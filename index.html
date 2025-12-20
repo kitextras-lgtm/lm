@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/elevate_v4.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Library Landing Page with Three-Color Palette</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap&text-rendering=optimizeLegibility" rel="stylesheet">
+    <style>
+      @supports (font-variation-settings: normal) {
+        * { font-variation-settings: normal; }
+      }
+
+      /* Fix Windows DPI scaling issue */
+      @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        body {
+          zoom: 0.9;
+        }
+      }
+
+      /* For modern Windows browsers */
+      @supports (-ms-ime-align: auto) {
+        body {
+          zoom: 0.9;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://prod.spline.design" crossorigin>
+    <link rel="dns-prefetch" href="https://prod.spline.design">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Fix Windows scaling issue
+      if (navigator.userAgent.indexOf('Windows') !== -1) {
+        document.body.style.zoom = '0.9';
+      }
+    </script>
+    <script>
+      // Lazy load Spline viewer after initial render
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          const script = document.createElement('script');
+          script.type = 'module';
+          script.src = 'https://unpkg.com/@splinetool/viewer@1.12.6/build/spline-viewer.js';
+          document.body.appendChild(script);
+        });
+      } else {
+        setTimeout(() => {
+          const script = document.createElement('script');
+          script.type = 'module';
+          script.src = 'https://unpkg.com/@splinetool/viewer@1.12.6/build/spline-viewer.js';
+          document.body.appendChild(script);
+        }, 300);
+      }
+    </script>
+  </body>
+</html>

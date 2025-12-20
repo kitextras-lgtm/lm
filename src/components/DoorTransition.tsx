@@ -1,0 +1,81 @@
+import { useState, useEffect } from "react"
+
+interface DoorTransitionProps {
+  showTransition?: boolean
+}
+
+export function DoorTransition({ showTransition = false }: DoorTransitionProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    if (showTransition) {
+      const timer = setTimeout(() => {
+        setIsOpen(true)
+      }, 500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showTransition])
+
+  if (!showTransition) {
+    return null
+  }
+
+  return (
+    <div className="fixed inset-0 pointer-events-none" style={{ perspective: "1500px", zIndex: 9999 }}>
+      {/* Left Door */}
+      <div
+        className={`absolute top-0 left-0 w-1/2 h-full bg-zinc-900 border-r border-white/10 transition-transform duration-[1.5s] ${
+          isOpen ? "shadow-none" : "shadow-[inset_-20px_0_40px_rgba(0,0,0,0.3)]"
+        }`}
+        style={{
+          transformOrigin: "left center",
+          transform: isOpen ? "rotateY(-105deg)" : "rotateY(0deg)",
+          transitionTimingFunction: "cubic-bezier(0.4, 0.0, 0.2, 1)",
+          backfaceVisibility: "hidden",
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-end pr-16">
+          <div className={`transition-opacity duration-300 ${isOpen ? "opacity-0" : "opacity-100"}`}>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-3 h-32 bg-zinc-600 rounded-full shadow-lg" />
+              <div className="w-12 h-3 bg-zinc-700 rounded-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Door */}
+      <div
+        className={`absolute top-0 right-0 w-1/2 h-full bg-zinc-900 border-l border-white/10 transition-transform duration-[1.5s] ${
+          isOpen ? "shadow-none" : "shadow-[inset_20px_0_40px_rgba(0,0,0,0.3)]"
+        }`}
+        style={{
+          transformOrigin: "right center",
+          transform: isOpen ? "rotateY(105deg)" : "rotateY(0deg)",
+          transitionTimingFunction: "cubic-bezier(0.4, 0.0, 0.2, 1)",
+          backfaceVisibility: "hidden",
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-start pl-16">
+          <div className={`transition-opacity duration-300 ${isOpen ? "opacity-0" : "opacity-100"}`}>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-3 h-32 bg-zinc-600 rounded-full shadow-lg" />
+              <div className="w-12 h-3 bg-zinc-700 rounded-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Center line */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${
+          isOpen ? "opacity-0" : "opacity-100"
+        }`}
+        style={{ zIndex: 10 }}
+      >
+        <div className="absolute top-0 bottom-0 w-px bg-white/10" />
+      </div>
+    </div>
+  )
+}
