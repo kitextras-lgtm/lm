@@ -815,7 +815,7 @@ export function SettingsPage() {
                       color: '#F8FAFC'
                     }}
                   >
-                    Payout methods
+                    Payment Method
                   </button>
                   <button
                     onClick={() => setActiveSection('notifications')}
@@ -848,7 +848,7 @@ export function SettingsPage() {
             <main className="flex-1 rounded-2xl p-8 shadow-xl overflow-y-auto" style={{ backgroundColor: '#1a1a1e' }}>
               {activeSection === 'personal' && renderPersonalInfo()}
               {activeSection === 'accounts' && renderPlaceholder('Connected accounts', 'Manage your social media connections')}
-              {activeSection === 'payout' && renderPlaceholder('Payout methods', 'Add your payout information')}
+              {activeSection === 'payout' && renderPlaceholder('Payment Method', 'Payments are typically processed automatically through Tipalti. If a payout needs to be issued outside of Tipalti, you can add an alternative payment method.')}
               {activeSection === 'notifications' && renderPlaceholder('Notifications', 'Manage your notification preferences')}
               {activeSection === 'close' && renderPlaceholder('Close account', 'Delete your account and data')}
             </main>

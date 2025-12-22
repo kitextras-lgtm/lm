@@ -803,12 +803,9 @@ export function ArtistDashboard() {
 
   const renderPayoutMethods = () => (
     <div ref={payoutRef} className="scroll-mt-6 rounded-2xl p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <h2 className="text-2xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Payout methods</h2>
-      <p className="text-sm mb-3" style={{ color: '#94A3B8' }}>
-        Link an account to withdraw funds. Depending on your location, you can connect either a <span className="font-semibold" style={{ color: '#F8FAFC' }}>Stripe</span> or <span className="font-semibold" style={{ color: '#F8FAFC' }}>PayPal</span> account.
-      </p>
+      <h2 className="text-2xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Payment Method</h2>
       <p className="text-sm mb-6" style={{ color: '#94A3B8' }}>
-        You can choose a preferred method when you cash out.
+        Payments are typically processed automatically through Tipalti. If a payout needs to be issued outside of Tipalti, you can add an alternative payment method.
       </p>
 
       <button className="flex items-center gap-3 px-5 py-4 rounded-xl text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
@@ -1206,7 +1203,7 @@ export function ArtistDashboard() {
                       onClick={() => scrollToSection('payout')}
                       isActive={settingsSection === 'payout'}
                       icon={<CreditCardIcon />}
-                      label="Payout methods"
+                      label="Payment Method"
                     />
                     <SettingsNavButton
                       onClick={() => scrollToSection('notifications')}
