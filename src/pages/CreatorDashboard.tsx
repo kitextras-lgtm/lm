@@ -248,6 +248,8 @@ export function CreatorDashboard() {
             console.log('Successfully fetched via Edge Function');
             console.log('Profile:', profile);
             console.log('User:', userData);
+            console.log('Profile picture URL from database:', profile?.profile_picture_url || userData?.profile_picture_url);
+            console.log('All profile keys:', profile ? Object.keys(profile) : 'null');
           } else {
             console.warn('Edge Function returned success:false', fetchData.message);
           }
@@ -262,30 +264,26 @@ export function CreatorDashboard() {
       // Fallback: Try direct query if Edge Function didn't work
       if (!profile) {
         console.log('Edge Function didn\'t return data, trying direct query...');
-        const [profileResult, userResult] = await Promise.all([
-          supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', userId)
-            .maybeSingle(),
-          supabase
-            .from('users')
-            .select('full_name, email')
-            .eq('id', userId)
-            .maybeSingle()
-        ]);
+        const userResult = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
 
         // Log any errors with full details
-        if (profileResult.error) {
-          console.error('Error fetching user_profiles:', profileResult.error);
+        if (userResult.error) {
+          console.error('Error fetching users table:', userResult.error);
           console.error('Error details:', {
-            message: profileResult.error.message,
-            details: profileResult.error.details,
-            hint: profileResult.error.hint,
-            code: profileResult.error.code
+            message: userResult.error.message,
+            details: userResult.error.details,
+            hint: userResult.error.hint,
+            code: userResult.error.code
           });
         } else {
-          console.log('user_profiles query successful, data:', profileResult.data);
+          console.log('users table query successful, data:', userResult.data);
+          if (userResult.data) {
+            profile = userResult.data;
+          }
         }
         
         if (userResult.error) {
@@ -327,10 +325,22 @@ export function CreatorDashboard() {
       console.log('Setting form data from users table:', formDataToSet);
       setFormData(formDataToSet);
       
-      // Set profile picture preview if available
-      if (profileData?.profile_picture_url) {
+      // Clear any blob URLs first (they're temporary and shouldn't be used)
+      if (profilePicturePreview && profilePicturePreview.startsWith('blob:')) {
+        console.log('Clearing blob URL:', profilePicturePreview);
+        URL.revokeObjectURL(profilePicturePreview);
+        setProfilePicturePreview(null);
+      }
+      
+      // Only set profilePicturePreview from database URL (for settings page preview)
+      // Header avatar will use userProfile.profile_picture_url directly
+      if (profileData?.profile_picture_url && !profileData.profile_picture_url.startsWith('blob:')) {
+        console.log('Setting profile picture preview from database:', profileData.profile_picture_url);
         setProfilePicturePreview(profileData.profile_picture_url);
       } else {
+        console.log('No valid profile picture URL found in profile data');
+        console.log('Profile data keys:', profileData ? Object.keys(profileData) : 'null');
+        console.log('profile_picture_url value:', profileData?.profile_picture_url);
         setProfilePicturePreview(null);
       }
       
@@ -406,35 +416,35 @@ export function CreatorDashboard() {
         return;
       }
 
-      // Upload profile picture if changed
-      let profilePictureUrl = userProfile?.profile_picture_url || null;
+      // Convert profile picture to base64 to send via Edge Function
+      // Edge Function will upload it using service role (bypasses RLS)
+      let profilePictureBase64 = null;
+      let profilePictureFileName = null;
       if (profilePicture) {
         try {
-          const fileExt = profilePicture.name.split('.').pop();
-          const fileName = `${Date.now()}.${fileExt}`;
-          const filePath = `profile-pictures/${userId}/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, profilePicture, {
-              cacheControl: '3600',
-              upsert: false
-            });
-
-          if (uploadError) {
-            console.error('Error uploading profile picture:', uploadError);
-            if (!uploadError.message?.includes('Bucket not found')) {
-              throw new Error('Failed to upload profile picture');
-            }
-          } else {
-            const { data: urlData } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(filePath);
-            profilePictureUrl = urlData.publicUrl;
-          }
-        } catch (uploadErr: any) {
-          console.error('Error uploading profile picture:', uploadErr);
-          throw new Error('Failed to upload profile picture');
+          console.log('🖼️ Converting profile picture to base64...');
+          console.log('File:', profilePicture.name, 'Size:', profilePicture.size);
+          
+          // Convert file to base64
+          const reader = new FileReader();
+          profilePictureBase64 = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+              const result = reader.result as string;
+              // Remove data:image/...;base64, prefix
+              const base64 = result.split(',')[1];
+              resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(profilePicture);
+          });
+          
+          profilePictureFileName = profilePicture.name;
+          console.log('✅ Profile picture converted to base64');
+        } catch (convertErr: any) {
+          console.error('❌ Failed to convert image:', convertErr);
+          setSaveError(`Failed to process profile picture: ${convertErr.message}`);
+          setIsSaving(false);
+          return;
         }
       }
 
@@ -453,7 +463,8 @@ export function CreatorDashboard() {
           username: formData.username,
           location: formData.location,
           primaryLanguage: formData.language,
-          profilePictureUrl: profilePictureUrl,
+          profilePictureBase64: profilePictureBase64, // Send base64 instead of URL
+          profilePictureFileName: profilePictureFileName,
         }),
       });
 
@@ -568,6 +579,11 @@ export function CreatorDashboard() {
                 type="text"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
@@ -650,6 +666,11 @@ export function CreatorDashboard() {
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
@@ -679,6 +700,11 @@ export function CreatorDashboard() {
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
@@ -938,10 +964,62 @@ export function CreatorDashboard() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-200 hover:brightness-110 cursor-pointer"
+              className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-200 hover:brightness-110 cursor-pointer overflow-hidden relative"
               style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
             >
-              M
+              {(() => {
+                // ONLY use database URL for header avatar (never use blob URLs)
+                const profilePicUrl = userProfile?.profile_picture_url;
+                
+                // Only render image if we have a valid database URL (not a blob URL)
+                if (profilePicUrl && !profilePicUrl.startsWith('blob:')) {
+                  return (
+                    <>
+                      {/* Show initials as placeholder while image loads */}
+                      <span className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}>
+                        {userProfile?.first_name?.[0]?.toUpperCase() || 
+                         userProfile?.last_name?.[0]?.toUpperCase() || 
+                         formData.firstName?.[0]?.toUpperCase() || 
+                         formData.lastName?.[0]?.toUpperCase() || 
+                         'M'}
+                      </span>
+                      <img 
+                        src={profilePicUrl} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover relative z-10"
+                        onLoad={(e) => {
+                          // Hide placeholder when image loads
+                          const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
+                          if (placeholder) {
+                            placeholder.style.opacity = '0';
+                            placeholder.style.transition = 'opacity 0.2s';
+                          }
+                        }}
+                        onError={(e) => {
+                          console.error('Failed to load profile picture from database:', profilePicUrl);
+                          // Show placeholder on error
+                          const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
+                          if (placeholder) {
+                            placeholder.style.opacity = '1';
+                          }
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </>
+                  );
+                }
+                
+                // Fallback to initials if no valid database URL
+                return (
+                  <span>
+                    {userProfile?.first_name?.[0]?.toUpperCase() || 
+                     userProfile?.last_name?.[0]?.toUpperCase() || 
+                     formData.firstName?.[0]?.toUpperCase() || 
+                     formData.lastName?.[0]?.toUpperCase() || 
+                     'M'}
+                  </span>
+                );
+              })()}
             </button>
 
             {isDropdownOpen && (

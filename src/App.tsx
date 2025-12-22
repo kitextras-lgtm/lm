@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 const HomePage = lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
 const SignupPage = lazy(() => import('./pages/SignupPage').then(module => ({ default: module.SignupPage })));
@@ -28,10 +29,38 @@ function App() {
           <Route path="/make-profile" element={<MakeProfilePage />} />
           <Route path="/tell-us-about-yourself" element={<TellUsAboutYourselfPage />} />
           <Route path="/contact" element={<ContactForm />} />
-          <Route path="/dashboard/artist" element={<ArtistDashboard />} />
-          <Route path="/dashboard/creator" element={<CreatorDashboard />} />
-          <Route path="/dashboard/business" element={<BusinessDashboard />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route 
+            path="/dashboard/artist" 
+            element={
+              <ProtectedRoute>
+                <ArtistDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/creator" 
+            element={
+              <ProtectedRoute>
+                <CreatorDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/business" 
+            element={
+              <ProtectedRoute>
+                <BusinessDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/verify-setup" element={<VerifySetupPage />} />
         </Routes>
       </Suspense>

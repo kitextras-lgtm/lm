@@ -24,49 +24,69 @@ export function ReferralSection() {
   const loadReferralData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const verifiedUserId = localStorage.getItem('verifiedUserId');
+      const userId = user?.id || verifiedUserId;
+      
+      if (!userId) {
+        console.warn('No user ID found');
+        setLoading(false);
+        return;
+      }
 
-      const { data: existingCode } = await supabase
-        .from('referral_codes')
-        .select('code, total_uses, total_earnings')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existingCode) {
-        setReferralData(existingCode);
-      } else {
+      // Get username from users table using Edge Function (bypasses RLS)
+      let username = null;
+      try {
+        const fetchUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-profile?userId=${userId}`;
+        const fetchResponse = await fetch(fetchUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (fetchResponse.ok) {
+          const fetchData = await fetchResponse.json();
+          if (fetchData.success && fetchData.profile) {
+            username = fetchData.profile.username;
+            console.log('✅ Fetched username from Edge Function:', username);
+          }
+        }
+      } catch (fetchErr) {
+        console.error('Error fetching via Edge Function:', fetchErr);
+        // Fallback to direct query
         const { data: userProfile } = await supabase
-          .from('user_profiles')
+          .from('users')
           .select('username')
-          .eq('id', user.id)
+          .eq('id', userId)
+          .maybeSingle();
+        username = userProfile?.username;
+      }
+
+      if (username) {
+        // Use username directly as the referral code
+        // Also fetch stats from referral_codes table if it exists
+        const { data: existingCode } = await supabase
+          .from('referral_codes')
+          .select('total_uses, total_earnings')
+          .eq('user_id', userId)
           .maybeSingle();
 
-        const username = userProfile?.username;
-
-        if (username) {
-          const { data: insertedCode, error: insertError } = await supabase
-            .from('referral_codes')
-            .insert({
-              user_id: user.id,
-              code: username.toUpperCase(),
-            })
-            .select('code, total_uses, total_earnings')
-            .single();
-
-          if (!insertError && insertedCode) {
-            setReferralData(insertedCode);
-          } else {
-            console.error('Error inserting referral code:', insertError);
-          }
-        } else {
-          console.error('No username found for user');
-        }
+        setReferralData({
+          code: username.toUpperCase(),
+          total_uses: existingCode?.total_uses || 0,
+          total_earnings: existingCode?.total_earnings || 0,
+        });
+        console.log('✅ Set referral code to username:', username.toUpperCase());
+      } else {
+        console.error('No username found for user');
+        console.log('User ID:', userId);
       }
 
       const { data: appliedCode } = await supabase
         .from('referral_applications')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .maybeSingle();
 
       setHasAppliedCode(!!appliedCode);

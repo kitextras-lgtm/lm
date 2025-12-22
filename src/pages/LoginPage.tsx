@@ -123,6 +123,10 @@ export function LoginPage() {
     if (e.key === 'Backspace' && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
+    // Submit on Enter when all digits are filled
+    if (e.key === 'Enter' && code.every(digit => digit !== '') && !loading) {
+      verifyCode(code.join(''));
+    }
   };
 
   const verifyCode = async (otp: string) => {
@@ -318,6 +322,11 @@ export function LoginPage() {
                 placeholder="alan.turing@example.com"
                 value={email}
                 onChange={handleEmailChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && email && isValidEmail && !loading) {
+                    handleContinue();
+                  }
+                }}
                 className="h-11 w-full px-4 bg-transparent border border-neutral-700 text-white placeholder:text-neutral-500 rounded-lg focus:border-neutral-500 focus:outline-none"
               />
               {!isValidEmail && (

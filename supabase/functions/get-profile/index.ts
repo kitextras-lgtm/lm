@@ -61,19 +61,9 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Fetch profile data from user_profiles (backup/legacy)
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('user_profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (profileError) {
-      console.error('Error fetching profile (non-critical):', profileError);
-      // Don't fail if profile fetch fails - users table is primary
-    }
-
     console.log('✅ Fetched user data from users table');
+    console.log('User data keys:', userData ? Object.keys(userData) : 'null');
+    console.log('Profile picture URL:', userData?.profile_picture_url);
 
     return new Response(
       JSON.stringify({

@@ -125,7 +125,7 @@ export function TellUsAboutYourselfPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase
-          .from('user_profiles')
+          .from('users')
           .select('*')
           .eq('id', user.id)
           .maybeSingle();

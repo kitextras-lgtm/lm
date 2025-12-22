@@ -53,7 +53,7 @@ export function MakeProfilePage() {
       
       if (userId) {
         const { data } = await supabase
-          .from('user_profiles')
+          .from('users')
           .select('user_type')
           .eq('id', userId)
           .maybeSingle();
@@ -126,60 +126,38 @@ export function MakeProfilePage() {
         return;
       }
 
-      // Upload profile picture if provided
-      let profilePictureUrl = null;
+      // Convert profile picture to base64 to send via Edge Function
+      // Edge Function will upload it using service role (bypasses RLS)
+      let profilePictureBase64 = null;
       if (profilePicture) {
         try {
-          console.log('🖼️ Attempting to upload profile picture...');
+          console.log('🖼️ Converting profile picture to base64...');
           console.log('File:', profilePicture.name, 'Size:', profilePicture.size);
           
-          // Check if user is authenticated
-          const { data: { session } } = await supabase.auth.getSession();
-          console.log('Session exists:', !!session);
-          console.log('User ID:', userId);
+          // Convert file to base64
+          const reader = new FileReader();
+          profilePictureBase64 = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+              const result = reader.result as string;
+              // Remove data:image/...;base64, prefix
+              const base64 = result.split(',')[1];
+              resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(profilePicture);
+          });
           
-          // Upload to Supabase Storage
-          // Structure: profile-pictures/{userId}/{filename}
-          const fileExt = profilePicture.name.split('.').pop();
-          const fileName = `${Date.now()}.${fileExt}`;
-          const filePath = `profile-pictures/${userId}/${fileName}`;
-          
-          console.log('Upload path:', filePath);
-
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, profilePicture, {
-              cacheControl: '3600',
-              upsert: false
-            });
-
-          if (uploadError) {
-            console.error('❌ Upload failed!');
-            console.error('Error code:', uploadError.message);
-            console.error('Full error:', uploadError);
-            
-            // Show error to user
-            setError(`Failed to upload profile picture: ${uploadError.message}`);
-            setIsLoading(false);
-            return;
-          } else {
-            console.log('✅ Upload successful!', uploadData);
-            // Get public URL
-            const { data: urlData } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(filePath);
-            profilePictureUrl = urlData.publicUrl;
-            console.log('✅ Public URL:', profilePictureUrl);
-          }
-        } catch (uploadErr: any) {
-          console.error('❌ Upload exception:', uploadErr);
-          setError(`Failed to upload profile picture: ${uploadErr.message}`);
+          console.log('✅ Profile picture converted to base64');
+        } catch (convertErr: any) {
+          console.error('❌ Failed to convert image:', convertErr);
+          setError(`Failed to process profile picture: ${convertErr.message}`);
           setIsLoading(false);
           return;
         }
       }
 
       // Save profile using Edge Function (bypasses RLS)
+      // Edge Function will handle profile picture upload using service role
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/save-profile`;
       console.log('Saving profile with data:', {
         userId,
@@ -187,7 +165,7 @@ export function MakeProfilePage() {
         lastName,
         username,
         userType,
-        profilePictureUrl
+        hasProfilePicture: !!profilePictureBase64
       });
       
       const response = await fetch(apiUrl, {
@@ -202,7 +180,8 @@ export function MakeProfilePage() {
           lastName,
           username,
           userType: userType || 'creator', // Default to 'creator' if not set
-          profilePictureUrl,
+          profilePictureBase64, // Send base64 instead of URL
+          profilePictureFileName: profilePicture?.name || null,
         }),
       });
 
@@ -217,7 +196,7 @@ export function MakeProfilePage() {
         firstName,
         lastName,
         username,
-        profilePicture: profilePictureUrl || previewUrl
+        profilePicture: previewUrl // Use preview URL for localStorage (blob URL)
       }));
 
       navigate('/tell-us-about-yourself');
@@ -321,6 +300,11 @@ export function MakeProfilePage() {
                   placeholder="First name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value.slice(0, MAX_NAME_LENGTH))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && firstName && username && !isLoading) {
+                      handleContinue();
+                    }
+                  }}
                   maxLength={MAX_NAME_LENGTH}
                   className="flex-1 min-w-0 h-11 px-4 rounded-lg text-sm focus:outline-none transition-all"
                   style={{
@@ -334,6 +318,11 @@ export function MakeProfilePage() {
                   placeholder="Last name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value.slice(0, MAX_NAME_LENGTH))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && firstName && username && !isLoading) {
+                      handleContinue();
+                    }
+                  }}
                   maxLength={MAX_NAME_LENGTH}
                   className="flex-1 min-w-0 h-11 px-4 rounded-lg text-sm focus:outline-none transition-all"
                   style={{
@@ -360,6 +349,11 @@ export function MakeProfilePage() {
                   onChange={(e) => {
                     const sanitized = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
                     setUsername(sanitized.slice(0, MAX_USERNAME_LENGTH));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && firstName && username && !isLoading) {
+                      handleContinue();
+                    }
                   }}
                   maxLength={MAX_USERNAME_LENGTH}
                   className="w-full h-11 pl-10 pr-4 rounded-lg text-sm focus:outline-none transition-all"

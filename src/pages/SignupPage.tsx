@@ -124,6 +124,10 @@ export function SignupPage() {
     if (e.key === 'Backspace' && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
+    // Submit on Enter when all digits are filled
+    if (e.key === 'Enter' && code.every((digit) => digit !== '') && !loading) {
+      verifyCode(code.join(''));
+    }
   };
 
   const verifyCode = async (otp: string) => {
@@ -157,43 +161,29 @@ export function SignupPage() {
 
       const data = await res.json();
       
-      console.log('OTP verification response:', data);
+      console.log('✅ OTP verification response:', data);
 
       if (!data.success) {
+        console.error('❌ OTP verification failed:', data);
         throw new Error(data.message || 'Invalid verification code');
       }
+      
+      console.log('✅ OTP verification successful');
 
       // Store userId and email immediately - this is critical for the next page
       if (data.userId) {
         localStorage.setItem('verifiedEmail', email);
         localStorage.setItem('verifiedUserId', data.userId);
-        console.log('Stored verifiedUserId:', data.userId);
+        console.log('✅ Stored verifiedUserId:', data.userId);
+        console.log('✅ Stored verifiedEmail:', email);
       } else {
-        console.error('Response data (no userId):', data);
+        console.error('❌ Response data (no userId):', data);
         throw new Error(data.message || 'User ID not received from server. Please try again or contact support.');
       }
 
-      // Try to sign in the user - since the auth user was created server-side
-      // Note: signInWithOtp sends a magic link, it doesn't create immediate session
-      // But we have the userId in localStorage, so the profile page can work
-      try {
-        const { error: signInError } = await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            shouldCreateUser: false, // User already exists
-            emailRedirectTo: window.location.origin + '/make-profile'
-          }
-        });
-
-        if (signInError) {
-          console.log('Note: Magic link sign-in initiated. User can continue with profile setup using stored userId.');
-        }
-      } catch (err) {
-        console.error('Error initiating sign-in:', err);
-        // Continue anyway - userId is stored in localStorage
-      }
-
       // Navigate to profile page - userId is in localStorage
+      // No need to call signInWithOtp - user is already created by verify-otp Edge Function
+      console.log('✅ Navigating to /make-profile');
       navigate('/make-profile');
     } catch (err: any) {
       console.error('OTP verification error:', err);
@@ -466,6 +456,11 @@ export function SignupPage() {
             placeholder="alan.turing@example.com"
             value={email}
             onChange={handleEmailChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && email && isValidEmail && !loading) {
+                handleContinue();
+              }
+            }}
             className="h-11 w-full px-4 bg-transparent border border-neutral-700 text-white placeholder:text-neutral-500 rounded-lg focus:border-neutral-500 focus:outline-none"
           />
           {!isValidEmail && (

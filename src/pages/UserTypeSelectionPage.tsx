@@ -154,13 +154,29 @@ export function UserTypeSelectionPage() {
       
       // Get userId from auth or from localStorage (if verified but not signed in yet)
       const verifiedUserId = localStorage.getItem('verifiedUserId');
+      const verifiedEmail = localStorage.getItem('verifiedEmail');
       const userId = user?.id || verifiedUserId;
 
+      console.log('UserTypeSelection - Auth check:', {
+        hasAuthUser: !!user,
+        authUserId: user?.id,
+        verifiedUserId: verifiedUserId ? verifiedUserId.substring(0, 8) + '...' : null,
+        verifiedEmail: verifiedEmail ? verifiedEmail.substring(0, 10) + '...' : null,
+        finalUserId: userId ? userId.substring(0, 8) + '...' : null
+      });
+
       if (userId) {
+        console.log('✅ UserTypeSelection - Saving profile with userId:', userId.substring(0, 8) + '...');
         const tempProfile = localStorage.getItem('tempProfile');
         const profileData = tempProfile ? JSON.parse(tempProfile) : {};
 
         // Save profile using Edge Function (bypasses RLS)
+        // Don't send blob URLs - they're temporary and the image should already be in storage
+        // The profile picture should have been uploaded during MakeProfilePage
+        const profilePictureUrl = profileData.profilePicture && !profileData.profilePicture.startsWith('blob:')
+          ? profileData.profilePicture
+          : null;
+        
         const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/save-profile`;
         const response = await fetch(apiUrl, {
           method: 'POST',
@@ -174,7 +190,7 @@ export function UserTypeSelectionPage() {
             firstName: profileData.firstName || '',
             lastName: profileData.lastName || '',
             username: profileData.username || '',
-            profilePictureUrl: profileData.profilePicture || null,
+            profilePictureUrl: profilePictureUrl, // Only send if it's a valid storage URL
             location: profileData.location || '',
             primaryLanguage: profileData.primaryLanguage || '',
           }),
@@ -185,10 +201,13 @@ export function UserTypeSelectionPage() {
         if (!data.success) {
           console.error('Error saving to database:', data.message);
           setError(data.message || 'Failed to save profile');
+          setIsLoading(false);
+          return;
         } else {
+          // Keep verifiedUserId - needed for dashboard access
+          // Only remove tempProfile data
           localStorage.removeItem('tempProfile');
-          localStorage.removeItem('verifiedEmail');
-          localStorage.removeItem('verifiedUserId');
+          console.log('✅ Profile saved successfully, keeping verifiedUserId for dashboard access');
         }
       } else {
         // No user ID available - store selection for later

@@ -36,29 +36,102 @@ Deno.serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { data: existingUser } = await supabaseClient
-      .from('users')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
+    // Check auth.users as the source of truth (consistent with verify-otp)
+    let existingAuthUser = null;
+    console.log('🔍 send-otp: Checking auth.users for email:', email);
+    console.log('🔍 send-otp: isSignup:', isSignup, 'isLogin:', isLogin);
+    
+    try {
+      const getUserResponse = await fetch(
+        `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
+        {
+          method: 'GET',
+          headers: {
+            'apikey': serviceRoleKey,
+            'Authorization': `Bearer ${serviceRoleKey}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('📡 send-otp: Auth API response status:', getUserResponse.status);
+      const responseText = await getUserResponse.text();
+      console.log('📡 send-otp: Auth API response body:', responseText);
+
+      if (getUserResponse.ok) {
+        let usersData;
+        try {
+          usersData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('❌ send-otp: Failed to parse response:', parseError);
+          usersData = { users: [] };
+        }
+        
+        console.log('📋 send-otp: Parsed users data:', JSON.stringify(usersData, null, 2));
+        
+        if (usersData.users && usersData.users.length > 0) {
+          // CRITICAL FIX: Supabase Auth API might return wrong users - filter by exact email match
+          const matchingUser = usersData.users.find((u: any) => 
+            u.email && u.email.toLowerCase() === email.toLowerCase()
+          );
+          
+          if (matchingUser) {
+            existingAuthUser = matchingUser;
+            console.log('⚠️ send-otp: Found matching auth user:', {
+              id: existingAuthUser.id,
+              email: existingAuthUser.email,
+              deleted_at: existingAuthUser.deleted_at,
+              banned_until: existingAuthUser.banned_until
+            });
+          } else {
+            // API returned users but none match the requested email - this is a bug
+            console.error('❌ CRITICAL BUG: Auth API returned users but none match requested email!');
+            console.error('❌ Requested email:', email);
+            console.error('❌ Returned users:', usersData.users.map((u: any) => u.email));
+            // Treat as if no user exists - allow signup
+            existingAuthUser = null;
+            console.log('✅ send-otp: No matching user found - allowing signup');
+          }
+        } else {
+          console.log('✅ send-otp: No existing user found in auth.users');
+        }
+      } else {
+        console.log('⚠️ send-otp: Auth API returned non-OK status:', getUserResponse.status);
+      }
+    } catch (err) {
+      console.error('❌ send-otp: Error checking auth.users:', err);
+    }
 
     if (isSignup) {
-      if (existingUser) {
-        return new Response(
-          JSON.stringify({ success: false, message: 'This email is already registered. Please log in instead.' }),
-          {
-            status: 400,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+      if (existingAuthUser) {
+        // Check if user is soft-deleted or banned
+        if (existingAuthUser.deleted_at) {
+          console.log('⚠️ send-otp: User exists but is soft-deleted, allowing signup');
+          existingAuthUser = null; // Allow signup to proceed
+        } else {
+          console.log('❌ send-otp: Signup blocked - User already exists in auth.users:', existingAuthUser.id);
+          return new Response(
+            JSON.stringify({ success: false, message: 'This email is already registered. Please log in instead.' }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
+      } else {
+        console.log('✅ send-otp: No existing user found - allowing signup to proceed');
       }
     }
 
     if (isLogin) {
-      if (!existingUser) {
+      if (!existingAuthUser) {
+        console.log('Login blocked: No user found in auth.users');
         return new Response(
           JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
           {
@@ -71,14 +144,15 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      // Check users table for user_type (updated to use users table instead of user_profiles)
+      // Also check users table for user_type to ensure profile exists
       const { data: userData } = await supabaseClient
         .from('users')
         .select('user_type')
-        .eq('id', existingUser.id)
+        .eq('id', existingAuthUser.id)
         .maybeSingle();
 
       if (!userData || !userData.user_type) {
+        console.log('Login blocked: User exists in auth but no user_type in users table');
         return new Response(
           JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
           {
@@ -159,30 +233,61 @@ Deno.serve(async (req: Request) => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
   <title>Elevate Verification Code</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .container {
+        padding: 20px 16px !important;
+      }
+      .content-box {
+        padding: 40px 24px !important;
+      }
+      .code-box {
+        padding: 30px 16px !important;
+      }
+      h1 {
+        font-size: 24px !important;
+        margin-bottom: 30px !important;
+      }
+      .code {
+        font-size: 42px !important;
+        letter-spacing: 8px !important;
+      }
+      .text {
+        font-size: 16px !important;
+      }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000;">
-  <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-    <div style="background-color: #000000; border-radius: 8px; padding: 60px 40px; box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000 !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  <!--[if mso]>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #000000;">
+    <tr>
+      <td style="padding: 20px;">
+  <![endif]-->
+  <div class="container" style="max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #000000;">
+    <div class="content-box" style="background-color: #000000; border-radius: 8px; padding: 60px 40px; box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);">
 
-      <h1 style="font-size: 32px; font-weight: 600; margin: 0 0 40px 0; text-align: center; color: #ffffff; line-height: 1.2;">
+      <h1 style="font-size: 32px; font-weight: 600; margin: 0 0 40px 0; text-align: center; color: #ffffff !important; line-height: 1.2;">
         Your Elevate verification code is:
       </h1>
 
-      <div style="background-color: #1a1a1a; border-radius: 16px; padding: 40px 20px; margin: 0 0 40px 0; text-align: center;">
-        <p style="font-size: 56px; font-weight: 700; letter-spacing: 12px; margin: 0; color: #ffffff; line-height: 1;">
+      <div class="code-box" style="background-color: #1a1a1a !important; border-radius: 16px; padding: 40px 20px; margin: 0 0 40px 0; text-align: center;">
+        <p class="code" style="font-size: 56px; font-weight: 700; letter-spacing: 12px; margin: 0; color: #ffffff !important; line-height: 1;">
           ${code}
         </p>
       </div>
 
       <div style="text-align: center;">
-        <p style="font-size: 18px; color: #ffffff; line-height: 1.6; margin: 0 0 8px 0;">
+        <p class="text" style="font-size: 18px; color: #ffffff !important; line-height: 1.6; margin: 0 0 8px 0;">
           This code expires after 30 minutes and can
         </p>
-        <p style="font-size: 18px; color: #ffffff; line-height: 1.6; margin: 0 0 8px 0;">
+        <p class="text" style="font-size: 18px; color: #ffffff !important; line-height: 1.6; margin: 0 0 8px 0;">
           only be used once.
         </p>
-        <p style="font-size: 18px; color: #ffffff; line-height: 1.6; margin: 0; font-weight: 600;">
+        <p class="text" style="font-size: 18px; color: #ffffff !important; line-height: 1.6; margin: 0; font-weight: 600;">
           Never share your code.
         </p>
       </div>
@@ -190,11 +295,16 @@ Deno.serve(async (req: Request) => {
     </div>
 
     <div style="text-align: center; margin-top: 30px; padding: 0 20px;">
-      <p style="font-size: 14px; color: #9ca3af; line-height: 1.5; margin: 0;">
+      <p style="font-size: 14px; color: #9ca3af !important; line-height: 1.5; margin: 0;">
         If you didn't request this code, you can safely ignore this email.
       </p>
     </div>
   </div>
+  <!--[if mso]>
+      </td>
+    </tr>
+  </table>
+  <![endif]-->
 </body>
 </html>
           `,

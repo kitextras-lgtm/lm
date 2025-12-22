@@ -197,34 +197,15 @@ export function SettingsPage() {
       // Fallback: Try direct query if Edge Function didn't work
       if (!profile) {
         console.log('Edge Function didn\'t return data, trying direct query...');
-        const [profileResult, userResult] = await Promise.all([
-          supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', userId)
-            .maybeSingle(),
-          supabase
-            .from('users')
-            .select('full_name, email')
-            .eq('id', userId)
-            .maybeSingle()
-        ]);
+        const userResult = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
 
         // Log any errors with full details
-        if (profileResult.error) {
-          console.error('Error fetching user_profiles:', profileResult.error);
-          console.error('Error details:', {
-            message: profileResult.error.message,
-            details: profileResult.error.details,
-            hint: profileResult.error.hint,
-            code: profileResult.error.code
-          });
-        } else {
-          console.log('user_profiles query successful, data:', profileResult.data);
-        }
-        
         if (userResult.error) {
-          console.error('Error fetching users:', userResult.error);
+          console.error('Error fetching users table:', userResult.error);
           console.error('Error details:', {
             message: userResult.error.message,
             details: userResult.error.details,
@@ -233,10 +214,11 @@ export function SettingsPage() {
           });
         } else {
           console.log('users query successful, data:', userResult.data);
+          if (userResult.data) {
+            profile = userResult.data;
+            userData = userResult.data;
+          }
         }
-
-        profile = profileResult.data;
-        userData = userResult.data;
       }
 
       console.log('Final profile data:', profile);
@@ -312,47 +294,56 @@ export function SettingsPage() {
     setSaveError(null);
 
     try {
+      // Get userId with fallback to localStorage (same logic as fetchUserProfile)
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const verifiedUserId = localStorage.getItem('verifiedUserId');
+      const userId = user?.id || verifiedUserId;
+
+      if (!userId) {
         setSaveError('You must be logged in to save changes');
         setIsSaving(false);
         return;
       }
 
-      // Upload profile picture if changed
-      let profilePictureUrl = userProfile?.profile_picture_url || null;
+      console.log('💾 Saving profile changes for userId:', userId);
+      console.log('Form data:', formData);
+
+      // Convert profile picture to base64 to send via Edge Function
+      // Edge Function will upload it using service role (bypasses RLS)
+      let profilePictureBase64 = null;
+      let profilePictureFileName = null;
       if (profilePicture) {
         try {
-          const fileExt = profilePicture.name.split('.').pop();
-          const fileName = `${Date.now()}.${fileExt}`;
-          const filePath = `profile-pictures/${user.id}/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, profilePicture, {
-              cacheControl: '3600',
-              upsert: false
-            });
-
-          if (uploadError) {
-            console.error('Error uploading profile picture:', uploadError);
-            if (!uploadError.message?.includes('Bucket not found')) {
-              throw new Error('Failed to upload profile picture');
-            }
-          } else {
-            const { data: urlData } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(filePath);
-            profilePictureUrl = urlData.publicUrl;
-          }
-        } catch (uploadErr: any) {
-          console.error('Error uploading profile picture:', uploadErr);
-          throw new Error('Failed to upload profile picture');
+          console.log('🖼️ Converting profile picture to base64...');
+          console.log('File:', profilePicture.name, 'Size:', profilePicture.size);
+          
+          // Convert file to base64
+          const reader = new FileReader();
+          profilePictureBase64 = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => {
+              const result = reader.result as string;
+              // Remove data:image/...;base64, prefix
+              const base64 = result.split(',')[1];
+              resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(profilePicture);
+          });
+          
+          profilePictureFileName = profilePicture.name;
+          console.log('✅ Profile picture converted to base64');
+        } catch (convertErr: any) {
+          console.error('❌ Failed to convert image:', convertErr);
+          setSaveError(`Failed to process profile picture: ${convertErr.message}`);
+          setIsSaving(false);
+          return;
         }
       }
 
       // Save profile using Edge Function (bypasses RLS)
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/save-profile`;
+      console.log('📤 Sending save request to:', apiUrl);
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -360,29 +351,42 @@ export function SettingsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
+          userId: userId,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          username: formData.username,
+          // Username is not included - it cannot be changed after onboarding
           location: formData.location,
           primaryLanguage: formData.language,
-          profilePictureUrl: profilePictureUrl,
+          profilePictureBase64: profilePictureBase64, // Send base64 instead of URL
+          profilePictureFileName: profilePictureFileName,
         }),
       });
 
       const data = await response.json();
+      console.log('📥 Save response:', data);
 
       if (!data.success) {
         throw new Error(data.message || 'Failed to save changes');
       }
 
+      console.log('✅ Profile saved successfully, refreshing data...');
+
+      // Clear blob URLs if any
+      if (profilePicturePreview && profilePicturePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(profilePicturePreview);
+      }
+
       // Refresh profile data
       await fetchUserProfile();
+      
+      // Reset editing state and clear temporary picture
       setProfilePicture(null);
+      setProfilePicturePreview(null);
       setIsEditing(false);
-      alert('Changes saved successfully!');
+      
+      console.log('✅ All changes saved and profile refreshed');
     } catch (err: any) {
-      console.error('Error saving profile:', err);
+      console.error('❌ Error saving profile:', err);
       setSaveError(err.message || 'Failed to save changes');
     } finally {
       setIsSaving(false);
@@ -496,6 +500,11 @@ export function SettingsPage() {
                 type="text"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
@@ -525,6 +534,11 @@ export function SettingsPage() {
                 type="text"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
@@ -541,29 +555,23 @@ export function SettingsPage() {
         <div>
           <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>Username</label>
           <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center h-12 px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
+            <div className="flex-1 flex items-center h-12 px-4 rounded-xl transition-all opacity-70" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
               <span style={{ color: '#64748B' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                disabled={!isEditing}
-                className="flex-1 bg-transparent text-sm focus:outline-none ml-1"
+                disabled={true}
+                readOnly
+                className="flex-1 bg-transparent text-sm focus:outline-none ml-1 cursor-not-allowed"
                 style={{ color: '#F8FAFC' }}
+                title="Username cannot be changed after onboarding"
               />
             </div>
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-2.5 hover:brightness-110 transition-all rounded-lg"
-                style={{ color: '#64748B' }}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </button>
-            )}
+            <div className="w-10 h-10"></div>
           </div>
+          <p className="text-xs mt-1.5" style={{ color: '#64748B' }}>
+            Username cannot be changed after onboarding
+          </p>
         </div>
 
         <div>
@@ -574,6 +582,11 @@ export function SettingsPage() {
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
@@ -605,6 +618,11 @@ export function SettingsPage() {
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isEditing && !isSaving) {
+                    handleSaveChanges();
+                  }
+                }}
                 disabled={!isEditing}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
@@ -656,11 +674,26 @@ export function SettingsPage() {
           <div className="flex gap-3 pt-4">
             <button
               onClick={() => {
+                // Clear blob URLs if any
+                if (profilePicturePreview && profilePicturePreview.startsWith('blob:')) {
+                  URL.revokeObjectURL(profilePicturePreview);
+                }
+                
                 setIsEditing(false);
                 setProfilePicture(null);
                 setProfilePicturePreview(userProfile?.profile_picture_url || null);
-                // Reset form data to original values
-                fetchUserProfile();
+                
+                // Reset form data to original values from userProfile
+                if (userProfile) {
+                  setFormData({
+                    firstName: userProfile?.first_name || '',
+                    lastName: userProfile?.last_name || '',
+                    username: userProfile?.username || '',
+                    location: userProfile?.location || 'United States of America',
+                    language: userProfile?.primary_language || 'English',
+                    email: userProfile?.email || formData.email
+                  });
+                }
               }}
               className="px-7 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
               style={{ backgroundColor: '#0f0f13', color: '#F8FAFC' }}
@@ -692,8 +725,8 @@ export function SettingsPage() {
   );
 
   return (
-    <div className="min-h-screen text-white" style={{ backgroundColor: '#111111' }}>
-      <header className="fixed top-0 left-0 right-0 z-50 h-16" style={{ backgroundColor: '#111111', borderBottom: '1px solid #1a1a1a' }}>
+    <div className="h-screen text-white overflow-hidden flex flex-col" style={{ backgroundColor: '#111111' }}>
+      <header className="flex-shrink-0 h-16 z-50" style={{ backgroundColor: '#111111', borderBottom: '1px solid #1a1a1a' }}>
         <div className="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
@@ -716,9 +749,9 @@ export function SettingsPage() {
         </div>
       </header>
 
-      <div className="pt-32 pb-8">
-        <div className="max-w-5xl mx-auto px-8">
-          <div className="flex items-center gap-6 mb-10">
+      <div className="flex-1 overflow-hidden pt-8 pb-8">
+        <div className="h-full max-w-5xl mx-auto px-8 flex flex-col">
+          <div className="flex items-center gap-6 mb-10 flex-shrink-0">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-lg">
               {userProfile?.profile_picture_url ? (
                 <img 
@@ -744,9 +777,9 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="flex gap-6">
+          <div className="flex gap-6 flex-1 overflow-hidden min-h-0">
             <aside className="w-72 flex-shrink-0">
-              <div className="rounded-2xl p-1 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-2xl p-1 shadow-xl h-full" style={{ backgroundColor: '#1a1a1e' }}>
                 <nav className="space-y-1 p-2">
                   <button
                     onClick={() => setActiveSection('personal')}
@@ -812,7 +845,7 @@ export function SettingsPage() {
               </div>
             </aside>
 
-            <main className="flex-1 rounded-2xl p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+            <main className="flex-1 rounded-2xl p-8 shadow-xl overflow-y-auto" style={{ backgroundColor: '#1a1a1e' }}>
               {activeSection === 'personal' && renderPersonalInfo()}
               {activeSection === 'accounts' && renderPlaceholder('Connected accounts', 'Manage your social media connections')}
               {activeSection === 'payout' && renderPlaceholder('Payout methods', 'Add your payout information')}

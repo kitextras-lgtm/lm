@@ -97,7 +97,7 @@ export const Hero = memo(() => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-transparent blur-3xl -z-10"></div>
 
           <h1
-            className="hero-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl mb-4 md:mb-6 text-center md:text-left"
+            className="hero-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-center md:text-left"
             style={{
               fontFamily: '"Fraunces", serif',
               fontWeight: 400,
@@ -105,7 +105,8 @@ export const Hero = memo(() => {
               letterSpacing: '-0.02em',
               willChange: 'transform, opacity',
               margin: 0,
-              padding: 0
+              padding: 0,
+              marginBottom: '2rem'
             }}
           >
             <span
@@ -142,7 +143,7 @@ export const Hero = memo(() => {
             </span>
           </h1>
 
-          <p className="text-base md:text-xl lg:text-2xl text-gray-400 mb-8 md:mb-14 leading-relaxed max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity' }}>
+          <p className="text-base md:text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '2rem' }}>
             Elevate is an invite-only 360° multimedia network and agency offering unparalleled opportunities for creators, artists, and brands.
           </p>
 
