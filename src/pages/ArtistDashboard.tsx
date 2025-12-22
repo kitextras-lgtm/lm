@@ -311,7 +311,8 @@ export function ArtistDashboard() {
       
       // Always set profile data, even if empty (use defaults)
       setUserProfile(profileData);
-      setUserType(profileData?.user_type?.toUpperCase() || 'ARTIST');
+      // Tag should always match the dashboard route (Artist Dashboard = ARTIST)
+      setUserType('ARTIST');
       
       // Set form data from users table (primary source)
       const formDataToSet = {
@@ -1032,7 +1033,7 @@ export function ArtistDashboard() {
                 <div className="p-6">
                   <div className="mb-5">
                     <div className="inline-block px-2.5 py-1 rounded-md text-xs font-bold tracking-wider mb-3" style={{ backgroundColor: '#111111', color: '#94A3B8' }}>
-                      {userType || 'ARTIST'}
+                      ARTIST
                     </div>
                     <h3 className="text-xl font-bold mb-0.5" style={{ color: '#F8FAFC' }}>
                       {formData.firstName || formData.lastName 

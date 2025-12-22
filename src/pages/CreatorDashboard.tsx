@@ -310,7 +310,8 @@ export function CreatorDashboard() {
       
       // Always set profile data, even if empty (use defaults)
       setUserProfile(profileData);
-      setUserType(profileData?.user_type?.toUpperCase() || 'CREATOR');
+      // Tag should always match the dashboard route (Creator Dashboard = CREATOR)
+      setUserType('CREATOR');
       
       // Set form data from users table (primary source)
       const formDataToSet = {
@@ -1030,7 +1031,7 @@ export function CreatorDashboard() {
                 <div className="p-6">
                   <div className="mb-5">
                     <div className="inline-block px-2.5 py-1 rounded-md text-xs font-bold tracking-wider mb-3" style={{ backgroundColor: '#111111', color: '#94A3B8' }}>
-                      {userType || 'CREATOR'}
+                      CREATOR
                     </div>
                     <h3 className="text-xl font-bold mb-0.5" style={{ color: '#F8FAFC' }}>
                       {formData.firstName || formData.lastName 
