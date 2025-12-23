@@ -120,10 +120,16 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
+    // Extract IP address and User-Agent for spam filtering
+    const forwardedFor = req.headers.get('x-forwarded-for');
+    const ipAddress = forwardedFor ? forwardedFor.split(',')[0].trim() : (req.headers.get('x-real-ip') || '127.0.0.1');
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+
     console.log('🔍 OTP verified successfully. Processing:', {
       email,
       isSignup,
       isLogin: !isSignup,
+      ipAddress,
       supabaseUrl: supabaseUrl ? '✅ Set' : '❌ Missing',
       serviceRoleKey: serviceRoleKey ? '✅ Set' : '❌ Missing'
     });
@@ -137,7 +143,8 @@ Deno.serve(async (req: Request) => {
 
     if (isSignup) {
       console.log('📝 SIGNUP FLOW: Starting new user creation process');
-      // Check if user already exists in auth.users
+      
+      // Check if user already exists in auth.users (to determine if this is completing an incomplete profile)
       console.log('Checking for existing user in auth.users:', email);
       const getUserResponse = await fetch(
         `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
@@ -345,6 +352,43 @@ Deno.serve(async (req: Request) => {
       // Create a new user for signup (only if we don't already have an authUserId from incomplete profile)
       if (!authUserId) {
         console.log('🚀 ENTERING USER CREATION BLOCK - authUserId is null, will create new user');
+        
+        // SPAM FILTER: Check if a signup already exists from this IP/device (only for new signups)
+        console.log('🛡️ SPAM FILTER: Checking for existing signup from IP:', ipAddress);
+        const { data: existingSignup, error: signupCheckError } = await supabaseClient
+          .from('signup_tracking')
+          .select('id, email, created_at')
+          .eq('ip_address', ipAddress)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (signupCheckError) {
+          console.error('❌ Error checking signup tracking:', signupCheckError);
+          // Don't block signup if we can't check - log error but continue
+        } else if (existingSignup) {
+          console.error('❌ SPAM FILTER: Signup blocked - IP address already used for signup:', {
+            ipAddress,
+            previousEmail: existingSignup.email,
+            previousSignupDate: existingSignup.created_at
+          });
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: 'Only one signup is allowed per device/IP address. Please contact support if you need assistance.' 
+            }),
+            {
+              status: 403,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        } else {
+          console.log('✅ SPAM FILTER: No existing signup found for this IP - allowing new signup');
+        }
+        
         // Create new Supabase Auth user using REST API
         console.log('🚀 Starting user creation process for:', email);
         console.log('📋 Supabase URL:', supabaseUrl);
@@ -684,6 +728,24 @@ Deno.serve(async (req: Request) => {
           email,
           insertedData: insertedUser
         });
+        
+        // Store signup tracking record for spam prevention
+        console.log('📝 Storing signup tracking record:', { ipAddress, userAgent, email, userId: authUserId });
+        const { error: trackingError } = await supabaseClient
+          .from('signup_tracking')
+          .insert({
+            ip_address: ipAddress,
+            user_agent: userAgent,
+            email: email,
+            user_id: authUserId
+          });
+        
+        if (trackingError) {
+          console.error('⚠️ Failed to store signup tracking record:', trackingError);
+          // Don't fail the signup if tracking fails - log error but continue
+        } else {
+          console.log('✅ Successfully stored signup tracking record');
+        }
       }
     } else {
       // Login - find existing auth user using REST API

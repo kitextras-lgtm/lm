@@ -144,3 +144,4 @@ SELECT * FROM pg_policies WHERE tablename = 'users';
 
 -- Should have policy allowing INSERT for authenticated users or service role
 ```
+

@@ -25,3 +25,4 @@ WHERE id = '98fd369c-80db-4743-94d0-8e26e04cd61d'
 -- UPDATE users 
 -- SET profile_picture_url = NULL 
 -- WHERE profile_picture_url LIKE 'blob:%';
+

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus } from 'lucide-react';
+import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info } from 'lucide-react';
 import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
@@ -130,6 +130,7 @@ const LANGUAGES = [
 export function ArtistDashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('personal');
   const [isEditing, setIsEditing] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -138,6 +139,7 @@ export function ArtistDashboard() {
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isTipaltiConnected, setIsTipaltiConnected] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -808,10 +810,18 @@ export function ArtistDashboard() {
         Payments are typically processed automatically through Tipalti. If a payout needs to be issued outside of Tipalti, you can add an alternative payment method.
       </p>
 
-      <button className="flex items-center gap-3 px-5 py-4 rounded-xl text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
-        <Plus className="w-5 h-5" />
-        Connect an account
-      </button>
+      <div className="flex items-center gap-4">
+        <button className="flex items-center gap-3 px-5 py-4 rounded-xl text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
+          <Plus className="w-5 h-5" />
+          Connect an account
+        </button>
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+          <span className="text-sm" style={{ color: '#94A3B8' }}>
+            Tipalti: {isTipaltiConnected ? 'Connected' : 'Not connected'}
+          </span>
+        </div>
+      </div>
     </div>
   );
 
@@ -1168,15 +1178,95 @@ export function ArtistDashboard() {
         )}
 
         {activeSection === 'earnings' && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-250px)] sm:min-h-[calc(100vh-200px)] animate-fade-in">
-            <div className="text-center px-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: '#1a1a1e' }}>
-                <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <div className="animate-fade-in">
+            {/* Summary Cards Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
+              {/* Available Balance Card */}
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Available balance</h3>
+                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                </div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                  <button className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#000000', color: '#FFFFFF' }}>
+                    Add account
+                  </button>
+                </div>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>No earnings yet</h3>
-              <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Start posting clips to earn money</p>
+
+              {/* Pending Balance Card */}
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
+                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                </div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+              </div>
+
+              {/* Lifetime Earnings Card */}
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
+                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                </div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+              </div>
+
+              {/* Affiliate Earnings Card */}
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Affiliate earnings</h3>
+                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                </div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+              </div>
+            </div>
+
+            {/* Transaction History Section */}
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              {/* Tabs */}
+              <div className="flex gap-2 mb-6">
+                <button 
+                  onClick={() => setEarningsTab('available')}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
+                  style={{ backgroundColor: earningsTab === 'available' ? '#0f0f13' : 'transparent', color: earningsTab === 'available' ? '#F8FAFC' : '#64748B' }}
+                >
+                  Available
+                </button>
+                <button 
+                  onClick={() => setEarningsTab('pending')}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
+                  style={{ backgroundColor: earningsTab === 'pending' ? '#0f0f13' : 'transparent', color: earningsTab === 'pending' ? '#F8FAFC' : '#64748B' }}
+                >
+                  Pending
+                </button>
+                <button 
+                  onClick={() => setEarningsTab('paidout')}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
+                  style={{ backgroundColor: earningsTab === 'paidout' ? '#0f0f13' : 'transparent', color: earningsTab === 'paidout' ? '#F8FAFC' : '#64748B' }}
+                >
+                  Paid out
+                </button>
+              </div>
+
+              {/* Table Headers */}
+              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: '#0f0f13' }}>
+                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Date</div>
+                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Clip</div>
+                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Campaign/Description</div>
+                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Amount</div>
+              </div>
+
+              {/* Empty State */}
+              <div className="flex flex-col items-center justify-center py-12 sm:py-16">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>
+                  {earningsTab === 'available' && 'No available earnings'}
+                  {earningsTab === 'pending' && 'No pending earnings'}
+                  {earningsTab === 'paidout' && 'No paid out earnings'}
+                </h3>
+                <p className="text-sm sm:text-base text-center" style={{ color: '#94A3B8' }}>Submit clips to campaigns and start earning!</p>
+              </div>
             </div>
           </div>
         )}

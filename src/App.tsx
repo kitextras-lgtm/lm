@@ -1,6 +1,8 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminAuthProvider } from './contexts/AdminAuthContext';
+import { AdminProtectedRoute } from './components/AdminProtectedRoute';
 
 const HomePage = lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
 const SignupPage = lazy(() => import('./pages/SignupPage').then(module => ({ default: module.SignupPage })));
@@ -15,12 +17,15 @@ const BusinessDashboard = lazy(() => import('./pages/BusinessDashboard').then(mo
 const MobileMenuPage = lazy(() => import('./pages/MobileMenuPage').then(module => ({ default: module.MobileMenuPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(module => ({ default: module.SettingsPage })));
 const VerifySetupPage = lazy(() => import('./pages/VerifySetupPage').then(module => ({ default: module.VerifySetupPage })));
+const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage').then(module => ({ default: module.AdminLoginPage })));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
 
 function App() {
   return (
-    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Suspense fallback={<div style={{ backgroundColor: '#000', minHeight: '100vh' }} />}>
-        <Routes>
+    <AdminAuthProvider>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Suspense fallback={<div style={{ backgroundColor: '#000', minHeight: '100vh' }} />}>
+          <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MobileMenuPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -62,9 +67,21 @@ function App() {
             } 
           />
           <Route path="/verify-setup" element={<VerifySetupPage />} />
-        </Routes>
-      </Suspense>
-    </Router>
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            } 
+          />
+          </Routes>
+        </Suspense>
+      </Router>
+    </AdminAuthProvider>
   );
 }
 

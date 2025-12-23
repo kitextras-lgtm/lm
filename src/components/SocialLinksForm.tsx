@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AnimatedLinkIcon } from './AnimatedLinkIcon';
 
@@ -20,6 +20,121 @@ const platformIcons: { [key: string]: any } = {
 };
 
 const platformOptions = ['YouTube', 'Instagram', 'TikTok', 'Twitter', 'Twitch', 'Other'];
+
+interface CustomDropdownProps {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  platformIcons: { [key: string]: any };
+}
+
+function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const selectedIcon = platformIcons[value] || Link2;
+  const SelectedIcon = selectedIcon;
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group"
+        style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = '#0f0f13';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#1a1a1e';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <SelectedIcon 
+            className="w-4 h-4 transition-all duration-200 group-hover:scale-110" 
+            style={{ color: '#F8FAFC' }} 
+          />
+          <span className="transition-all duration-200">{value}</span>
+        </div>
+        <ChevronDown 
+          className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isOpen ? 'rotate-180' : ''}`} 
+          style={{ color: '#94A3B8' }} 
+        />
+      </button>
+
+      {isOpen && (
+        <div
+          className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
+          style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.2)' }}
+        >
+          <div className="max-h-60 overflow-y-auto">
+            {options.map((option) => {
+              const Icon = platformIcons[option] || Link2;
+              const isSelected = option === value;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => {
+                    onChange(option);
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
+                  style={{
+                    backgroundColor: isSelected ? '#0f0f13' : 'transparent',
+                    color: '#F8FAFC',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.backgroundColor = '#0f0f13';
+                    }
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}
+                >
+                  <div className="relative group/icon">
+                    <Icon 
+                      className="w-4 h-4 transition-all duration-300 group-hover/option:scale-125 group-hover/option:rotate-12 group-hover/icon:scale-150 group-hover/icon:rotate-180" 
+                      style={{ color: '#F8FAFC' }} 
+                    />
+                    <div className="absolute inset-0 w-4 h-4 rounded-full opacity-0 group-hover/icon:opacity-20 group-hover/icon:scale-150 transition-all duration-300" style={{ backgroundColor: '#F8FAFC' }}></div>
+                  </div>
+                  <span className="transition-all duration-200">{option}</span>
+                  {isSelected && (
+                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function SocialLinksForm() {
   const [links, setLinks] = useState<SocialLink[]>([]);
@@ -126,18 +241,12 @@ export function SocialLinksForm() {
               <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
                 Platform
               </label>
-              <select
+              <CustomDropdown
                 value={newLink.platform}
-                onChange={(e) => setNewLink({ ...newLink, platform: e.target.value })}
-                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
-                style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
-              >
-                {platformOptions.map((platform) => (
-                  <option key={platform} value={platform}>
-                    {platform}
-                  </option>
-                ))}
-              </select>
+                options={platformOptions}
+                onChange={(value) => setNewLink({ ...newLink, platform: value })}
+                platformIcons={platformIcons}
+              />
             </div>
 
             <div>

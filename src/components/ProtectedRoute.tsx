@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { AnimatedBarsLoader } from './AnimatedBarsLoader';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -82,7 +83,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         justifyContent: 'center',
         color: '#fff'
       }}>
-        Loading...
+        <AnimatedBarsLoader text="Loading..." />
       </div>
     );
   }
@@ -93,3 +94,4 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   return children;
 }
+

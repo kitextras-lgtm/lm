@@ -102,3 +102,4 @@ Supabase Auth uses **soft deletes** - when a user is deleted, they're marked wit
 - Data retention
 
 However, soft-deleted users shouldn't block new signups with the same email.
+
