@@ -69,19 +69,34 @@ export function FAQ() {
           {faqData.map((item, index) => (
             <div
               key={index}
-              className="bg-gray-900/30 rounded-xl md:rounded-2xl border border-gray-800 overflow-hidden transition-all duration-300 hover:border-gray-700"
+              className="overflow-hidden transition-all duration-300"
+              style={{
+                borderRadius: '16px',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+              }}
             >
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full px-5 md:px-8 py-5 md:py-6 text-left flex items-center justify-between hover:bg-gray-800/30 transition-all duration-300"
+                className="w-full px-5 md:px-6 py-5 md:py-6 text-left flex items-center justify-between transition-all duration-300"
+                style={{
+                  background: openItems.includes(index) ? 'rgba(255, 255, 255, 0.02)' : 'transparent',
+                }}
               >
-                <h3 className="text-base md:text-xl font-semibold text-white pr-3 md:pr-4 leading-tight">
+                <h3 
+                  className="text-base md:text-xl pr-3 md:pr-4 leading-tight"
+                  style={{
+                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                    color: '#ffffff',
+                    fontWeight: 500
+                  }}
+                >
                   {item.question}
                 </h3>
                 {openItems.includes(index) ? (
-                  <Minus className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0 transition-transform duration-300" style={{ color: '#FFFFFF' }} />
+                  <Minus className="w-5 h-5 md:w-5 md:h-5 flex-shrink-0 transition-transform duration-300" style={{ color: '#999999' }} />
                 ) : (
-                  <Plus className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0 transition-transform duration-300" style={{ color: '#FFFFFF' }} />
+                  <Plus className="w-5 h-5 md:w-5 md:h-5 flex-shrink-0 transition-transform duration-300" style={{ color: '#999999' }} />
                 )}
               </button>
 
@@ -92,9 +107,16 @@ export function FAQ() {
                     : 'max-h-0 opacity-0'
                 }`}
               >
-                <div className="px-5 md:px-8 pb-5 md:pb-6">
-                  <div className="border-t border-gray-800 pt-5 md:pt-6">
-                    <p className="text-sm md:text-base text-gray-300 leading-relaxed">
+                <div className="px-5 md:px-6 pb-5 md:pb-6">
+                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '20px' }}>
+                    <p 
+                      className="text-sm md:text-sm leading-relaxed"
+                      style={{
+                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                        color: '#999999',
+                        fontWeight: 400
+                      }}
+                    >
                       {item.answer}
                     </p>
                   </div>

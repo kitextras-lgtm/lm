@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, AlertTriangle, Users, User, Loader2, X, Search } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Send, AlertTriangle, Users, User, Loader2, X, Search, Palette, Music, AlertCircle, Bell } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { debounce } from '../utils/debounce';
 
@@ -15,11 +15,16 @@ interface UserSuggestion {
   full_name: string | null;
 }
 
+type AnnouncementType = 'normal' | 'serious';
+type TargetAudience = 'all' | 'creators' | 'artists';
+
 export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps) {
   const [sendToAll, setSendToAll] = useState(true);
   const [username, setUsername] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [announcementType, setAnnouncementType] = useState<AnnouncementType>('normal');
+  const [targetAudience, setTargetAudience] = useState<TargetAudience>('all');
   const [isSending, setIsSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ success: boolean; message: string } | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
@@ -28,6 +33,65 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
   const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Debounced search function
+  const searchUsers = useCallback(
+    debounce(async (query: string) => {
+      if (query.trim().length < 2) {
+        setUserSuggestions([]);
+        setShowSuggestions(false);
+        setIsSearching(false);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, username, email, full_name')
+          .ilike('username', `%${query}%`)
+          .limit(5);
+
+        if (error) throw error;
+        setUserSuggestions(data || []);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error('Error searching users:', error);
+        setUserSuggestions([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300),
+    []
+  );
+
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    searchUsers(value);
+  };
+
+  const handleSelectUser = (user: UserSuggestion) => {
+    setUsername(user.username);
+    setShowSuggestions(false);
+    setUserSuggestions([]);
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSend = async () => {
     if (!title.trim() || !content.trim()) {
@@ -82,6 +146,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         user_id: sendToAll ? null : profileId,
         title: title.trim(),
         content: content.trim(),
+        announcement_type: announcementType,
+        target_audience: sendToAll ? targetAudience : 'all', // Only apply audience filter for broadcast
       };
 
       const { data, error } = await supabase
@@ -91,10 +157,11 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
       if (error) throw error;
 
+      const audienceLabel = targetAudience === 'all' ? 'all users' : targetAudience;
       setSendResult({
         success: true,
         message: sendToAll 
-          ? 'Announcement sent to all users successfully' 
+          ? `${announcementType === 'serious' ? '🚨 Serious' : '📢 Normal'} announcement sent to ${audienceLabel} successfully` 
           : `Announcement sent to user @${username.trim()} successfully`,
       });
       
@@ -105,6 +172,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
       setUserSuggestions([]);
       setShowSuggestions(false);
       setSendToAll(true);
+      setAnnouncementType('normal');
+      setTargetAudience('all');
     } catch (error: any) {
       setIsLookingUp(false);
       setSendResult({
@@ -133,6 +202,43 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
       </div>
 
       <div className="space-y-6">
+        {/* Announcement Type */}
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+          <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
+            Announcement Type
+          </label>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setAnnouncementType('normal')}
+              className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                announcementType === 'normal' ? '' : 'hover:brightness-110'
+              }`}
+              style={{
+                backgroundColor: announcementType === 'normal' ? '#0f0f13' : 'transparent',
+                color: '#F8FAFC',
+                border: announcementType === 'normal' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+              }}
+            >
+              <Bell className="w-4 h-4" />
+              Normal
+            </button>
+            <button
+              onClick={() => setAnnouncementType('serious')}
+              className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                announcementType === 'serious' ? '' : 'hover:brightness-110'
+              }`}
+              style={{
+                backgroundColor: announcementType === 'serious' ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
+                color: announcementType === 'serious' ? '#ef4444' : '#F8FAFC',
+                border: announcementType === 'serious' ? '1px solid rgba(239, 68, 68, 0.5)' : '1px solid rgba(75, 85, 99, 0.2)',
+              }}
+            >
+              <AlertCircle className="w-4 h-4" />
+              Serious
+            </button>
+          </div>
+        </div>
+
         {/* Send To Toggle */}
         <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
           <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
@@ -156,7 +262,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               }}
             >
               <Users className="w-4 h-4" />
-              Send to all users
+              Broadcast
             </button>
             <button
               onClick={() => {
@@ -174,10 +280,63 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               }}
             >
               <User className="w-4 h-4" />
-              Send to specific user
+              Specific User
             </button>
           </div>
         </div>
+
+        {/* Target Audience (only shown when broadcasting) */}
+        {sendToAll && (
+          <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+            <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
+              Target Audience
+            </label>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setTargetAudience('all')}
+                className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                  targetAudience === 'all' ? '' : 'hover:brightness-110'
+                }`}
+                style={{
+                  backgroundColor: targetAudience === 'all' ? '#0f0f13' : 'transparent',
+                  color: '#F8FAFC',
+                  border: targetAudience === 'all' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                }}
+              >
+                <Users className="w-4 h-4" />
+                All Users
+              </button>
+              <button
+                onClick={() => setTargetAudience('creators')}
+                className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                  targetAudience === 'creators' ? '' : 'hover:brightness-110'
+                }`}
+                style={{
+                  backgroundColor: targetAudience === 'creators' ? '#0f0f13' : 'transparent',
+                  color: '#F8FAFC',
+                  border: targetAudience === 'creators' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                }}
+              >
+                <Palette className="w-4 h-4" />
+                Creators
+              </button>
+              <button
+                onClick={() => setTargetAudience('artists')}
+                className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                  targetAudience === 'artists' ? '' : 'hover:brightness-110'
+                }`}
+                style={{
+                  backgroundColor: targetAudience === 'artists' ? '#0f0f13' : 'transparent',
+                  color: '#F8FAFC',
+                  border: targetAudience === 'artists' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                }}
+              >
+                <Music className="w-4 h-4" />
+                Artists
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Username Field (only shown when not sending to all) */}
         {!sendToAll && (

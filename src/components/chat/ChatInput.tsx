@@ -133,63 +133,61 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
         </div>
       )}
 
-      <div className="flex items-center justify-center safe-area-inset-bottom" style={{ borderTop: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111', padding: '16px' }}>
-        <div className="w-full">
-          <form onSubmit={handleFormSubmit} className="w-full">
-            <div className="flex gap-2 items-center">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageSelect}
-                accept="image/*"
-                className="hidden"
-              />
-              <button
-                ref={imageButtonRef}
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={disabled}
-                className="shrink-0 hover:bg-transparent group h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ color: '#94A3B8', borderRadius: 0 }}
-              >
-                <ImagePlus className="w-4 h-4 transition-transform duration-200 group-hover:scale-125" />
-              </button>
-              <textarea
-                ref={textareaRef}
-                value={message}
-                onChange={(e) => {
-                  setMessage(e.target.value);
-                  handleTyping();
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder={otherUserName ? `Message @${otherUserName}` : 'Send a message...'}
-                disabled={disabled}
-                rows={1}
-                maxLength={5000}
-                aria-label="Message input"
-                className="flex-1 px-4 py-2 text-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed resize-none overflow-y-auto"
-                style={{ 
-                  minHeight: '32px',
-                  maxHeight: '120px',
-                  color: '#F8FAFC',
-                  backgroundColor: '#1a1a1e',
-                  border: '1px solid rgba(75, 85, 99, 0.2)',
-                  borderRadius: 0
-                }}
-              />
-              <button
-                ref={sendButtonRef}
-                type="submit"
-                disabled={!hasContent || disabled}
-                className="shrink-0 h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0 } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: '#94A3B8', borderRadius: 0 }}
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+      <form 
+        onSubmit={handleFormSubmit} 
+        className="flex gap-2 items-center safe-area-inset-bottom"
+        style={{ borderTop: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111', padding: '12px 16px' }}
+      >
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleImageSelect}
+          accept="image/*"
+          className="hidden"
+        />
+        <button
+          ref={imageButtonRef}
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={disabled}
+          className="shrink-0 hover:bg-transparent group h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ color: '#94A3B8', borderRadius: 0 }}
+        >
+          <ImagePlus className="w-4 h-4 transition-transform duration-200 group-hover:scale-125" />
+        </button>
+        <textarea
+          ref={textareaRef}
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            handleTyping();
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder={otherUserName ? `Message @${otherUserName}` : 'Send a message...'}
+          disabled={disabled}
+          rows={1}
+          maxLength={5000}
+          aria-label="Message input"
+          className="flex-1 px-4 py-2 text-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed resize-none overflow-y-auto"
+          style={{ 
+            minHeight: '32px',
+            maxHeight: '120px',
+            color: '#F8FAFC',
+            backgroundColor: '#1a1a1e',
+            border: '1px solid rgba(75, 85, 99, 0.2)',
+            borderRadius: 0
+          }}
+        />
+        <button
+          ref={sendButtonRef}
+          type="submit"
+          disabled={!hasContent || disabled}
+          className="shrink-0 h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0 } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: '#94A3B8', borderRadius: 0 }}
+        >
+          <Send className="w-4 h-4" />
+        </button>
+      </form>
     </>
   );
 }

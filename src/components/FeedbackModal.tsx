@@ -26,7 +26,7 @@ function CategoryButton({ isActive, onClick, icon, label }: CategoryButtonProps)
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`w-full text-left px-5 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 ${
+      className={`w-full text-left px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 sm:gap-3 ${
         isActive ? 'shadow-md' : 'hover:brightness-105'
       }`}
       style={{
@@ -106,37 +106,37 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm animate-fade-in overflow-y-auto"
+      className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm animate-fade-in overflow-y-auto p-0 sm:p-4"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl mx-4 my-8 rounded-2xl shadow-2xl animate-fade-in"
-        style={{ backgroundColor: '#111111', border: '1px solid rgba(75, 85, 99, 0.25)' }}
+        className="relative w-full h-full sm:h-auto sm:max-w-2xl sm:mx-4 sm:my-8 sm:rounded-2xl shadow-2xl animate-fade-in flex flex-col"
+        style={{ backgroundColor: '#111111', border: 'none' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'rgba(75, 85, 99, 0.25)', backgroundColor: '#111111' }}>
-          <h2 className="text-xl font-bold tracking-tight" style={{ color: '#F8FAFC' }}>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b flex-shrink-0" style={{ borderColor: 'rgba(75, 85, 99, 0.25)', backgroundColor: '#111111' }}>
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: '#F8FAFC' }}>
             Give Feedback
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors hover:brightness-110"
+            className="p-2 sm:p-1.5 rounded-lg transition-colors hover:brightness-110"
             style={{ backgroundColor: 'transparent', color: '#64748B' }}
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        {/* Form - scrollable on mobile */}
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 flex-1 overflow-y-auto">
           {/* Category Selection */}
           <div>
-            <label className="block text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
+            <label className="block text-sm font-semibold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>
               Category
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <CategoryButton
                 isActive={category === 'suggestion'}
                 onClick={() => setCategory('suggestion')}
@@ -176,9 +176,9 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="Share your thoughts, suggestions, or report any issues..."
-              rows={6}
+              rows={5}
               required
-              className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
+              className="w-full px-3 sm:px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
               style={{
                 backgroundColor: '#0f0f13',
                 border: '1px solid rgba(75, 85, 99, 0.25)',
@@ -200,7 +200,7 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
           )}
 
           {/* Submit Button */}
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex items-center gap-2 sm:gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}

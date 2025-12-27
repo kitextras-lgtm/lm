@@ -17,15 +17,22 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
     }
     return [];
   });
-  const [loading, setLoading] = useState(false); // Start with false since we have cached messages or empty
+  // Start loading=true only if we don't have cached messages
+  // This prevents showing "No messages yet" while fetching
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const cached = getCachedMessages(conversationId);
+      return !cached || cached.length === 0;
+    }
+    return true;
+  });
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   const fetchMessages = useCallback(async () => {
-    // Always fetch silently in background - never show loading state
-    
     if (!conversationId) {
       console.warn('⚠️ fetchMessages: No conversationId provided');
+      setLoading(false);
       return;
     }
     
@@ -46,6 +53,7 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
           hint: error.hint,
           code: error.code
         });
+        setLoading(false);
         return;
       }
 
@@ -62,6 +70,8 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
       }
     } catch (error) {
       console.error('❌ Exception fetching messages:', error);
+    } finally {
+      setLoading(false);
     }
   }, [conversationId]);
 
@@ -73,8 +83,19 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
     
     console.log('🔄 useChat effect running for conversation:', conversationId, 'currentUserId:', currentUserId);
     
-    // Load cached messages for this conversation immediately (already done in useState initializer)
-    // Always fetch fresh messages silently in background - never show loading
+    // Check cache and set loading state accordingly
+    const cached = getCachedMessages(conversationId);
+    if (cached && cached.length > 0) {
+      // We have cached messages - use them immediately, no loading state
+      setMessages(cached);
+      setLoading(false);
+    } else {
+      // No cache - show loading state while fetching
+      setMessages([]);
+      setLoading(true);
+    }
+    
+    // Fetch fresh messages from server
     fetchMessages();
 
     const channel = supabase
@@ -442,10 +463,13 @@ export function useCustomerConversations(customerId: string) {
               }
               return prev;
             });
+            // Don't refetch after optimistic update - the optimistic update is sufficient
+            // This prevents flickering of the badge
+            return;
           }
           
-          // Always refetch after any event to ensure we have the latest data (including admin profile)
-          // This ensures the badge counter updates correctly in real-time
+          // Only refetch for INSERT events or if optimistic update didn't apply
+          // This ensures the badge counter updates correctly in real-time without flickering
           console.log(`🔄 [useCustomerConversations:${customerId.substring(0, 8)}] Refetching conversations after real-time update...`);
           fetchConversations();
         }

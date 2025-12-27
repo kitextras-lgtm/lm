@@ -450,19 +450,27 @@ export function SignupPage() {
         </div>
 
         <div className="w-full mb-4">
-          <label className="block text-neutral-400 text-xs mb-1.5">Email</label>
-          <input
-            type="email"
-            placeholder="alan.turing@example.com"
-            value={email}
-            onChange={handleEmailChange}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && email && isValidEmail && !loading) {
-                handleContinue();
-              }
-            }}
-            className="h-11 w-full px-4 bg-transparent border border-neutral-700 text-white placeholder:text-neutral-500 rounded-lg focus:border-neutral-500 focus:outline-none"
-          />
+          <div className="relative">
+            <input
+              type="email"
+              id="signup-email-input"
+              value={email}
+              onChange={handleEmailChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && email && isValidEmail && !loading) {
+                  handleContinue();
+                }
+              }}
+              placeholder=" "
+              className="peer h-11 w-full px-4 bg-transparent border border-neutral-700 text-white rounded-lg focus:border-neutral-500 focus:outline-none transition-colors"
+            />
+            <label
+              htmlFor="signup-email-input"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm pointer-events-none transition-all duration-200 peer-focus:top-0 peer-focus:text-xs peer-focus:bg-black peer-focus:px-1 peer-focus:-translate-y-1/2 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-black peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:-translate-y-1/2"
+            >
+              Email address*
+            </label>
+          </div>
           {!isValidEmail && (
             <p className="text-red-500 text-xs mt-1.5">
               Please enter a valid email address

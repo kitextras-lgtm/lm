@@ -34,103 +34,28 @@ export const ChatWindow = memo(function ChatWindow({
   const markAsReadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasMarkedAsReadRef = useRef(false);
 
-  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'instant') => {
-    if (messagesContainerRef.current) {
-      const container = messagesContainerRef.current;
-      // Directly set scroll position for instant scroll
-      if (behavior === 'instant') {
-        container.scrollTop = container.scrollHeight;
-      } else {
-        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-      }
-    } else if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior });
-    }
-  }, []);
-
   // Track if this is the initial load for this conversation
   const isInitialLoadRef = useRef(true);
-  const hasScrolledToBottomRef = useRef(false);
-  const scrollAttemptsRef = useRef(0);
+  const shouldAutoScrollRef = useRef(true);
 
   // Reset flags when conversation changes
   useEffect(() => {
     isInitialLoadRef.current = true;
-    hasScrolledToBottomRef.current = false;
-    scrollAttemptsRef.current = 0;
+    shouldAutoScrollRef.current = true;
   }, [conversation.id]);
 
-  // Scroll to bottom when conversation changes and messages are loaded (initial load)
+  // Scroll to bottom after messages finish rendering
+  // Uses bottom anchor ref (messagesEndRef) instead of scrollTop math
   useEffect(() => {
-    if (!loading && messages.length > 0 && isInitialLoadRef.current && !hasScrolledToBottomRef.current) {
-      let previousScrollHeight = 0;
-      let stableCount = 0;
+    if (!loading && messages.length > 0 && messagesEndRef.current && shouldAutoScrollRef.current) {
+      // Scroll happens after render, using bottom anchor ref
+      messagesEndRef.current.scrollIntoView({ behavior: isInitialLoadRef.current ? 'instant' : 'smooth' });
       
-      const attemptScroll = () => {
-        if (!messagesContainerRef.current) return;
-        
-        const container = messagesContainerRef.current;
-        const currentScrollHeight = container.scrollHeight;
-        
-        // Wait for scrollHeight to stabilize (no change in 2 consecutive checks)
-        if (currentScrollHeight === previousScrollHeight) {
-          stableCount++;
-        } else {
-          stableCount = 0;
-          previousScrollHeight = currentScrollHeight;
-        }
-        
-        // Only scroll when height has been stable for at least 2 frames
-        if (stableCount >= 2) {
-          const targetScrollTop = currentScrollHeight - container.clientHeight;
-          
-          // Scroll immediately
-          container.scrollTop = targetScrollTop;
-          
-          // Verify scroll succeeded
-          const actualScrollTop = container.scrollTop;
-          const isAtBottom = Math.abs(actualScrollTop - targetScrollTop) <= 2;
-          
-          if (isAtBottom || scrollAttemptsRef.current >= 15) {
-            // Success - mark as scrolled
-            hasScrolledToBottomRef.current = true;
-            isInitialLoadRef.current = false;
-            scrollAttemptsRef.current = 0;
-            return;
-          }
-        }
-        
-        scrollAttemptsRef.current += 1;
-        
-        // Continue checking if we haven't scrolled yet
-        if (!hasScrolledToBottomRef.current && scrollAttemptsRef.current < 15) {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              attemptScroll();
-            });
-          });
-        }
-      };
-      
-      // Start scrolling after a small delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            attemptScroll();
-          });
-        });
-      }, 50);
-      
-      return () => clearTimeout(timer);
+      if (isInitialLoadRef.current) {
+        isInitialLoadRef.current = false;
+      }
     }
-  }, [loading, conversation.id, messages.length]);
-
-  // Scroll to bottom when new messages are added (not initial load)
-  useEffect(() => {
-    if (messages.length > 0 && hasScrolledToBottomRef.current) {
-      scrollToBottom('smooth');
-    }
-  }, [messages.length, scrollToBottom]);
+  }, [loading, messages.length, conversation.id]);
 
   // Mark as read when conversation is opened (only once per conversation)
   useEffect(() => {
@@ -187,6 +112,9 @@ export const ChatWindow = memo(function ChatWindow({
     // Clear reply preview immediately when sending
     setReplyTo(null);
     
+    // Enable auto-scroll when user sends a message (they're at bottom)
+    shouldAutoScrollRef.current = true;
+    
     try {
       let imageUrl: string | undefined;
       if (imageFile) {
@@ -238,10 +166,13 @@ export const ChatWindow = memo(function ChatWindow({
         className="flex-1 overflow-y-auto min-h-0" 
         style={{ backgroundColor: '#111111', scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', overflowY: 'auto' }}
         onScroll={() => {
-          // Mark as read when user scrolls to bottom
+          // Track if user is at bottom to control auto-scroll behavior
           if (messagesContainerRef.current) {
             const container = messagesContainerRef.current;
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50; // 50px threshold
+            
+            // Only auto-scroll if user is at bottom (don't restore mid-scroll state)
+            shouldAutoScrollRef.current = isAtBottom;
             
             if (isAtBottom && messages.length > 0) {
               // Clear existing timeout
@@ -260,7 +191,12 @@ export const ChatWindow = memo(function ChatWindow({
         }}
       >
         <div className="py-2 lg:py-4 min-h-full flex flex-col justify-end">
-          {messages.length === 0 ? (
+          {loading ? (
+            // Show loading spinner while fetching messages (prevents "No messages yet" flicker)
+            <div className="flex-1 flex items-center justify-center">
+              <AnimatedBarsLoader text="Loading messages..." />
+            </div>
+          ) : messages.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center px-4 lg:px-6">
                 <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-5 rounded-xl lg:rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>

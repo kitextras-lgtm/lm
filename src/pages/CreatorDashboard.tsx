@@ -325,6 +325,38 @@ const MobileSettingsButton = ({
   );
 };
 
+const MobileSettingsMenuItem = ({ 
+  onClick, 
+  icon, 
+  label,
+  showBorder
+}: { 
+  onClick: () => void; 
+  icon: React.ReactElement; 
+  label: string;
+  showBorder: boolean;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors"
+      style={{ borderBottom: showBorder ? '1px solid rgba(75, 85, 99, 0.2)' : 'none' }}
+    >
+      <div className="flex items-center gap-3">
+        <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
+        <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
+      </div>
+      <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  );
+};
+
 const COUNTRIES = [
   'United States of America',
   'United Kingdom',
@@ -412,6 +444,7 @@ export function CreatorDashboard() {
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('personal');
+  const [mobileSettingsView, setMobileSettingsView] = useState<'menu' | SettingsSection>('menu');
   const [isEditing, setIsEditing] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [userType, setUserType] = useState<string>('');
@@ -968,12 +1001,12 @@ export function CreatorDashboard() {
   const scrollToSection = (section: SettingsSection) => {
     setSettingsSection(section);
     const refs = {
-      personal: personalRef,
-      accounts: accountsRef,
-      payout: payoutRef,
-      notifications: notificationsRef
-    };
-    refs[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        personal: personalRef,
+        accounts: accountsRef,
+        payout: payoutRef,
+        notifications: notificationsRef
+      };
+      refs[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   useEffect(() => {
@@ -1376,9 +1409,9 @@ export function CreatorDashboard() {
   return (
     <>
       <FeedbackModal 
-        isOpen={showFeedbackModal} 
+        isOpen={showFeedbackModal && !!currentUserId} 
         onClose={() => setShowFeedbackModal(false)} 
-        userId={currentUserId}
+        userId={currentUserId || ''}
       />
       <div className="h-screen text-white flex flex-col" style={{ backgroundColor: '#111111' }}>
       <style>{`
@@ -1609,16 +1642,23 @@ export function CreatorDashboard() {
                   </button>
 
                   <button 
-                    onClick={() => setShowFeedbackModal(true)}
-                    className="w-full flex items-center justify-between py-3 px-4 rounded-xl text-sm font-bold mb-1 transition-all duration-200" 
+                    onClick={() => {
+                      if (currentUserId) {
+                        setShowFeedbackModal(true);
+                      } else {
+                        console.warn('Cannot open feedback modal: currentUserId is not set');
+                      }
+                    }}
+                    disabled={!currentUserId}
+                    className="w-full flex items-center justify-between py-3 px-4 rounded-xl text-sm font-bold mb-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
                     style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#0f0f13';
-                      e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2)';
+                      if (currentUserId) {
+                        e.currentTarget.style.backgroundColor = '#0f0f13';
+                      }
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
                     <span>Give feedback</span>
@@ -1630,11 +1670,9 @@ export function CreatorDashboard() {
                     style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#0f0f13';
-                      e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
                     <span>Support</span>
@@ -1752,7 +1790,7 @@ export function CreatorDashboard() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 flex-1 flex flex-col min-h-0 w-full pt-14 sm:pt-16">
+      <main className={`max-w-7xl mx-auto px-4 sm:px-8 flex-1 flex flex-col min-h-0 w-full ${activeSection === 'messages' ? 'pt-14 sm:pt-16 pb-20 md:pb-0' : 'pt-20 sm:pt-24 pb-24 md:pb-0'}`}>
         {activeSection === 'messages' && (
           <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden">
             {currentUserId ? (
@@ -1770,7 +1808,7 @@ export function CreatorDashboard() {
         )}
 
         {activeSection === 'earnings' && (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in pb-20 md:pb-0">
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
@@ -1861,61 +1899,154 @@ export function CreatorDashboard() {
         )}
 
         {activeSection === 'settings' && (
-          <div className="max-w-5xl mx-auto animate-fade-inpt-16">
-            <div className="flex gap-6">
-              <aside className="w-72 flex-shrink-0 self-start">
-                <div className="rounded-2xl p-1 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-                  <nav className="space-y-1 p-2">
-                    <SettingsNavButton
-                      onClick={() => scrollToSection('personal')}
-                      isActive={settingsSection === 'personal'}
+          <>
+            {/* Mobile Settings View */}
+            <div className="lg:hidden animate-fade-in pb-20">
+              {mobileSettingsView === 'menu' ? (
+                // Mobile Settings Menu
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>Settings</h1>
+                    <button 
+                      onClick={() => setActiveSection('home')}
+                      className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                      <svg className="w-6 h-6" style={{ color: '#94A3B8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {/* Profile Header */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-white/10">
+                      {profilePicturePreview || userProfile?.profile_picture_url ? (
+                        <img 
+                          src={profilePicturePreview || userProfile?.profile_picture_url} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-xl font-semibold" style={{ color: '#F8FAFC' }}>
+                          {formData.firstName?.charAt(0) || 'U'}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>
+                        {formData.firstName || 'User'} {formData.lastName}
+                      </h2>
+                      <p className="text-sm" style={{ color: '#94A3B8' }}>
+                        @{formData.username || userProfile?.username || 'username'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#1a1a1e' }}>
+                    <MobileSettingsMenuItem
+                      onClick={() => setMobileSettingsView('personal')}
                       icon={<UserSilhouetteIcon />}
                       label="Personal info"
+                      showBorder={true}
                     />
-                    <SettingsNavButton
-                      onClick={() => scrollToSection('accounts')}
-                      isActive={settingsSection === 'accounts'}
+                    <MobileSettingsMenuItem
+                      onClick={() => setMobileSettingsView('accounts')}
                       icon={<PuzzlePiecesIcon />}
                       label="Connected accounts"
+                      showBorder={true}
                     />
-                    <SettingsNavButton
-                      onClick={() => scrollToSection('payout')}
-                      isActive={settingsSection === 'payout'}
+                    <MobileSettingsMenuItem
+                      onClick={() => setMobileSettingsView('payout')}
                       icon={<CreditCardIcon />}
-                      label="Payment Method"
+                      label="Payout methods"
+                      showBorder={true}
                     />
-                    <SettingsNavButton
-                      onClick={() => scrollToSection('notifications')}
-                      isActive={settingsSection === 'notifications'}
+                    <MobileSettingsMenuItem
+                      onClick={() => setMobileSettingsView('notifications')}
                       icon={<BellIcon />}
                       label="Notifications"
+                      showBorder={false}
                     />
+                  </div>
+                </div>
+              ) : (
+                // Mobile Settings Detail View
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <button 
+                      onClick={() => setMobileSettingsView('menu')}
+                      className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                      <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <h1 className="text-xl font-bold" style={{ color: '#F8FAFC' }}>
+                      {mobileSettingsView === 'personal' && 'Personal info'}
+                      {mobileSettingsView === 'accounts' && 'Connected accounts'}
+                      {mobileSettingsView === 'payout' && 'Payout methods'}
+                      {mobileSettingsView === 'notifications' && 'Notifications'}
+                    </h1>
+                  </div>
+                  
+                  {/* Render the original content */}
+                  {mobileSettingsView === 'personal' && renderPersonalInfo()}
+                  {mobileSettingsView === 'accounts' && renderConnectedAccounts()}
+                  {mobileSettingsView === 'payout' && renderPayoutMethods()}
+                  {mobileSettingsView === 'notifications' && renderNotifications()}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Settings View */}
+            <div className="hidden lg:flex max-w-4xl mx-auto animate-fade-in pt-8 gap-8" style={{ height: 'calc(100vh - 10rem)' }}>
+              <aside className="w-64 flex-shrink-0">
+                <div className="rounded-2xl p-1 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+                  <nav className="space-y-1 p-2">
+                      <SettingsNavButton
+                        onClick={() => scrollToSection('personal')}
+                        isActive={settingsSection === 'personal'}
+                        icon={<UserSilhouetteIcon />}
+                        label="Personal info"
+                      />
+                      <SettingsNavButton
+                        onClick={() => scrollToSection('accounts')}
+                        isActive={settingsSection === 'accounts'}
+                        icon={<PuzzlePiecesIcon />}
+                        label="Connected accounts"
+                      />
+                      <SettingsNavButton
+                        onClick={() => scrollToSection('payout')}
+                        isActive={settingsSection === 'payout'}
+                        icon={<CreditCardIcon />}
+                        label="Payment Method"
+                      />
+                      <SettingsNavButton
+                        onClick={() => scrollToSection('notifications')}
+                        isActive={settingsSection === 'notifications'}
+                        icon={<BellIcon />}
+                        label="Notifications"
+                      />
                   </nav>
                 </div>
               </aside>
 
-              <div className="relative flex-1">
-                <div className="settings-scrollable space-y-6 overflow-y-auto pb-6 scroll-smooth" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-                  {renderPersonalInfo()}
-                  {renderConnectedAccounts()}
-                  {renderPayoutMethods()}
-                  {renderNotifications()}
-                </div>
-                {/* Scroll indicator gradient */}
-                <div 
-                  className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none transition-opacity duration-300"
-                  style={{
-                    background: 'linear-gradient(to top, rgba(17, 17, 17, 0.9) 0%, rgba(17, 17, 17, 0.7) 40%, transparent 100%)'
-                  }}
-                />
-              </div>
-            </div>
-          </div>
+              <div className="flex-1 min-w-0 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent' }}>
+                <div className="space-y-6 pb-8 pr-2">
+                      {renderPersonalInfo()}
+                      {renderConnectedAccounts()}
+                      {renderPayoutMethods()}
+                      {renderNotifications()}
+                    </div>
+                        </div>
+                      </div>
+          </>
         )}
 
         {activeSection === 'home' && (
-          <div className="animate-fade-in">
-            <AnnouncementBanner userId={currentUserId} />
+          <div className="animate-fade-in pb-20 md:pb-0">
+            <AnnouncementBanner userId={currentUserId} userType="creator" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Active campaigns</h2>
