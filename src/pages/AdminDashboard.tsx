@@ -4,6 +4,10 @@ import { LogOut, X, User, Link2, CreditCard, Bell } from 'lucide-react';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { useAdmin } from '../hooks/useAdmin';
 import { AnimatedBarsLoader } from '../components/AnimatedBarsLoader';
+import { AdminMessagesPage } from './AdminMessagesPage';
+import { getAdminId } from '../hooks/useChat';
+import { NotificationSender } from '../components/NotificationSender';
+import { AnnouncementSender } from '../components/AnnouncementSender';
 
 interface User {
   id: string;
@@ -25,6 +29,7 @@ export function AdminDashboard() {
   const [usersError, setUsersError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userDetailSection, setUserDetailSection] = useState<'personal' | 'connected' | 'payment' | 'notifications'>('personal');
+  const [adminProfileId, setAdminProfileId] = useState<string | null>(null);
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const fetchingUsersRef = useRef(false); // Prevent multiple simultaneous requests
@@ -41,6 +46,19 @@ export function AdminDashboard() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Get admin profile ID for chat and announcements
+  useEffect(() => {
+    const fetchAdminProfileId = async () => {
+      if (admin && (activeSection === 'messages' || activeSection === 'alerts')) {
+        const profileId = await getAdminId();
+        if (profileId) {
+          setAdminProfileId(profileId);
+        }
+      }
+    };
+    fetchAdminProfileId();
+  }, [admin, activeSection]);
 
   // Fetch users when users section is active
   useEffect(() => {
@@ -421,6 +439,39 @@ export function AdminDashboard() {
               </div>
               <span className="label">Data</span>
             </div>
+
+            {/* Notifications Icon */}
+            <div
+              className={`messages-icon group ${activeSection === 'notifications' ? 'active' : ''}`}
+              onClick={() => setActiveSection('notifications')}
+            >
+              <div className="messages-icon-wrapper">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible">
+                  <path
+                    d="M24 8C18.4772 8 14 12.4772 14 18V26L10 32H38L34 26V18C34 12.4772 29.5228 8 24 8Z"
+                    stroke="white"
+                    strokeWidth="2.5"
+                    fill="none"
+                    className="transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <path
+                    d="M20 36C20 38.2091 21.7909 40 24 40C26.2091 40 28 38.2091 28 36"
+                    stroke="white"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    className="transition-transform duration-300 group-hover:translate-y-1"
+                  />
+                  <circle
+                    cx="32"
+                    cy="18"
+                    r="4"
+                    fill="white"
+                    className="opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110"
+                  />
+                </svg>
+              </div>
+              <span className="label">Notifications</span>
+            </div>
           </nav>
 
           <div className="relative" ref={dropdownRef}>
@@ -604,6 +655,39 @@ export function AdminDashboard() {
             </div>
             <span className="label">Data</span>
           </div>
+
+          {/* Notifications Icon */}
+          <div
+            className={`messages-icon group ${activeSection === 'notifications' ? 'active' : ''}`}
+            onClick={() => setActiveSection('notifications')}
+          >
+            <div className="messages-icon-wrapper">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 overflow-visible">
+                <path
+                  d="M24 8C18.4772 8 14 12.4772 14 18V26L10 32H38L34 26V18C34 12.4772 29.5228 8 24 8Z"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  fill="none"
+                  className="transition-transform duration-300 group-hover:scale-105"
+                />
+                <path
+                  d="M20 36C20 38.2091 21.7909 40 24 40C26.2091 40 28 38.2091 28 36"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  className="transition-transform duration-300 group-hover:translate-y-1"
+                />
+                <circle
+                  cx="32"
+                  cy="18"
+                  r="4"
+                  fill="white"
+                  className="opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110"
+                />
+              </svg>
+            </div>
+            <span className="label">Notifications</span>
+          </div>
         </div>
       </nav>
 
@@ -623,31 +707,29 @@ export function AdminDashboard() {
         )}
 
         {activeSection === 'alerts' && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
-            <div className="text-center px-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: '#1a1a1e' }}>
-                <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+          <div className="max-w-4xl mx-auto animate-fade-in">
+            {adminProfileId ? (
+              <AnnouncementSender adminId={adminProfileId} />
+            ) : (
+              <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+                <AnimatedBarsLoader text="Loading..." />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>No alerts yet</h3>
-              <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Important alerts will appear here</p>
-            </div>
+            )}
           </div>
         )}
 
         {activeSection === 'messages' && (
-          <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
-            <div className="text-center px-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: '#1a1a1e' }}>
-                <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
+          adminProfileId ? (
+            <AdminMessagesPage currentAdminId={adminProfileId} />
+          ) : (
+            <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
+                <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>No messages yet</h3>
-              <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Your conversations will appear here</p>
             </div>
-          </div>
+          )
         )}
 
         {activeSection === 'users' && (

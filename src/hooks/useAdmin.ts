@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/config';
 
 /**
  * Custom hook for admin operations
@@ -19,9 +20,8 @@ export function useAdmin() {
    * Get authorization header for API requests
    */
   const getAuthHeaders = (): Record<string, string> => {
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${supabaseAnonKey}`,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       'Content-Type': 'application/json',
     };
     
@@ -38,11 +38,10 @@ export function useAdmin() {
    * Memoized to prevent recreation on every render
    */
   const adminFetch = useCallback(async (endpoint: string, options: RequestInit = {}) => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const url = `${supabaseUrl}/functions/v1/${endpoint}`;
+    const url = `${SUPABASE_URL}/functions/v1/${endpoint}`;
 
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       'Content-Type': 'application/json',
       ...options.headers as Record<string, string>,
     };

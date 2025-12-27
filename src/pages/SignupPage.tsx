@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 
 declare global {
   namespace JSX {
@@ -62,11 +62,11 @@ export function SignupPage() {
       setError('');
 
       try {
-        const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-otp`;
+        const apiUrl = `${SUPABASE_URL}/functions/v1/send-otp`;
         const res = await fetch(apiUrl, {
           method: "POST",
           headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ email, isSignup: true }),
@@ -135,11 +135,11 @@ export function SignupPage() {
     setError('');
 
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-otp`;
+      const apiUrl = `${SUPABASE_URL}/functions/v1/verify-otp`;
       const res = await fetch(apiUrl, {
         method: "POST",
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, code: otp, isSignup: true }),
@@ -201,11 +201,11 @@ export function SignupPage() {
     setError('');
 
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-otp`;
+      const apiUrl = `${SUPABASE_URL}/functions/v1/send-otp`;
       const res = await fetch(apiUrl, {
         method: "POST",
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, isSignup: true }),

@@ -170,6 +170,19 @@ export function SocialLinksForm() {
     }
   };
 
+  const normalizeUrl = (url: string): string => {
+    let normalized = url.trim();
+    // Remove leading/trailing whitespace and trailing slashes
+    normalized = normalized.replace(/\/+$/, '');
+    
+    // Ensure it starts with https:// or http://
+    if (!normalized.match(/^https?:\/\//i)) {
+      normalized = 'https://' + normalized;
+    }
+    
+    return normalized;
+  };
+
   const handleAddLink = async () => {
     if (!newLink.url.trim()) return;
 
@@ -177,22 +190,48 @@ export function SocialLinksForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      const normalizedUrl = normalizeUrl(newLink.url);
+
+      // Check if URL already exists
+      const { data: existingLinks, error: checkError } = await supabase
+        .from('social_links')
+        .select('id')
+        .eq('url', normalizedUrl)
+        .limit(1);
+
+      if (existingLinks && existingLinks.length > 0) {
+        alert('This link has already been registered by another user. Please use a different link.');
+        return;
+      }
+
       const { error } = await supabase
         .from('social_links')
         .insert({
           user_id: user.id,
           platform: newLink.platform,
-          url: newLink.url.trim(),
+          url: normalizedUrl,
           display_name: newLink.display_name.trim() || newLink.platform,
         });
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's a unique constraint violation
+        if (error.code === '23505') {
+          alert('This link has already been registered by another user. Please use a different link.');
+        } else {
+          throw error;
+        }
+        return;
+      }
 
       await loadLinks();
       setNewLink({ platform: 'YouTube', url: '', display_name: '' });
       setIsAdding(false);
     } catch (error) {
       console.error('Error adding link:', error);
+      // Error already handled above if it's a duplicate
+      if (error && typeof error === 'object' && 'code' in error && error.code !== '23505') {
+        alert('Error adding link. Please try again.');
+      }
     }
   };
 
@@ -254,10 +293,9 @@ export function SocialLinksForm() {
                 URL
               </label>
               <input
-                type="url"
+                type="text"
                 value={newLink.url}
                 onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-                placeholder="https://..."
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
                 style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
               />
@@ -332,7 +370,7 @@ export function SocialLinksForm() {
                       {link.display_name || link.platform}
                     </div>
                     <div className="text-xs sm:text-sm truncate" style={{ color: '#64748B' }}>
-                      {link.url}
+                      {link.url.replace(/^https?:\/\//i, '')}
                     </div>
                   </div>
                 </div>

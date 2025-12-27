@@ -31,15 +31,17 @@ export function MobileMenuPage() {
         <div className="flex flex-col gap-3 mb-8">
           <button
             onClick={() => navigate('/login')}
-            className="w-full px-5 py-4 text-[13px] font-medium tracking-wide text-white/90 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-lg transition-all duration-200"
+            className="w-full px-5 py-4 text-[13px] font-medium tracking-wide text-white/90 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-lg transition-all duration-200 animate-domino-drop"
+            style={{ animationDelay: '0ms' }}
           >
             Log In
           </button>
           <button
             onClick={() => navigate('/signup')}
-            className="w-full px-5 py-4 text-[13px] font-medium tracking-wide text-black rounded-lg transition-all duration-200"
+            className="w-full px-5 py-4 text-[13px] font-medium tracking-wide text-black rounded-lg transition-all duration-200 animate-domino-drop"
             style={{
-              background: '#E8E8E8'
+              background: '#E8E8E8',
+              animationDelay: '80ms'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = '#D8D8D8';
@@ -59,7 +61,8 @@ export function MobileMenuPage() {
               e.preventDefault();
               navigate('/');
             }}
-            className="text-white/70 hover:text-white text-[13px] font-medium tracking-wide py-4 px-4 rounded-lg hover:bg-white/[0.05] transition-all duration-200"
+            className="text-white/70 hover:text-white text-[13px] font-medium tracking-wide py-4 px-4 rounded-lg hover:bg-white/[0.05] transition-all duration-200 animate-domino-drop"
+            style={{ animationDelay: '160ms' }}
           >
             Home
           </a>
@@ -69,7 +72,8 @@ export function MobileMenuPage() {
               e.preventDefault();
               navigate('/#partnership');
             }}
-            className="text-white/70 hover:text-white text-[13px] font-medium tracking-wide py-4 px-4 rounded-lg hover:bg-white/[0.05] transition-all duration-200"
+            className="text-white/70 hover:text-white text-[13px] font-medium tracking-wide py-4 px-4 rounded-lg hover:bg-white/[0.05] transition-all duration-200 animate-domino-drop"
+            style={{ animationDelay: '240ms' }}
           >
             Benefits
           </a>
@@ -79,7 +83,8 @@ export function MobileMenuPage() {
               e.preventDefault();
               navigate('/#about');
             }}
-            className="text-white/70 hover:text-white text-[13px] font-medium tracking-wide py-4 px-4 rounded-lg hover:bg-white/[0.05] transition-all duration-200"
+            className="text-white/70 hover:text-white text-[13px] font-medium tracking-wide py-4 px-4 rounded-lg hover:bg-white/[0.05] transition-all duration-200 animate-domino-drop"
+            style={{ animationDelay: '320ms' }}
           >
             About Us
           </a>

@@ -1,0 +1,24 @@
+/**
+ * Regression Test: Profile Foreign Key Constraint
+ * 
+ * This test would have caught the bug where getOrCreateAdminConversation
+ * attempted to create a conversation without ensuring the customer profile exists.
+ * 
+ * To use this test:
+ * 1. Install test framework: npm install -D vitest @testing-library/react
+ * 2. Add to package.json: "test": "vitest"
+ * 3. Rename this file to useChat.test.ts (remove .example)
+ * 4. Adjust mocks based on your Supabase client implementation
+ */
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// This is a template - actual implementation would need to mock Supabase properly
+describe('getOrCreateAdminConversation - Profile Foreign Key Regression Test', () => {
+  it('should create customer profile before creating conversation when profile does not exist', async () => {
+    // TODO: Implement test once test framework is set up
+    // See BUG_FIX_HARDENING_CONVERSATION_PROFILE_FK.md Section 4 for full test code
+    expect(true).toBe(true); // Placeholder
+  });
+});
+

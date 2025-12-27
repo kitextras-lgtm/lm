@@ -3,28 +3,19 @@ import { useNavigate } from 'react-router-dom';
 
 const SplineViewer = memo(() => {
   const [splineLoaded, setSplineLoaded] = useState(false);
-  const [shouldLoad, setShouldLoad] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShouldLoad(true);
-      const loadTimer = setTimeout(() => setSplineLoaded(true), 500);
-      return () => clearTimeout(loadTimer);
-    }, 100);
-
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
+    
+    // Set loaded immediately since script is preloaded
+    setSplineLoaded(true);
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
-  if (!shouldLoad) {
-    return null;
-  }
 
   return (
     <>
@@ -32,7 +23,7 @@ const SplineViewer = memo(() => {
         <spline-viewer
           key="mobile-spline"
           url="https://prod.spline.design/j6Vui4oX3PbVT0Bv/scene.splinecode"
-          loading="lazy"
+          loading="eager"
           style={{
             position: 'absolute',
             top: '72%',
@@ -43,15 +34,16 @@ const SplineViewer = memo(() => {
             transform: 'translate(-50%, -50%)',
             transformOrigin: 'center center',
             opacity: splineLoaded ? 1 : 0,
-            transition: 'opacity 1.5s ease-in-out',
-            pointerEvents: 'none'
+            transition: 'opacity 0.5s ease-in-out',
+            pointerEvents: 'none',
+            backgroundColor: '#000000'
           }}
         />
       ) : (
         <spline-viewer
           key="desktop-spline"
           url="https://prod.spline.design/LrLPFXR2ZuBzIAV8/scene.splinecode"
-          loading="lazy"
+          loading="eager"
           style={{
             position: 'absolute',
             top: 0,
@@ -62,8 +54,9 @@ const SplineViewer = memo(() => {
             transform: 'scaleX(-1)',
             transformOrigin: 'center center',
             opacity: splineLoaded ? 1 : 0,
-            transition: 'opacity 1.5s ease-in-out',
-            pointerEvents: 'none'
+            transition: 'opacity 0.5s ease-in-out',
+            pointerEvents: 'none',
+            backgroundColor: '#000000'
           }}
         />
       )}
@@ -96,19 +89,19 @@ export const Hero = memo(() => {
         <div className="relative md:text-left">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-transparent blur-3xl -z-10"></div>
 
-          <h1
-            className="hero-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-center md:text-left"
-            style={{
-              fontFamily: '"Fraunces", serif',
-              fontWeight: 400,
-              lineHeight: '1.05',
-              letterSpacing: '-0.02em',
-              willChange: 'transform, opacity',
-              margin: 0,
-              padding: 0,
-              marginBottom: '2rem'
-            }}
-          >
+            <h1
+              className="hero-heading text-6xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-center md:text-left"
+              style={{
+                fontFamily: '"Fraunces", serif',
+                fontWeight: 400,
+                lineHeight: '1.05',
+                letterSpacing: '-0.02em',
+                willChange: 'transform, opacity',
+                margin: 0,
+                padding: 0,
+                marginBottom: '2rem'
+              }}
+            >
             <span
               style={{
                 display: 'inline-block',
@@ -143,18 +136,22 @@ export const Hero = memo(() => {
             </span>
           </h1>
 
-          <p className="text-base md:text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '2rem' }}>
+          <p className="text-base md:text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-sm sm:max-w-md md:max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '2rem' }}>
             Elevate is an invite-only 360° multimedia network and agency offering unparalleled opportunities for creators, artists, and brands.
           </p>
 
           <div className="flex justify-center md:justify-start">
             <button
               onClick={() => navigate('/signup')}
-              className="text-black px-10 py-3.5 md:px-14 md:py-5 rounded-full text-base md:text-lg font-semibold transition-all duration-300 transform hover:scale-[1.03] hover:opacity-95 active:scale-[0.98] pointer-events-auto"
+              className="text-black px-10 py-3.5 md:px-14 md:py-5 rounded-lg text-base md:text-lg font-semibold transition-all duration-200 pointer-events-auto"
               style={{
-                background: '#E8E8E8',
-                willChange: 'transform, opacity',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)'
+                background: '#E8E8E8'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#D8D8D8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#E8E8E8';
               }}
             >
               Start Here

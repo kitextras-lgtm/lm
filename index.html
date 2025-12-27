@@ -31,6 +31,32 @@
     <link rel="dns-prefetch" href="https://prod.spline.design">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="dns-prefetch" href="https://unpkg.com">
+    
+    <!-- Preload Spline viewer script for instant loading -->
+    <link rel="modulepreload" href="https://unpkg.com/@splinetool/viewer@1.12.6/build/spline-viewer.js" crossorigin>
+    
+    <!-- Prefetch Spline scene files -->
+    <link rel="prefetch" href="https://prod.spline.design/j6Vui4oX3PbVT0Bv/scene.splinecode" as="fetch" crossorigin>
+    <link rel="prefetch" href="https://prod.spline.design/LrLPFXR2ZuBzIAV8/scene.splinecode" as="fetch" crossorigin>
+    <link rel="prefetch" href="https://prod.spline.design/hxB6DGH8u6Rcpq21/scene.splinecode" as="fetch" crossorigin>
+    
+    <!-- Load Spline viewer script immediately in head -->
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.6/build/spline-viewer.js"></script>
+    <style>
+      /* Prevent white flash on Spline canvas load - critical for instant display */
+      spline-viewer {
+        background-color: #000000 !important;
+        background: #000000 !important;
+      }
+      spline-viewer canvas {
+        background-color: #000000 !important;
+        background: #000000 !important;
+      }
+      spline-viewer::before,
+      spline-viewer::after {
+        background-color: #000000 !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -39,24 +65,6 @@
       // Fix Windows scaling issue
       if (navigator.userAgent.indexOf('Windows') !== -1) {
         document.body.style.zoom = '0.9';
-      }
-    </script>
-    <script>
-      // Lazy load Spline viewer after initial render
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => {
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = 'https://unpkg.com/@splinetool/viewer@1.12.6/build/spline-viewer.js';
-          document.body.appendChild(script);
-        });
-      } else {
-        setTimeout(() => {
-          const script = document.createElement('script');
-          script.type = 'module';
-          script.src = 'https://unpkg.com/@splinetool/viewer@1.12.6/build/spline-viewer.js';
-          document.body.appendChild(script);
-        }, 300);
       }
     </script>
   </body>

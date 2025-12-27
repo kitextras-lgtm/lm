@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/config';
 
 interface AdminRole {
   id: string;
@@ -55,12 +56,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const response = await fetch(`${supabaseUrl}/functions/v1/admin-verify-session`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-verify-session`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           'X-Session-Token': token, // Pass session token in custom header
           'Content-Type': 'application/json',
         },
@@ -93,18 +92,35 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   // Login function
   const login = async (email: string, password: string, totpCode?: string): Promise<{ success: boolean; message?: string; requiresTotp?: boolean }> => {
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const response = await fetch(`${supabaseUrl}/functions/v1/admin-login`, {
+      console.log('🔐 Admin login request to:', `${SUPABASE_URL}/functions/v1/admin-login`);
+      
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ email, password, totpCode }),
       });
 
-      const data = await response.json();
+      console.log('📨 Admin login response status:', response.status);
+      
+      // Check if response is OK
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Admin login failed:', response.status, errorText);
+        return { success: false, message: `Server error: ${response.status}` };
+      }
+      
+      // Try to parse JSON, handle empty response
+      const responseText = await response.text();
+      console.log('📝 Admin login response:', responseText.substring(0, 200));
+      
+      if (!responseText) {
+        return { success: false, message: 'Empty response from server' };
+      }
+      
+      const data = JSON.parse(responseText);
 
       if (data.success && data.sessionToken && data.admin) {
         // Store token in memory only (ref + state)
@@ -129,12 +145,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const logout = async (): Promise<void> => {
     try {
       if (sessionToken) {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        await fetch(`${supabaseUrl}/functions/v1/admin-logout`, {
+        await fetch(`${SUPABASE_URL}/functions/v1/admin-logout`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'X-Session-Token': sessionToken, // Pass session token in custom header
             'Content-Type': 'application/json',
           },

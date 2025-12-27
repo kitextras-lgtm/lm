@@ -130,39 +130,63 @@ Deno.serve(async (req: Request) => {
     }
 
     if (isLogin) {
+      // For login, check users table first (consistent with verify-otp)
+      // If not found in users table, fall back to existingAuthUser from auth.users check
       if (!existingAuthUser) {
-        console.log('Login blocked: No user found in auth.users');
-        return new Response(
-          JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
-          {
-            status: 400,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-            },
+        console.log('⚠️ Login: User not found in auth.users, checking users table as fallback');
+        
+        const { data: userFromTable } = await supabaseClient
+          .from('users')
+          .select('id, email')
+          .eq('email', email)
+          .maybeSingle();
+        
+        if (userFromTable?.id) {
+          console.log('✅ Login: Found user in users table, allowing OTP to be sent');
+          // Verify user exists in auth.users by ID
+          const getUserByIdResponse = await fetch(
+            `${supabaseUrl}/auth/v1/admin/users/${userFromTable.id}`,
+            {
+              method: 'GET',
+              headers: {
+                'apikey': serviceRoleKey,
+                'Authorization': `Bearer ${serviceRoleKey}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          
+          if (getUserByIdResponse.ok) {
+            console.log('✅ Login: User verified in auth.users by ID, allowing OTP');
+          } else {
+            console.log('❌ Login: User found in users table but not in auth.users');
+            return new Response(
+              JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
+              {
+                status: 400,
+                headers: {
+                  ...corsHeaders,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
           }
-        );
-      }
-
-      // Also check users table for user_type to ensure profile exists
-      const { data: userData } = await supabaseClient
-        .from('users')
-        .select('user_type')
-        .eq('id', existingAuthUser.id)
-        .maybeSingle();
-
-      if (!userData || !userData.user_type) {
-        console.log('Login blocked: User exists in auth but no user_type in users table');
-        return new Response(
-          JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
-          {
-            status: 400,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        } else {
+          console.log('❌ Login: No user found in auth.users or users table');
+          return new Response(
+            JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
+      } else {
+        // User found in auth.users (normal path)
+        console.log('✅ Login: User found in auth.users, allowing OTP to be sent');
       }
     }
 

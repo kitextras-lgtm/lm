@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface ServiceCard {
   title: string;
@@ -9,7 +10,8 @@ interface ServiceCard {
 export function Partnership() {
   const [activeTab, setActiveTab] = useState('artists');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.1);
+  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation(0.1);
 
   const handleTabChange = (tabId: string) => {
     if (tabId !== activeTab) {
@@ -107,7 +109,12 @@ export function Partnership() {
       }}
     >
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="mb-12 md:mb-20">
+        <div 
+          ref={headerRef}
+          className={`mb-12 md:mb-20 transition-all duration-1000 ease-out ${
+            headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
           <div className="flex flex-col items-center mb-8 md:mb-16">
             <div className="max-w-3xl text-center">
               <h2
@@ -228,8 +235,8 @@ export function Partnership() {
 
         <div
           ref={gridRef}
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200 ${
-            isTransitioning ? 'opacity-0' : 'opacity-100'
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-1000 ease-out ${
+            isTransitioning ? 'opacity-0' : gridVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
           {services.map((service, index) => (

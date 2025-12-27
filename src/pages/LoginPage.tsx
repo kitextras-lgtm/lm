@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/config';
 
 declare global {
   namespace JSX {
@@ -62,17 +63,36 @@ export function LoginPage() {
       setLoading(true);
       setError('');
       try {
-        const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-otp`;
+        const apiUrl = `${SUPABASE_URL}/functions/v1/send-otp`;
+        console.log('🔐 Sending OTP request to:', apiUrl);
+        
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({ email, isLogin: true }),
         });
 
-        const data = await response.json();
+        console.log('📨 OTP response status:', response.status);
+        
+        // Check if response is OK
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ OTP request failed:', response.status, errorText);
+          throw new Error(`Server error: ${response.status}`);
+        }
+        
+        // Try to parse JSON, handle empty response
+        const responseText = await response.text();
+        console.log('📝 OTP response text:', responseText);
+        
+        if (!responseText) {
+          throw new Error('Empty response from server');
+        }
+        
+        const data = JSON.parse(responseText);
         if (!data.success) {
           throw new Error(data.message || 'Failed to send OTP');
         }
@@ -133,12 +153,12 @@ export function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-otp`;
+      const apiUrl = `${SUPABASE_URL}/functions/v1/verify-otp`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ email, code: otp, isSignup: false }),
       });
@@ -188,12 +208,12 @@ export function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-otp`;
+      const apiUrl = `${SUPABASE_URL}/functions/v1/send-otp`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ email, isLogin: true }),
       });

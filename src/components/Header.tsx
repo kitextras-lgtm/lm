@@ -64,11 +64,15 @@ export function Header() {
           </button>
           <button
             onClick={() => navigate('/signup')}
-            className="px-5 py-2 text-[13px] font-semibold text-black cursor-pointer transition-all duration-300 ease-out hover:scale-[1.03] hover:opacity-95"
+            className="px-5 py-2 text-[13px] font-semibold text-black cursor-pointer transition-all duration-200 rounded-lg"
             style={{
-              background: '#E8E8E8',
-              borderRadius: '999px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)'
+              background: '#E8E8E8'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#D8D8D8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#E8E8E8';
             }}
           >
             Sign Up

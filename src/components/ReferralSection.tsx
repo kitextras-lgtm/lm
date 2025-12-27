@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Copy, Check, Gift } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 
 interface ReferralData {
   code: string;
@@ -36,11 +36,11 @@ export function ReferralSection() {
       // Get username from users table using Edge Function (bypasses RLS)
       let username = null;
       try {
-        const fetchUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-profile?userId=${userId}`;
+        const fetchUrl = `${SUPABASE_URL}/functions/v1/get-profile?userId=${userId}`;
         const fetchResponse = await fetch(fetchUrl, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
           },
         });
@@ -54,13 +54,32 @@ export function ReferralSection() {
         }
       } catch (fetchErr) {
         console.error('Error fetching via Edge Function:', fetchErr);
-        // Fallback to direct query
+      }
+      
+      // Fallback: try users table first, then profiles table
+      if (!username) {
         const { data: userProfile } = await supabase
           .from('users')
           .select('username')
           .eq('id', userId)
           .maybeSingle();
         username = userProfile?.username;
+        
+        // If still no username, try profiles table (uses 'name' field)
+        if (!username) {
+          console.log('Trying profiles table for username...');
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', userId)
+            .maybeSingle();
+          
+          if (profileData?.name) {
+            // Use first part of name as username, or full name without spaces
+            username = profileData.name.replace(/\s+/g, '');
+            console.log('✅ Using name from profiles table as username:', username);
+          }
+        }
       }
 
       if (username) {

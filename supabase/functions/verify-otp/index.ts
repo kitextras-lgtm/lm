@@ -134,13 +134,6 @@ Deno.serve(async (req: Request) => {
       serviceRoleKey: serviceRoleKey ? '✅ Set' : '❌ Missing'
     });
     
-    // CRITICAL: Log the flow type clearly
-    if (isSignup) {
-      console.log('📝 ========== SIGNUP FLOW STARTED ==========');
-    } else {
-      console.log('🔐 ========== LOGIN FLOW STARTED ==========');
-    }
-
     if (isSignup) {
       console.log('📝 SIGNUP FLOW: Starting new user creation process');
       
@@ -729,6 +722,119 @@ Deno.serve(async (req: Request) => {
           insertedData: insertedUser
         });
         
+        // Create profile for chat system (required for conversations)
+        console.log('📝 Creating profile for new user:', authUserId);
+        const { error: profileError } = await supabaseClient
+          .from('profiles')
+          .insert({
+            id: authUserId,
+            name: email.split('@')[0] || 'User', // Default name from email
+            avatar_url: '',
+            is_admin: false,
+            is_online: false,
+          });
+        
+        if (profileError) {
+          console.error('⚠️ Failed to create profile:', profileError);
+          // Don't fail signup if profile creation fails - user can still proceed
+        } else {
+          console.log('✅ Successfully created profile for new user');
+        }
+        
+        // Create admin conversation and send welcome message (only for new signups)
+        console.log('💬 Setting up admin conversation for new user:', authUserId);
+        try {
+          // Get admin ID
+          const { data: adminProfile, error: adminError } = await supabaseClient
+            .from('profiles')
+            .select('id')
+            .eq('is_admin', true)
+            .limit(1)
+            .maybeSingle();
+          
+          if (adminError) {
+            console.error('⚠️ Failed to find admin profile:', adminError);
+          } else if (adminProfile?.id) {
+            const adminId = adminProfile.id;
+            console.log('✅ Found admin ID:', adminId);
+            
+            // Check if conversation already exists
+            const { data: existingConv } = await supabaseClient
+              .from('conversations')
+              .select('id')
+              .eq('customer_id', authUserId)
+              .eq('admin_id', adminId)
+              .maybeSingle();
+            
+            if (!existingConv) {
+              // Create new conversation
+              const { data: newConv, error: convError } = await supabaseClient
+                .from('conversations')
+                .insert({
+                  customer_id: authUserId,
+                  admin_id: adminId,
+                  last_message: '',
+                  unread_count_admin: 0,
+                  unread_count_customer: 0,
+                })
+                .select('id')
+                .single();
+              
+              if (convError) {
+                console.error('⚠️ Failed to create admin conversation:', convError);
+              } else if (newConv?.id) {
+                console.log('✅ Created admin conversation:', newConv.id);
+                
+                // Get user's first name if available (might be empty during signup)
+                const { data: userData } = await supabaseClient
+                  .from('users')
+                  .select('first_name')
+                  .eq('id', authUserId)
+                  .maybeSingle();
+                
+                const firstName = userData?.first_name?.trim() || '';
+                const welcomeMessage = `Hi${firstName ? ` ${firstName},` : ''} welcome to Elevate! 👋\n\nIf you have any questions, feel free to ask.\n\nHave suggestions or feedback? You can submit them here. We review everything and are always working to give you the best experience on Elevate.`;
+                
+                // Send welcome message
+                const { error: messageError } = await supabaseClient
+                  .from('messages')
+                  .insert({
+                    conversation_id: newConv.id,
+                    sender_id: adminId,
+                    type: 'text',
+                    content: welcomeMessage,
+                    status: 'sent',
+                  });
+                
+                if (messageError) {
+                  console.error('⚠️ Failed to send welcome message:', messageError);
+                } else {
+                  // Update conversation with last message
+                  const welcomeMessagePreview = welcomeMessage.split('\n')[0];
+                  await supabaseClient
+                    .from('conversations')
+                    .update({
+                      last_message: welcomeMessagePreview,
+                      last_message_at: new Date().toISOString(),
+                      last_message_sender_id: adminId,
+                      unread_count_customer: 1,
+                    })
+                    .eq('id', newConv.id);
+                  
+                  console.log('✅ Welcome message sent to new user');
+                }
+              }
+            } else {
+              console.log('ℹ️ Admin conversation already exists for user');
+            }
+          } else {
+            console.warn('⚠️ No admin profile found - cannot create conversation');
+          }
+        } catch (chatError) {
+          console.error('⚠️ Error setting up admin conversation:', chatError);
+          // Don't fail signup if conversation setup fails
+        }
+        
         // Store signup tracking record for spam prevention
         console.log('📝 Storing signup tracking record:', { ipAddress, userAgent, email, userId: authUserId });
         const { error: trackingError } = await supabaseClient
@@ -748,106 +854,226 @@ Deno.serve(async (req: Request) => {
         }
       }
     } else {
-      // Login - find existing auth user using REST API
-      console.log('Looking up user for login:', email);
-      const getUserResponse = await fetch(
-        `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
-        {
-          method: 'GET',
-          headers: {
-            'apikey': serviceRoleKey,
-            'Authorization': `Bearer ${serviceRoleKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!getUserResponse.ok) {
-        return new Response(
-          JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
-          {
-            status: 400,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      }
-
-      const responseText = await getUserResponse.text();
-      console.log('📡 Login: Auth API response body:', responseText);
+      // Login - find existing user by checking which user ID the OTP was sent to
+      // The OTP record contains the email, so we can verify the user exists
+      // PRIMARY STRATEGY: Check users table FIRST (source of truth for email)
+      console.log('🔍 Login: Checking users table by email (primary method):', email);
+      const { data: userFromTable, error: userTableError } = await supabaseClient
+        .from('users')
+        .select('id, email')
+        .ilike('email', email)  // Case-insensitive match
+        .maybeSingle();
       
-      let usersData;
-      try {
-        usersData = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('❌ Login: Failed to parse response:', parseError);
-        return new Response(
-          JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
-          {
-            status: 400,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      }
-      
-      console.log('📋 Login: Parsed users data:', JSON.stringify(usersData, null, 2));
-      
-      if (!usersData.users || usersData.users.length === 0) {
-        console.log('❌ Login: No users found in response');
-        return new Response(
-          JSON.stringify({ success: false, message: 'No account found. Please sign up first.' }),
-          {
-            status: 400,
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      }
-
-      const foundUser = usersData.users[0];
-      console.log('🔍 Login: Found user:', {
-        id: foundUser.id,
-        email: foundUser.email,
-        requestedEmail: email
+      console.log('📊 Login: Users table query result:', {
+        hasData: !!userFromTable,
+        hasError: !!userTableError,
+        userId: userFromTable?.id,
+        email: userFromTable?.email,
+        error: userTableError ? JSON.stringify(userTableError) : null
       });
-
-      // CRITICAL: Verify the found user's email matches the requested email
-      if (foundUser.email?.toLowerCase() !== email.toLowerCase()) {
-        console.error('❌ CRITICAL ERROR: Email mismatch!');
-        console.error('❌ Requested email:', email);
-        console.error('❌ Found user email:', foundUser.email);
-        console.error('❌ Found user ID:', foundUser.id);
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            message: 'No account found. Please sign up first.' 
-          }),
+      
+      if (userTableError) {
+        console.error('❌ Login: Error querying users table:', userTableError);
+      }
+      
+      if (userFromTable?.id) {
+        console.log('✅ Login: Found user in users table with email:', userFromTable.email);
+        console.log('✅ Login: User ID:', userFromTable.id);
+        
+        // Verify this user exists in auth.users by ID
+        const getUserByIdResponse = await fetch(
+          `${supabaseUrl}/auth/v1/admin/users/${userFromTable.id}`,
           {
-            status: 400,
+            method: 'GET',
             headers: {
-              ...corsHeaders,
+              'apikey': serviceRoleKey,
+              'Authorization': `Bearer ${serviceRoleKey}`,
               'Content-Type': 'application/json',
             },
           }
         );
+        
+        if (getUserByIdResponse.ok) {
+          const userByIdText = await getUserByIdResponse.text();
+          let userByIdData;
+          try {
+            userByIdData = JSON.parse(userByIdText);
+          } catch (parseError) {
+            console.error('❌ Login: Failed to parse auth.users response by ID:', parseError);
+            return new Response(
+              JSON.stringify({ 
+                success: false, 
+                message: 'No account found. Please sign up first.',
+                debug: 'Failed to parse auth.users response'
+              }),
+              {
+                status: 400,
+                headers: {
+                  ...corsHeaders,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          }
+          
+          if (userByIdData && userByIdData.id) {
+            console.log('✅ Login: User verified in auth.users by ID');
+            console.log('✅ Login: Email in users table:', userFromTable.email);
+            console.log('✅ Login: Email in auth.users:', userByIdData.email);
+            console.log('✅ Login: Using authUserId:', userByIdData.id);
+            authUserId = userByIdData.id;
+            // Continue with login flow below - email mismatch is OK, we use users table as source of truth
+          } else {
+            console.error('❌ Login: User ID from users table not found in auth.users');
+            return new Response(
+              JSON.stringify({ 
+                success: false, 
+                message: 'No account found. Please sign up first.',
+                debug: 'User found in users table but not in auth.users'
+              }),
+              {
+                status: 400,
+                headers: {
+                  ...corsHeaders,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          }
+        } else {
+          const errorText = await getUserByIdResponse.text();
+          console.error('❌ Login: Failed to verify user in auth.users by ID');
+          console.error('❌ Status:', getUserByIdResponse.status);
+          console.error('❌ Response:', errorText);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: 'No account found. Please sign up first.',
+              debug: 'User found in users table but auth.users verification failed'
+            }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
+      } else {
+        // FALLBACK: Try auth.users API (in case user exists there but not in users table - should be rare)
+        console.log('⚠️ Login: User not found in users table, trying auth.users API as fallback');
+        
+        const getUserResponse = await fetch(
+          `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
+          {
+            method: 'GET',
+            headers: {
+              'apikey': serviceRoleKey,
+              'Authorization': `Bearer ${serviceRoleKey}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!getUserResponse.ok) {
+          console.error('❌ Login: Auth API returned non-OK status:', getUserResponse.status);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: 'No account found. Please sign up first.',
+              debug: `Email not found in users table and auth API returned ${getUserResponse.status}`
+            }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
+        
+        const responseText = await getUserResponse.text();
+        let usersData;
+        try {
+          usersData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('❌ Login: Failed to parse auth API response:', parseError);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: 'No account found. Please sign up first.',
+              debug: 'Failed to parse auth API response'
+            }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
+
+        if (!usersData || !usersData.users || usersData.users.length === 0) {
+          console.error('❌ Login: No users found in auth.users response');
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: 'No account found. Please sign up first.',
+              debug: 'Email not found in users table or auth.users'
+            }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
+
+        // CRITICAL: Only use user if email matches EXACTLY (case-insensitive)
+        // Don't trust auth.users if it returns wrong email (could be normalization bug/email collision)
+        const matchingUser = usersData.users.find((u: any) => 
+          u.email && u.email.toLowerCase() === email.toLowerCase()
+        );
+
+        if (matchingUser) {
+          console.log('✅ Login: Found user in auth.users with matching email:', matchingUser.id);
+          authUserId = matchingUser.id;
+        } else {
+          console.error('❌ Login: Auth API returned user(s) but none match requested email exactly');
+          console.error('❌ Requested email:', email);
+          console.error('❌ Auth API returned:', usersData.users.map((u: any) => ({ email: u.email, id: u.id })));
+          console.error('❌ This likely means email collision or normalization bug in Supabase Auth API');
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              message: 'No account found. Please sign up first.',
+              debug: `Email ${email} not found. Auth API returned different email(s) - possible email collision`
+            }),
+            {
+              status: 400,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
       }
 
-      authUserId = foundUser.id;
-      console.log('✅ Login: Verified user email matches, using authUserId:', authUserId);
+      console.log('✅ Login: Using authUserId:', authUserId);
       
-      // Use upsert but ONLY update verified status, NOT the email (email should never change)
+      // Upsert to users table - use requested email (source of truth for what user entered)
+      // This ensures users table has the correct email even if auth.users has different one
       const { error: usersError } = await supabaseClient
         .from('users')
         .upsert({
           id: authUserId,
-          email: foundUser.email, // Use the email from auth.users, not the request (for safety)
+          email: email, // Use requested email (what user typed)
           verified: true,
         }, {
           onConflict: 'id'
@@ -861,32 +1087,14 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Ensure authUserId is set
+    // Ensure authUserId is set before returning
     if (!authUserId) {
-      console.error('Error: authUserId is null after processing');
+      console.error('❌ CRITICAL ERROR: authUserId is null at end of function!');
+      console.error('❌ This should never happen - user creation/retrieval must have failed silently');
       return new Response(
         JSON.stringify({ 
           success: false, 
           message: 'Failed to create or retrieve user account. Please try again.' 
-        }),
-        {
-          status: 500,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-    }
-
-    // Ensure authUserId is set before returning
-    if (!authUserId) {
-      console.error('❌ CRITICAL ERROR: authUserId is null at end of function!');
-      console.error('❌ This should never happen - user creation must have failed silently');
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          message: 'Failed to create user account. Please try again.' 
         }),
         {
           status: 500,
