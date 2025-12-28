@@ -57,6 +57,7 @@ export const UserListItem = memo(function UserListItem({ user, conversation, isA
           src={user.avatar_url}
           name={user.name}
           size="lg"
+          isAdmin={user.is_admin}
         />
 
         <div className="flex-1 min-w-0">

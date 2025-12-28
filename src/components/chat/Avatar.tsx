@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getCachedImage, preloadAndCacheImage } from '../../utils/imageCache';
-import { DEFAULT_AVATAR_DATA_URI } from '../DefaultAvatar';
+import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../DefaultAvatar';
 
 interface AvatarProps {
   src: string;
@@ -8,6 +8,7 @@ interface AvatarProps {
   size?: 'sm' | 'md' | 'lg';
   isOnline?: boolean;
   showOnlineIndicator?: boolean;
+  isAdmin?: boolean;
 }
 
 const sizeClasses = {
@@ -25,12 +26,15 @@ function preloadImage(src: string, onLoad: () => void, onError: () => void) {
   return img;
 }
 
-export function Avatar({ src, name, size = 'md', isOnline, showOnlineIndicator = false }: AvatarProps) {
+export function Avatar({ src, name, size = 'md', isOnline, showOnlineIndicator = false, isAdmin = false }: AvatarProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
-  const hasValidSrc = src && src.trim() !== '';
+  
+  // For admin, use the Elevate admin avatar URL; otherwise use provided src
+  const effectiveSrc = isAdmin ? ELEVATE_ADMIN_AVATAR_URL : (src || '');
+  const hasValidSrc = effectiveSrc && effectiveSrc.trim() !== '';
 
   // Check cache first for instant display
   useEffect(() => {
@@ -40,22 +44,22 @@ export function Avatar({ src, name, size = 'md', isOnline, showOnlineIndicator =
     }
 
     // Check if we have a cached version
-    const cached = getCachedImage(src);
+    const cached = getCachedImage(effectiveSrc);
     if (cached) {
       setCachedImageUrl(cached);
       setImageLoaded(true);
       // Still preload the fresh version in background
-      preloadAndCacheImage(src);
+      preloadAndCacheImage(effectiveSrc);
     } else {
       // Start caching in background
-      preloadAndCacheImage(src);
+      preloadAndCacheImage(effectiveSrc);
       
       // Load image normally
       setImageLoaded(false);
       setImageError(false);
       
       const img = preloadImage(
-        src,
+        effectiveSrc,
         () => setImageLoaded(true),
         () => setImageError(true)
       );
@@ -69,9 +73,9 @@ export function Avatar({ src, name, size = 'md', isOnline, showOnlineIndicator =
         }
       };
     }
-  }, [src, hasValidSrc]);
+  }, [effectiveSrc, hasValidSrc]);
 
-  const imageUrl = cachedImageUrl || src;
+  const imageUrl = cachedImageUrl || effectiveSrc;
   const showRealImage = hasValidSrc && (imageLoaded || cachedImageUrl) && !imageError;
   const defaultAvatar = DEFAULT_AVATAR_DATA_URI;
 

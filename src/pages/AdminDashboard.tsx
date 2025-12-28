@@ -8,6 +8,7 @@ import { AdminMessagesPage } from './AdminMessagesPage';
 import { getAdminId } from '../hooks/useChat';
 import { NotificationSender } from '../components/NotificationSender';
 import { AnnouncementSender } from '../components/AnnouncementSender';
+import { ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 
 interface User {
   id: string;
@@ -481,7 +482,7 @@ export function AdminDashboard() {
               style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
             >
               <img
-                src="https://hlcpoqxzqgbghsadouef.supabase.co/storage/v1/object/public/avatars/pic/elevate%20smaller%20logo.png"
+                src={ELEVATE_ADMIN_AVATAR_URL}
                 alt="Admin profile"
                 className="w-full h-full object-cover"
               />

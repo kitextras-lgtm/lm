@@ -1,6 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import type { Profile } from '../../types/chat';
-import { DEFAULT_AVATAR_DATA_URI } from '../DefaultAvatar';
+import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../DefaultAvatar';
 
 interface ChatHeaderProps {
   user: Profile;
@@ -26,7 +26,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton }: ChatHeade
         )}
         <div className="relative flex-shrink-0">
           <img
-            src={user.avatar_url || DEFAULT_AVATAR_DATA_URI}
+            src={user.is_admin ? ELEVATE_ADMIN_AVATAR_URL : (user.avatar_url || DEFAULT_AVATAR_DATA_URI)}
             alt={user.name}
             className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover default-avatar-shake"
             style={{ backgroundColor: '#0f0f13' }}

@@ -56,3 +56,25 @@ export const DEFAULT_AVATAR_DATA_URI = `data:image/svg+xml;base64,${btoa(
   </svg>`
 )}`;
 
+// Elevate logo as data URI (5 vertical bars with rounded ends)
+export const ELEVATE_LOGO_DATA_URI = `data:image/svg+xml;base64,${btoa(
+  `<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="40" height="40" fill="#000000"/>
+    <g>
+      <!-- Leftmost bar (shortest) -->
+      <rect x="7" y="19" width="3" height="6" rx="1.5" fill="#FFFFFF"/>
+      <!-- Second bar (medium) -->
+      <rect x="12" y="16" width="3" height="12" rx="1.5" fill="#FFFFFF"/>
+      <!-- Center bar (tallest) -->
+      <rect x="17" y="8" width="3" height="24" rx="1.5" fill="#FFFFFF"/>
+      <!-- Fourth bar (medium) -->
+      <rect x="22" y="16" width="3" height="12" rx="1.5" fill="#FFFFFF"/>
+      <!-- Rightmost bar (shortest) -->
+      <rect x="27" y="19" width="3" height="6" rx="1.5" fill="#FFFFFF"/>
+    </g>
+  </svg>`
+)}`;
+
+// Elevate admin profile picture URL
+export const ELEVATE_ADMIN_AVATAR_URL = 'https://hlcpoqxzqgbghsadouef.supabase.co/storage/v1/object/public/avatars/pic/elevate%20solid%20white%20logo%20ver.jpeg';
+

@@ -241,7 +241,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
       onClick={onClose}
     >
@@ -249,7 +249,8 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
         style={{ 
           backgroundColor: '#1a1a1e',
-          border: '1px solid rgba(255, 255, 255, 0.08)'
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          animation: 'popOut 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -313,17 +314,19 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
               <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2 mt-1">
                 {campaign.platforms.includes('instagram') && (
-                  <Instagram className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                  <div className="w-5 h-5">
+                    <InstagramIconAnimated isHovered={true} />
+                  </div>
                 )}
                 {campaign.platforms.includes('tiktok') && (
-                  <svg className="w-5 h-5" style={{ color: '#94A3B8' }} viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
-                  </svg>
+                  <div className="w-5 h-5">
+                    <TikTokIcon isHovered={true} />
+                  </div>
                 )}
                 {campaign.platforms.includes('youtube') && (
-                  <svg className="w-5 h-5" style={{ color: '#94A3B8' }} viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                  </svg>
+                  <div className="w-5 h-5">
+                    <YouTubeIcon isHovered={true} />
+                  </div>
                 )}
               </div>
             </div>
@@ -1496,33 +1499,6 @@ export function ArtistDashboard() {
         userId={currentUserId || ''}
       />
       <div className="h-screen text-white flex flex-col" style={{ backgroundColor: '#111111' }}>
-      <style>{`
-        /* Custom scrollbar for settings content area */
-        .settings-scrollable::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        .settings-scrollable::-webkit-scrollbar-track {
-          background: rgba(15, 15, 19, 0.3);
-          border-radius: 4px;
-        }
-        
-        .settings-scrollable::-webkit-scrollbar-thumb {
-          background: rgba(148, 163, 184, 0.3);
-          border-radius: 4px;
-          transition: background 0.2s ease;
-        }
-        
-        .settings-scrollable::-webkit-scrollbar-thumb:hover {
-          background: rgba(148, 163, 184, 0.5);
-        }
-        
-        /* Firefox scrollbar */
-        .settings-scrollable {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(148, 163, 184, 0.3) rgba(15, 15, 19, 0.3);
-        }
-      `}</style>
       <DoorTransition showTransition={location.state?.fromOnboarding === true} />
       <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16" style={{ backgroundColor: '#111111', borderBottom: '1px solid #1a1a1a' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-full flex items-center justify-between">
@@ -1752,20 +1728,6 @@ export function ArtistDashboard() {
                     }}
                   >
                     <span>Give feedback</span>
-                    <ArrowUpRight className="w-4 h-4" style={{ color: '#64748B' }} />
-                  </button>
-
-                  <button 
-                    className="w-full flex items-center justify-between py-3 px-4 rounded-xl text-sm font-bold mb-5 transition-all duration-200" 
-                    style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#0f0f13';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
-                  >
-                    <span>Support</span>
                     <ArrowUpRight className="w-4 h-4" style={{ color: '#64748B' }} />
                   </button>
 
@@ -2138,7 +2100,7 @@ export function ArtistDashboard() {
                 </div>
               </aside>
 
-              <div className="flex-1 min-w-0 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent' }}>
+              <div className="flex-1 min-w-0 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <div className="space-y-6 pb-8 pr-2">
                   {renderPersonalInfo()}
                   {renderConnectedAccounts()}
