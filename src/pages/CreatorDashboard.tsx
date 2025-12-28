@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, Loader2, X, MessageSquare } from 'lucide-react';
 import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
@@ -171,7 +171,216 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean }) {
 
 type SettingsSection = 'personal' | 'accounts' | 'payout' | 'notifications';
 
-function FighterMusicCard() {
+interface CampaignData {
+  id: string;
+  name: string;
+  avatar?: string;
+  timeAgo: string;
+  title: string;
+  description: string;
+  status: 'Active' | 'Ended' | 'Coming Soon';
+  endsIn: string;
+  paidOutPercent?: string;
+  language: string;
+  platforms: ('instagram' | 'tiktok' | 'youtube')[];
+  payType: string;
+  payout: string;
+  rules: string[];
+  requiredHashtags?: string[];
+}
+
+const CAMPAIGNS: CampaignData[] = [
+  {
+    id: 'fighter-music',
+    name: 'Fighter Music',
+    timeAgo: '13d ago',
+    title: 'Turn Pain into Power',
+    description: 'Fighter Music is a passionate artist turning pain into power, and scars into sound. Create clips showcasing their music and earn your share of the budget!',
+    status: 'Active',
+    endsIn: '6d',
+    paidOutPercent: '87.37%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$1.00 cpm',
+    rules: [
+      'Allowed Content: Use footage from provided music videos only. No unrelated footage or outside content.',
+      'Minimum video length: 15 seconds',
+      'Must include audio from the official track',
+      'No explicit or inappropriate content'
+    ],
+    requiredHashtags: ['#FighterMusic', '#ElevateMusic']
+  },
+  {
+    id: 'asta-violina',
+    name: 'Asta Violina',
+    timeAgo: '13d ago',
+    title: 'Classical Meets Modern',
+    description: 'Asta Violina brings classical violin to the modern age. Create engaging content featuring their unique sound and earn from every view!',
+    status: 'Active',
+    endsIn: '10d',
+    paidOutPercent: '45.20%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$0.80 cpm',
+    rules: [
+      'Allowed Content: Use footage from provided music videos only.',
+      'Minimum video length: 10 seconds',
+      'Must include audio from the official track',
+      'Family-friendly content only'
+    ],
+    requiredHashtags: ['#AstaViolina', '#ClassicalVibes']
+  }
+];
+
+function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void }) {
+  const [showFullRules, setShowFullRules] = useState(false);
+
+  if (!campaign) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
+      onClick={onClose}
+    >
+      <div 
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
+        style={{ 
+          backgroundColor: '#1a1a1e',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 w-9 h-9 flex items-center justify-center rounded-full transition-colors z-10"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
+        >
+          <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+        </button>
+
+        {/* Header */}
+        <div className="p-7 pb-5">
+          <div className="flex items-start gap-5">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+              <Video className="w-9 h-9 text-white" />
+            </div>
+            <div className="flex-1 min-w-0 pt-1">
+              <div className="flex items-center gap-2 mb-1.5">
+                <h2 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{campaign.name}</h2>
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-sm" style={{ color: '#64748B' }}>{campaign.timeAgo}</p>
+              <p className="text-base font-medium mt-1.5" style={{ color: '#94A3B8' }}>{campaign.title}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+          <div className="flex items-start">
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Ends</p>
+              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
+            </div>
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Language</p>
+              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
+            </div>
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-2" style={{ color: '#64748B' }}>Platforms</p>
+              <div className="flex items-center justify-center gap-2">
+                {campaign.platforms.includes('instagram') && (
+                  <Instagram className="w-5 h-5" style={{ color: '#F8FAFC' }} />
+                )}
+                {campaign.platforms.includes('tiktok') && (
+                  <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
+                  </svg>
+                )}
+                {campaign.platforms.includes('youtube') && (
+                  <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                )}
+              </div>
+            </div>
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Pay Type</p>
+              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
+            </div>
+            <div className="flex-1 text-center">
+              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Payout</p>
+              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Details section */}
+        <div className="px-7 pb-5">
+          <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Details</h3>
+          <p className="text-sm leading-relaxed" style={{ color: '#94A3B8' }}>{campaign.description}</p>
+        </div>
+
+        {/* Rules section */}
+        <div className="px-7 pb-5">
+          <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Rules</h3>
+          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#94A3B8' }}>
+            {campaign.rules.map((rule, index) => (
+              <p key={index} className="mb-1.5">• {rule}</p>
+            ))}
+          </div>
+          {campaign.rules.length > 1 && (
+            <button
+              onClick={() => setShowFullRules(!showFullRules)}
+              className="text-sm font-semibold mt-3 hover:opacity-80 transition-opacity"
+              style={{ color: '#F8FAFC' }}
+            >
+              {showFullRules ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </div>
+
+        {/* What to include */}
+        {campaign.requiredHashtags && campaign.requiredHashtags.length > 0 && (
+          <div className="px-7 pb-6">
+            <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>What to include</h3>
+            <div className="flex items-start gap-4">
+              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#64748B' }} />
+              <div>
+                <p className="text-base font-medium" style={{ color: '#F8FAFC' }}>Caption, tags, text</p>
+                <p className="text-xs font-semibold mt-2" style={{ color: '#94A3B8' }}>REQUIRED HASHTAGS</p>
+                <p className="text-sm mt-1.5" style={{ color: '#94A3B8' }}>{campaign.requiredHashtags.join(' ')}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Join button */}
+        <div className="px-7 pb-7">
+          <button
+            className="w-full py-4 rounded-xl text-black font-semibold text-base transition-all hover:opacity-90"
+            style={{ backgroundColor: '#F8FAFC' }}
+          >
+            Join campaign
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FighterMusicCard({ onClick }: { onClick: () => void }) {
   const [isCardHovered, setIsCardHovered] = useState(false);
   
   return (
@@ -180,6 +389,7 @@ function FighterMusicCard() {
       style={{ backgroundColor: '#1a1a1e' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
+      onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
         <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -211,7 +421,7 @@ function FighterMusicCard() {
   );
 }
 
-function AstaViolinaCard() {
+function AstaViolinaCard({ onClick }: { onClick: () => void }) {
   const [isCardHovered, setIsCardHovered] = useState(false);
   
   return (
@@ -220,6 +430,7 @@ function AstaViolinaCard() {
       style={{ backgroundColor: '#1a1a1e' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
+      onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
         <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -447,6 +658,7 @@ export function CreatorDashboard() {
   const [mobileSettingsView, setMobileSettingsView] = useState<'menu' | SettingsSection>('menu');
   const [isEditing, setIsEditing] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<CampaignData | null>(null);
   const [userType, setUserType] = useState<string>('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
@@ -2054,9 +2266,9 @@ export function CreatorDashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-            <FighterMusicCard />
+            <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
 
-            <AstaViolinaCard />
+            <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} />
           </div>
         </section>
 
@@ -2080,6 +2292,12 @@ export function CreatorDashboard() {
           </div>
         )}
       </main>
+
+      {/* Campaign Detail Modal */}
+      <CampaignDetailModal 
+        campaign={selectedCampaign} 
+        onClose={() => setSelectedCampaign(null)} 
+      />
     </div>
     </>
   );
