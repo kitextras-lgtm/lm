@@ -21,6 +21,11 @@ import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
 import { ExploreIcon } from '../components/ExploreIcon';
+import { SettingsIcon } from '../components/SettingsIcon';
+import { LeftSidebar } from '../components/LeftSidebar';
+import { MobileBottomNav } from '../components/MobileBottomNav';
+import { ProfileView } from '../components/ProfileView';
+import { SettingsView } from '../components/SettingsView';
 
 function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
   return (
@@ -1632,355 +1637,40 @@ export function CreatorDashboard() {
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
       />
-      <div className="h-screen text-white flex flex-col" style={{ backgroundColor: '#111111' }}>
-      <DoorTransition showTransition={location.state?.fromOnboarding === true} />
-      <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16" style={{ backgroundColor: '#111111', borderBottom: '1px solid #1a1a1a' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-full flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <img 
-              src="/elevate_transparent_white_.png" 
-              alt="ELEVATE" 
-              className="h-20 sm:h-28 cursor-pointer hover:opacity-80 transition-opacity" 
-              onClick={() => navigate('/')}
-            />
-            <BetaBadge />
-          </div>
+      <div className="min-h-screen text-white flex" style={{ backgroundColor: '#111111' }}>
+        <DoorTransition showTransition={location.state?.fromOnboarding === true} />
+        
+        {/* Left Sidebar - Desktop Only */}
+        <LeftSidebar
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          userProfile={userProfile}
+          unreadCount={unreadCount}
+          cachedProfilePic={cachedProfilePic}
+        />
 
-          <nav className="hidden md:flex items-center gap-8">
-            <div
-              className={`home-icon group ${activeSection === 'home' ? 'active' : ''}`}
-              onClick={() => setActiveSection('home')}
-            >
-              <div className="home-icon-wrapper">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="14" y="18" width="20" height="24" rx="2" stroke="white" strokeWidth="2.5" fill="none"/>
-                  <path d="M8 20L24 8L40 20" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path className="light-beam" d="M19 42V28C19 27.4477 19.4477 27 20 27H28C28.5523 27 29 27.4477 29 28V42" fill="white"/>
-                  <ellipse className="glow-ellipse" cx="24" cy="35" rx="6" ry="8" fill="white"/>
-                </svg>
-                <div className="outer-glow"></div>
-              </div>
-              <span className="label">Home</span>
-            </div>
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          unreadCount={unreadCount}
+        />
 
-            <TalentIcon className={activeSection === 'talent' ? 'active' : ''} onClick={() => setActiveSection('talent')} />
-            <PuzzleDealIcon className={activeSection === 'deals' ? 'active' : ''} onClick={() => setActiveSection('deals')} />
-            <MoreIcon className={activeSection === 'more' ? 'active' : ''} onClick={() => setActiveSection('more')} />
-            <ExploreIcon className={activeSection === 'explore' ? 'active' : ''} onClick={() => setActiveSection('explore')} />
+        {/* Main Content Area */}
+        <main className="flex-1 lg:ml-[275px] min-h-screen pb-20 lg:pb-0">
 
-            <div
-              className={`messages-icon group ${activeSection === 'messages' ? 'active' : ''}`}
-              onClick={() => setActiveSection('messages')}
-            >
-              <div className="messages-icon-wrapper relative">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path className="back-bubble" d="M32 12H18C14.6863 12 12 14.6863 12 18V26C12 29.3137 14.6863 32 18 32H20L24 36L28 32H32C35.3137 32 38 29.3137 38 26V18C38 14.6863 35.3137 12 32 12Z" stroke="white" strokeWidth="2.5" fill="none"/>
-                  <path className="front-bubble" d="M30 20H16C13.2386 20 11 22.2386 11 25V31C11 33.7614 13.2386 36 16 36H18L21 40L24 36H30C32.7614 36 35 33.7614 35 31V25C35 22.2386 32.7614 20 30 20Z" stroke="white" strokeWidth="2.5" fill="rgba(0,0,0,0.8)"/>
-                  <g className="dots">
-                    <circle cx="17" cy="28" r="1.5" fill="white"/>
-                    <circle cx="23" cy="28" r="1.5" fill="white"/>
-                    <circle cx="29" cy="28" r="1.5" fill="white"/>
-                  </g>
-                </svg>
-                {shouldShowBadge ? (
-                  <div className="absolute -top-0.5 -right-0.5 flex items-center justify-center" style={{ zIndex: 9999 }}>
-                    {/* Pulse ring - animates outward */}
-                    <div className="absolute w-3.5 h-3.5 rounded-full bg-red-500 animate-ping opacity-75" style={{ zIndex: 9998 }} />
-                    {/* Solid badge with count */}
-                    <div className="relative w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center shadow-lg" style={{ zIndex: 9999 }}>
-                      <span className="text-[9px] font-bold text-white leading-none">{unreadCount > 99 ? '99+' : unreadCount}</span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              <span className="label">Messages</span>
-            </div>
+        {activeSection === 'profile' && (
+          <ProfileView
+            userProfile={userProfile}
+            cachedProfilePic={cachedProfilePic}
+            onBack={() => setActiveSection('home')}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+          />
+        )}
 
-            <div
-              className={`earnings-icon group ${activeSection === 'earnings' ? 'active' : ''}`}
-              onClick={() => setActiveSection('earnings')}
-            >
-              <div className="icon-container">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="icon">
-                  <ellipse cx="24" cy="28" rx="14" ry="10" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                  <ellipse cx="36" cy="28" rx="4" ry="3" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                  <circle cx="35" cy="27" r="0.8" fill="currentColor"/>
-                  <circle cx="37" cy="27" r="0.8" fill="currentColor"/>
-                  <path d="M16 20C16 20 14 16 18 14C22 12 24 16 24 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                  <path d="M16 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                  <path d="M22 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                  <path d="M26 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                  <path d="M32 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                  <rect x="20" y="17" width="8" height="2" rx="1" fill="currentColor"/>
-                  <circle cx="18" cy="25" r="1.5" fill="currentColor"/>
-                </svg>
-                <div className="coin coin-1">
-                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                    <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5"/>
-                    <text x="6" y="8" textAnchor="middle" fill="currentColor" fontSize="6" fontWeight="bold">$</text>
-                  </svg>
-                </div>
-                <div className="coin coin-2">
-                  <svg width="6" height="6" viewBox="0 0 12 12" fill="none">
-                    <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5"/>
-                    <text x="6" y="8" textAnchor="middle" fill="currentColor" fontSize="6" fontWeight="bold">$</text>
-                  </svg>
-                </div>
-              </div>
-              <span className="label">Earnings</span>
-            </div>
-          </nav>
-
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-200 hover:brightness-110 cursor-pointer overflow-hidden relative"
-              style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
-            >
-              {(() => {
-                // ONLY use database URL for header avatar (never use blob URLs)
-                const profilePicUrl = userProfile?.profile_picture_url;
-                
-                // Only render image if we have a valid database URL (not a blob URL)
-                if (profilePicUrl && !profilePicUrl.startsWith('blob:')) {
-                  // Use cached image if available, otherwise use URL
-                  const imageSrc = cachedProfilePic || profilePicUrl;
-                  
-                  return (
-                    <>
-                      {/* Show default avatar as placeholder - always visible behind */}
-                      <img 
-                        src={DEFAULT_AVATAR_DATA_URI} 
-                        alt="Profile placeholder" 
-                        className="absolute inset-0 w-full h-full object-cover rounded-full default-avatar-shake"
-                        style={{ opacity: cachedProfilePic ? 0 : 1 }}
-                      />
-                      <img 
-                        src={imageSrc} 
-                        alt="Profile" 
-                        className="w-full h-full object-cover rounded-full relative z-10"
-                        loading="eager"
-                        decoding="async"
-                        onLoad={(e) => {
-                          // Update cached image if it was loaded from URL
-                          if (!cachedProfilePic && profilePicUrl) {
-                            const cached = getCachedImage(profilePicUrl);
-                            if (cached) {
-                              setCachedProfilePic(cached);
-                            }
-                          }
-                          // Hide placeholder when image loads
-                          const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
-                          if (placeholder) {
-                            placeholder.style.opacity = '0';
-                            placeholder.style.transition = 'opacity 0.2s';
-                          }
-                        }}
-                        onError={(e) => {
-                          console.error('Failed to load profile picture:', imageSrc);
-                          // If cached image failed, try URL directly
-                          if (cachedProfilePic && profilePicUrl !== imageSrc) {
-                            e.currentTarget.src = profilePicUrl;
-                            setCachedProfilePic(null);
-                            return;
-                          }
-                          // Show placeholder on error
-                          const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
-                          if (placeholder) {
-                            placeholder.style.opacity = '1';
-                          }
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </>
-                  );
-                }
-                
-                // Fallback to default avatar if no valid database URL
-                return (
-                  <img 
-                    src={DEFAULT_AVATAR_DATA_URI} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover rounded-full default-avatar-shake"
-                  />
-                );
-              })()}
-            </button>
-
-            {isDropdownOpen && (
-              <div
-                className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in-down"
-                style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
-              >
-                <div className="p-6">
-                  <div className="mb-5">
-                    <div className="inline-block px-2.5 py-1 rounded-md text-xs font-bold tracking-wider mb-3" style={{ backgroundColor: '#111111', color: '#94A3B8' }}>
-                      CREATOR
-                    </div>
-                    <h3 className="text-xl font-bold mb-0.5" style={{ color: '#F8FAFC' }}>
-                      {formData.firstName || formData.lastName 
-                        ? `${formData.firstName} ${formData.lastName}`.trim() 
-                        : userProfile?.full_name || 'Your Name'}
-                    </h3>
-                    <p className="text-sm" style={{ color: '#64748B' }}>
-                      {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : 'No username'}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setActiveSection('settings');
-                      setIsDropdownOpen(false);
-                    }}
-                    className="w-full py-3 px-4 rounded-xl text-sm font-bold mb-3 transition-all duration-200 hover:brightness-110"
-                    style={{ backgroundColor: '#111111', color: '#F8FAFC' }}
-                  >
-                    Settings
-                  </button>
-
-                  <button 
-                    onClick={() => {
-                      if (currentUserId) {
-                        setShowFeedbackModal(true);
-                      } else {
-                        console.warn('Cannot open feedback modal: currentUserId is not set');
-                      }
-                    }}
-                    disabled={!currentUserId}
-                    className="w-full flex items-center justify-between py-3 px-4 rounded-xl text-sm font-bold mb-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
-                    style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
-                    onMouseEnter={(e) => {
-                      if (currentUserId) {
-                        e.currentTarget.style.backgroundColor = '#0f0f13';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
-                  >
-                    <span>Give feedback</span>
-                    <ArrowUpRight className="w-4 h-4" style={{ color: '#64748B' }} />
-                  </button>
-
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2.5 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200" 
-                    style={{ color: '#F8FAFC' }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#0f0f13';
-                      e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Log out</span>
-                  </button>
-                </div>
-
-                <div className="px-6 py-4 flex items-center gap-4 text-xs" style={{ color: '#64748B', borderTop: '1px solid #111111' }}>
-                  <button className="transition-colors" style={{ color: '#64748B' }}>Privacy</button>
-                  <button className="transition-colors" style={{ color: '#64748B' }}>Terms</button>
-                  <button className="transition-colors" style={{ color: '#64748B' }}>Clipper Terms</button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t" style={{ backgroundColor: '#111111', borderColor: '#1a1a1e' }}>
-        <div className="flex items-center justify-around px-4 py-2">
-          <div
-            className={`home-icon group ${activeSection === 'home' ? 'active' : ''}`}
-            onClick={() => setActiveSection('home')}
-          >
-            <div className="home-icon-wrapper">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="14" y="18" width="20" height="24" rx="2" stroke="white" strokeWidth="2.5" fill="none"/>
-                <path d="M8 20L24 8L40 20" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path className="light-beam" d="M19 42V28C19 27.4477 19.4477 27 20 27H28C28.5523 27 29 27.4477 29 28V42" fill="white"/>
-                <ellipse className="glow-ellipse" cx="24" cy="35" rx="6" ry="8" fill="white"/>
-              </svg>
-              <div className="outer-glow"></div>
-            </div>
-            <span className="label">Home</span>
-          </div>
-
-          <TalentIcon className={activeSection === 'talent' ? 'active' : ''} onClick={() => setActiveSection('talent')} />
-          <PuzzleDealIcon className={activeSection === 'deals' ? 'active' : ''} onClick={() => setActiveSection('deals')} />
-          <MoreIcon className={activeSection === 'more' ? 'active' : ''} onClick={() => setActiveSection('more')} />
-          <ExploreIcon className={activeSection === 'explore' ? 'active' : ''} onClick={() => setActiveSection('explore')} />
-
-          <div
-            className={`messages-icon group ${activeSection === 'messages' ? 'active' : ''}`}
-            onClick={() => setActiveSection('messages')}
-          >
-            <div className="messages-icon-wrapper relative">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path className="back-bubble" d="M32 12H18C14.6863 12 12 14.6863 12 18V26C12 29.3137 14.6863 32 18 32H20L24 36L28 32H32C35.3137 32 38 29.3137 38 26V18C38 14.6863 35.3137 12 32 12Z" stroke="white" strokeWidth="2.5" fill="none"/>
-                <path className="front-bubble" d="M30 20H16C13.2386 20 11 22.2386 11 25V31C11 33.7614 13.2386 36 16 36H18L21 40L24 36H30C32.7614 36 35 33.7614 35 31V25C35 22.2386 32.7614 20 30 20Z" stroke="white" strokeWidth="2.5" fill="rgba(0,0,0,0.8)"/>
-                <g className="dots">
-                  <circle cx="17" cy="28" r="1.5" fill="white"/>
-                  <circle cx="23" cy="28" r="1.5" fill="white"/>
-                  <circle cx="29" cy="28" r="1.5" fill="white"/>
-                </g>
-              </svg>
-              {shouldShowBadge ? (
-                <div className="absolute -top-0.5 -right-0.5 flex items-center justify-center" style={{ zIndex: 9999 }}>
-                  {/* Pulse ring - animates outward */}
-                  <div className="absolute w-3.5 h-3.5 rounded-full bg-red-500 animate-ping opacity-75" style={{ zIndex: 9998 }} />
-                  {/* Solid badge with count */}
-                  <div className="relative w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center shadow-lg" style={{ zIndex: 9999 }}>
-                    <span className="text-[9px] font-bold text-white leading-none">{unreadCount > 99 ? '99+' : unreadCount}</span>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-            <span className="label">Messages</span>
-          </div>
-
-          <div
-            className={`earnings-icon group ${activeSection === 'earnings' ? 'active' : ''}`}
-            onClick={() => setActiveSection('earnings')}
-          >
-            <div className="icon-container">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="icon">
-                <ellipse cx="24" cy="28" rx="14" ry="10" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                <ellipse cx="36" cy="28" rx="4" ry="3" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                <circle cx="35" cy="27" r="0.8" fill="currentColor"/>
-                <circle cx="37" cy="27" r="0.8" fill="currentColor"/>
-                <path d="M16 20C16 20 14 16 18 14C22 12 24 16 24 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                <path d="M16 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                <path d="M22 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                <path d="M26 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                <path d="M32 36V40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                <rect x="20" y="17" width="8" height="2" rx="1" fill="currentColor"/>
-                <circle cx="18" cy="25" r="1.5" fill="currentColor"/>
-              </svg>
-              <div className="coin coin-1">
-                <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
-                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5"/>
-                  <text x="6" y="8" textAnchor="middle" fill="currentColor" fontSize="6" fontWeight="bold">$</text>
-                </svg>
-              </div>
-              <div className="coin coin-2">
-                <svg width="6" height="6" viewBox="0 0 12 12" fill="none">
-                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.5"/>
-                  <text x="6" y="8" textAnchor="middle" fill="currentColor" fontSize="6" fontWeight="bold">$</text>
-                </svg>
-              </div>
-            </div>
-            <span className="label">Earnings</span>
-          </div>
-        </div>
-      </nav>
-
-      <main className={`max-w-7xl mx-auto px-4 sm:px-8 flex-1 flex flex-col min-h-0 w-full ${activeSection === 'messages' ? 'pt-14 sm:pt-16 pb-20 md:pb-0' : 'pt-20 sm:pt-24 pb-24 md:pb-0'}`}>
         {activeSection === 'messages' && (
-          <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden h-screen">
             {currentUserId ? (
               <MessagesPage currentUserId={currentUserId} />
             ) : (
@@ -1996,7 +1686,7 @@ export function CreatorDashboard() {
         )}
 
         {activeSection === 'earnings' && (
-          <div className="animate-fade-in pb-20 md:pb-0">
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
@@ -2089,151 +1779,32 @@ export function CreatorDashboard() {
         {activeSection === 'settings' && (
           <>
             {/* Mobile Settings View */}
-            <div className="lg:hidden animate-fade-in pb-20">
-              {mobileSettingsView === 'menu' ? (
-                // Mobile Settings Menu
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>Settings</h1>
-                    <button 
-                      onClick={() => setActiveSection('home')}
-                      className="p-2 rounded-full hover:bg-white/10 transition-colors"
-                    >
-                      <svg className="w-6 h-6" style={{ color: '#94A3B8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  {/* Profile Header */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-white/10">
-                      {profilePicturePreview || userProfile?.profile_picture_url ? (
-                        <img 
-                          src={profilePicturePreview || userProfile?.profile_picture_url} 
-                          alt="Profile" 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-xl font-semibold" style={{ color: '#F8FAFC' }}>
-                          {formData.firstName?.charAt(0) || 'U'}
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>
-                        {formData.firstName || 'User'} {formData.lastName}
-                      </h2>
-                      <p className="text-sm" style={{ color: '#94A3B8' }}>
-                        @{formData.username || userProfile?.username || 'username'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Menu Items */}
-                  <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#1a1a1e' }}>
-                    <MobileSettingsMenuItem
-                      onClick={() => setMobileSettingsView('personal')}
-                      icon={<UserSilhouetteIcon />}
-                      label="Personal info"
-                      showBorder={true}
-                    />
-                    <MobileSettingsMenuItem
-                      onClick={() => setMobileSettingsView('accounts')}
-                      icon={<PuzzlePiecesIcon />}
-                      label="Connected accounts"
-                      showBorder={true}
-                    />
-                    <MobileSettingsMenuItem
-                      onClick={() => setMobileSettingsView('payout')}
-                      icon={<CreditCardIcon />}
-                      label="Payout methods"
-                      showBorder={true}
-                    />
-                    <MobileSettingsMenuItem
-                      onClick={() => setMobileSettingsView('notifications')}
-                      icon={<BellIcon />}
-                      label="Notifications"
-                      showBorder={false}
-                    />
-                  </div>
-                </div>
-              ) : (
-                // Mobile Settings Detail View
-                <div>
-                  <div className="flex items-center gap-3 mb-6">
-                    <button 
-                      onClick={() => setMobileSettingsView('menu')}
-                      className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
-                    >
-                      <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    <h1 className="text-xl font-bold" style={{ color: '#F8FAFC' }}>
-                      {mobileSettingsView === 'personal' && 'Personal info'}
-                      {mobileSettingsView === 'accounts' && 'Connected accounts'}
-                      {mobileSettingsView === 'payout' && 'Payout methods'}
-                      {mobileSettingsView === 'notifications' && 'Notifications'}
-                    </h1>
-                  </div>
-                  
-                  {/* Render the original content */}
-                  {mobileSettingsView === 'personal' && renderPersonalInfo()}
-                  {mobileSettingsView === 'accounts' && renderConnectedAccounts()}
-                  {mobileSettingsView === 'payout' && renderPayoutMethods()}
-                  {mobileSettingsView === 'notifications' && renderNotifications()}
-                </div>
-              )}
+            <div className="lg:hidden px-4 pt-4">
+              <SettingsView
+                renderPersonalInfo={renderPersonalInfo}
+                renderConnectedAccounts={renderConnectedAccounts}
+                renderPayoutMethods={renderPayoutMethods}
+                renderNotifications={renderNotifications}
+                isMobile={true}
+                onBack={() => setActiveSection('home')}
+              />
             </div>
 
-            {/* Desktop Settings View */}
-            <div className="hidden lg:flex max-w-4xl mx-auto animate-fade-in pt-8 gap-8" style={{ height: 'calc(100vh - 10rem)' }}>
-              <aside className="w-64 flex-shrink-0">
-                <div className="rounded-2xl p-1 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-                  <nav className="space-y-1 p-2">
-                      <SettingsNavButton
-                        onClick={() => scrollToSection('personal')}
-                        isActive={settingsSection === 'personal'}
-                        icon={<UserSilhouetteIcon />}
-                        label="Personal info"
-                      />
-                      <SettingsNavButton
-                        onClick={() => scrollToSection('accounts')}
-                        isActive={settingsSection === 'accounts'}
-                        icon={<PuzzlePiecesIcon />}
-                        label="Connected accounts"
-                      />
-                      <SettingsNavButton
-                        onClick={() => scrollToSection('payout')}
-                        isActive={settingsSection === 'payout'}
-                        icon={<CreditCardIcon />}
-                        label="Payment Method"
-                      />
-                      <SettingsNavButton
-                        onClick={() => scrollToSection('notifications')}
-                        isActive={settingsSection === 'notifications'}
-                        icon={<BellIcon />}
-                        label="Notifications"
-                      />
-                  </nav>
-                </div>
-              </aside>
-
-              <div className="flex-1 min-w-0 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                <div className="space-y-6 pb-8 pr-2">
-                      {renderPersonalInfo()}
-                      {renderConnectedAccounts()}
-                      {renderPayoutMethods()}
-                      {renderNotifications()}
-                    </div>
-                        </div>
-                      </div>
+            {/* Desktop Settings View - Twitter/X Style */}
+            <div className="hidden lg:block">
+              <SettingsView
+                renderPersonalInfo={renderPersonalInfo}
+                renderConnectedAccounts={renderConnectedAccounts}
+                renderPayoutMethods={renderPayoutMethods}
+                renderNotifications={renderNotifications}
+                isMobile={false}
+              />
+            </div>
           </>
         )}
 
         {activeSection === 'home' && (
-          <div className="animate-fade-in pb-20 md:pb-0">
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <AnnouncementBanner userId={currentUserId} userType="creator" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
