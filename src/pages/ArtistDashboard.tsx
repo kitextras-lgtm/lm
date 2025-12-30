@@ -17,6 +17,10 @@ import { DEFAULT_AVATAR_DATA_URI } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
+import { TalentIcon } from '../components/TalentIcon';
+import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
+import { MoreIcon } from '../components/MoreIcon';
+import { ExploreIcon } from '../components/ExploreIcon';
 
 function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
   return (
@@ -1529,6 +1533,11 @@ export function ArtistDashboard() {
               <span className="label">Home</span>
             </div>
 
+            <TalentIcon className={activeSection === 'talent' ? 'active' : ''} onClick={() => setActiveSection('talent')} />
+            <PuzzleDealIcon className={activeSection === 'deals' ? 'active' : ''} onClick={() => setActiveSection('deals')} />
+            <MoreIcon className={activeSection === 'more' ? 'active' : ''} onClick={() => setActiveSection('more')} />
+            <ExploreIcon className={activeSection === 'explore' ? 'active' : ''} onClick={() => setActiveSection('explore')} />
+
             <div
               className={`messages-icon group ${activeSection === 'messages' ? 'active' : ''}`}
               onClick={() => {
@@ -1777,6 +1786,11 @@ export function ArtistDashboard() {
             </div>
             <span className="label">Home</span>
           </div>
+
+          <TalentIcon className={activeSection === 'talent' ? 'active' : ''} onClick={() => setActiveSection('talent')} />
+          <PuzzleDealIcon className={activeSection === 'deals' ? 'active' : ''} onClick={() => setActiveSection('deals')} />
+          <MoreIcon className={activeSection === 'more' ? 'active' : ''} onClick={() => setActiveSection('more')} />
+          <ExploreIcon className={activeSection === 'explore' ? 'active' : ''} onClick={() => setActiveSection('explore')} />
 
           <div
             className={`messages-icon group ${activeSection === 'messages' ? 'active' : ''}`}
