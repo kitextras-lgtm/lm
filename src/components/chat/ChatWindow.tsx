@@ -1,17 +1,15 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
-import { ChatHeader, ChatInput, MessageBubble, TypingIndicator } from './';
+import { ChatHeader, ChatInput, MessageBubble, TypingIndicator, ChatInfoDrawer } from './';
 import { useChat } from '../../hooks/useChat';
 import { useImageUpload } from '../../hooks/useImageUpload';
 import type { Conversation, Profile, ReplyTo } from '../../types/chat';
 import { formatDate, isSameDay } from '../../utils/dateUtils';
-import { AnimatedBarsLoader } from '../AnimatedBarsLoader';
 
 interface ChatWindowProps {
   conversation: Conversation;
   otherUser: Profile;
   currentUserId: string;
   getSenderName: (senderId: string) => string;
-  isLoading?: boolean;
   onMarkAsRead?: (conversationId: string) => void;
 }
 
@@ -20,7 +18,6 @@ export const ChatWindow = memo(function ChatWindow({
   otherUser,
   currentUserId,
   getSenderName,
-  isLoading = false,
   onMarkAsRead,
 }: ChatWindowProps) {
   const { messages, loading, otherUserTyping, sendMessage, setTyping, markMessagesAsSeen } = useChat({
@@ -31,6 +28,7 @@ export const ChatWindow = memo(function ChatWindow({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const markAsReadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasMarkedAsReadRef = useRef(false);
 
@@ -202,12 +200,93 @@ export const ChatWindow = memo(function ChatWindow({
 
   return (
     <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden" style={{ backgroundColor: '#111111', height: '100%' }}>
-      <ChatHeader user={otherUser} isTyping={otherUserTyping} />
+      <ChatHeader 
+        user={otherUser} 
+        isTyping={otherUserTyping}
+        onVideoCall={() => console.log('Video call clicked')}
+        onScheduleMeeting={() => console.log('Schedule meeting clicked')}
+        onOpenDrawer={() => setIsDrawerOpen(true)}
+      />
 
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto min-h-0"
-        style={{ backgroundColor: '#111111', scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', overflowY: 'auto' }}
+      {/* Messages area wrapper with relative positioning for skeleton overlay */}
+      <div className="flex-1 min-h-0 relative">
+        {/* Skeleton overlay - stays visible until content is fully ready */}
+        {!contentReady && (
+          <div 
+            className="absolute inset-0 z-10 flex flex-col"
+            style={{ 
+              backgroundColor: '#111111',
+              transition: 'opacity 150ms ease-out',
+              opacity: contentReady ? 0 : 1,
+              pointerEvents: contentReady ? 'none' : 'auto'
+            }}
+          >
+          {/* Skeleton messages area */}
+          <div className="flex-1 py-2 lg:py-4 flex flex-col justify-end animate-pulse">
+            <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-4">
+              {/* Received message skeleton */}
+              <div className="flex justify-start px-2 lg:px-4 py-0.5">
+                <div className="flex items-center gap-1.5 lg:gap-2 max-w-[85%] lg:max-w-[70%]">
+                  <div className="flex flex-col gap-1">
+                    <div
+                      className="rounded-2xl px-4 py-3"
+                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', minHeight: '2.5rem', width: '180px' }}
+                    />
+                    <div
+                      className="h-3 rounded px-1"
+                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sent message skeleton */}
+              <div className="flex justify-end px-2 lg:px-4 py-0.5">
+                <div className="flex items-center gap-1.5 lg:gap-2 max-w-[85%] lg:max-w-[70%] flex-row-reverse">
+                  <div className="flex flex-col gap-1">
+                    <div
+                      className="rounded-2xl px-4 py-3"
+                      style={{ backgroundColor: 'rgba(248, 250, 252, 0.1)', minHeight: '2.5rem', width: '140px' }}
+                    />
+                    <div
+                      className="h-3 rounded px-1 ml-auto"
+                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Received message with longer content */}
+              <div className="flex justify-start px-2 lg:px-4 py-0.5">
+                <div className="flex items-center gap-1.5 lg:gap-2 max-w-[85%] lg:max-w-[70%]">
+                  <div className="flex flex-col gap-1">
+                    <div
+                      className="rounded-2xl px-4 py-3"
+                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', minHeight: '3.5rem', width: '220px' }}
+                    />
+                    <div
+                      className="h-3 rounded px-1"
+                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        )}
+
+        <div
+          ref={messagesContainerRef}
+          className="absolute inset-0 overflow-y-auto"
+        style={{ 
+          backgroundColor: '#111111', 
+          scrollbarWidth: 'thin', 
+          scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', 
+          overflowY: 'auto',
+          opacity: contentReady ? 1 : 0,
+          transition: 'opacity 150ms ease-in'
+        }}
         onScroll={() => {
           // Track if user is at bottom to control auto-scroll behavior
           if (messagesContainerRef.current) {
@@ -234,12 +313,7 @@ export const ChatWindow = memo(function ChatWindow({
         }}
       >
         <div className="py-2 lg:py-4 min-h-full flex flex-col justify-end">
-          {loading ? (
-            // Show loading spinner while fetching messages (prevents "No messages yet" flicker)
-            <div className="flex-1 flex items-center justify-center">
-              <AnimatedBarsLoader text="Loading messages..." />
-            </div>
-          ) : messages.length === 0 ? (
+          {messages.length === 0 && !loading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center px-4 lg:px-6">
                 <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-5 rounded-xl lg:rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
@@ -287,6 +361,7 @@ export const ChatWindow = memo(function ChatWindow({
           {otherUserTyping && <TypingIndicator />}
           <div ref={messagesEndRef} />
         </div>
+        </div>
       </div>
 
       <ChatInput
@@ -296,6 +371,13 @@ export const ChatWindow = memo(function ChatWindow({
         replyTo={replyTo}
         onCancelReply={handleCancelReply}
         otherUserName={otherUser.name}
+      />
+
+      {/* Info Drawer */}
+      <ChatInfoDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        user={otherUser}
       />
     </div>
   );

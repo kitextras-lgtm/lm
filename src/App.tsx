@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
+import { UserProfileProvider } from './contexts/UserProfileContext';
 import { AdminProtectedRoute } from './components/AdminProtectedRoute';
 import { PremiumLoader } from './components/PremiumLoader';
 
@@ -23,10 +24,11 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(module =
 
 function App() {
   return (
-    <AdminAuthProvider>
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Suspense fallback={<PremiumLoader />}>
-          <Routes>
+    <UserProfileProvider>
+      <AdminAuthProvider>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Suspense fallback={<PremiumLoader />}>
+            <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MobileMenuPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -82,7 +84,8 @@ function App() {
           </Routes>
         </Suspense>
       </Router>
-    </AdminAuthProvider>
+      </AdminAuthProvider>
+    </UserProfileProvider>
   );
 }
 

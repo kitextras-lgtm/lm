@@ -16,6 +16,7 @@ import { useCustomerConversations } from '../hooks/useChat';
 import { DEFAULT_AVATAR_DATA_URI } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
+import { useUserProfile } from '../contexts/UserProfileContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
@@ -662,6 +663,9 @@ const LANGUAGES = [
 ];
 
 export function CreatorDashboard() {
+  // Use cached profile for instant loading (like Twitter/Instagram)
+  const { profile: cachedProfile, userId: cachedUserId, updateProfile: updateCachedProfile, clearCache: clearProfileCache } = useUserProfile();
+  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -738,10 +742,36 @@ export function CreatorDashboard() {
     });
   }, [currentUserId, conversations, unreadCount, activeSection, shouldShowBadge]);
 
+  // INSTANT: Initialize from cached profile immediately (like Twitter/Instagram)
+  useEffect(() => {
+    if (cachedProfile && !userProfile) {
+      console.log('[CreatorDashboard] 🚀 INSTANT: Loading from cached profile');
+      setUserProfile(cachedProfile);
+      setUserType('CREATOR');
+      if (cachedUserId) {
+        setCurrentUserId(cachedUserId);
+      }
+      setFormData({
+        firstName: cachedProfile.first_name || '',
+        lastName: cachedProfile.last_name || '',
+        username: cachedProfile.username || '',
+        location: cachedProfile.location || '',
+        language: cachedProfile.primary_language || '',
+        email: cachedProfile.email || ''
+      });
+      if (cachedProfile.profile_picture_url) {
+        setProfilePicturePreview(cachedProfile.profile_picture_url);
+      }
+    }
+  }, [cachedProfile, cachedUserId, userProfile]);
+
   useEffect(() => {
     localStorage.setItem('currentDashboard', '/dashboard/creator');
-    fetchUserProfile();
-  }, []);
+    // Only fetch if no cached profile (background refresh happens in context)
+    if (!cachedProfile) {
+      fetchUserProfile();
+    }
+  }, [cachedProfile]);
 
   // Update cached image when userProfile changes
   useEffect(() => {
@@ -1103,6 +1133,7 @@ export function CreatorDashboard() {
   };
 
   const handleLogout = () => {
+    clearProfileCache(); // Clear cached profile state
     localStorage.clear();
     navigate('/');
   };
@@ -1210,6 +1241,15 @@ export function CreatorDashboard() {
         throw new Error(data.message || 'Failed to save changes');
       }
 
+      // Update cache with new profile data for instant loading next time
+      updateCachedProfile({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        location: formData.location,
+        primary_language: formData.language,
+        profile_picture_url: data.profilePictureUrl || userProfile?.profile_picture_url || null,
+      });
+      
       // Refresh profile data
       await fetchUserProfile();
       setProfilePicture(null);
@@ -1813,7 +1853,7 @@ export function CreatorDashboard() {
             <AnnouncementBanner userId={currentUserId} userType="creator" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Active campaigns</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Overview</h2>
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
           </div>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, MessageSquare, ArrowLeft } from 'lucide-react';
-import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton } from '../components/chat';
+import { Search, MessageSquare, ArrowLeft, PenSquare } from 'lucide-react';
+import { useUserProfile } from '../contexts/UserProfileContext';
+import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton, NewMessageModal } from '../components/chat';
 import { useCustomerConversations, usePresence, useProfile, getOrCreateAdminConversation } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
@@ -17,6 +18,9 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
   console.log('🔵🔵🔵 [MessagesPage] currentUserId type:', typeof currentUserId);
   console.log('🔵🔵🔵 [MessagesPage] currentUserId truthy?', !!currentUserId);
   
+  // Get cached user profile for username display
+  const { profile: cachedProfile } = useUserProfile();
+  
   const { conversations, loading, updateConversationUnreadCount, refetch } = useCustomerConversations(currentUserId);
   
   console.log('🔵🔵🔵 [MessagesPage] Hook state:', {
@@ -32,6 +36,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
   const [showChatOnMobile, setShowChatOnMobile] = useState(false); // Track if we're showing chat on mobile (vs list)
   const [filter, setFilter] = useState<FilterType>('all');
   const [initializing, setInitializing] = useState(true);
+  const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const { profile: customerProfile } = useProfile(currentUserId);
 
   usePresence(currentUserId);
@@ -300,10 +305,17 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
     <div className="flex flex-col lg:flex-row rounded-2xl w-full shadow-2xl" style={{ backgroundColor: '#111111', height: '100%', maxHeight: '100%', border: '1px solid rgba(75, 85, 99, 0.1)', overflow: 'hidden', display: 'flex' }}>
       {/* Mobile header - only show when showing list */}
       {isMobile && (
-        <div className="lg:hidden flex items-center justify-between p-3 border-b" style={{ borderColor: 'rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
-          <div className="w-9"></div> {/* Spacer */}
-          <h2 className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Messages</h2>
-          <div className="w-9"></div> {/* Spacer */}
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
+          <span className="text-lg font-bold" style={{ color: '#F8FAFC' }}>
+            {cachedProfile?.username || customerProfile?.name || 'Messages'}
+          </span>
+          <button 
+            onClick={() => setIsNewMessageModalOpen(true)}
+            className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+            aria-label="New message"
+          >
+            <PenSquare className="w-5 h-5" style={{ color: '#F8FAFC' }} />
+          </button>
         </div>
       )}
 
@@ -339,7 +351,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
               }`}
               style={filter === 'all' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
             >
-              All
+              Primary
             </button>
             <button
               onClick={() => setFilter('unread')}
@@ -350,7 +362,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
               }`}
               style={filter === 'unread' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
             >
-              Unread
+              General
             </button>
             <button
               onClick={() => setFilter('pinned')}
@@ -361,7 +373,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
               }`}
               style={filter === 'pinned' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
             >
-              Pinned
+              Requests
             </button>
           </div>
         </div>
@@ -399,7 +411,21 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
 
       {/* Desktop Sidebar - Always Visible */}
       <div className="hidden lg:flex flex-col w-80 xl:w-96 min-h-0 flex-shrink-0 overflow-hidden border-r" style={{ borderRight: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111', height: '100%' }}>
-        <div className="p-5 pb-4" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
+        {/* Username header with new chat button */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ backgroundColor: '#111111' }}>
+          <span className="text-xl font-bold" style={{ color: '#F8FAFC' }}>
+            {cachedProfile?.username || customerProfile?.name || 'Messages'}
+          </span>
+          <button 
+            onClick={() => setIsNewMessageModalOpen(true)}
+            className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+            aria-label="New message"
+          >
+            <PenSquare className="w-5 h-5" style={{ color: '#F8FAFC' }} />
+          </button>
+        </div>
+        
+        <div className="px-5 pb-4" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
           <div className="relative mb-4">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#64748B' }} />
             <input
@@ -428,7 +454,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
               }`}
               style={filter === 'all' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
             >
-              All
+              Primary
             </button>
             <button
               onClick={() => setFilter('unread')}
@@ -439,7 +465,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
               }`}
               style={filter === 'unread' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
             >
-              Unread
+              General
             </button>
             <button
               onClick={() => setFilter('pinned')}
@@ -450,7 +476,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
               }`}
               style={filter === 'pinned' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
             >
-              Pinned
+              Requests
             </button>
           </div>
         </div>
@@ -510,6 +536,18 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
           </div>
         )}
       </div>
+
+      {/* New Message Modal */}
+      <NewMessageModal
+        isOpen={isNewMessageModalOpen}
+        onClose={() => setIsNewMessageModalOpen(false)}
+        onSelectUser={(user) => {
+          console.log('Selected user for new message:', user);
+          // TODO: Create or find conversation with selected user
+          setIsNewMessageModalOpen(false);
+        }}
+        currentUserId={currentUserId}
+      />
     </div>
   );
 }

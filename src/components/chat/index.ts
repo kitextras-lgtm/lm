@@ -6,5 +6,7 @@ export { UserListItem } from './UserListItem';
 export { TypingIndicator } from './TypingIndicator';
 export { Avatar } from './Avatar';
 export { ConversationSkeleton, ConversationListSkeleton, ChatWindowSkeleton } from './ConversationSkeleton';
+export { NewMessageModal } from './NewMessageModal';
+export { ChatInfoDrawer } from './ChatInfoDrawer';
 
 
