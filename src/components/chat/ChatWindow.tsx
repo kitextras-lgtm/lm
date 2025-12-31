@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, memo } from 'react';
+import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
 import { ChatHeader, ChatInput, MessageBubble, TypingIndicator } from './';
 import { useChat } from '../../hooks/useChat';
 import { useImageUpload } from '../../hooks/useImageUpload';
@@ -38,24 +38,67 @@ export const ChatWindow = memo(function ChatWindow({
   const isInitialLoadRef = useRef(true);
   const shouldAutoScrollRef = useRef(true);
 
+  // Track content readiness for smooth transition
+  const [contentReady, setContentReady] = useState(false);
+  const imagesLoadedRef = useRef<Record<string, boolean>>({});
+
+  // Get messages with images that need to load
+  const messagesWithImages = useMemo(() =>
+    messages.filter(m => m.type === 'image' && m.image_url),
+    [messages]
+  );
+
   // Reset flags when conversation changes
   useEffect(() => {
     isInitialLoadRef.current = true;
     shouldAutoScrollRef.current = true;
+    setContentReady(false);
+    imagesLoadedRef.current = {};
   }, [conversation.id]);
+
+  // Check if all images are loaded and mark content as ready
+  useEffect(() => {
+    if (!loading && messages.length > 0) {
+      // If no images, content is ready immediately
+      if (messagesWithImages.length === 0) {
+        setContentReady(true);
+        return;
+      }
+
+      // Check if all images are loaded
+      const allLoaded = messagesWithImages.every(m => imagesLoadedRef.current[m.id] === true);
+      if (allLoaded) {
+        setContentReady(true);
+      }
+    } else if (!loading && messages.length === 0) {
+      // No messages, content is ready
+      setContentReady(true);
+    }
+  }, [loading, messages.length, messagesWithImages]);
+
+  // Handle image load callback from MessageBubble
+  const handleImageLoad = useCallback((messageId: string, loaded: boolean) => {
+    imagesLoadedRef.current[messageId] = loaded;
+
+    // Check if all images are now loaded
+    const allLoaded = messagesWithImages.every(m => imagesLoadedRef.current[m.id] === true);
+    if (allLoaded && !loading) {
+      setContentReady(true);
+    }
+  }, [messagesWithImages, loading]);
 
   // Scroll to bottom after messages finish rendering
   // Uses bottom anchor ref (messagesEndRef) instead of scrollTop math
   useEffect(() => {
-    if (!loading && messages.length > 0 && messagesEndRef.current && shouldAutoScrollRef.current) {
+    if (!loading && messages.length > 0 && messagesEndRef.current && shouldAutoScrollRef.current && contentReady) {
       // Scroll happens after render, using bottom anchor ref
       messagesEndRef.current.scrollIntoView({ behavior: isInitialLoadRef.current ? 'instant' : 'smooth' });
-      
+
       if (isInitialLoadRef.current) {
         isInitialLoadRef.current = false;
       }
     }
-  }, [loading, messages.length, conversation.id]);
+  }, [loading, messages.length, conversation.id, contentReady]);
 
   // Mark as read when conversation is opened (only once per conversation)
   useEffect(() => {
@@ -111,10 +154,10 @@ export const ChatWindow = memo(function ChatWindow({
   const handleSendMessage = async (content: string, imageFile?: File, reply?: ReplyTo) => {
     // Clear reply preview immediately when sending
     setReplyTo(null);
-    
+
     // Enable auto-scroll when user sends a message (they're at bottom)
     shouldAutoScrollRef.current = true;
-    
+
     try {
       let imageUrl: string | undefined;
       if (imageFile) {
@@ -127,7 +170,7 @@ export const ChatWindow = memo(function ChatWindow({
       if (result?.error) {
         throw result.error;
       }
-      
+
       // Mark as read when user sends a message (they're viewing the conversation)
       // Note: sendMessage already marks as read in useChat, but we also update optimistically
       if (onMarkAsRead) {
@@ -161,25 +204,25 @@ export const ChatWindow = memo(function ChatWindow({
     <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden" style={{ backgroundColor: '#111111', height: '100%' }}>
       <ChatHeader user={otherUser} isTyping={otherUserTyping} />
 
-      <div 
+      <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto min-h-0" 
+        className="flex-1 overflow-y-auto min-h-0"
         style={{ backgroundColor: '#111111', scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', overflowY: 'auto' }}
         onScroll={() => {
           // Track if user is at bottom to control auto-scroll behavior
           if (messagesContainerRef.current) {
             const container = messagesContainerRef.current;
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50; // 50px threshold
-            
+
             // Only auto-scroll if user is at bottom (don't restore mid-scroll state)
             shouldAutoScrollRef.current = isAtBottom;
-            
+
             if (isAtBottom && messages.length > 0) {
               // Clear existing timeout
               if (markAsReadTimeoutRef.current) {
                 clearTimeout(markAsReadTimeoutRef.current);
               }
-              
+
               // Mark as read immediately when scrolled to bottom
               markMessagesAsSeen().then(() => {
                 if (onMarkAsRead) {
@@ -209,7 +252,7 @@ export const ChatWindow = memo(function ChatWindow({
               </div>
             </div>
           ) : (
-            <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-2">
+            <div className={`space-y-0.5 lg:space-y-1 px-2 lg:px-2 ${contentReady ? 'chat-content-ready' : 'chat-content-loading'}`}>
               {messages.map((message, index) => {
                 const previousMessage = index > 0 ? messages[index - 1] : null;
                 const currentDate = new Date(message.created_at);
@@ -233,6 +276,7 @@ export const ChatWindow = memo(function ChatWindow({
                       onReply={handleReply}
                       onScrollToMessage={handleScrollToMessage}
                       senderName={getSenderName(message.sender_id)}
+                      onImageLoad={handleImageLoad}
                     />
                   </div>
                 );

@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Copy, Reply } from 'lucide-react';
 import type { Message, ReplyTo } from '../../types/chat';
 import { ImagePreviewModal } from './ImagePreviewModal';
@@ -12,12 +12,33 @@ interface MessageBubbleProps {
   onReply?: (replyTo: ReplyTo) => void;
   onScrollToMessage?: (messageId: string) => void;
   senderName?: string;
+  onImageLoad?: (messageId: string, loaded: boolean) => void;
 }
 
-export const MessageBubble = memo(function MessageBubble({ message, isOwn, onReply, onScrollToMessage, senderName }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({ message, isOwn, onReply, onScrollToMessage, senderName, onImageLoad }: MessageBubbleProps) {
   const [showActions, setShowActions] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Preload image to prevent layout shift
+  useEffect(() => {
+    if (message.type === 'image' && message.image_url) {
+      const img = new Image();
+      img.onload = () => {
+        setImageLoaded(true);
+        onImageLoad?.(message.id, true);
+      };
+      img.onerror = () => {
+        setImageError(true);
+        onImageLoad?.(message.id, true); // Mark as loaded even on error to unblock
+      };
+      img.src = message.image_url;
+    } else {
+      // No image to load, mark as loaded immediately
+      onImageLoad?.(message.id, true);
+    }
+  }, [message.id, message.type, message.image_url, onImageLoad]);
 
   const handleCopy = async () => {
     if (message.content) {
@@ -93,21 +114,36 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                       <p className="text-xs" style={{ color: '#64748B' }}>Failed to load image</p>
                     </div>
                   ) : (
-                    <img
-                      src={message.image_url}
-                      alt="Shared image"
-                      className={`rounded-lg w-full max-w-[280px] lg:max-w-[280px] max-h-[300px] object-cover cursor-pointer hover:opacity-90 transition-opacity ${
-                        message.content ? 'mb-2' : ''
-                      }`}
-                      style={{ 
-                        display: 'block',
-                        border: 'none',
-                        outline: 'none'
-                      }}
-                      onClick={() => setImageModalOpen(true)}
-                      onError={() => setImageError(true)}
-                      loading="lazy"
-                    />
+                    <>
+                      {/* Placeholder shown while image is loading - same dimensions */}
+                      {!imageLoaded && (
+                        <div 
+                          className={`chat-image-placeholder rounded-lg ${
+                            message.content ? 'mb-2' : ''
+                          }`} 
+                          style={{ 
+                            width: '280px', 
+                            height: '200px',
+                            backgroundColor: 'rgba(75, 85, 99, 0.15)'
+                          }}
+                        />
+                      )}
+                      <img
+                        src={message.image_url}
+                        alt="Shared image"
+                        className={`rounded-lg w-full max-w-[280px] lg:max-w-[280px] max-h-[300px] object-cover cursor-pointer hover:opacity-90 transition-opacity ${
+                          message.content ? 'mb-2' : ''
+                        } ${imageLoaded ? 'chat-image-loaded' : ''}`}
+                        style={{ 
+                          display: imageLoaded ? 'block' : 'none',
+                          border: 'none',
+                          outline: 'none'
+                        }}
+                        onClick={() => setImageModalOpen(true)}
+                        onError={() => setImageError(true)}
+                        onLoad={() => setImageLoaded(true)}
+                      />
+                    </>
                   )}
                 </div>
               )}
