@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, MessageSquare, Menu, X, ArrowLeft } from 'lucide-react';
-import { ChatWindow, UserListItem } from '../components/chat';
+import { Search, MessageSquare, ArrowLeft } from 'lucide-react';
+import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton } from '../components/chat';
 import { useCustomerConversations, usePresence, useProfile, getOrCreateAdminConversation } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
 import { debounce } from '../utils/debounce';
-import { AnimatedBarsLoader } from '../components/AnimatedBarsLoader';
 
 type FilterType = 'all' | 'unread' | 'pinned';
 
@@ -244,32 +243,23 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
     }
   };
 
-  // Show loading until conversations are loaded AND we have a selected conversation (if desktop)
-  // This prevents the "Select a conversation" empty state from flickering
+  // Check if we're on mobile
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  const shouldShowLoading = loading || initializing || 
-                            (!isMobile && conversations.length > 0 && !selectedConversation);
+  
+  // Determine if we should show skeleton loaders (only for truly empty initial state)
+  const showConversationSkeletons = loading && conversations.length === 0;
+  const showChatSkeleton = initializing && !selectedConversation;
   
   console.log('[MessagesPage] Loading state check:', {
-    shouldShowLoading,
     loading,
     initializing,
     conversationsLength: conversations.length,
     selectedConversation: !!selectedConversation,
     isMobile,
+    showConversationSkeletons,
+    showChatSkeleton,
     currentUserId
   });
-  
-  if (shouldShowLoading) {
-    console.log('[MessagesPage] Showing loading state');
-    return (
-      <div className="flex items-center justify-center rounded-2xl w-full shadow-2xl" style={{ minHeight: 'calc(100vh - 120px)', backgroundColor: '#111111', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
-        <AnimatedBarsLoader text="Loading messages..." />
-      </div>
-    );
-  }
-
-  // isMobile is already defined above in shouldShowLoading check
   
   if (isMobile && showChatOnMobile && selectedConversation) {
     // Mobile: Show chat view with back button
@@ -377,7 +367,9 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent' }}>
-          {filteredConversations.length === 0 ? (
+          {showConversationSkeletons ? (
+            <ConversationListSkeleton count={4} />
+          ) : filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f0f13' }}>
                 <MessageSquare className="w-8 h-8" style={{ color: '#64748B' }} />
@@ -464,7 +456,9 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent' }}>
-          {filteredConversations.length === 0 ? (
+          {showConversationSkeletons ? (
+            <ConversationListSkeleton count={5} />
+          ) : filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f0f13' }}>
                 <MessageSquare className="w-8 h-8" style={{ color: '#64748B' }} />
@@ -502,24 +496,18 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
             getSenderName={getSenderName}
             onMarkAsRead={(convId) => updateConversationUnreadCount(convId, 0)}
           />
+        ) : showChatSkeleton ? (
+          <ChatWindowSkeleton />
         ) : (
-          // Only show empty state if we're NOT loading and conversations exist (user manually deselected)
-          // If conversations don't exist, we would have shown loading state above
-          conversations.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <AnimatedBarsLoader text="Loading messages..." />
-            </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center px-6">
-                <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
-                  <MessageSquare className="w-10 h-10" style={{ color: '#64748B' }} />
-                </div>
-                <h2 className="text-xl font-semibold mb-2" style={{ color: '#F8FAFC' }}>Select a conversation</h2>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Choose a support agent from the list to start chatting</p>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center px-6">
+              <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
+                <MessageSquare className="w-10 h-10" style={{ color: '#64748B' }} />
               </div>
+              <h2 className="text-xl font-semibold mb-2" style={{ color: '#F8FAFC' }}>Select a conversation</h2>
+              <p className="text-sm" style={{ color: '#94A3B8' }}>Choose a support agent from the list to start chatting</p>
             </div>
-          )
+          </div>
         )}
       </div>
     </div>

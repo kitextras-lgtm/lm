@@ -22,7 +22,7 @@ import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
 import { ExploreIcon } from '../components/ExploreIcon';
 import { SettingsIcon } from '../components/SettingsIcon';
-import { LeftSidebar } from '../components/LeftSidebar';
+import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
@@ -634,6 +634,7 @@ const LANGUAGES = [
 export function ArtistDashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('personal');
   const [mobileSettingsView, setMobileSettingsView] = useState<'menu' | SettingsSection>('menu');
@@ -1511,12 +1512,14 @@ export function ArtistDashboard() {
         <DoorTransition showTransition={location.state?.fromOnboarding === true} />
         
         {/* Left Sidebar - Desktop Only */}
-        <LeftSidebar
+        <CollapsibleSidebar
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           userProfile={userProfile}
           unreadCount={unreadCount}
           cachedProfilePic={cachedProfilePic}
+          isCollapsed={sidebarCollapsed}
+          onCollapsedChange={setSidebarCollapsed}
         />
 
         {/* Mobile Bottom Navigation */}
@@ -1526,8 +1529,10 @@ export function ArtistDashboard() {
           unreadCount={unreadCount}
         />
 
-        {/* Main Content Area */}
-        <main className="flex-1 lg:ml-[275px] min-h-screen pb-20 lg:pb-0">
+        {/* Main Content Area - margin adjusts based on sidebar state */}
+        <main 
+          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-[margin-left] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
+        >
         {activeSection === 'messages' && (
           <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden h-screen">
             {(() => {

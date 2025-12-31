@@ -5,5 +5,6 @@ export { MessageBubble } from './MessageBubble';
 export { UserListItem } from './UserListItem';
 export { TypingIndicator } from './TypingIndicator';
 export { Avatar } from './Avatar';
+export { ConversationSkeleton, ConversationListSkeleton, ChatWindowSkeleton } from './ConversationSkeleton';
 
 

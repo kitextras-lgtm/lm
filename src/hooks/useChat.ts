@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Message, Profile, Conversation, ReplyTo } from '../types/chat';
 import { getCachedMessages, cacheMessages } from '../utils/messageCache';
+import { getCachedConversations, cacheConversations } from '../utils/conversationCache';
 
 interface UseChatOptions {
   conversationId: string;
@@ -317,8 +318,22 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
 }
 
 export function useCustomerConversations(customerId: string) {
-  const [conversations, setConversations] = useState<(Conversation & { admin: Profile })[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Initialize with cached data for instant display
+  const [conversations, setConversations] = useState<(Conversation & { admin: Profile })[]>(() => {
+    if (typeof window !== 'undefined' && customerId) {
+      const cached = getCachedConversations(customerId);
+      return (cached as (Conversation & { admin: Profile })[]) || [];
+    }
+    return [];
+  });
+  // Only show loading if we don't have cached data
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined' && customerId) {
+      const cached = getCachedConversations(customerId);
+      return !cached || cached.length === 0;
+    }
+    return true;
+  });
   
   // Function to optimistically update a conversation's unread count
   const updateConversationUnreadCount = useCallback((conversationId: string, unreadCount: number) => {
@@ -394,6 +409,9 @@ export function useCustomerConversations(customerId: string) {
       // Always create a new array reference to ensure React detects the change
       setConversations([...conversationsData]);
       
+      // Cache conversations for instant loading next time
+      cacheConversations(customerId, conversationsData);
+      
       // Preload and cache all avatar images in the background
       conversationsData.forEach((conv) => {
         if (conv.admin?.avatar_url) {
@@ -417,6 +435,14 @@ export function useCustomerConversations(customerId: string) {
       return;
     }
 
+    // Check cache first and use it immediately if available
+    const cached = getCachedConversations(customerId);
+    if (cached && cached.length > 0) {
+      setConversations(cached as (Conversation & { admin: Profile })[]);
+      setLoading(false);
+    }
+
+    // Always fetch fresh data in the background (stale-while-revalidate)
     fetchConversations();
 
     const channel = supabase
