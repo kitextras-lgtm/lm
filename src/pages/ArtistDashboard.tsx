@@ -18,6 +18,7 @@ import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
+import { MoreView } from '../components/MoreView';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -1133,6 +1134,92 @@ export function ArtistDashboard() {
     }
   };
 
+  const handleUpdateProfile = async (updates: { profile_picture?: File; banner?: File; bio?: string }) => {
+    if (!currentUserId) return;
+
+    try {
+      console.log('📝 Updating profile with:', updates);
+
+      // Convert files to base64 for Edge Function
+      let profilePictureBase64 = null;
+      let profilePictureFileName = null;
+      let bannerBase64 = null;
+      let bannerFileName = null;
+
+      if (updates.profile_picture) {
+        console.log('🖼️ Converting profile picture to base64...');
+        const file = updates.profile_picture;
+        const reader = new FileReader();
+        profilePictureBase64 = await new Promise((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(',')[1]; // Remove data URL prefix
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        profilePictureFileName = file.name;
+      }
+
+      if (updates.banner) {
+        console.log('🖼️ Converting banner to base64...');
+        const file = updates.banner;
+        const reader = new FileReader();
+        bannerBase64 = await new Promise((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(',')[1]; // Remove data URL prefix
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        bannerFileName = file.name;
+      }
+
+      // Call Edge Function to update profile
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/save-profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            userId: currentUserId,
+            profilePictureBase64,
+            profilePictureFileName,
+            bannerBase64,
+            bannerFileName,
+            bio: updates.bio,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response data:', data);
+
+      if (!response.ok || !data.success) {
+        const errorMessage = data.message || data.error || 'Failed to update profile';
+        console.error('❌ Profile update failed:', errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      console.log('✅ Profile updated successfully');
+      
+      // Refresh profile data
+      await fetchUserProfile();
+      
+    } catch (err: any) {
+      console.error('❌ Error updating profile:', err);
+      throw err;
+    }
+  };
+
   const scrollToSection = (section: SettingsSection) => {
     setSettingsSection(section);
     const refs = {
@@ -1161,12 +1248,12 @@ export function ArtistDashboard() {
   }, [isDropdownOpen]);
 
   const renderPersonalInfo = () => (
-    <div ref={personalRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <div className="mb-3 lg:mb-8 hidden lg:block">
-        <h2 className="text-lg lg:text-2xl font-bold" style={{ color: '#F8FAFC' }}>Personal info</h2>
+    <div ref={personalRef} className="scroll-mt-6 rounded-2xl p-3 lg:p-4 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+      <div className="mb-2 lg:mb-4 hidden lg:block">
+        <h2 className="text-base lg:text-lg font-bold" style={{ color: '#F8FAFC' }}>Personal info</h2>
       </div>
 
-      <div className="space-y-5 lg:space-y-7">
+      <div className="space-y-3 lg:space-y-4">
         <div className="mb-2 lg:mb-0">
           <div className="flex items-center gap-2.5 lg:gap-4">
             <div
@@ -1567,6 +1654,7 @@ export function ArtistDashboard() {
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           unreadCount={unreadCount}
+          profilePicture={cachedProfilePic || profilePicturePreview || userProfile?.profile_picture_url}
         />
 
         {/* Main Content Area - margin adjusts based on sidebar state */}
@@ -1723,11 +1811,18 @@ export function ArtistDashboard() {
           </>
         )}
 
+        {activeSection === 'more' && (
+          <div className="h-full">
+            <MoreView />
+          </div>
+        )}
+
         {activeSection === 'profile' && (
           <ProfileView
             userProfile={userProfile}
             cachedProfilePic={cachedProfilePic}
             onBack={() => setActiveSection('home')}
+            onUpdateProfile={handleUpdateProfile}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
           />
@@ -1766,6 +1861,22 @@ export function ArtistDashboard() {
 
           <ReferralSection />
         </section>
+          </div>
+        )}
+
+        {activeSection === 'explore' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            <section className="mb-10 sm:mb-20">
+              <div className="mb-5 sm:mb-7">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Opportunities</h2>
+                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and collaborations</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
+                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} />
+              </div>
+            </section>
           </div>
         )}
       </main>

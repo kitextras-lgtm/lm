@@ -18,6 +18,7 @@ import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
+import { MoreView } from '../components/MoreView';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -398,20 +399,20 @@ function FighterMusicCard({ onClick }: { onClick: () => void }) {
   
   return (
     <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer" 
-      style={{ backgroundColor: '#1a1a1e' }}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: '#2f2f2f' }}>
           <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#F8FAFC' }}>Fighter Music</h3>
-            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: '#2f2f2f' }}>
               <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
               </svg>
@@ -439,20 +440,20 @@ function AstaViolinaCard({ onClick }: { onClick: () => void }) {
   
   return (
     <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer" 
-      style={{ backgroundColor: '#1a1a1e' }}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: '#2f2f2f' }}>
           <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#F8FAFC' }}>Asta Violina</h3>
-            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: '#2f2f2f' }}>
               <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
               </svg>
@@ -1263,6 +1264,92 @@ export function CreatorDashboard() {
     }
   };
 
+  const handleUpdateProfile = async (updates: { profile_picture?: File; banner?: File; bio?: string }) => {
+    if (!currentUserId) return;
+
+    try {
+      console.log('📝 Updating profile with:', updates);
+
+      // Convert files to base64 for Edge Function
+      let profilePictureBase64 = null;
+      let profilePictureFileName = null;
+      let bannerBase64 = null;
+      let bannerFileName = null;
+
+      if (updates.profile_picture) {
+        console.log('🖼️ Converting profile picture to base64...');
+        const file = updates.profile_picture;
+        const reader = new FileReader();
+        profilePictureBase64 = await new Promise((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(',')[1]; // Remove data URL prefix
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        profilePictureFileName = file.name;
+      }
+
+      if (updates.banner) {
+        console.log('🖼️ Converting banner to base64...');
+        const file = updates.banner;
+        const reader = new FileReader();
+        bannerBase64 = await new Promise((resolve, reject) => {
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(',')[1]; // Remove data URL prefix
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        bannerFileName = file.name;
+      }
+
+      // Call Edge Function to update profile
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/save-profile`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            userId: currentUserId,
+            profilePictureBase64,
+            profilePictureFileName,
+            bannerBase64,
+            bannerFileName,
+            bio: updates.bio,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response data:', data);
+
+      if (!response.ok || !data.success) {
+        const errorMessage = data.message || data.error || 'Failed to update profile';
+        console.error('❌ Profile update failed:', errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      console.log('✅ Profile updated successfully');
+      
+      // Refresh profile data
+      await fetchUserProfile();
+      
+    } catch (err: any) {
+      console.error('❌ Error updating profile:', err);
+      throw err;
+    }
+  };
+
   const scrollToSection = (section: SettingsSection) => {
     setSettingsSection(section);
     const refs = {
@@ -1291,17 +1378,17 @@ export function CreatorDashboard() {
   }, [isDropdownOpen]);
 
   const renderPersonalInfo = () => (
-    <div ref={personalRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <div className="mb-3 lg:mb-8 hidden lg:block">
-        <h2 className="text-lg lg:text-2xl font-bold" style={{ color: '#F8FAFC' }}>Personal info</h2>
+    <div ref={personalRef} className="scroll-mt-6 rounded-2xl p-3 lg:p-4 shadow-xl border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
+      <div className="mb-2 lg:mb-4 hidden lg:block">
+        <h2 className="text-base lg:text-lg font-bold" style={{ color: '#F8FAFC' }}>Personal info</h2>
       </div>
 
-      <div className="space-y-5 lg:space-y-7">
-        <div className="mb-2 lg:mb-0">
-          <div className="flex items-center gap-2.5 lg:gap-4">
+      <div className="space-y-3 lg:space-y-4">
+        <div className="mb-1 lg:mb-0">
+          <div className="flex items-center gap-2 lg:gap-3">
             <div
               onClick={handleProfilePictureClick}
-              className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-md cursor-pointer hover:brightness-110 transition-all duration-200"
+              className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-md cursor-pointer hover:brightness-110 transition-all duration-200"
             >
               {profilePicturePreview ? (
                 <img 
@@ -1316,16 +1403,16 @@ export function CreatorDashboard() {
                   className="w-full h-full object-cover rounded-full"
                 />
               ) : (
-                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 lg:w-8 lg:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               )}
             </div>
             <div>
-              <h3 className="text-lg lg:text-xl font-semibold mb-0.5 lg:mb-1" style={{ color: '#F8FAFC' }}>
+              <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: '#F8FAFC' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
-              <p className="text-base lg:text-sm" style={{ color: '#94A3B8' }}>
+              <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
                 {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : 'No username'}
               </p>
             </div>
@@ -1339,10 +1426,10 @@ export function CreatorDashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5 lg:gap-5">
+        <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>First name</label>
-            <div className="flex items-center gap-1 lg:gap-3">
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>First name</label>
+            <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
                 value={formData.firstName}
@@ -1353,47 +1440,75 @@ export function CreatorDashboard() {
                   }
                 }}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                className="flex-1 min-w-0 h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
                   color: '#F8FAFC',
-                  background: '#0f0f13',
-                  border: '1px solid rgba(75, 85, 99, 0.2)',
+                  background: '#111111',
+                  border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
               />
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
+                  className="p-1.5 hover:brightness-110 transition-all rounded flex-shrink-0"
                   style={{ color: '#64748B' }}
                 >
-                  <EditIcon />
+                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 lg:w-5 lg:h-5 overflow-visible">
+                    <rect x="8" y="10" width="28" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                    <path
+                      d="M40 8 L28 20 L22 14 L34 2 C34.8 1.2 36.2 1.2 37 2 L40 5 C40.8 5.8 40.8 7.2 40 8 Z"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      fill="rgba(0,0,0,0.9)"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M28 20 L22 14 L20 16 L26 22 Z"
+                      fill="currentColor"
+                      opacity="0.7"
+                    />
+                  </svg>
                 </button>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Last name</label>
-            <div className="flex items-center gap-1 lg:gap-3">
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Last name</label>
+            <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                className="flex-1 min-w-0 h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
                   color: '#F8FAFC',
-                  background: '#0f0f13',
-                  border: '1px solid rgba(75, 85, 99, 0.2)',
+                  background: '#111111',
+                  border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
               />
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
+                  className="p-1.5 hover:brightness-110 transition-all rounded flex-shrink-0"
                   style={{ color: '#64748B' }}
                 >
-                  <EditIcon />
+                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 lg:w-5 lg:h-5 overflow-visible">
+                    <rect x="8" y="10" width="28" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                    <path
+                      d="M40 8 L28 20 L22 14 L34 2 C34.8 1.2 36.2 1.2 37 2 L40 5 C40.8 5.8 40.8 7.2 40 8 Z"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      fill="rgba(0,0,0,0.9)"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M28 20 L22 14 L20 16 L26 22 Z"
+                      fill="currentColor"
+                      opacity="0.7"
+                    />
+                  </svg>
                 </button>
               )}
             </div>
@@ -1401,15 +1516,15 @@ export function CreatorDashboard() {
         </div>
 
         <div>
-          <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Username</label>
-          <div className="flex items-center gap-1.5 lg:gap-3">
-            <div className="flex-1 flex items-center h-11 lg:h-12 px-3 lg:px-4 rounded-xl" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <span className="text-sm lg:text-sm" style={{ color: '#64748B' }}>@</span>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Username</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: '#111111', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+              <span className="text-xs lg:text-sm" style={{ color: '#64748B' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
                 disabled
-                className="flex-1 bg-transparent text-sm lg:text-sm focus:outline-none ml-1 opacity-50"
+                className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1 opacity-50"
                 style={{ color: '#F8FAFC' }}
               />
             </div>
@@ -1417,10 +1532,10 @@ export function CreatorDashboard() {
         </div>
 
         <div>
-          <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Location</label>
-          <div className="flex items-center gap-1.5 lg:gap-3">
-            <div className="flex-1 min-w-0 flex items-center h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <MapPin className="w-4 h-4 lg:w-4 lg:h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#64748B' }} />
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Location</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#111111', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#64748B' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -1430,31 +1545,45 @@ export function CreatorDashboard() {
                   }
                 }}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 bg-transparent text-sm lg:text-sm focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
               >
                 {COUNTRIES.map(country => (
-                  <option key={country} value={country} style={{ background: '#0f0f13' }}>{country}</option>
+                  <option key={country} value={country} style={{ background: '#111111' }}>{country}</option>
                 ))}
               </select>
             </div>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
+                className="p-1.5 hover:brightness-110 transition-all rounded flex-shrink-0"
                 style={{ color: '#64748B' }}
               >
-                <EditIcon />
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 lg:w-5 lg:h-5 overflow-visible">
+                  <rect x="8" y="10" width="28" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                  <path
+                    d="M40 8 L28 20 L22 14 L34 2 C34.8 1.2 36.2 1.2 37 2 L40 5 C40.8 5.8 40.8 7.2 40 8 Z"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="rgba(0,0,0,0.9)"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M28 20 L22 14 L20 16 L26 22 Z"
+                    fill="currentColor"
+                    opacity="0.7"
+                  />
+                </svg>
               </button>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
-          <div className="flex items-center gap-1.5 lg:gap-3">
-            <div className="flex-1 min-w-0 flex items-center h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <Globe className="w-4 h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#64748B' }} />
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#111111', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#64748B' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -1464,37 +1593,51 @@ export function CreatorDashboard() {
                   }
                 }}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 bg-transparent text-sm focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
               >
                 {LANGUAGES.map(language => (
-                  <option key={language} value={language} style={{ background: '#0f0f13' }}>{language}</option>
+                  <option key={language} value={language} style={{ background: '#111111' }}>{language}</option>
                 ))}
               </select>
             </div>
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
+                className="p-1.5 hover:brightness-110 transition-all rounded flex-shrink-0"
                 style={{ color: '#64748B' }}
               >
-                <EditIcon />
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 lg:w-5 lg:h-5 overflow-visible">
+                  <rect x="8" y="10" width="28" height="28" rx="3" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                  <path
+                    d="M40 8 L28 20 L22 14 L34 2 C34.8 1.2 36.2 1.2 37 2 L40 5 C40.8 5.8 40.8 7.2 40 8 Z"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    fill="rgba(0,0,0,0.9)"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M28 20 L22 14 L20 16 L26 22 Z"
+                    fill="currentColor"
+                    opacity="0.7"
+                  />
+                </svg>
               </button>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Email</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Email</label>
           <input
             type="email"
             value={formData.email}
             disabled
-            className="w-full h-11 lg:h-12 px-3 lg:px-4 rounded-xl text-sm lg:text-sm focus:outline-none opacity-50"
+            className="w-full h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none opacity-50"
             style={{
               color: '#F8FAFC',
-              background: '#0f0f13',
-              border: '1px solid rgba(75, 85, 99, 0.2)',
+              background: '#111111',
+              border: '1px solid rgba(75, 85, 99, 0.5)',
             }}
           />
         </div>
@@ -1523,7 +1666,7 @@ export function CreatorDashboard() {
                 fetchUserProfile();
               }}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: '#0f0f13', color: '#F8FAFC' }}
+              style={{ backgroundColor: '#111111', color: '#F8FAFC' }}
             >
               Cancel
             </button>
@@ -1542,13 +1685,13 @@ export function CreatorDashboard() {
   );
 
   const renderConnectedAccounts = () => (
-    <div ref={accountsRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+    <div ref={accountsRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
       <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Connected accounts (0)</h2>
       <p className="text-sm lg:text-sm mb-4 lg:mb-6" style={{ color: '#94A3B8' }}>
         Add social links to display your portfolio and verify account ownership.
       </p>
 
-      <button className="flex items-center gap-3 px-5 py-3.5 lg:py-4 rounded-xl text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
+      <button className="flex items-center gap-3 px-5 py-3.5 lg:py-4 rounded-xl text-sm font-medium transition-all duration-200 hover:brightness-110 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f', color: '#94A3B8' }}>
         <Plus className="w-5 h-5" />
         Connect an account
       </button>
@@ -1556,14 +1699,14 @@ export function CreatorDashboard() {
   );
 
   const renderPayoutMethods = () => (
-    <div ref={payoutRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+    <div ref={payoutRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
       <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Payment Method</h2>
       <p className="text-sm lg:text-sm mb-4 lg:mb-6" style={{ color: '#94A3B8' }}>
         Payments are typically processed automatically through Tipalti. If a payout needs to be issued outside of Tipalti, you can add an alternative payment method.
       </p>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:gap-4">
-        <button className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
+        <button className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f', color: '#94A3B8' }}>
           <Plus className="w-5 h-5" />
           Connect an account
         </button>
@@ -1622,7 +1765,7 @@ export function CreatorDashboard() {
   };
 
   const renderNotifications = () => (
-    <div ref={notificationsRef} className="scroll-mt-6 rounded-2xl p-3 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+    <div ref={notificationsRef} className="scroll-mt-6 rounded-2xl p-3 lg:p-8 shadow-xl border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
       <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-3 lg:mb-8" style={{ color: '#F8FAFC' }}>Notifications</h2>
 
       <div className="space-y-3 lg:space-y-8">
@@ -1630,7 +1773,7 @@ export function CreatorDashboard() {
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Email</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: '#0f0f13' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: '#2f2f2f' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Notify me about new platform features and updates</p>
@@ -1671,6 +1814,141 @@ export function CreatorDashboard() {
     </div>
   );
 
+  const renderDisplay = () => (
+    <div className="scroll-mt-6 rounded-2xl p-3 lg:p-8 shadow-xl border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
+      <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-3 lg:mb-8" style={{ color: '#F8FAFC' }}>Display</h2>
+
+      <div className="space-y-3 lg:space-y-8">
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Appearance</h3>
+
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: '#2f2f2f' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Dark mode</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Use dark theme across the platform</p>
+              </div>
+              <button
+                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
+                style={{ backgroundColor: '#3B82F6' }}
+              >
+                <div 
+                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  style={{ transform: 'translateX(20px)' }}
+                ></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: '#2f2f2f' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Compact view</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Show more content in less space</p>
+              </div>
+              <button
+                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
+                style={{ backgroundColor: '#64748B' }}
+              >
+                <div 
+                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  style={{ transform: 'translateX(0px)' }}
+                ></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Content</h3>
+
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Show animations</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Enable UI animations and transitions</p>
+              </div>
+              <button
+                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
+                style={{ backgroundColor: '#3B82F6' }}
+              >
+                <div 
+                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  style={{ transform: 'translateX(20px)' }}
+                ></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLanguages = () => (
+    <div className="scroll-mt-6 rounded-2xl p-3 lg:p-8 shadow-xl border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
+      <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-3 lg:mb-8" style={{ color: '#F8FAFC' }}>Languages</h2>
+
+      <div className="space-y-3 lg:space-y-8">
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface Language</h3>
+
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: '#2f2f2f' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Display language</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Choose your preferred interface language</p>
+              </div>
+              <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#111111', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+                <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#64748B' }} />
+                <select
+                  defaultValue="English"
+                  className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none"
+                  style={{ color: '#F8FAFC' }}
+                >
+                  <option value="English" style={{ background: '#111111' }}>English</option>
+                  <option value="Spanish" style={{ background: '#111111' }}>Spanish</option>
+                  <option value="French" style={{ background: '#111111' }}>French</option>
+                  <option value="German" style={{ background: '#111111' }}>German</option>
+                  <option value="Italian" style={{ background: '#111111' }}>Italian</option>
+                  <option value="Portuguese" style={{ background: '#111111' }}>Portuguese</option>
+                  <option value="Dutch" style={{ background: '#111111' }}>Dutch</option>
+                  <option value="Russian" style={{ background: '#111111' }}>Russian</option>
+                  <option value="Chinese (Mandarin)" style={{ background: '#111111' }}>Chinese (Mandarin)</option>
+                  <option value="Japanese" style={{ background: '#111111' }}>Japanese</option>
+                  <option value="Korean" style={{ background: '#111111' }}>Korean</option>
+                  <option value="Arabic" style={{ background: '#111111' }}>Arabic</option>
+                  <option value="Hindi" style={{ background: '#111111' }}>Hindi</option>
+                  <option value="Bengali" style={{ background: '#111111' }}>Bengali</option>
+                  <option value="Turkish" style={{ background: '#111111' }}>Turkish</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Content Preferences</h3>
+
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Auto-translate content</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Automatically translate posts to your language</p>
+              </div>
+              <button
+                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
+                style={{ backgroundColor: '#64748B' }}
+              >
+                <div 
+                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  style={{ transform: 'translateX(0px)' }}
+                ></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <FeedbackModal 
@@ -1697,6 +1975,7 @@ export function CreatorDashboard() {
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           unreadCount={unreadCount}
+          profilePicture={cachedProfilePic || profilePicturePreview || userProfile?.profile_picture_url}
         />
 
         {/* Main Content Area - margin adjusts based on sidebar state */}
@@ -1709,6 +1988,7 @@ export function CreatorDashboard() {
             userProfile={userProfile}
             cachedProfilePic={cachedProfilePic}
             onBack={() => setActiveSection('home')}
+            onUpdateProfile={handleUpdateProfile}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
           />
@@ -1735,7 +2015,7 @@ export function CreatorDashboard() {
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Available balance</h3>
                   <Info className="w-4 h-4" style={{ color: '#64748B' }} />
@@ -1746,7 +2026,7 @@ export function CreatorDashboard() {
               </div>
 
               {/* Pending Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
                   <Info className="w-4 h-4" style={{ color: '#64748B' }} />
@@ -1755,7 +2035,7 @@ export function CreatorDashboard() {
               </div>
 
               {/* Lifetime Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
                   <Info className="w-4 h-4" style={{ color: '#64748B' }} />
@@ -1764,7 +2044,7 @@ export function CreatorDashboard() {
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Affiliate earnings</h3>
                   <Info className="w-4 h-4" style={{ color: '#64748B' }} />
@@ -1774,34 +2054,34 @@ export function CreatorDashboard() {
             </div>
 
             {/* Transaction History Section */}
-            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
               {/* Tabs */}
               <div className="flex gap-2 mb-6">
                 <button 
                   onClick={() => setEarningsTab('available')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
-                  style={{ backgroundColor: earningsTab === 'available' ? '#0f0f13' : 'transparent', color: earningsTab === 'available' ? '#F8FAFC' : '#64748B' }}
+                  style={{ backgroundColor: earningsTab === 'available' ? '#111111' : 'transparent', color: earningsTab === 'available' ? '#F8FAFC' : '#64748B' }}
                 >
                   Available
                 </button>
                 <button 
                   onClick={() => setEarningsTab('pending')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'pending' ? '#0f0f13' : 'transparent', color: earningsTab === 'pending' ? '#F8FAFC' : '#64748B' }}
+                  style={{ backgroundColor: earningsTab === 'pending' ? '#111111' : 'transparent', color: earningsTab === 'pending' ? '#F8FAFC' : '#64748B' }}
                 >
                   Pending
                 </button>
                 <button 
                   onClick={() => setEarningsTab('paidout')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'paidout' ? '#0f0f13' : 'transparent', color: earningsTab === 'paidout' ? '#F8FAFC' : '#64748B' }}
+                  style={{ backgroundColor: earningsTab === 'paidout' ? '#111111' : 'transparent', color: earningsTab === 'paidout' ? '#F8FAFC' : '#64748B' }}
                 >
                   Paid out
                 </button>
               </div>
 
               {/* Table Headers */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: '#0f0f13' }}>
+              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: '#2f2f2f' }}>
                 <div className="text-xs font-medium" style={{ color: '#64748B' }}>Date</div>
                 <div className="text-xs font-medium" style={{ color: '#64748B' }}>Clip</div>
                 <div className="text-xs font-medium" style={{ color: '#64748B' }}>Campaign/Description</div>
@@ -1829,6 +2109,8 @@ export function CreatorDashboard() {
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
                 renderPayoutMethods={renderPayoutMethods}
+                renderDisplay={renderDisplay}
+                renderLanguages={renderLanguages}
                 renderNotifications={renderNotifications}
                 isMobile={true}
                 onBack={() => setActiveSection('home')}
@@ -1841,11 +2123,19 @@ export function CreatorDashboard() {
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
                 renderPayoutMethods={renderPayoutMethods}
+                renderDisplay={renderDisplay}
+                renderLanguages={renderLanguages}
                 renderNotifications={renderNotifications}
                 isMobile={false}
               />
             </div>
           </>
+        )}
+
+        {activeSection === 'more' && (
+          <div className="h-full">
+            <MoreView />
+          </div>
         )}
 
         {activeSection === 'home' && (
@@ -1881,6 +2171,22 @@ export function CreatorDashboard() {
 
           <ReferralSection />
         </section>
+          </div>
+        )}
+
+        {activeSection === 'explore' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            <section className="mb-10 sm:mb-20">
+              <div className="mb-5 sm:mb-7">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Opportunities</h2>
+                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and collaborations</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
+                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} />
+              </div>
+            </section>
           </div>
         )}
       </main>

@@ -32,6 +32,10 @@ export function ProfileView({
   const [avatarHovered, setAvatarHovered] = useState(false);
   const [activeTab, setActiveTab] = useState<'posts' | 'replies' | 'highlights' | 'articles' | 'media' | 'likes'>('posts');
   const [bio, setBio] = useState(userProfile?.bio || '');
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [isBannerUploading, setIsBannerUploading] = useState(false);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
   
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -53,17 +57,45 @@ export function ProfileView({
     avatarInputRef.current?.click();
   };
 
-  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && onUpdateProfile) {
-      onUpdateProfile({ banner: file });
+      // Show immediate preview
+      const previewUrl = URL.createObjectURL(file);
+      setBannerPreview(previewUrl);
+      setIsBannerUploading(true);
+      
+      try {
+        await onUpdateProfile({ banner: file });
+        console.log('✅ Banner uploaded successfully');
+      } catch (err) {
+        console.error('❌ Banner upload failed:', err);
+        // Revert preview on error
+        setBannerPreview(null);
+      } finally {
+        setIsBannerUploading(false);
+      }
     }
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && onUpdateProfile) {
-      onUpdateProfile({ profile_picture: file });
+      // Show immediate preview
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+      setIsAvatarUploading(true);
+      
+      try {
+        await onUpdateProfile({ profile_picture: file });
+        console.log('✅ Profile picture uploaded successfully');
+      } catch (err) {
+        console.error('❌ Profile picture upload failed:', err);
+        // Revert preview on error
+        setAvatarPreview(null);
+      } finally {
+        setIsAvatarUploading(false);
+      }
     }
   };
 
@@ -102,21 +134,28 @@ export function ProfileView({
 
       {/* Banner */}
       <div 
-        className="relative h-48 cursor-pointer group"
-        style={{ backgroundColor: '#1a1a1e' }}
+        className="relative h-48 cursor-pointer group border"
+        style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f' }}
         onMouseEnter={() => setBannerHovered(true)}
         onMouseLeave={() => setBannerHovered(false)}
         onClick={handleBannerClick}
       >
-        {userProfile?.banner_url && (
+        {(bannerPreview || userProfile?.banner_url) && (
           <img 
-            src={userProfile.banner_url} 
+            src={bannerPreview || userProfile?.banner_url} 
             alt="Banner" 
             className="w-full h-full object-cover"
           />
         )}
-        <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${bannerHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <Camera className="w-8 h-8" style={{ color: '#F8FAFC' }} />
+        <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${bannerHovered || isBannerUploading ? 'opacity-100' : 'opacity-0'}`}>
+          {isBannerUploading ? (
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm" style={{ color: '#F8FAFC' }}>Uploading...</span>
+            </div>
+          ) : (
+            <Camera className="w-8 h-8" style={{ color: '#F8FAFC' }} />
+          )}
         </div>
         <input 
           type="file" 
@@ -136,21 +175,20 @@ export function ProfileView({
           onMouseLeave={() => setAvatarHovered(false)}
           onClick={handleAvatarClick}
         >
-          {displayPic ? (
-            <img 
-              src={displayPic} 
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <img 
-              src={DEFAULT_AVATAR_DATA_URI} 
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
-          )}
-          <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${avatarHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <Camera className="w-6 h-6" style={{ color: '#F8FAFC' }} />
+          <img 
+            src={avatarPreview || displayPic || DEFAULT_AVATAR_DATA_URI} 
+            alt="Profile" 
+            className="w-full h-full object-cover"
+          />
+          <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${avatarHovered || isAvatarUploading ? 'opacity-100' : 'opacity-0'}`}>
+            {isAvatarUploading ? (
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs" style={{ color: '#F8FAFC' }}>Uploading...</span>
+              </div>
+            ) : (
+              <Camera className="w-6 h-6" style={{ color: '#F8FAFC' }} />
+            )}
           </div>
           <input 
             type="file" 
@@ -165,8 +203,8 @@ export function ProfileView({
         <div className="flex justify-end pt-3">
           <button 
             onClick={() => setIsEditing?.(!isEditing)}
-            className="px-5 py-2 rounded-xl font-semibold text-sm hover:brightness-110 transition-all"
-            style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+            className="px-5 py-2 rounded-xl font-semibold text-sm hover:brightness-110 transition-all border"
+            style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
           >
             Edit profile
           </button>

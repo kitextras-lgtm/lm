@@ -44,13 +44,13 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group"
-        style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+        style={{ backgroundColor: 'transparent', color: '#F8FAFC', border: '1px solid rgba(75, 85, 99, 0.5)' }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#0f0f13';
+          e.currentTarget.style.backgroundColor = 'transparent';
           e.currentTarget.style.transform = 'translateY(-1px)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#1a1a1e';
+          e.currentTarget.style.backgroundColor = 'transparent';
           e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
@@ -64,7 +64,7 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
       {isOpen && (
         <div
           className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
-          style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.2)' }}
+          style={{ backgroundColor: 'rgba(17, 17, 17, 0.95)', border: '1px solid rgba(75, 85, 99, 0.5)' }}
         >
           <div className="max-h-60 overflow-y-auto">
             {subjectOptions.map((option) => {
@@ -79,19 +79,15 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
                   style={{
-                    backgroundColor: isSelected ? '#0f0f13' : 'transparent',
+                    backgroundColor: 'transparent',
                     color: '#F8FAFC',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = '#0f0f13';
-                    }
+                    e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.transform = 'translateX(4px)';
                   }}
                   onMouseLeave={(e) => {
-                    if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
+                    e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
@@ -190,12 +186,9 @@ export function ContactForm() {
             onSubmit={handleSubmit}
             className="w-full p-6 relative overflow-hidden space-y-4"
             style={{
-              background: 'rgba(10, 10, 15, 0.65)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: '16px',
-              boxShadow: '0 24px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
+              background: 'transparent',
+              border: '1px solid rgba(75, 85, 99, 0.5)',
+              borderRadius: '16px'
             }}
           >
             <div>

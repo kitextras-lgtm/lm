@@ -81,6 +81,13 @@ export const Hero = memo(() => {
 
   return (
     <main className="min-h-screen bg-black flex items-center justify-center relative isolate">
+      <style>
+        {`
+          spline-viewer canvas {
+            background-color: #000000 !important;
+          }
+        `}
+      </style>
       <Suspense fallback={null}>
         <SplineViewer />
       </Suspense>
@@ -137,7 +144,7 @@ export const Hero = memo(() => {
           </h1>
 
           <p className="text-base md:text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-sm sm:max-w-md md:max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '2rem' }}>
-            Elevate is an invite-only 360° multimedia network and agency offering unparalleled opportunities for creators, artists, and brands.
+            Elevate is an invite only 360° multimedia network and agency accelerating growth for talents and brands.
           </p>
 
           <div className="flex justify-center md:justify-start">

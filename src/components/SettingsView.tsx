@@ -4,11 +4,15 @@ import { UserSilhouetteIcon } from './UserSilhouetteIcon';
 import { PuzzlePiecesIcon } from './PuzzlePiecesIcon';
 import { CreditCardIcon } from './CreditCardIcon';
 import { BellIcon } from './BellIcon';
+import { DisplayIcon } from './DisplayIcon';
+import { LanguageIcon } from './LanguageIcon';
 
 interface SettingsViewProps {
   renderPersonalInfo: () => React.ReactNode;
   renderConnectedAccounts: () => React.ReactNode;
   renderPayoutMethods: () => React.ReactNode;
+  renderDisplay: () => React.ReactNode;
+  renderLanguages: () => React.ReactNode;
   renderNotifications: () => React.ReactNode;
   isMobile?: boolean;
   onBack?: () => void;
@@ -30,6 +34,16 @@ const settingsMenuItems = [
     id: 'payout',
     label: 'Payment method',
     IconComponent: CreditCardIcon,
+  },
+  {
+    id: 'display',
+    label: 'Display',
+    IconComponent: DisplayIcon,
+  },
+  {
+    id: 'languages',
+    label: 'Languages',
+    IconComponent: LanguageIcon,
   },
   {
     id: 'notifications',
@@ -76,7 +90,9 @@ function SettingsMenuItem({
 export function SettingsView({ 
   renderPersonalInfo, 
   renderConnectedAccounts, 
-  renderPayoutMethods, 
+  renderPayoutMethods,
+  renderDisplay,
+  renderLanguages,
   renderNotifications,
   isMobile = false,
   onBack
@@ -93,6 +109,10 @@ export function SettingsView({
         return 'Connected accounts';
       case 'payout':
         return 'Payment method';
+      case 'display':
+        return 'Display';
+      case 'languages':
+        return 'Languages';
       case 'notifications':
         return 'Notifications';
       default:
@@ -108,6 +128,10 @@ export function SettingsView({
         return 'Manage your connected social media accounts and third-party integrations.';
       case 'payout':
         return 'Manage your payment methods and payout settings.';
+      case 'display':
+        return 'Customize your display preferences and appearance settings.';
+      case 'languages':
+        return 'Set your language preferences and regional settings.';
       case 'notifications':
         return 'Select the kinds of notifications you get about your activities and recommendations.';
       default:
@@ -123,6 +147,10 @@ export function SettingsView({
         return renderConnectedAccounts();
       case 'payout':
         return renderPayoutMethods();
+      case 'display':
+        return renderDisplay();
+      case 'languages':
+        return renderLanguages();
       case 'notifications':
         return renderNotifications();
       default:
@@ -180,12 +208,12 @@ export function SettingsView({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full border rounded-full py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#3B82F6]"
-            style={{ backgroundColor: '#1a1a1e', borderColor: '#2f2f2f', color: '#F8FAFC' }}
+            style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
           />
         </div>
 
         {/* Menu Items */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#1a1a1e' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'transparent' }}>
           {settingsMenuItems.map((item, index) => (
             <SettingsMenuItem
               key={item.id}
@@ -207,7 +235,7 @@ export function SettingsView({
   return (
     <div className="flex h-[calc(100vh-2rem)] animate-fade-in">
       {/* Left Panel - Settings Menu */}
-      <div className="w-[380px] flex-shrink-0 border-r flex flex-col" style={{ borderColor: '#1a1a1a' }}>
+      <div className="w-[380px] flex-shrink-0 border-r flex flex-col" style={{ borderColor: '#2f2f2f' }}>
         {/* Header */}
         <div className="p-4">
           <h1 className="text-xl font-bold mb-4" style={{ color: '#F8FAFC' }}>Settings</h1>
@@ -246,7 +274,7 @@ export function SettingsView({
         {activeSection && (
           <>
             {/* Section Header */}
-            <div className="p-6 border-b" style={{ borderColor: '#1a1a1a' }}>
+            <div className="p-6 border-b" style={{ borderColor: '#2f2f2f' }}>
               <h2 className="text-xl font-bold mb-2" style={{ color: '#F8FAFC' }}>{getSectionTitle()}</h2>
               <p className="text-[15px] leading-relaxed" style={{ color: '#94A3B8' }}>{getSectionDescription()}</p>
             </div>

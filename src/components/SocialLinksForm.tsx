@@ -56,14 +56,14 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group"
-        style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+        style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#0f0f13';
+          e.currentTarget.style.backgroundColor = '#111111';
           e.currentTarget.style.transform = 'translateY(-1px)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#1a1a1e';
+          e.currentTarget.style.backgroundColor = 'transparent';
           e.currentTarget.style.transform = 'translateY(0)';
         }}
       >
@@ -83,7 +83,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
       {isOpen && (
         <div
           className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
-          style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.2)' }}
+          style={{ backgroundColor: 'rgba(17, 17, 17, 0.95)', border: '1px solid rgba(75, 85, 99, 0.5)' }}
         >
           <div className="max-h-60 overflow-y-auto">
             {options.map((option) => {
@@ -99,12 +99,12 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
                   style={{
-                    backgroundColor: isSelected ? '#0f0f13' : 'transparent',
+                    backgroundColor: isSelected ? '#111111' : 'transparent',
                     color: '#F8FAFC',
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = '#0f0f13';
+                      e.currentTarget.style.backgroundColor = '#111111';
                     }
                     e.currentTarget.style.transform = 'translateX(4px)';
                   }}
@@ -251,21 +251,21 @@ export function SocialLinksForm() {
 
   if (loading) {
     return (
-      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#1a1a1e' }}>
+      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
         <div className="text-center" style={{ color: '#94A3B8' }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
       <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>My Social Links</h3>
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
-            style={{ backgroundColor: '#111111', color: '#F8FAFC' }}
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 border"
+            style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Add Link</span>
@@ -274,7 +274,7 @@ export function SocialLinksForm() {
       </div>
 
       {isAdding && (
-        <div className="mb-5 p-4 sm:p-5 rounded-xl" style={{ backgroundColor: '#111111' }}>
+        <div className="mb-5 p-4 sm:p-5 rounded-xl" style={{ backgroundColor: 'transparent' }}>
           <div className="space-y-3 sm:space-y-4">
             <div>
               <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
@@ -296,8 +296,8 @@ export function SocialLinksForm() {
                 type="text"
                 value={newLink.url}
                 onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
-                style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
+                style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
               />
             </div>
 
@@ -310,8 +310,8 @@ export function SocialLinksForm() {
                 value={newLink.display_name}
                 onChange={(e) => setNewLink({ ...newLink, display_name: e.target.value })}
                 placeholder="My Channel"
-                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
-                style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
+                style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
               />
             </div>
 
@@ -328,8 +328,8 @@ export function SocialLinksForm() {
                   setIsAdding(false);
                   setNewLink({ platform: 'YouTube', url: '', display_name: '' });
                 }}
-                className="px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-90"
-                style={{ backgroundColor: '#111111', color: '#F8FAFC' }}
+                className="px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-90 border"
+                style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
               >
                 Cancel
               </button>
@@ -356,12 +356,12 @@ export function SocialLinksForm() {
               <div
                 key={link.id}
                 className="flex items-center justify-between p-3 sm:p-4 rounded-lg transition-all duration-200 hover:brightness-105"
-                style={{ backgroundColor: '#111111' }}
+                style={{ backgroundColor: 'transparent' }}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div
                     className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: '#1a1a1e' }}
+                    style={{ backgroundColor: 'transparent' }}
                   >
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#F8FAFC' }} />
                   </div>
@@ -377,7 +377,7 @@ export function SocialLinksForm() {
                 <button
                   onClick={() => handleDeleteLink(link.id)}
                   className="ml-2 p-2 rounded-lg transition-all duration-200 hover:brightness-110 flex-shrink-0"
-                  style={{ backgroundColor: '#1a1a1e', color: '#64748B' }}
+                  style={{ backgroundColor: 'transparent', color: '#64748B' }}
                 >
                   <X className="w-4 h-4" />
                 </button>

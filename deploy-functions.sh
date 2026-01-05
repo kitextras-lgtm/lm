@@ -43,6 +43,24 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
+echo "📦 Deploying save-profile function..."
+npx supabase functions deploy save-profile
+
+if [ $? -ne 0 ]; then
+  echo "❌ Failed to deploy save-profile"
+  exit 1
+fi
+
+echo ""
+echo "📦 Deploying get-profile function..."
+npx supabase functions deploy get-profile
+
+if [ $? -ne 0 ]; then
+  echo "❌ Failed to deploy get-profile"
+  exit 1
+fi
+
+echo ""
 echo "✅ All functions deployed successfully!"
 echo ""
 echo "📝 Next steps:"

@@ -39,15 +39,16 @@ function ElevateIcon({ className = "w-8 h-8" }: { className?: string }) {
 }
 
 // Animated Icons from original LeftSidebar
-function HomeIconSVG({ isHovered }: { isHovered: boolean }) {
+function HomeIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
-      <rect x="12" y="20" width="24" height="26" rx="2" stroke="white" strokeWidth="2.5" fill="none"/>
-      <path d="M4 22L24 4L44 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <rect x="12" y="20" width="24" height="26" rx="2" stroke="white" strokeWidth="3.5" fill="none"/>
+      <path d="M4 22L24 4L44 22" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path 
         d="M18 46V30C18 29.4477 18.4477 29 19 29H29C29.5523 29 30 29.4477 30 30V46" 
         fill="white"
-        style={{ opacity: isHovered ? 1 : 0.3, transition: 'opacity 0.3s ease' }}
+        style={{ opacity: shouldAnimate ? 1 : 0.3, transition: 'opacity 0.3s ease' }}
       />
       <ellipse 
         cx="24" 
@@ -55,27 +56,28 @@ function HomeIconSVG({ isHovered }: { isHovered: boolean }) {
         rx="7" 
         ry="9" 
         fill="white"
-        style={{ opacity: isHovered ? 0.4 : 0, transition: 'opacity 0.3s ease' }}
+        style={{ opacity: shouldAnimate ? 0.4 : 0, transition: 'opacity 0.3s ease' }}
       />
     </svg>
   );
 }
 
-function ExploreIconSVG({ isHovered }: { isHovered: boolean }) {
+function ExploreIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
-      <circle cx="24" cy="24" r="20" stroke="white" strokeWidth="2.5" fill="none" />
+      <circle cx="24" cy="24" r="20" stroke="white" strokeWidth="3.5" fill="none" />
       <circle cx="24" cy="24" r="16" stroke="white" strokeWidth="1" strokeOpacity="0.4" fill="none" />
-      <line x1="24" y1="4" x2="24" y2="8" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="24" y1="40" x2="24" y2="44" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="4" y1="24" x2="8" y2="24" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="40" y1="24" x2="44" y2="24" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="24" y1="4" x2="24" y2="8" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="24" y1="40" x2="24" y2="44" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="4" y1="24" x2="8" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="40" y1="24" x2="44" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
       <line x1="38.1" y1="9.9" x2="36" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
       <line x1="38.1" y1="38.1" x2="36" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
       <line x1="9.9" y1="38.1" x2="12" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
       <line x1="9.9" y1="9.9" x2="12" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
       <g style={{
-        transform: isHovered ? "rotate(180deg)" : "rotate(0deg)",
+        transform: shouldAnimate ? "rotate(180deg)" : "rotate(0deg)",
         transformOrigin: "24px 24px",
         transition: "transform 0.5s ease-in-out",
       }}>
@@ -87,7 +89,8 @@ function ExploreIconSVG({ isHovered }: { isHovered: boolean }) {
   );
 }
 
-function TalentIconSVG({ isHovered }: { isHovered: boolean }) {
+function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
       {[0, 1, 2, 3, 4].map((i) => {
@@ -98,42 +101,43 @@ function TalentIconSVG({ isHovered }: { isHovered: boolean }) {
             points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
             fill="white"
             style={{
-              opacity: isHovered ? 1 : 0,
-              transform: isHovered ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
+              opacity: shouldAnimate ? 1 : 0,
+              transform: shouldAnimate ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
               transformOrigin: `${cx}px 6px`,
               transition: `all 0.3s ease ${i * 0.06}s`,
             }}
           />
         );
       })}
-      <circle cx="12" cy="22" r="5" stroke="white" strokeWidth="2.5" fill="none"
-        style={{ opacity: 0.5, transform: isHovered ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <path d="M4 44C4 37 7 32 12 32" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"
-        style={{ opacity: 0.5, transform: isHovered ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <circle cx="36" cy="22" r="5" stroke="white" strokeWidth="2.5" fill="none"
-        style={{ opacity: 0.5, transform: isHovered ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <path d="M44 44C44 37 41 32 36 32" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"
-        style={{ opacity: 0.5, transform: isHovered ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <circle cx="24" cy="20" r="6" stroke="white" strokeWidth="2.5" fill="none"
-        style={{ transform: isHovered ? "scale(1.05)" : "scale(1)", transformOrigin: "24px 20px", transition: "transform 0.3s ease" }} />
-      <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <circle cx="12" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <path d="M4 44C4 37 7 32 12 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <circle cx="36" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <path d="M44 44C44 37 41 32 36 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <circle cx="24" cy="20" r="6" stroke="white" strokeWidth="3.5" fill="none"
+        style={{ transform: shouldAnimate ? "scale(1.05)" : "scale(1)", transformOrigin: "24px 20px", transition: "transform 0.3s ease" }} />
+      <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
 
 // New puzzle piece Deals icon with animations
-function DealsIconSVG({ isHovered }: { isHovered: boolean }) {
+function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
       {/* Left puzzle piece with tab */}
       <path
         d="M6 12 H20 V18 C20 20.2 18.2 22 16 22 C13.8 22 12 20.2 12 18 V12 H6 V36 H20 V30 C20 27.8 18.2 26 16 26 C13.8 26 12 27.8 12 30 V36 H6 Z"
         stroke="white"
-        strokeWidth="2.5"
+        strokeWidth="3"
         strokeLinejoin="round"
         fill="none"
         style={{
-          transform: isHovered ? "translateX(2px)" : "translateX(-3px)",
+          transform: shouldAnimate ? "translateX(2px)" : "translateX(-3px)",
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       />
@@ -142,11 +146,11 @@ function DealsIconSVG({ isHovered }: { isHovered: boolean }) {
       <path
         d="M42 12 H28 V18 C28 20.2 29.8 22 32 22 C34.2 22 36 20.2 36 18 V12 H42 V36 H28 V30 C28 27.8 29.8 26 32 26 C34.2 26 36 27.8 36 30 V36 H42 Z"
         stroke="white"
-        strokeWidth="2.5"
+        strokeWidth="3"
         strokeLinejoin="round"
         fill="none"
         style={{
-          transform: isHovered ? "translateX(-2px)" : "translateX(3px)",
+          transform: shouldAnimate ? "translateX(-2px)" : "translateX(3px)",
           transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
         }}
       />
@@ -161,7 +165,7 @@ function DealsIconSVG({ isHovered }: { isHovered: boolean }) {
         strokeWidth="2"
         strokeLinecap="round"
         style={{
-          opacity: isHovered ? 0.6 : 0,
+          opacity: shouldAnimate ? 0.6 : 0,
           transition: "opacity 0.3s ease 0.2s",
         }}
       />
@@ -169,25 +173,26 @@ function DealsIconSVG({ isHovered }: { isHovered: boolean }) {
   );
 }
 
-function MessagesIconSVG({ isHovered, unreadCount = 0 }: { isHovered: boolean; unreadCount?: number }) {
+function MessagesIconSVG({ isHovered, isActive, unreadCount = 0 }: { isHovered: boolean; isActive: boolean; unreadCount?: number }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <div className={`relative ${ICON_SIZE}`}>
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
         <path 
           d="M36 6H14C9.58172 6 6 9.58172 6 14V26C6 30.4183 9.58172 34 14 34H17L24 42L31 34H36C40.4183 34 44 30.4183 44 26V14C44 9.58172 40.4183 6 36 6Z" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           fill="none"
-          style={{ transform: isHovered ? 'scale(1.05) translate(-2px, -2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
+          style={{ transform: shouldAnimate ? 'scale(1.05) translate(-2px, -2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
         />
         <path 
           d="M34 16H12C8.68629 16 6 18.6863 6 22V32C6 35.3137 8.68629 38 12 38H15L21 46L27 38H34C37.3137 38 40 35.3137 40 32V22C40 18.6863 37.3137 16 34 16Z" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           fill="rgba(0,0,0,0.8)"
-          style={{ transform: isHovered ? 'scale(1.08) translate(2px, 2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
+          style={{ transform: shouldAnimate ? 'scale(1.08) translate(2px, 2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
         />
-        <g style={{ opacity: isHovered ? 1 : 0.7, transition: 'opacity 0.3s ease' }}>
+        <g style={{ opacity: shouldAnimate ? 1 : 0.7, transition: 'opacity 0.3s ease' }}>
           <circle cx="15" cy="28" r="2" fill="white"/>
           <circle cx="23" cy="28" r="2" fill="white"/>
           <circle cx="31" cy="28" r="2" fill="white"/>
@@ -205,7 +210,8 @@ function MessagesIconSVG({ isHovered, unreadCount = 0 }: { isHovered: boolean; u
   );
 }
 
-function EarningsIconSVG({ isHovered }: { isHovered: boolean }) {
+function EarningsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <div className={`relative ${ICON_SIZE} overflow-visible`}>
       <svg 
@@ -214,18 +220,18 @@ function EarningsIconSVG({ isHovered }: { isHovered: boolean }) {
         xmlns="http://www.w3.org/2000/svg" 
         className={ICON_SIZE}
         style={{
-          animation: isHovered ? 'piggyWiggle 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97)' : 'none'
+          animation: shouldAnimate ? 'piggyWiggle 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97)' : 'none'
         }}
       >
-        <ellipse cx="24" cy="26" rx="18" ry="14" stroke="white" strokeWidth="2.5" fill="none"/>
-        <ellipse cx="40" cy="26" rx="5" ry="4" stroke="white" strokeWidth="2.5" fill="none"/>
+        <ellipse cx="24" cy="26" rx="18" ry="14" stroke="white" strokeWidth="3.5" fill="none"/>
+        <ellipse cx="40" cy="26" rx="5" ry="4" stroke="white" strokeWidth="3.5" fill="none"/>
         <circle cx="39" cy="24" r="1" fill="white"/>
         <circle cx="42" cy="24" r="1" fill="white"/>
-        <path d="M14 16C14 16 11 10 16 8C21 6 24 12 24 14" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-        <path d="M14 38V46" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M22 38V46" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M28 38V46" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-        <path d="M36 38V46" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+        <path d="M14 16C14 16 11 10 16 8C21 6 24 12 24 14" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+        <path d="M14 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
+        <path d="M22 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
+        <path d="M28 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
+        <path d="M36 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
         <rect x="19" y="12" width="10" height="3" rx="1.5" fill="white"/>
         <circle cx="16" cy="22" r="2" fill="white"/>
       </svg>
@@ -382,19 +388,20 @@ function EarningsIconSVG({ isHovered }: { isHovered: boolean }) {
   );
 }
 
-function SettingsIconSVG({ isHovered }: { isHovered: boolean }) {
+function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
-      <g style={{ transform: isHovered ? "rotate(45deg)" : "rotate(0deg)", transformOrigin: "24px 24px", transition: "transform 0.5s ease-in-out" }}>
+      <g style={{ transform: shouldAnimate ? "rotate(45deg)" : "rotate(0deg)", transformOrigin: "24px 24px", transition: "transform 0.5s ease-in-out" }}>
         <path
           d="M21 4H27V10L30 11.5L35 6L42 13L37 18L38.5 21H44V27H38.5L37 30L42 35L35 42L30 37L27 38.5V44H21V38.5L18 37L13 42L6 35L11 30L9.5 27H4V21H9.5L11 18L6 13L13 6L18 11L21 10V4Z"
           stroke="white"
-          strokeWidth="2.5"
+          strokeWidth="3"
           strokeLinejoin="round"
           fill="none"
         />
       </g>
-      <circle cx="24" cy="24" r="7" stroke="white" strokeWidth="2.5" fill="none" />
+      <circle cx="24" cy="24" r="7" stroke="white" strokeWidth="3" fill="none" />
     </svg>
   );
 }
@@ -414,11 +421,12 @@ function MoreIconSVG({ isHovered }: { isHovered: boolean }) {
       ))}
     </svg>
   );
+}
 
 // Nav items with their animated icon components
 const navItems = [
   { id: 'home', label: 'Home', Icon: HomeIconSVG },
-  { id: 'explore', label: 'Opportunities', Icon: ExploreIconSVG },
+  { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },
   { id: 'talent', label: 'Talent', Icon: TalentIconSVG },
   { id: 'deals', label: 'Deals', Icon: DealsIconSVG },
   { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
@@ -443,7 +451,7 @@ export function CollapsibleSidebar({
   const navigate = useNavigate();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-
+  
   // Use external state if provided, otherwise use internal state
   const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
   const setIsCollapsed = (collapsed: boolean) => {
@@ -548,15 +556,16 @@ export function CollapsibleSidebar({
               onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleNavClick(item.id)}
               style={{ 
-                backgroundColor: isHovered ? 'rgba(255,255,255,0.08)' : 'transparent',
+                backgroundColor: isHovered && !isCollapsed ? 'rgba(255,255,255,0.1)' : 'transparent',
+                boxShadow: isHovered && !isCollapsed ? '0 0 0 1px rgba(255,255,255,0.15)' : 'none',
               }}
             >
               {/* Icon container - fixed position */}
               <div className="w-7 h-7 flex items-center justify-center overflow-visible flex-shrink-0">
                 {item.id === 'messages' ? (
-                  <IconComponent isHovered={isHovered} unreadCount={showBadge ? unreadCount : 0} />
+                  <IconComponent isHovered={isHovered} isActive={isActive} unreadCount={showBadge ? unreadCount : 0} />
                 ) : (
-                  <IconComponent isHovered={isHovered} />
+                  <IconComponent isHovered={isHovered} isActive={isActive} />
                 )}
               </div>
               

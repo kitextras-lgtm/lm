@@ -24,7 +24,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         <rect 
           x="4" y="14" width="28" height="20" rx="3" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           fill="none"
           style={{ 
             transform: isHovered ? "scale(1.05)" : "scale(1)", 
@@ -37,7 +37,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         <circle 
           cx="18" cy="24" r="6" 
           stroke="white" 
-          strokeWidth="2" 
+          strokeWidth="3" 
           fill="none"
           style={{ 
             transform: isHovered ? "scale(1.1)" : "scale(1)", 
@@ -70,7 +70,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         <path 
           d="M32 18L44 12V36L32 30V18Z" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           strokeLinejoin="round" 
           fill="none"
           style={{ 
@@ -124,7 +124,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         <rect 
           x="6" y="10" width="36" height="32" rx="3" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           fill="none"
           style={{ 
             transform: isHovered ? "scale(1.05)" : "scale(1)", 
@@ -137,7 +137,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         <line 
           x1="6" y1="18" x2="42" y2="18" 
           stroke="white" 
-          strokeWidth="2"
+          strokeWidth="3"
           style={{ opacity: isHovered ? 0.8 : 0.6, transition: "opacity 0.3s ease" }}
         />
         
@@ -145,7 +145,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         <line 
           x1="14" y1="6" x2="14" y2="14" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           strokeLinecap="round"
           style={{ 
             transform: isHovered ? "translateY(-1px)" : "translateY(0)", 
@@ -155,7 +155,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         <line 
           x1="34" y1="6" x2="34" y2="14" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           strokeLinecap="round"
           style={{ 
             transform: isHovered ? "translateY(-1px)" : "translateY(0)", 
@@ -209,7 +209,7 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
         <rect 
           x="6" y="6" width="36" height="36" rx="3" 
           stroke="white" 
-          strokeWidth="2.5" 
+          strokeWidth="3" 
           fill="none"
           style={{ 
             transform: isHovered ? "scale(1.02)" : "scale(1)", 
@@ -222,14 +222,14 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
         <rect 
           x="10" y="10" width="28" height="8" rx="1" 
           stroke="white" 
-          strokeWidth="1.5" 
+          strokeWidth="3" 
           fill="none" 
           style={{ opacity: 0.6 }} 
         />
         <line 
           x1="20" y1="14" x2="28" y2="14" 
           stroke="white" 
-          strokeWidth="2" 
+          strokeWidth="3" 
           strokeLinecap="round" 
           style={{ opacity: 0.6 }} 
         />
@@ -243,13 +243,13 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
           <rect 
             x="10" y="20" width="28" height="8" rx="1" 
             stroke="white" 
-            strokeWidth="1.5" 
+            strokeWidth="3" 
             fill="rgba(0,0,0,0.9)" 
           />
           <line 
             x1="20" y1="24" x2="28" y2="24" 
             stroke="white" 
-            strokeWidth="2" 
+            strokeWidth="3" 
             strokeLinecap="round" 
           />
           
@@ -271,14 +271,14 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
         <rect 
           x="10" y="30" width="28" height="8" rx="1" 
           stroke="white" 
-          strokeWidth="1.5" 
+          strokeWidth="3" 
           fill="none" 
           style={{ opacity: 0.6 }} 
         />
         <line 
           x1="20" y1="34" x2="28" y2="34" 
           stroke="white" 
-          strokeWidth="2" 
+          strokeWidth="3" 
           strokeLinecap="round" 
           style={{ opacity: 0.6 }} 
         />
@@ -352,21 +352,21 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
       <div className="flex items-center gap-1 lg:gap-2">
         <button
           onClick={onVideoCall}
-          className="p-2.5 rounded-lg hover:bg-white/5 transition-colors"
+          className="p-2.5 rounded-lg transition-colors"
           aria-label="Video call"
         >
           <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
         </button>
         <button
           onClick={onScheduleMeeting}
-          className="p-2.5 rounded-lg hover:bg-white/5 transition-colors"
+          className="p-2.5 rounded-lg transition-colors"
           aria-label="Schedule meeting"
         >
           <CalendarIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
         </button>
         <button
           onClick={onOpenDrawer}
-          className="p-2.5 rounded-lg hover:bg-white/5 transition-colors"
+          className="p-2.5 rounded-lg transition-colors"
           aria-label="View details"
         >
           <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />

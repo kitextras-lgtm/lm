@@ -195,8 +195,8 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
       <div
         className="rounded-xl px-4 py-3 border relative"
         style={{
-          backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.1)' : '#1a1a1e',
-          borderColor: isSerious ? 'rgba(239, 68, 68, 0.4)' : 'rgba(148, 163, 184, 0.2)',
+          backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.1)' : '#111111',
+          borderColor: isSerious ? 'rgba(239, 68, 68, 0.4)' : '#2f2f2f',
         }}
       >
         <div className="flex items-start gap-3">

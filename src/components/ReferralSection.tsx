@@ -157,7 +157,7 @@ export function ReferralSection() {
 
   if (loading) {
     return (
-      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8" style={{ backgroundColor: '#1a1a1e' }}>
+      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
         <div className="text-center" style={{ color: '#94A3B8' }}>Loading...</div>
       </div>
     );
@@ -165,13 +165,13 @@ export function ReferralSection() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-      <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+      <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
         <div className="flex items-center gap-2 mb-5">
           <Gift className="w-5 h-5" style={{ color: '#64748B' }} />
           <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>Your Code</h3>
         </div>
 
-        <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: '#111111' }}>
+        <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: 'transparent' }}>
           <div className="text-center">
             <div className="text-xs font-medium mb-2" style={{ color: '#64748B' }}>
               YOUR REFERRAL CODE
@@ -207,13 +207,13 @@ export function ReferralSection() {
             Your Stats
           </div>
           <div className="space-y-2">
-            <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: '#111111' }}>
+            <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <span className="text-sm" style={{ color: '#94A3B8' }}>Total uses</span>
               <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
                 {referralData?.total_uses || 0}
               </span>
             </div>
-            <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: '#111111' }}>
+            <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <span className="text-sm" style={{ color: '#94A3B8' }}>Total earned</span>
               <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
                 ${referralData?.total_earnings?.toFixed(2) || '0.00'}
@@ -223,14 +223,14 @@ export function ReferralSection() {
         </div>
       </div>
 
-      <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+      <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: '#111111', borderColor: '#2f2f2f' }}>
         <div className="flex items-center gap-2 mb-5">
           <Gift className="w-5 h-5" style={{ color: '#64748B' }} />
           <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>Enter a Code</h3>
         </div>
 
         {hasAppliedCode ? (
-          <div className="rounded-lg p-6 text-center" style={{ backgroundColor: '#111111' }}>
+          <div className="rounded-lg p-6 text-center" style={{ backgroundColor: 'transparent' }}>
             <Check className="w-12 h-12 mx-auto mb-3" style={{ color: '#10B981' }} />
             <p className="text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
               Code Applied!
@@ -241,7 +241,7 @@ export function ReferralSection() {
           </div>
         ) : (
           <>
-            <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: '#111111' }}>
+            <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: 'transparent' }}>
               <div className="text-center">
                 <label className="block text-xs font-medium mb-2" style={{ color: '#64748B' }}>
                   REFERRAL CODE
@@ -254,7 +254,7 @@ export function ReferralSection() {
                     placeholder="Enter code..."
                     maxLength={8}
                     className="w-full px-4 py-2.5 rounded-lg text-2xl sm:text-3xl font-bold tracking-wider text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
-                    style={{ backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+                    style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
                   />
                 </div>
                 <button
@@ -285,11 +285,11 @@ export function ReferralSection() {
                 Benefits
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: '#111111' }}>
+                <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
                   <span className="text-sm" style={{ color: '#94A3B8' }}>10% first campaign bonus</span>
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
                 </div>
-                <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: '#111111' }}>
+                <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
                   <span className="text-sm" style={{ color: '#94A3B8' }}>Support the community</span>
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
                 </div>

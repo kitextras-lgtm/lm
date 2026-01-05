@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, MessageSquare, ArrowLeft, PenSquare } from 'lucide-react';
+import { Search, MessageSquare, ArrowLeft } from 'lucide-react';
+import { EditIcon } from '../components/EditIcon';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton, NewMessageModal } from '../components/chat';
 import { useCustomerConversations, usePresence, useProfile, getOrCreateAdminConversation } from '../hooks/useChat';
@@ -274,7 +275,7 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
         <div className="lg:hidden flex items-center gap-3 p-3 border-b" style={{ borderColor: 'rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
           <button
             onClick={handleBackToConversations}
-            className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+            className="p-2 rounded-lg transition-colors"
             style={{ color: '#F8FAFC' }}
             aria-label="Back to conversations"
           >
@@ -309,13 +310,10 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
           <span className="text-lg font-bold" style={{ color: '#F8FAFC' }}>
             {cachedProfile?.username || customerProfile?.name || 'Messages'}
           </span>
-          <button 
+          <EditIcon 
             onClick={() => setIsNewMessageModalOpen(true)}
-            className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-            aria-label="New message"
-          >
-            <PenSquare className="w-5 h-5" style={{ color: '#F8FAFC' }} />
-          </button>
+            className="p-2 rounded-lg transition-colors"
+          />
         </div>
       )}
 
@@ -416,13 +414,10 @@ export function MessagesPage({ currentUserId }: MessagesPageProps) {
           <span className="text-xl font-bold" style={{ color: '#F8FAFC' }}>
             {cachedProfile?.username || customerProfile?.name || 'Messages'}
           </span>
-          <button 
+          <EditIcon 
             onClick={() => setIsNewMessageModalOpen(true)}
-            className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-            aria-label="New message"
-          >
-            <PenSquare className="w-5 h-5" style={{ color: '#F8FAFC' }} />
-          </button>
+            className="p-2 rounded-lg transition-colors"
+          />
         </div>
         
         <div className="px-5 pb-4" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
