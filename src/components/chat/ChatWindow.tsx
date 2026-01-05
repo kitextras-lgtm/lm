@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
-import { ChatHeader, ChatInput, MessageBubble, TypingIndicator, ChatInfoDrawer } from './';
+import { ChatHeader } from './ChatHeader';
+import { ChatInput } from './ChatInput';
+import { MessageBubble } from './MessageBubble';
+import { TypingIndicator } from './TypingIndicator';
+import { ChatInfoDrawer } from './ChatInfoDrawer';
 import { useChat } from '../../hooks/useChat';
 import { useImageUpload } from '../../hooks/useImageUpload';
 import type { Conversation, Profile, ReplyTo } from '../../types/chat';
