@@ -1,26 +1,28 @@
 // Message cache utility to store messages locally for instant loading
+import type { Message } from '../types/chat';
+
 const CACHE_PREFIX = 'messages_cache_';
 const CACHE_VERSION = '1';
 const MAX_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
 
 interface CachedMessages {
-  messages: any[];
+  messages: Message[];
   timestamp: number;
   version: string;
 }
 
 // Get cached messages for a conversation
-export function getCachedMessages(conversationId: string): any[] | null {
+export function getCachedMessages(conversationId: string): Message[] | null {
   try {
     const cached = localStorage.getItem(CACHE_PREFIX + conversationId);
     if (cached) {
       const data: CachedMessages = JSON.parse(cached);
-      
+
       // Check version
       if (data.version !== CACHE_VERSION) {
         return null;
       }
-      
+
       // Check cache age
       const age = Date.now() - data.timestamp;
       if (age > MAX_CACHE_AGE) {
@@ -28,17 +30,17 @@ export function getCachedMessages(conversationId: string): any[] | null {
         localStorage.removeItem(CACHE_PREFIX + conversationId);
         return null;
       }
-      
+
       return data.messages || null;
     }
-  } catch (error) {
+  } catch {
     // Ignore errors
   }
   return null;
 }
 
 // Cache messages for a conversation
-export function cacheMessages(conversationId: string, messages: any[]): void {
+export function cacheMessages(conversationId: string, messages: Message[]): void {
   try {
     const data: CachedMessages = {
       messages,
@@ -46,9 +48,8 @@ export function cacheMessages(conversationId: string, messages: any[]): void {
       version: CACHE_VERSION,
     };
     localStorage.setItem(CACHE_PREFIX + conversationId, JSON.stringify(data));
-  } catch (error) {
+  } catch {
     // Ignore errors (localStorage might be full)
-    console.warn('Failed to cache messages:', error);
   }
 }
 
@@ -56,7 +57,7 @@ export function cacheMessages(conversationId: string, messages: any[]): void {
 export function clearCachedMessages(conversationId: string): void {
   try {
     localStorage.removeItem(CACHE_PREFIX + conversationId);
-  } catch (error) {
+  } catch {
     // Ignore errors
   }
 }
@@ -70,8 +71,7 @@ export function clearAllCachedMessages(): void {
         localStorage.removeItem(key);
       }
     });
-  } catch (error) {
+  } catch {
     // Ignore errors
   }
 }
-

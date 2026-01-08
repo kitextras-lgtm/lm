@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import type { Message, Profile, Conversation, ReplyTo } from '../types/chat';
 import { getCachedMessages, cacheMessages } from '../utils/messageCache';
 import { getCachedConversations, cacheConversations } from '../utils/conversationCache';
+import { preloadAndCacheImage } from '../utils/imageCache';
 
 interface UseChatOptions {
   conversationId: string;
@@ -32,13 +33,10 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
 
   const fetchMessages = useCallback(async () => {
     if (!conversationId) {
-      console.warn('⚠️ fetchMessages: No conversationId provided');
       setLoading(false);
       return;
     }
-    
-    console.log('📥 Fetching messages for conversation:', conversationId);
-    
+
     try {
       const { data, error } = await supabase
         .from('messages')
@@ -47,30 +45,18 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('❌ Error fetching messages:', error);
-        console.error('Error details:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
+        console.error('Error fetching messages:', error);
         setLoading(false);
         return;
       }
 
-      console.log('✅ Fetched messages:', data?.length || 0, 'messages');
-      
       if (data) {
         const fetchedMessages = data as Message[];
         setMessages(fetchedMessages);
-        
-        // Cache messages for instant loading next time
         cacheMessages(conversationId, fetchedMessages);
-      } else {
-        console.warn('⚠️ No messages data returned');
       }
     } catch (error) {
-      console.error('❌ Exception fetching messages:', error);
+      console.error('Error fetching messages:', error);
     } finally {
       setLoading(false);
     }
@@ -78,25 +64,19 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
 
   useEffect(() => {
     if (!conversationId) {
-      console.warn('⚠️ useChat: No conversationId, skipping message fetch');
       return;
     }
-    
-    console.log('🔄 useChat effect running for conversation:', conversationId, 'currentUserId:', currentUserId);
-    
+
     // Check cache and set loading state accordingly
     const cached = getCachedMessages(conversationId);
     if (cached && cached.length > 0) {
-      // We have cached messages - use them immediately, no loading state
       setMessages(cached);
       setLoading(false);
     } else {
-      // No cache - show loading state while fetching
       setMessages([]);
       setLoading(true);
     }
-    
-    // Fetch fresh messages from server
+
     fetchMessages();
 
     const channel = supabase
@@ -114,7 +94,6 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
           setMessages((prev) => {
             if (prev.some((m) => m.id === newMessage.id)) return prev;
             const updated = [...prev, newMessage];
-            // Update cache with new message
             cacheMessages(conversationId, updated);
             return updated;
           });
@@ -132,7 +111,6 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
           const updatedMessage = payload.new as Message;
           setMessages((prev) => {
             const updated = prev.map((m) => (m.id === updatedMessage.id ? updatedMessage : m));
-            // Update cache with updated message
             cacheMessages(conversationId, updated);
             return updated;
           });
@@ -183,7 +161,6 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
       }
 
       if (data) {
-        // Get the conversation to check who the other user is
         const { data: convData } = await supabase
           .from('conversations')
           .select('customer_id, admin_id, unread_count_admin, unread_count_customer')
@@ -192,54 +169,37 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
 
         if (convData) {
           const isCustomer = convData.customer_id === currentUserId;
-          // Format last message: remove newlines, trim, and truncate if too long
-          // Store plain message without "Me: " prefix (we'll add it in the UI)
           let lastMessageText = content || 'Sent an image';
           if (lastMessageText !== 'Sent an image') {
             lastMessageText = lastMessageText.replace(/\n/g, ' ').trim();
-            // Strip any existing "Me: " prefix (in case of old data or edge cases)
             if (lastMessageText.startsWith('Me: ')) {
               lastMessageText = lastMessageText.substring(4).trim();
             }
-            // Truncate to 80 characters for preview
             if (lastMessageText.length > 80) {
               lastMessageText = lastMessageText.substring(0, 80) + '...';
             }
           }
-          const updateData: any = {
+          const updateData: Record<string, unknown> = {
             last_message: lastMessageText,
             last_message_at: new Date().toISOString(),
-            last_message_sender_id: currentUserId, // Store who sent the last message
+            last_message_sender_id: currentUserId,
           };
 
-          // When user sends a message, mark their own unread count as 0 (they're viewing the conversation)
-          // And increment unread count for the other user
           if (isCustomer) {
-            // Customer sent message - mark their own unread as 0, increment admin unread count
             updateData.unread_count_customer = 0;
             updateData.unread_count_admin = (convData.unread_count_admin || 0) + 1;
           } else {
-            // Admin sent message - mark their own unread as 0, increment customer unread count
             updateData.unread_count_admin = 0;
-            const previousCount = convData.unread_count_customer || 0;
-            updateData.unread_count_customer = previousCount + 1;
-            console.log('Admin sent message - incrementing customer unread count:', {
-              conversationId,
-              previousCount,
-              newCount: updateData.unread_count_customer,
-              isCustomer
-            });
+            updateData.unread_count_customer = (convData.unread_count_customer || 0) + 1;
           }
 
           const { error: updateError } = await supabase
             .from('conversations')
             .update(updateData)
             .eq('id', conversationId);
-          
+
           if (updateError) {
             console.error('Error updating conversation:', updateError);
-          } else {
-            console.log('Successfully updated conversation unread count:', updateData);
           }
         }
       }
@@ -261,7 +221,6 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
   );
 
   const markMessagesAsSeen = useCallback(async () => {
-    // Mark messages as seen
     const { data: convData } = await supabase
       .from('conversations')
       .select('customer_id, admin_id')
@@ -270,8 +229,7 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
 
     if (convData) {
       const isCustomer = convData.customer_id === currentUserId;
-      
-      // Update message status
+
       await supabase
         .from('messages')
         .update({ status: 'seen' })
@@ -279,30 +237,20 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
         .neq('sender_id', currentUserId)
         .neq('status', 'seen');
 
-      // Reset unread count for the current user
-      const updateData: any = {};
+      const updateData: Record<string, number> = {};
       if (isCustomer) {
         updateData.unread_count_customer = 0;
       } else {
         updateData.unread_count_admin = 0;
       }
 
-      const { data: updatedData, error: updateError } = await supabase
+      const { error: updateError } = await supabase
         .from('conversations')
         .update(updateData)
-        .eq('id', conversationId)
-        .select()
-        .single();
-      
+        .eq('id', conversationId);
+
       if (updateError) {
-        console.error('❌ Error updating unread count:', updateError);
-      } else {
-        console.log('✅ Successfully updated unread count to 0:', {
-          conversationId,
-          isCustomer,
-          updateData,
-          updatedConversation: updatedData
-        });
+        console.error('Error updating unread count:', updateError);
       }
     }
   }, [conversationId, currentUserId]);
@@ -318,7 +266,6 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
 }
 
 export function useCustomerConversations(customerId: string) {
-  // Initialize with cached data for instant display
   const [conversations, setConversations] = useState<(Conversation & { admin: Profile })[]>(() => {
     if (typeof window !== 'undefined' && customerId) {
       const cached = getCachedConversations(customerId);
@@ -326,7 +273,6 @@ export function useCustomerConversations(customerId: string) {
     }
     return [];
   });
-  // Only show loading if we don't have cached data
   const [loading, setLoading] = useState(() => {
     if (typeof window !== 'undefined' && customerId) {
       const cached = getCachedConversations(customerId);
@@ -334,23 +280,15 @@ export function useCustomerConversations(customerId: string) {
     }
     return true;
   });
-  
-  // Function to optimistically update a conversation's unread count
+
   const updateConversationUnreadCount = useCallback((conversationId: string, unreadCount: number) => {
     setConversations((prev) => {
-      const updated = prev.map((conv) =>
+      return prev.map((conv) =>
         conv.id === conversationId ? { ...conv, unread_count_customer: unreadCount } : conv
       );
-      console.log('Optimistically updated conversation unread count:', {
-        conversationId,
-        unreadCount,
-        conversations: updated.map(c => ({ id: c.id, unread: c.unread_count_customer }))
-      });
-      return updated;
     });
   }, []);
 
-  // Define fetchConversations outside useEffect using useCallback to avoid closure issues
   const fetchConversations = useCallback(async () => {
     if (!customerId) {
       setConversations([]);
@@ -358,7 +296,6 @@ export function useCustomerConversations(customerId: string) {
       return;
     }
 
-    console.log('📥 [useCustomerConversations] Fetching conversations for customer:', customerId);
     const { data, error } = await supabase
       .from('conversations')
       .select(`
@@ -369,80 +306,37 @@ export function useCustomerConversations(customerId: string) {
       .order('last_message_at', { ascending: false });
 
     if (error) {
-      console.error('❌ [useCustomerConversations] Error fetching conversations:', error);
-      console.error('❌ Error details:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
+      console.error('Error fetching conversations:', error);
     }
 
     if (!error && data) {
       const conversationsData = data as (Conversation & { admin: Profile })[];
-      
-      // Log which conversations have admin profiles
-      conversationsData.forEach((conv, index) => {
-        if (!conv.admin) {
-          console.warn(`⚠️ [useCustomerConversations] Conversation ${conv.id} (index ${index}) has no admin profile!`, {
-            conversationId: conv.id,
-            adminId: conv.admin_id,
-            hasAdmin: !!conv.admin
-          });
-        }
-      });
-      
-      const totalUnread = conversationsData.reduce((sum, c) => sum + (c.unread_count_customer || 0), 0);
-      console.log('📦 [useCustomerConversations] Fetched conversations:', {
-        customerId,
-        count: conversationsData.length,
-        totalUnread,
-        conversationsWithAdmin: conversationsData.filter(c => !!c.admin).length,
-        conversationsWithoutAdmin: conversationsData.filter(c => !c.admin).length,
-        unreadCounts: conversationsData.map(c => ({ 
-          id: c.id, 
-          unread: c.unread_count_customer,
-          hasAdmin: !!c.admin,
-          adminName: c.admin?.name 
-        }))
-      });
-      // Always create a new array reference to ensure React detects the change
       setConversations([...conversationsData]);
-      
-      // Cache conversations for instant loading next time
       cacheConversations(customerId, conversationsData);
-      
-      // Preload and cache all avatar images in the background
+
+      // Preload avatar images
       conversationsData.forEach((conv) => {
         if (conv.admin?.avatar_url) {
-          // Dynamic import to avoid circular dependency
-          import('../utils/imageCache').then(({ preloadAndCacheImage }) => {
-            preloadAndCacheImage(conv.admin.avatar_url);
-          });
+          preloadAndCacheImage(conv.admin.avatar_url);
         }
       });
-    } else if (error) {
-      console.error('❌ Error fetching customer conversations:', error);
     }
     setLoading(false);
   }, [customerId]);
 
   useEffect(() => {
-    // Don't fetch if customerId is empty
     if (!customerId) {
       setConversations([]);
       setLoading(false);
       return;
     }
 
-    // Check cache first and use it immediately if available
     const cached = getCachedConversations(customerId);
     if (cached && cached.length > 0) {
       setConversations(cached as (Conversation & { admin: Profile })[]);
       setLoading(false);
     }
 
-    // Always fetch fresh data in the background (stale-while-revalidate)
     fetchConversations();
 
     const channel = supabase
@@ -457,52 +351,26 @@ export function useCustomerConversations(customerId: string) {
         },
         (payload) => {
           const newData = payload.new as Conversation | null;
-          const oldData = payload.old as Partial<Conversation> | null;
-          
-          console.log('🔔 Real-time conversation update received:', {
-            event: payload.eventType,
-            conversationId: newData?.id,
-            unread_count_customer: newData?.unread_count_customer,
-            old_unread_count: oldData?.unread_count_customer,
-            customerId,
-            fullPayload: payload
-          });
-          
-          // If this is an UPDATE event, optimistically update immediately
+
           if (payload.eventType === 'UPDATE' && newData?.id) {
             const updatedConv = newData as Conversation;
             setConversations((prev) => {
               const existingIndex = prev.findIndex(c => c.id === updatedConv.id);
               if (existingIndex >= 0) {
-                // Update the conversation with new unread count immediately
                 const updated = [...prev];
                 const adminProfile = prev[existingIndex].admin;
                 updated[existingIndex] = { ...updatedConv, admin: adminProfile } as Conversation & { admin: Profile };
-                const totalUnread = updated.reduce((sum, c) => sum + (c.unread_count_customer || 0), 0);
-                console.log('✅ Optimistically updated conversation from real-time:', {
-                  conversationId: updatedConv.id,
-                  unread_count_customer: updatedConv.unread_count_customer,
-                  totalUnread,
-                  allUnreadCounts: updated.map(c => ({ id: c.id, unread: c.unread_count_customer }))
-                });
                 return updated;
               }
               return prev;
             });
-            // Don't refetch after optimistic update - the optimistic update is sufficient
-            // This prevents flickering of the badge
             return;
           }
-          
-          // Only refetch for INSERT events or if optimistic update didn't apply
-          // This ensures the badge counter updates correctly in real-time without flickering
-          console.log(`🔄 [useCustomerConversations:${customerId.substring(0, 8)}] Refetching conversations after real-time update...`);
+
           fetchConversations();
         }
       )
-      .subscribe((status) => {
-        console.log('📡 Subscription status changed:', status, 'for customer:', customerId);
-      });
+      .subscribe();
 
     return () => {
       channel.unsubscribe();
@@ -592,7 +460,6 @@ export function usePresence(userId: string) {
 // Get the first admin profile ID
 export async function getAdminId(): Promise<string | null> {
   try {
-    console.log('🔍 [getAdminId] Searching for admin profile...');
     const { data, error } = await supabase
       .from('profiles')
       .select('id, name, is_admin')
@@ -601,40 +468,17 @@ export async function getAdminId(): Promise<string | null> {
       .maybeSingle();
 
     if (error) {
-      console.error('❌ [getAdminId] Error fetching admin:', error);
-      console.error('❌ [getAdminId] Error details:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
+      console.error('Error fetching admin:', error);
       return null;
     }
 
     if (!data) {
-      console.warn('⚠️ [getAdminId] No admin profile found. Make sure at least one profile has is_admin = true');
-      // List all profiles for debugging
-      const { data: allProfiles, error: listError } = await supabase
-        .from('profiles')
-        .select('id, name, is_admin, email')
-        .limit(10);
-      
-      if (listError) {
-        console.error('❌ [getAdminId] Error listing profiles:', listError);
-      } else {
-        console.log('📋 [getAdminId] Available profiles:', allProfiles);
-        const adminProfiles = allProfiles?.filter(p => p.is_admin === true) || [];
-        if (adminProfiles.length === 0) {
-          console.error('❌ [getAdminId] NO ADMIN PROFILES FOUND! Please create an admin profile with is_admin = true');
-        }
-      }
       return null;
     }
 
-    console.log('✅ [getAdminId] Admin profile ID found:', data.id, 'Name:', data.name);
     return data.id;
   } catch (error) {
-    console.error('❌ [getAdminId] Exception:', error);
+    console.error('Error in getAdminId:', error);
     return null;
   }
 }
@@ -642,43 +486,36 @@ export async function getAdminId(): Promise<string | null> {
 // Get or create a conversation with admin for a customer
 export async function getOrCreateAdminConversation(customerId: string): Promise<Conversation & { admin: Profile } | null> {
   try {
-    console.log('💬 [getOrCreateAdminConversation] Starting for customer:', customerId);
-    
-    // CRITICAL: Ensure customer profile exists before creating conversation
-    // The foreign key constraint requires the customer_id to exist in profiles table
-    console.log('🔍 [getOrCreateAdminConversation] Checking if customer profile exists...');
+    // Ensure customer profile exists before creating conversation
     const { data: customerProfile, error: profileCheckError } = await supabase
       .from('profiles')
       .select('id')
       .eq('id', customerId)
       .maybeSingle();
-    
+
     if (profileCheckError) {
-      console.error('❌ [getOrCreateAdminConversation] Error checking customer profile:', profileCheckError);
+      console.error('Error checking customer profile:', profileCheckError);
       return null;
     }
-    
+
     if (!customerProfile) {
-      console.log('⚠️ [getOrCreateAdminConversation] Customer profile does not exist, creating it...');
-      
       // Get user data to populate profile
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('email, first_name, last_name, full_name')
         .eq('id', customerId)
         .maybeSingle();
-      
+
       if (userError) {
-        console.error('❌ [getOrCreateAdminConversation] Error fetching user data:', userError);
+        console.error('Error fetching user data:', userError);
         return null;
       }
-      
-      // Create profile with user data
-      const profileName = userData?.full_name || 
+
+      const profileName = userData?.full_name ||
                          (userData?.first_name && userData?.last_name ? `${userData.first_name} ${userData.last_name}`.trim() : null) ||
-                         userData?.email?.split('@')[0] || 
+                         userData?.email?.split('@')[0] ||
                          'User';
-      
+
       const { error: createProfileError } = await supabase
         .from('profiles')
         .insert({
@@ -688,30 +525,20 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
           is_admin: false,
           is_online: false,
         });
-      
+
       if (createProfileError) {
-        console.error('❌ [getOrCreateAdminConversation] Error creating customer profile:', createProfileError);
-        console.error('❌ [getOrCreateAdminConversation] This will prevent conversation creation due to foreign key constraint');
+        console.error('Error creating customer profile:', createProfileError);
         return null;
       }
-      
-      console.log('✅ [getOrCreateAdminConversation] Customer profile created successfully');
-    } else {
-      console.log('✅ [getOrCreateAdminConversation] Customer profile exists');
     }
-    
-    // First, get the admin ID
+
     const adminId = await getAdminId();
     if (!adminId) {
-      console.error('❌ [getOrCreateAdminConversation] No admin profile found. Please ensure at least one profile has is_admin = true');
-      console.error('❌ [getOrCreateAdminConversation] This means the admin conversation cannot be created');
+      console.error('No admin profile found');
       return null;
     }
 
-    console.log('✅ [getOrCreateAdminConversation] Admin ID found:', adminId);
-
     // Check if conversation already exists
-    console.log('🔍 [getOrCreateAdminConversation] Checking for existing conversation...');
     const { data: existingConv, error: fetchError } = await supabase
       .from('conversations')
       .select('*')
@@ -719,19 +546,12 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
       .eq('admin_id', adminId)
       .maybeSingle();
 
-    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('❌ [getOrCreateAdminConversation] Error fetching conversation:', fetchError);
-      console.error('❌ [getOrCreateAdminConversation] Error details:', {
-        code: fetchError.code,
-        message: fetchError.message,
-        details: fetchError.details
-      });
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('Error fetching conversation:', fetchError);
       return null;
     }
 
     if (existingConv) {
-      console.log('✅ [getOrCreateAdminConversation] Existing conversation found:', existingConv.id);
-      // Fetch admin profile
       const { data: adminProfile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -739,23 +559,17 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
         .single();
 
       if (profileError) {
-        console.error('❌ [getOrCreateAdminConversation] Error fetching admin profile:', profileError);
+        console.error('Error fetching admin profile:', profileError);
         return null;
       }
 
       if (adminProfile) {
-        console.log('✅ [getOrCreateAdminConversation] Admin profile loaded:', adminProfile.name);
-        console.log('✅ [getOrCreateAdminConversation] Returning existing conversation with admin');
         return { ...existingConv, admin: adminProfile } as Conversation & { admin: Profile };
       }
-      console.warn('⚠️ [getOrCreateAdminConversation] Admin profile is null');
       return null;
     }
-    
-    console.log('ℹ️ [getOrCreateAdminConversation] No existing conversation found, will create new one');
 
     // Create new conversation
-    console.log('Creating new conversation with admin...');
     const { data: newConv, error: createError } = await supabase
       .from('conversations')
       .insert({
@@ -770,40 +584,31 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
 
     if (createError) {
       console.error('Error creating conversation:', createError);
-      
-      // Handle 409 conflict - conversation already exists (race condition or duplicate)
-      // Check for various error codes and messages that indicate a duplicate/conflict
-      const isConflictError = 
-        createError.code === '23505' || // PostgreSQL unique violation
-        createError.code === '409' || // HTTP 409 Conflict
-        createError.code === 'PGRST204' || // PostgREST conflict
+
+      // Handle conflict - conversation already exists
+      const isConflictError =
+        createError.code === '23505' ||
+        createError.code === '409' ||
+        createError.code === 'PGRST204' ||
         createError.message?.toLowerCase().includes('duplicate') ||
         createError.message?.toLowerCase().includes('unique') ||
         createError.message?.toLowerCase().includes('conflict') ||
         createError.message?.toLowerCase().includes('already exists');
-      
+
       if (isConflictError) {
-        console.log('⚠️ Conversation already exists (conflict detected), fetching existing conversation...', {
-          errorCode: createError.code,
-          errorMessage: createError.message
-        });
-        
-        // Fetch the existing conversation
         const { data: existingConv, error: fetchError } = await supabase
           .from('conversations')
           .select('*')
           .eq('customer_id', customerId)
           .eq('admin_id', adminId)
           .maybeSingle();
-        
+
         if (fetchError) {
           console.error('Error fetching existing conversation after conflict:', fetchError);
           return null;
         }
-        
+
         if (existingConv) {
-          console.log('✅ Found existing conversation after conflict:', existingConv.id);
-          // Fetch admin profile
           const { data: adminProfile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
@@ -816,16 +621,13 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
           }
 
           if (adminProfile) {
-            console.log('✅ Admin profile loaded after conflict:', adminProfile.name);
             return { ...existingConv, admin: adminProfile } as Conversation & { admin: Profile };
           }
         }
       }
-      
+
       return null;
     }
-
-    console.log('New conversation created:', newConv.id);
 
     // Get user's first name for welcome message
     const { data: userData } = await supabase
@@ -851,20 +653,18 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
     if (messageError) {
       console.error('Error sending welcome message:', messageError);
     } else {
-      // Update conversation with last message
-      const welcomeMessagePreview = welcomeMessage.split('\n')[0]; // First line only
+      const welcomeMessagePreview = welcomeMessage.split('\n')[0];
       await supabase
         .from('conversations')
         .update({
           last_message: welcomeMessagePreview,
           last_message_at: new Date().toISOString(),
-          last_message_sender_id: adminId, // Admin sent the welcome message
+          last_message_sender_id: adminId,
           unread_count_customer: 1,
         })
         .eq('id', newConv.id);
     }
 
-    // Fetch admin profile
     const { data: adminProfile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -877,14 +677,12 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
     }
 
     if (adminProfile && newConv) {
-      const result = { ...newConv, admin: adminProfile } as Conversation & { admin: Profile };
-      console.log('Conversation ready:', result);
-      return result;
+      return { ...newConv, admin: adminProfile } as Conversation & { admin: Profile };
     }
 
     return null;
   } catch (error) {
-    console.error('Exception in getOrCreateAdminConversation:', error);
+    console.error('Error in getOrCreateAdminConversation:', error);
     return null;
   }
 }
@@ -896,7 +694,6 @@ export function useAdminConversations(adminId: string) {
   const hasInitiallyLoadedRef = useRef(false);
 
   useEffect(() => {
-    // Don't fetch if adminId is empty
     if (!adminId) {
       setConversations([]);
       setLoading(false);
@@ -904,11 +701,10 @@ export function useAdminConversations(adminId: string) {
     }
 
     const fetchConversations = async () => {
-      // Only set loading on initial fetch, not on subsequent real-time updates
       if (!hasInitiallyLoadedRef.current) {
         setLoading(true);
       }
-      // First get conversations
+
       const { data: convData, error: convError } = await supabase
         .from('conversations')
         .select('*')
@@ -929,11 +725,9 @@ export function useAdminConversations(adminId: string) {
         return;
       }
 
-      // Get all unique customer IDs and conversation IDs
       const customerIds = [...new Set(convData.map(c => c.customer_id))];
       const conversationIds = convData.map(c => c.id);
-      
-      // Fetch customer profiles
+
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -947,8 +741,6 @@ export function useAdminConversations(adminId: string) {
         return;
       }
 
-      // Get the most recent message from each customer (where sender_id = customer_id)
-      // This will help us sort conversations by most recent user message
       const { data: lastCustomerMessages, error: messagesError } = await supabase
         .from('messages')
         .select('conversation_id, created_at, sender_id')
@@ -959,12 +751,10 @@ export function useAdminConversations(adminId: string) {
         console.error('Error fetching last customer messages:', messagesError);
       }
 
-      // Create a map of conversation_id -> most recent customer message timestamp
       const lastCustomerMessageMap = new Map<string, string>();
       if (lastCustomerMessages) {
         for (const msg of lastCustomerMessages) {
           const conv = convData.find(c => c.id === msg.conversation_id);
-          // Only consider messages from the customer (not admin)
           if (conv && msg.sender_id === conv.customer_id) {
             if (!lastCustomerMessageMap.has(msg.conversation_id)) {
               lastCustomerMessageMap.set(msg.conversation_id, msg.created_at);
@@ -973,7 +763,6 @@ export function useAdminConversations(adminId: string) {
         }
       }
 
-      // Map profiles to conversations
       const profileMap = new Map((profileData || []).map(p => [p.id, p]));
       const conversationsWithCustomers = convData.map(conv => ({
         ...conv,
@@ -981,30 +770,23 @@ export function useAdminConversations(adminId: string) {
         last_customer_message_at: lastCustomerMessageMap.get(conv.id) || conv.last_message_at,
       })).filter(conv => conv.customer !== null) as (Conversation & { customer: Profile; last_customer_message_at?: string })[];
 
-      // Preload and cache all customer avatar images in the background
+      // Preload avatar images
       conversationsWithCustomers.forEach((conv) => {
         if (conv.customer?.avatar_url) {
-          // Dynamic import to avoid circular dependency
-          import('../utils/imageCache').then(({ preloadAndCacheImage }) => {
-            preloadAndCacheImage(conv.customer.avatar_url);
-          });
+          preloadAndCacheImage(conv.customer.avatar_url);
         }
       });
 
-      // Sort by most recent customer message
-      // Conversations with customer messages are prioritized over those without
       conversationsWithCustomers.sort((a, b) => {
         const hasCustomerMsgA = lastCustomerMessageMap.has(a.id);
         const hasCustomerMsgB = lastCustomerMessageMap.has(b.id);
-        
-        // If one has customer message and the other doesn't, prioritize the one with customer message
+
         if (hasCustomerMsgA && !hasCustomerMsgB) return -1;
         if (!hasCustomerMsgA && hasCustomerMsgB) return 1;
-        
-        // Both have or both don't have customer messages - sort by timestamp
+
         const timeA = a.last_customer_message_at ? new Date(a.last_customer_message_at).getTime() : (a.last_message_at ? new Date(a.last_message_at).getTime() : 0);
         const timeB = b.last_customer_message_at ? new Date(b.last_customer_message_at).getTime() : (b.last_message_at ? new Date(b.last_message_at).getTime() : 0);
-        return timeB - timeA; // Descending order (most recent first)
+        return timeB - timeA;
       });
 
       setConversations(conversationsWithCustomers);
@@ -1025,8 +807,6 @@ export function useAdminConversations(adminId: string) {
           filter: `admin_id=eq.${adminId}`,
         },
         () => {
-          // Silently refresh on real-time updates (don't show loading)
-          // hasInitiallyLoadedRef ensures we don't set loading to true
           fetchConversations();
         }
       )
@@ -1039,4 +819,3 @@ export function useAdminConversations(adminId: string) {
 
   return { conversations, loading };
 }
-
