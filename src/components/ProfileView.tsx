@@ -18,6 +18,8 @@ interface ProfileViewProps {
   onUpdateProfile?: (updates: { profile_picture?: File; banner?: File; bio?: string }) => void;
   isEditing?: boolean;
   setIsEditing?: (editing: boolean) => void;
+  onEditProfile?: () => void;
+  appliedTheme?: 'light' | 'grey' | 'dark';
 }
 
 export function ProfileView({ 
@@ -26,7 +28,9 @@ export function ProfileView({
   onBack,
   onUpdateProfile,
   isEditing = false,
-  setIsEditing
+  setIsEditing,
+  onEditProfile,
+  appliedTheme = 'dark'
 }: ProfileViewProps) {
   const [bannerHovered, setBannerHovered] = useState(false);
   const [avatarHovered, setAvatarHovered] = useState(false);
@@ -68,6 +72,10 @@ export function ProfileView({
       try {
         await onUpdateProfile({ banner: file });
         console.log('✅ Banner uploaded successfully');
+        // Clear preview after a short delay to allow profile refresh
+        setTimeout(() => {
+          setBannerPreview(null);
+        }, 500);
       } catch (err) {
         console.error('❌ Banner upload failed:', err);
         // Revert preview on error
@@ -109,9 +117,9 @@ export function ProfileView({
   ];
 
   return (
-    <div className="min-h-screen bg-[#111111]">
+    <div className="min-h-screen" style={{ backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#111111]/80 backdrop-blur-md border-b border-[#1a1a1a]">
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b" style={{ backgroundColor: appliedTheme === 'light' ? 'rgba(15, 23, 42, 0.8)' : appliedTheme === 'grey' ? 'rgba(26, 26, 30, 0.8)' : 'rgba(0, 0, 0, 0.8)', borderColor: appliedTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : appliedTheme === 'grey' ? '#2A2A2E' : '#1a1a1a' }}>
         <div className="flex items-center gap-6 px-4 py-3">
           {onBack && (
             <button 
@@ -202,7 +210,7 @@ export function ProfileView({
         {/* Edit Profile Button */}
         <div className="flex justify-end pt-3">
           <button 
-            onClick={() => setIsEditing?.(!isEditing)}
+            onClick={onEditProfile}
             className="px-5 py-2 rounded-xl font-semibold text-sm hover:brightness-110 transition-all border"
             style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
           >
@@ -212,11 +220,31 @@ export function ProfileView({
 
         {/* Name & Username */}
         <div className="mt-12">
-          <h2 className="font-bold text-xl" style={{ color: '#F8FAFC' }}>
-            {userProfile?.first_name && userProfile?.last_name 
-              ? `${userProfile.first_name} ${userProfile.last_name}`
-              : 'Your Name'}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-bold text-xl" style={{ color: '#F8FAFC' }}>
+              {userProfile?.first_name && userProfile?.last_name 
+                ? `${userProfile.first_name} ${userProfile.last_name}`
+                : 'Your Name'}
+            </h2>
+            <svg 
+              className="w-5 h-5" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(26, 140, 255, 0.3))' }}
+            >
+              <path 
+                d="M12 2L22 8.5V15.5L12 22L2 15.5V8.5L12 2Z" 
+                fill="#1a8cff" 
+                stroke="#1a8cff" 
+                strokeWidth="0.5"
+              />
+              <path 
+                d="M10 13L8.5 11.5L7 13L10 16L17 9L15.5 7.5L10 13Z" 
+                fill="#000000"
+              />
+            </svg>
+          </div>
           <p style={{ color: '#64748B' }}>@{userProfile?.username || 'username'}</p>
         </div>
 
@@ -237,18 +265,7 @@ export function ProfileView({
           </div>
         </div>
 
-        {/* Following/Followers */}
-        <div className="flex items-center gap-4 mt-3">
-          <div className="flex items-center gap-1">
-            <span className="font-bold" style={{ color: '#F8FAFC' }}>0</span>
-            <span style={{ color: '#94A3B8' }}>Following</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="font-bold" style={{ color: '#F8FAFC' }}>0</span>
-            <span style={{ color: '#94A3B8' }}>Followers</span>
-          </div>
-        </div>
-      </div>
+              </div>
 
       {/* Tabs */}
       <div className="border-b" style={{ borderColor: '#1a1a1a' }}>
@@ -272,7 +289,7 @@ export function ProfileView({
 
       {/* Content Area */}
       <div className="p-8 text-center" style={{ color: '#94A3B8' }}>
-        <p>No content yet.</p>
+        <p>Interactions coming soon</p>
       </div>
     </div>
   );

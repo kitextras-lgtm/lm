@@ -5,6 +5,7 @@ interface MobileBottomNavProps {
   setActiveSection: (section: string) => void;
   unreadCount?: number;
   profilePicture?: string | null;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
 }
 
 // Haptic feedback utility for iOS
@@ -23,13 +24,30 @@ const triggerHaptic = (style: 'light' | 'medium' | 'heavy' = 'light') => {
   }
 };
 
-export function MobileBottomNav({ activeSection, setActiveSection, unreadCount = 0, profilePicture }: MobileBottomNavProps) {
+export function MobileBottomNav({ activeSection, setActiveSection, unreadCount = 0, profilePicture, backgroundTheme = 'dark' }: MobileBottomNavProps) {
   const [pressedItem, setPressedItem] = useState<string | null>(null);
+
+  // Get theme-consistent colors
+  const getNavBackground = () => {
+    switch (backgroundTheme) {
+      case 'light': return '#0F172A'; // Navy
+      case 'grey': return '#1A1A1E'; // Grey
+      default: return '#000000'; // Dark - pure black for consistency
+    }
+  };
+
+  const getBorderColor = () => {
+    switch (backgroundTheme) {
+      case 'light': return 'rgba(148, 163, 184, 0.2)';
+      case 'grey': return 'rgba(255, 255, 255, 0.1)';
+      default: return 'rgba(255, 255, 255, 0.1)';
+    }
+  };
 
   const navItems = [
     { id: 'home' },
     { id: 'explore' },
-    { id: 'deals' },
+    { id: 'talent' },
     { id: 'messages' },
     { id: 'profile' },
   ];
@@ -37,6 +55,10 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
   const handleTabPress = useCallback((id: string) => {
     triggerHaptic('light');
     setActiveSection(id);
+    // Scroll to top when profile is clicked
+    if (id === 'profile') {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }, [setActiveSection]);
 
   const handleTouchStart = useCallback((id: string) => {
@@ -96,53 +118,48 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
             </g>
           </svg>
         );
-      case 'deals':
+      case 'talent':
         return (
           <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
-            <path
-              d="M6 12 H20 V18 C20 20.2 18.2 22 16 22 C13.8 22 12 20.2 12 18 V12 H6 V36 H20 V30 C20 27.8 18.2 26 16 26 C13.8 26 12 27.8 12 30 V36 H6 Z"
-              stroke={color}
-              strokeWidth={strokeWidth}
-              strokeLinejoin="round"
-              fill="none"
-              style={{ transform: isActive ? "translateX(2px)" : "translateX(-3px)", transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" }}
-            />
-            <path
-              d="M42 12 H28 V18 C28 20.2 29.8 22 32 22 C34.2 22 36 20.2 36 18 V12 H42 V36 H28 V30 C28 27.8 29.8 26 32 26 C34.2 26 36 27.8 36 30 V36 H42 Z"
-              stroke={color}
-              strokeWidth={strokeWidth}
-              strokeLinejoin="round"
-              fill="none"
-              style={{ transform: isActive ? "translateX(-2px)" : "translateX(3px)", transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" }}
-            />
+            {/* Left person (behind) */}
+            <circle cx="12" cy="22" r="5" stroke={color} strokeWidth="2.5" fill="none" style={{ opacity: 0.5 }} />
+            <path d="M4 44C4 37 7 32 12 32" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" style={{ opacity: 0.5 }} />
+            {/* Right person (behind) */}
+            <circle cx="36" cy="22" r="5" stroke={color} strokeWidth="2.5" fill="none" style={{ opacity: 0.5 }} />
+            <path d="M44 44C44 37 41 32 36 32" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" style={{ opacity: 0.5 }} />
+            {/* Center person (front) - stays white, no fill change */}
+            <circle cx="24" cy="20" r="6" stroke={color} strokeWidth="2.5" fill="none" />
+            <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" />
           </svg>
         );
       case 'messages':
         return (
-          <div className="relative">
+          <div className="relative w-7 h-7 flex items-center justify-center">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+              {/* Back bubble */}
               <path 
-                d="M32 12H18C14.6863 12 12 14.6863 12 18V26C12 29.3137 14.6863 32 18 32H20L24 36L28 32H32C35.3137 32 38 29.3137 38 26V18C38 14.6863 35.3137 12 32 12Z" 
+                d="M36 6H14C9.58172 6 6 9.58172 6 14V26C6 30.4183 9.58172 34 14 34H17L24 42L31 34H36C40.4183 34 44 30.4183 44 26V14C44 9.58172 40.4183 6 36 6Z" 
                 stroke={color} 
                 strokeWidth={strokeWidth} 
                 fill="none"
-                              />
+              />
+              {/* Front bubble */}
               <path 
-                d="M30 20H16C13.2386 20 11 22.2386 11 25V31C11 33.7614 13.2386 36 16 36H18L21 40L24 36H30C32.7614 36 35 33.7614 35 31V25C35 22.2386 32.7614 20 30 20Z" 
+                d="M34 16H12C8.68629 16 6 18.6863 6 22V32C6 35.3137 8.68629 38 12 38H15L21 46L27 38H34C37.3137 38 40 35.3137 40 32V22C40 18.6863 37.3137 16 34 16Z" 
                 stroke={color} 
                 strokeWidth={strokeWidth} 
-                fill="rgba(0,0,0,0.9)"
-                              />
-              <g style={{ opacity: isActive ? 1 : 0.3, transition: 'opacity 0.3s ease' }}>
-                <circle cx="17" cy="28" r="2" fill={color}/>
+                fill={getNavBackground()}
+              />
+              <g style={{ opacity: isActive ? 1 : 0.7, transition: 'opacity 0.3s ease' }}>
+                <circle cx="15" cy="28" r="2" fill={color}/>
                 <circle cx="23" cy="28" r="2" fill={color}/>
-                <circle cx="29" cy="28" r="2" fill={color}/>
+                <circle cx="31" cy="28" r="2" fill={color}/>
               </g>
             </svg>
             {activeSection !== 'messages' && unreadCount > 0 && (
-              <div className="absolute -top-1 -right-1 flex items-center justify-center">
-                <div className="absolute w-3.5 h-3.5 rounded-full bg-red-500 animate-ping opacity-75" />
-                <div className="relative w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center shadow-lg" />
+              <div className="absolute -top-0.5 -right-0.5 flex items-center justify-center">
+                <div className="absolute w-3 h-3 rounded-full bg-red-500 animate-ping opacity-75" />
+                <div className="relative w-3 h-3 rounded-full bg-red-500 flex items-center justify-center shadow-lg" />
               </div>
             )}
           </div>
@@ -182,13 +199,14 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
 
   return (
     <nav 
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#111111]"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50"
       style={{ 
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        borderTop: '1px solid rgba(255,255,255,0.1)'
+        borderTop: `1px solid ${getBorderColor()}`,
+        backgroundColor: getNavBackground()
       }}
     >
-      <div className="flex items-center justify-around py-2 px-4">
+      <div className="flex items-center justify-around py-2 px-2">
         {navItems.map((item) => {
           const isActive = activeSection === item.id || (item.id === 'profile' && activeSection === 'settings');
           const isPressed = pressedItem === item.id;
@@ -200,8 +218,10 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               onTouchStart={() => handleTouchStart(item.id)}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-center justify-center p-3 rounded-full"
+              className="flex items-center justify-center rounded-full"
               style={{ 
+                width: '52px',
+                height: '52px',
                 transform: isPressed ? 'scale(0.9)' : 'scale(1)',
                 transition: 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                 WebkitTapHighlightColor: 'transparent'
@@ -209,6 +229,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               aria-label={item.id}
             >
               <div
+                className="w-7 h-7 flex items-center justify-center"
                 style={{
                   transform: isActive ? 'scale(1.1)' : 'scale(1)',
                   transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'

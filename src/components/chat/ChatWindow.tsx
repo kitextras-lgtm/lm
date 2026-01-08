@@ -15,6 +15,9 @@ interface ChatWindowProps {
   currentUserId: string;
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
+  onBack?: () => void;
+  showBackButton?: boolean;
 }
 
 export const ChatWindow = memo(function ChatWindow({
@@ -23,6 +26,9 @@ export const ChatWindow = memo(function ChatWindow({
   currentUserId,
   getSenderName,
   onMarkAsRead,
+  backgroundTheme = 'dark',
+  onBack,
+  showBackButton = false,
 }: ChatWindowProps) {
   const { messages, loading, otherUserTyping, sendMessage, setTyping, markMessagesAsSeen } = useChat({
     conversationId: conversation.id,
@@ -41,7 +47,24 @@ export const ChatWindow = memo(function ChatWindow({
   const shouldAutoScrollRef = useRef(true);
 
   // Track content readiness for smooth transition
-  const [contentReady, setContentReady] = useState(false);
+  // Show content immediately if we have cached messages (instant loading)
+  const [contentReady, setContentReady] = useState(() => {
+    // Check if we have cached messages - if so, show content immediately
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(`messages_cache_${conversation.id}`);
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          if (data.messages && data.messages.length > 0) {
+            return true; // Show content immediately from cache
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+    }
+    return false;
+  });
   const imagesLoadedRef = useRef<Record<string, boolean>>({});
 
   // Get messages with images that need to load
@@ -54,29 +77,34 @@ export const ChatWindow = memo(function ChatWindow({
   useEffect(() => {
     isInitialLoadRef.current = true;
     shouldAutoScrollRef.current = true;
-    setContentReady(false);
     imagesLoadedRef.current = {};
+    
+    // Check if we have cached messages for the new conversation
+    const cached = localStorage.getItem(`messages_cache_${conversation.id}`);
+    if (cached) {
+      try {
+        const data = JSON.parse(cached);
+        if (data.messages && data.messages.length > 0) {
+          setContentReady(true); // Show content immediately from cache
+          return;
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+    setContentReady(false);
   }, [conversation.id]);
 
-  // Check if all images are loaded and mark content as ready
+  // Mark content as ready when messages are available (don't wait for images)
   useEffect(() => {
     if (!loading && messages.length > 0) {
-      // If no images, content is ready immediately
-      if (messagesWithImages.length === 0) {
-        setContentReady(true);
-        return;
-      }
-
-      // Check if all images are loaded
-      const allLoaded = messagesWithImages.every(m => imagesLoadedRef.current[m.id] === true);
-      if (allLoaded) {
-        setContentReady(true);
-      }
+      // Content is ready immediately when we have messages - images will load in place
+      setContentReady(true);
     } else if (!loading && messages.length === 0) {
       // No messages, content is ready
       setContentReady(true);
     }
-  }, [loading, messages.length, messagesWithImages]);
+  }, [loading, messages.length]);
 
   // Handle image load callback from MessageBubble
   const handleImageLoad = useCallback((messageId: string, loaded: boolean) => {
@@ -203,13 +231,17 @@ export const ChatWindow = memo(function ChatWindow({
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden" style={{ backgroundColor: '#111111', height: '100%' }}>
+    <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', height: '100%' }}>
       <ChatHeader 
         user={otherUser} 
         isTyping={otherUserTyping}
         onVideoCall={() => console.log('Video call clicked')}
         onScheduleMeeting={() => console.log('Schedule meeting clicked')}
         onOpenDrawer={() => setIsDrawerOpen(true)}
+        isDrawerOpen={isDrawerOpen}
+        backgroundTheme={backgroundTheme}
+        onBack={onBack}
+        showBackButton={showBackButton}
       />
 
       {/* Messages area wrapper with relative positioning for skeleton overlay */}
@@ -219,10 +251,10 @@ export const ChatWindow = memo(function ChatWindow({
           <div 
             className="absolute inset-0 z-10 flex flex-col"
             style={{ 
-              backgroundColor: '#111111',
+              backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
               transition: 'opacity 150ms ease-out',
-              opacity: contentReady ? 0 : 1,
-              pointerEvents: contentReady ? 'none' : 'auto'
+              opacity: 1,
+              pointerEvents: 'none'
             }}
           >
           {/* Skeleton messages area */}
@@ -283,19 +315,18 @@ export const ChatWindow = memo(function ChatWindow({
         <div
           ref={messagesContainerRef}
           className="absolute inset-0 overflow-y-auto"
-        style={{ 
-          backgroundColor: '#111111', 
-          scrollbarWidth: 'thin', 
-          scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', 
-          overflowY: 'auto',
-          opacity: contentReady ? 1 : 0,
-          transition: 'opacity 150ms ease-in'
-        }}
-        onScroll={() => {
-          // Track if user is at bottom to control auto-scroll behavior
-          if (messagesContainerRef.current) {
-            const container = messagesContainerRef.current;
-            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50; // 50px threshold
+          style={{ 
+            backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', 
+            scrollbarWidth: 'thin', 
+            scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', 
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch'
+          }}
+          onScroll={() => {
+            // Track if user is at bottom to control auto-scroll behavior
+            if (messagesContainerRef.current) {
+              const container = messagesContainerRef.current;
+              const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50; // 50px threshold
 
             // Only auto-scroll if user is at bottom (don't restore mid-scroll state)
             shouldAutoScrollRef.current = isAtBottom;
@@ -320,7 +351,7 @@ export const ChatWindow = memo(function ChatWindow({
           {messages.length === 0 && !loading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center px-4 lg:px-6">
-                <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-5 rounded-xl lg:rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
+                <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-5 rounded-xl lg:rounded-2xl flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#2A2A2E' : '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
                   <svg className="w-8 h-8 lg:w-10 lg:h-10" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
@@ -341,7 +372,7 @@ export const ChatWindow = memo(function ChatWindow({
                   <div key={message.id}>
                     {shouldShowDate && (
                       <div className="flex items-center justify-center py-5">
-                        <div className="px-3 py-1.5 rounded-lg" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.15)' }}>
+                        <div className="px-3 py-1.5 rounded-lg" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', border: '1px solid rgba(75, 85, 99, 0.15)' }}>
                           <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>
                             {formatDate(message.created_at)}
                           </span>
@@ -355,6 +386,7 @@ export const ChatWindow = memo(function ChatWindow({
                       onScrollToMessage={handleScrollToMessage}
                       senderName={getSenderName(message.sender_id)}
                       onImageLoad={handleImageLoad}
+                      backgroundTheme={backgroundTheme}
                     />
                   </div>
                 );
@@ -375,6 +407,7 @@ export const ChatWindow = memo(function ChatWindow({
         replyTo={replyTo}
         onCancelReply={handleCancelReply}
         otherUserName={otherUser.name}
+        backgroundTheme={backgroundTheme}
       />
 
       {/* Info Drawer */}

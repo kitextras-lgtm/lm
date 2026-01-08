@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, X, MessageSquare, ChevronRight } from 'lucide-react';
+import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, X, MessageSquare, ChevronRight, ChevronDown } from 'lucide-react';
 import { BetaBadge } from '../components/BetaBadge';
+import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
 import { DoorTransition } from '../components/DoorTransition';
@@ -13,12 +14,11 @@ import { CreditCardIcon } from '../components/CreditCardIcon';
 import { BellIcon } from '../components/BellIcon';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 import { useCustomerConversations } from '../hooks/useChat';
-import { DEFAULT_AVATAR_DATA_URI } from '../components/DefaultAvatar';
+import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
-import { MoreView } from '../components/MoreView';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -245,7 +245,7 @@ const CAMPAIGNS: CampaignData[] = [
   }
 ];
 
-function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void }) {
+function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
   const [showFullRules, setShowFullRules] = useState(false);
 
   if (!campaign) return null;
@@ -259,7 +259,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
       <div 
         className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
         style={{ 
-          backgroundColor: '#1a1a1e',
+          backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           animation: 'popOut 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}
@@ -291,7 +291,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
                   </svg>
                 </div>
               </div>
-              <p className="text-sm" style={{ color: '#64748B' }}>{campaign.timeAgo}</p>
+              <p className="text-sm" style={{ color: '#94A3B8' }}>{campaign.timeAgo}</p>
               <p className="text-base font-medium mt-1.5" style={{ color: '#94A3B8' }}>{campaign.title}</p>
             </div>
             <div 
@@ -308,21 +308,21 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         </div>
 
         {/* Stats row */}
-        <div className="mx-7 mb-7 rounded-2xl overflow-hidden" style={{ backgroundColor: '#111111', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <div className="mx-7 mb-7 rounded-2xl overflow-hidden" style={{ backgroundColor: '#000000', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
           <div className="grid grid-cols-5 divide-x" style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}>
             <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Ends</p>
+              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
               {campaign.paidOutPercent && (
                 <p className="text-xs font-medium mt-1" style={{ color: '#3b82f6' }}>{campaign.paidOutPercent} PAID OUT</p>
               )}
             </div>
             <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Language</p>
+              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
             </div>
             <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Platforms</p>
+              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2 mt-1">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
@@ -342,11 +342,11 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
               </div>
             </div>
             <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Pay Type</p>
+              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Pay Type</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
             </div>
             <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#64748B' }}>Payout</p>
+              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Payout</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
             </div>
           </div>
@@ -382,7 +382,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           <div className="px-7 pb-7 pt-5 mt-2" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
             <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>What to include</h3>
             <div className="flex items-start gap-4">
-              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#64748B' }} />
+              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#94A3B8' }} />
               <div>
                 <p className="text-base font-medium" style={{ color: '#F8FAFC' }}>Caption, tags, text</p>
                 <p className="text-xs font-semibold mt-2" style={{ color: '#3b82f6' }}>REQUIRED HASHTAGS</p>
@@ -406,13 +406,13 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
   );
 }
 
-function FighterMusicCard({ onClick }: { onClick: () => void }) {
+function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
   const [isCardHovered, setIsCardHovered] = useState(false);
   
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer" 
-      style={{ backgroundColor: '#1a1a1e' }}
+      style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
@@ -430,7 +430,7 @@ function FighterMusicCard({ onClick }: { onClick: () => void }) {
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>13d ago • Varied</p>
+          <p className="text-xs sm:text-sm" style={{ color: '#94A3B8' }}>13d ago • Varied</p>
         </div>
       </div>
 
@@ -447,13 +447,13 @@ function FighterMusicCard({ onClick }: { onClick: () => void }) {
   );
 }
 
-function AstaViolinaCard({ onClick }: { onClick: () => void }) {
+function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
   const [isCardHovered, setIsCardHovered] = useState(false);
   
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer" 
-      style={{ backgroundColor: '#1a1a1e' }}
+      style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
@@ -471,7 +471,7 @@ function AstaViolinaCard({ onClick }: { onClick: () => void }) {
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>13d ago • Varied</p>
+          <p className="text-xs sm:text-sm" style={{ color: '#94A3B8' }}>13d ago • Varied</p>
         </div>
       </div>
 
@@ -538,14 +538,14 @@ const MobileSettingsMenuItem = ({
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors"
+      className="w-full flex items-center justify-between px-4 py-4 transition-colors"
       style={{ borderBottom: showBorder ? '1px solid rgba(75, 85, 99, 0.2)' : 'none' }}
     >
       <div className="flex items-center gap-3">
         <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
         <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
       </div>
-      <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-5 h-5" style={{ color: '#94A3B8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     </button>
@@ -664,9 +664,30 @@ export function ArtistDashboard() {
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+  const [backgroundTheme, setBackgroundTheme] = useState<'light' | 'grey' | 'dark'>(() => {
+    const saved = localStorage.getItem('backgroundTheme');
+    return (saved as 'light' | 'grey' | 'dark') || 'dark';
+  });
+  const [appliedTheme, setAppliedTheme] = useState<'light' | 'grey' | 'dark'>(() => {
+    const saved = localStorage.getItem('appliedTheme');
+    return (saved as 'light' | 'grey' | 'dark') || 'dark';
+  });
+
+  // Save theme to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('backgroundTheme', backgroundTheme);
+  }, [backgroundTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('appliedTheme', appliedTheme);
+  }, [appliedTheme]);
+  const [feedbackCategory, setFeedbackCategory] = useState<'suggestion' | 'bug-report' | 'feature-request' | 'other' | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [cachedProfilePic, setCachedProfilePic] = useState<string | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignData | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const languageDropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const personalRef = useRef<HTMLDivElement>(null);
   const accountsRef = useRef<HTMLDivElement>(null);
@@ -1236,24 +1257,22 @@ export function ArtistDashboard() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
+      if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
+        setIsLanguageDropdownOpen(false);
+      }
     };
 
-    if (isDropdownOpen) {
+    if (isDropdownOpen || isLanguageDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isLanguageDropdownOpen]);
 
   const renderPersonalInfo = () => (
-    <div ref={personalRef} className="scroll-mt-6 rounded-2xl p-3 lg:p-4 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <div className="mb-2 lg:mb-4 hidden lg:block">
-        <h2 className="text-base lg:text-lg font-bold" style={{ color: '#F8FAFC' }}>Personal info</h2>
-      </div>
-
-      <div className="space-y-3 lg:space-y-4">
+    <div ref={personalRef} className="scroll-mt-6 space-y-3 lg:space-y-4">
         <div className="mb-2 lg:mb-0">
           <div className="flex items-center gap-2.5 lg:gap-4">
             <div
@@ -1321,7 +1340,7 @@ export function ArtistDashboard() {
                 <button
                   onClick={() => setIsEditing(true)}
                   className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                  style={{ color: '#64748B' }}
+                  style={{ color: '#94A3B8' }}
                 >
                   <EditIcon />
                 </button>
@@ -1348,7 +1367,7 @@ export function ArtistDashboard() {
                 <button
                   onClick={() => setIsEditing(true)}
                   className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                  style={{ color: '#64748B' }}
+                  style={{ color: '#94A3B8' }}
                 >
                   <EditIcon />
                 </button>
@@ -1361,7 +1380,7 @@ export function ArtistDashboard() {
           <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Username</label>
           <div className="flex items-center gap-1.5 lg:gap-3">
             <div className="flex-1 flex items-center h-11 lg:h-12 px-3 lg:px-4 rounded-xl" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <span className="text-sm lg:text-sm" style={{ color: '#64748B' }}>@</span>
+              <span className="text-sm lg:text-sm" style={{ color: '#94A3B8' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -1377,7 +1396,7 @@ export function ArtistDashboard() {
           <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Location</label>
           <div className="flex items-center gap-1.5 lg:gap-3">
             <div className="flex-1 min-w-0 flex items-center h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <MapPin className="w-4 h-4 lg:w-4 lg:h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#64748B' }} />
+              <MapPin className="w-4 h-4 lg:w-4 lg:h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#94A3B8' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -1399,7 +1418,7 @@ export function ArtistDashboard() {
               <button
                 onClick={() => setIsEditing(true)}
                 className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                style={{ color: '#64748B' }}
+                style={{ color: '#94A3B8' }}
               >
                 <EditIcon />
               </button>
@@ -1411,7 +1430,7 @@ export function ArtistDashboard() {
           <label className="block text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
           <div className="flex items-center gap-1.5 lg:gap-3">
             <div className="flex-1 min-w-0 flex items-center h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <Globe className="w-4 h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#64748B' }} />
+              <Globe className="w-4 h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#94A3B8' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -1433,7 +1452,7 @@ export function ArtistDashboard() {
               <button
                 onClick={() => setIsEditing(true)}
                 className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                style={{ color: '#64748B' }}
+                style={{ color: '#94A3B8' }}
               >
                 <EditIcon />
               </button>
@@ -1495,30 +1514,16 @@ export function ArtistDashboard() {
           </div>
         )}
       </div>
-    </div>
   );
 
   const renderConnectedAccounts = () => (
-    <div ref={accountsRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Connected accounts (0)</h2>
-      <p className="text-sm lg:text-sm mb-4 lg:mb-6" style={{ color: '#94A3B8' }}>
-        Add social links to display your portfolio and verify account ownership.
-      </p>
-
-      <button className="flex items-center gap-3 px-5 py-3.5 lg:py-4 rounded-xl text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
-        <Plus className="w-5 h-5" />
-        Connect an account
-      </button>
+    <div ref={accountsRef} className="scroll-mt-6">
+      <SocialLinksForm appliedTheme={appliedTheme} />
     </div>
   );
 
   const renderPayoutMethods = () => (
-    <div ref={payoutRef} className="scroll-mt-6 rounded-2xl p-4 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Payment Method</h2>
-      <p className="text-sm lg:text-sm mb-4 lg:mb-6" style={{ color: '#94A3B8' }}>
-        Payments are typically processed automatically through Tipalti. If a payout needs to be issued outside of Tipalti, you can add an alternative payment method.
-      </p>
-
+    <div ref={payoutRef} className="scroll-mt-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:gap-4">
         <button className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
           <Plus className="w-5 h-5" />
@@ -1579,15 +1584,14 @@ export function ArtistDashboard() {
   };
 
   const renderNotifications = () => (
-    <div ref={notificationsRef} className="scroll-mt-6 rounded-2xl p-3 lg:p-8 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-      <h2 className="hidden lg:block text-lg lg:text-2xl font-bold mb-3 lg:mb-8" style={{ color: '#F8FAFC' }}>Notifications</h2>
+    <div ref={notificationsRef} className="scroll-mt-6">
 
       <div className="space-y-3 lg:space-y-8">
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Email</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: '#0f0f13' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#0f0f13' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Notify me about new platform features and updates</p>
@@ -1596,11 +1600,14 @@ export function ArtistDashboard() {
                 onClick={handleToggleNewFeatures}
                 disabled={isSavingNotifications}
                 className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: emailNewFeatures ? '#3B82F6' : '#64748B' }}
+                style={{ backgroundColor: emailNewFeatures ? 'white' : '#64748B' }}
               >
                 <div
-                  className="w-6 h-6 rounded-full bg-white shadow-sm transition-transform duration-200"
-                  style={{ transform: emailNewFeatures ? 'translateX(20px)' : 'translateX(0px)' }}
+                  className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
+                  style={{ 
+                    backgroundColor: emailNewFeatures ? (backgroundTheme === 'light' ? '#0F172A' : '#111111') : 'white',
+                    transform: emailNewFeatures ? 'translateX(20px)' : 'translateX(0px)'
+                  }}
                 ></div>
               </button>
             </div>
@@ -1614,13 +1621,464 @@ export function ArtistDashboard() {
                 onClick={handleTogglePlatformUpdates}
                 disabled={isSavingNotifications}
                 className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: emailPlatformUpdates ? '#3B82F6' : '#64748B' }}
+                style={{ backgroundColor: emailPlatformUpdates ? 'white' : '#64748B' }}
               >
                 <div
-                  className="w-6 h-6 rounded-full bg-white shadow-sm transition-transform duration-200"
-                  style={{ transform: emailPlatformUpdates ? 'translateX(20px)' : 'translateX(0px)' }}
+                  className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
+                  style={{ 
+                    backgroundColor: emailPlatformUpdates ? (backgroundTheme === 'light' ? '#0F172A' : '#111111') : 'white',
+                    transform: emailPlatformUpdates ? 'translateX(20px)' : 'translateX(0px)'
+                  }}
                 ></div>
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSendFeedback = () => (
+    <div className="scroll-mt-6">
+      <div className="space-y-5">
+        {/* Category Selection */}
+        <div>
+          <label className="block text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
+            Category
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setFeedbackCategory('suggestion')}
+              className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
+              style={{
+                backgroundColor: feedbackCategory === 'suggestion' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                color: '#F8FAFC',
+                border: feedbackCategory === 'suggestion' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+              }}
+            >
+              <SuggestionIcon isHovered={feedbackCategory === 'suggestion'} />
+              <span>Suggestion</span>
+            </button>
+            
+            <button
+              onClick={() => setFeedbackCategory('bug-report')}
+              className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
+              style={{
+                backgroundColor: feedbackCategory === 'bug-report' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                color: '#F8FAFC',
+                border: feedbackCategory === 'bug-report' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+              }}
+            >
+              <BugReportIcon isHovered={feedbackCategory === 'bug-report'} />
+              <span>Bug Report</span>
+            </button>
+            
+            <button
+              onClick={() => setFeedbackCategory('feature-request')}
+              className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
+              style={{
+                backgroundColor: feedbackCategory === 'feature-request' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                color: '#F8FAFC',
+                border: feedbackCategory === 'feature-request' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+              }}
+            >
+              <FeatureRequestIcon isHovered={feedbackCategory === 'feature-request'} />
+              <span>Feature Request</span>
+            </button>
+            
+            <button
+              onClick={() => setFeedbackCategory('other')}
+              className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
+              style={{
+                backgroundColor: feedbackCategory === 'other' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                color: '#F8FAFC',
+                border: feedbackCategory === 'other' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+              }}
+            >
+              <OtherIcon isHovered={feedbackCategory === 'other'} />
+              <span>Other</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Feedback Textarea */}
+        <div>
+          <label className="block text-sm font-semibold mb-2" style={{ color: '#F8FAFC' }}>
+            Your Feedback
+          </label>
+          <textarea
+            placeholder="Share your thoughts, suggestions, or report any issues..."
+            rows={5}
+            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
+            style={{
+              backgroundColor: 'transparent',
+              border: '1px solid rgba(75, 85, 99, 0.5)',
+              color: '#F8FAFC',
+            }}
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            onClick={() => setFeedbackCategory(null)}
+            className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-110"
+            style={{
+              backgroundColor: 'transparent',
+              border: '1px solid rgba(75, 85, 99, 0.25)',
+              color: '#94A3B8',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
+            style={{
+              backgroundColor: feedbackCategory ? '#F8FAFC' : 'transparent',
+              color: feedbackCategory ? '#111111' : '#94A3B8',
+              border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
+            }}
+            disabled={!feedbackCategory}
+          >
+            Submit Feedback
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLogOut = () => (
+    <div className="scroll-mt-6 flex gap-3">
+      <button 
+        className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110" 
+        style={{ backgroundColor: 'white', color: '#111111' }}
+        onClick={() => {
+          // Clear user session and redirect to login
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = '/login';
+        }}
+      >
+        Log Out
+      </button>
+      <button 
+        className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200" 
+        style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: '#F8FAFC' }}
+        onClick={() => setActiveSection('home')}
+      >
+        Cancel
+      </button>
+    </div>
+  );
+
+  const renderDisplay = () => {
+    const getPreviewBackground = () => {
+      switch (backgroundTheme) {
+        case 'light':
+          return '#0F172A';
+        case 'grey':
+          return '#1A1A1E';
+        case 'dark':
+        default:
+          return '#000000';
+      }
+    };
+
+    const getPreviewTextColor = () => {
+      switch (backgroundTheme) {
+        case 'light':
+          return '#FFFFFF';
+        case 'grey':
+        case 'dark':
+        default:
+          return '#FFFFFF';
+      }
+    };
+
+    const getPreviewSecondaryTextColor = () => {
+      switch (backgroundTheme) {
+        case 'light':
+          return '#64748B';
+        case 'grey':
+        case 'dark':
+        default:
+          return '#94A3B8';
+      }
+    };
+
+    return (
+      <div className="scroll-mt-6">
+        <div className="space-y-6 lg:space-y-8">
+          {/* Preview Section */}
+          <div>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Preview</h3>
+            <div 
+              className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
+              style={{ 
+                backgroundColor: getPreviewBackground(), 
+                borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' 
+              }}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div 
+                  className="w-10 h-10 rounded-full overflow-hidden"
+                  style={{ 
+                    backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : '#2f2f2f',
+                  }}
+                >
+                  <img
+                    src={ELEVATE_ADMIN_AVATAR_URL}
+                    alt="Elevate"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0 flex items-center">
+                  <h4 className="font-semibold" style={{ color: getPreviewTextColor() }}>Elevate</h4>
+                </div>
+              </div>
+              
+              <div className="mb-4">
+                <p className="mb-3" style={{ color: getPreviewTextColor() }}>
+                  Explore opportunities to earn, invest, and connect with top talent. Elevate brings everything you need to scale and succeed into one unified ecosystem.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Background Selector */}
+          <div>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Background Theme</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Light Option */}
+              <div 
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'light' ? 'border-blue-500' : 'border-gray-600'
+                }`}
+                style={{ backgroundColor: '#0F172A' }}
+                onClick={() => setBackgroundTheme('light')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'light' 
+                      ? 'bg-blue-500 border-blue-500' 
+                      : 'bg-white border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'light' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg bg-gray-700 mb-2"></div>
+                  <div className="h-2 bg-gray-600 rounded w-3/4 mb-2"></div>
+                  <div className="h-2 bg-gray-600 rounded w-1/2"></div>
+                </div>
+                
+                <h4 className="font-semibold text-white mb-1">Navy</h4>
+                <p className="text-sm text-gray-300">Navy blue background</p>
+              </div>
+
+              {/* Grey Option */}
+              <div 
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'grey' ? 'border-blue-500' : 'border-gray-600'
+                }`}
+                style={{ backgroundColor: '#1A1A1E' }}
+                onClick={() => setBackgroundTheme('grey')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'grey' 
+                      ? 'bg-blue-500 border-blue-500' 
+                      : 'bg-white border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'grey' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg bg-gray-800 mb-2"></div>
+                  <div className="h-2 bg-gray-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-2 bg-gray-700 rounded w-1/2"></div>
+                </div>
+                
+                <h4 className="font-semibold text-white mb-1">Grey</h4>
+                <p className="text-sm text-gray-400">Dim background</p>
+              </div>
+
+              {/* Dark Option */}
+              <div 
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'dark' ? 'border-blue-500' : 'border-gray-600'
+                }`}
+                style={{ backgroundColor: '#000000' }}
+                onClick={() => setBackgroundTheme('dark')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'dark' 
+                      ? 'bg-blue-500 border-blue-500' 
+                      : 'bg-white border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'dark' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
+                  <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
+                  <div className="h-2 bg-gray-800 rounded w-1/2"></div>
+                </div>
+                
+                <h4 className="font-semibold text-white mb-1">Dark</h4>
+                <p className="text-sm text-gray-400">Pure black background (default)</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Apply Button */}
+          <div className="flex justify-end pt-4">
+            <button
+              onClick={() => setAppliedTheme(backgroundTheme)}
+              disabled={backgroundTheme === appliedTheme}
+              className="px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: backgroundTheme !== appliedTheme 
+                  ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000')
+                  : 'transparent',
+                color: backgroundTheme !== appliedTheme 
+                  ? (backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC')
+                  : '#94A3B8',
+                border: backgroundTheme !== appliedTheme 
+                  ? (backgroundTheme === 'light' ? 'none' : '1px solid rgba(255, 255, 255, 0.2)')
+                  : '1px solid rgba(75, 85, 99, 0.25)',
+              }}
+            >
+              Apply Theme
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const languageOptions: { name: string; icon: string }[] = [
+    { name: 'English', icon: 'EN' },
+    { name: 'Spanish', icon: 'ES' },
+    { name: 'French', icon: 'FR' },
+    { name: 'German', icon: 'DE' },
+    { name: 'Italian', icon: 'IT' },
+    { name: 'Portuguese', icon: 'PT' },
+    { name: 'Dutch', icon: 'NL' },
+    { name: 'Russian', icon: 'RU' },
+    { name: 'Chinese (Mandarin)', icon: '中文' },
+    { name: 'Japanese', icon: '日本語' },
+    { name: 'Korean', icon: '한국어' },
+    { name: 'Arabic', icon: 'العربية' },
+    { name: 'Hindi', icon: 'हिन्दी' },
+    { name: 'Bengali', icon: 'বাংলা' },
+    { name: 'Turkish', icon: 'TR' },
+  ];
+
+  const getLanguageIcon = (languageName: string) => {
+    const lang = languageOptions.find(l => l.name === languageName);
+    return lang?.icon || '🌐';
+  };
+
+  const renderLanguages = () => (
+    <div className="scroll-mt-6">
+      <div className="space-y-3 lg:space-y-8">
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface Language</h3>
+
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: '#2f2f2f' }}>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Display language</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Choose your preferred interface language</p>
+              </div>
+              <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                  className="w-full px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                  style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#0a0a0a';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-base lg:text-lg transition-all duration-200 group-hover:scale-110">{getLanguageIcon(selectedLanguage)}</span>
+                    <span className="transition-all duration-200">{selectedLanguage}</span>
+                  </div>
+                  <ChevronDown 
+                    className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
+                    style={{ color: '#94A3B8' }} 
+                  />
+                </button>
+
+                {isLanguageDropdownOpen && (
+                  <div
+                    className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
+                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)', border: '1px solid rgba(75, 85, 99, 0.5)' }}
+                  >
+                    <div className="max-h-60 overflow-y-auto">
+                      {languageOptions.map((option) => {
+                        const isSelected = option.name === selectedLanguage;
+                        return (
+                          <button
+                            key={option.name}
+                            type="button"
+                            onClick={() => {
+                              setSelectedLanguage(option.name);
+                              setIsLanguageDropdownOpen(false);
+                            }}
+                            className="w-full px-3 lg:px-4 py-2 lg:py-2.5 text-left text-sm lg:text-base transition-all duration-200 flex items-center gap-2 group/option relative"
+                            style={{
+                              backgroundColor: isSelected ? '#111111' : 'transparent',
+                              color: '#F8FAFC',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.backgroundColor = '#111111';
+                              }
+                              e.currentTarget.style.transform = 'translateX(4px)';
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }
+                              e.currentTarget.style.transform = 'translateX(0)';
+                            }}
+                          >
+                            <span className="text-base transition-all duration-300 group-hover/option:scale-125">{option.icon}</span>
+                            <span className="transition-all duration-200">{option.name}</span>
+                            {isSelected && (
+                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -1635,7 +2093,7 @@ export function ArtistDashboard() {
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
       />
-      <div className="min-h-screen text-white flex" style={{ backgroundColor: '#111111' }}>
+      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
         <DoorTransition showTransition={location.state?.fromOnboarding === true} />
         
         {/* Left Sidebar - Desktop Only */}
@@ -1647,6 +2105,7 @@ export function ArtistDashboard() {
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
+          appliedTheme={appliedTheme}
         />
 
         {/* Mobile Bottom Navigation */}
@@ -1655,14 +2114,19 @@ export function ArtistDashboard() {
           setActiveSection={setActiveSection}
           unreadCount={unreadCount}
           profilePicture={cachedProfilePic || profilePicturePreview || userProfile?.profile_picture_url}
+          backgroundTheme={appliedTheme}
         />
 
         {/* Main Content Area - margin adjusts based on sidebar state */}
         <main 
-          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-[margin-left] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
+          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
+          style={{ 
+            backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000',
+            color: appliedTheme === 'light' ? '#FFFFFF' : '#FFFFFF'
+          }}
         >
         {activeSection === 'messages' && (
-          <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden h-screen">
+          <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden" style={{ height: 'calc(100vh - 80px)' }}>
             {(() => {
               console.log('🔴🔴🔴 [ArtistDashboard] RENDERING MESSAGES SECTION:', {
                 activeSection,
@@ -1675,7 +2139,7 @@ export function ArtistDashboard() {
               
               if (currentUserId) {
                 console.log('🔴🔴🔴 [ArtistDashboard] Passing currentUserId to MessagesPage:', currentUserId);
-                return <MessagesPage currentUserId={currentUserId} />;
+                return <MessagesPage currentUserId={currentUserId} backgroundTheme={backgroundTheme} />;
               } else {
                 console.warn('🔴🔴🔴 [ArtistDashboard] ❌ NO currentUserId - showing loading spinner');
                 console.warn('🔴🔴🔴 [ArtistDashboard] This means fetchUserProfile has not set currentUserId yet');
@@ -1698,10 +2162,10 @@ export function ArtistDashboard() {
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Available balance</h3>
-                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="mt-auto">
                   <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
@@ -1709,66 +2173,66 @@ export function ArtistDashboard() {
               </div>
 
               {/* Pending Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
-                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Lifetime Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Affiliate earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: '#64748B' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
             </div>
 
             {/* Transaction History Section */}
-            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: '#1a1a1e' }}>
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
               {/* Tabs */}
               <div className="flex gap-2 mb-6">
                 <button 
                   onClick={() => setEarningsTab('available')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
-                  style={{ backgroundColor: earningsTab === 'available' ? '#0f0f13' : 'transparent', color: earningsTab === 'available' ? '#F8FAFC' : '#64748B' }}
+                  style={{ backgroundColor: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#FFFFFF' : '#0f0f13') : 'transparent', color: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Available
                 </button>
                 <button 
                   onClick={() => setEarningsTab('pending')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'pending' ? '#0f0f13' : 'transparent', color: earningsTab === 'pending' ? '#F8FAFC' : '#64748B' }}
+                  style={{ backgroundColor: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#FFFFFF' : '#0f0f13') : 'transparent', color: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Pending
                 </button>
                 <button 
                   onClick={() => setEarningsTab('paidout')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'paidout' ? '#0f0f13' : 'transparent', color: earningsTab === 'paidout' ? '#F8FAFC' : '#64748B' }}
+                  style={{ backgroundColor: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#FFFFFF' : '#0f0f13') : 'transparent', color: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Paid out
                 </button>
               </div>
 
               {/* Table Headers */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: '#0f0f13' }}>
-                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Date</div>
-                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Clip</div>
-                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Campaign/Description</div>
-                <div className="text-xs font-medium" style={{ color: '#64748B' }}>Amount</div>
+              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#0f0f13' }}>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Date</div>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Clip</div>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Campaign/Description</div>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Amount</div>
               </div>
 
               {/* Empty State */}
@@ -1792,9 +2256,14 @@ export function ArtistDashboard() {
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
                 renderPayoutMethods={renderPayoutMethods}
+                renderDisplay={renderDisplay}
+                renderLanguages={renderLanguages}
                 renderNotifications={renderNotifications}
+                renderSendFeedback={renderSendFeedback}
+                renderLogOut={renderLogOut}
                 isMobile={true}
                 onBack={() => setActiveSection('home')}
+                appliedTheme={appliedTheme}
               />
             </div>
 
@@ -1805,18 +2274,18 @@ export function ArtistDashboard() {
                 renderConnectedAccounts={renderConnectedAccounts}
                 renderPayoutMethods={renderPayoutMethods}
                 renderNotifications={renderNotifications}
+                renderDisplay={renderDisplay}
+                renderLanguages={renderLanguages}
+                renderSendFeedback={renderSendFeedback}
+                renderLogOut={renderLogOut}
                 isMobile={false}
+                appliedTheme={appliedTheme}
               />
             </div>
           </>
         )}
 
-        {activeSection === 'more' && (
-          <div className="h-full">
-            <MoreView />
-          </div>
-        )}
-
+        
         {activeSection === 'profile' && (
           <ProfileView
             userProfile={userProfile}
@@ -1825,6 +2294,11 @@ export function ArtistDashboard() {
             onUpdateProfile={handleUpdateProfile}
             isEditing={isEditing}
             setIsEditing={setIsEditing}
+            onEditProfile={() => {
+              setActiveSection('settings');
+              setIsEditing(true);
+            }}
+            appliedTheme={appliedTheme}
           />
         )}
 
@@ -1838,9 +2312,9 @@ export function ArtistDashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-            <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
+            <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
 
-            <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} />
+            <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
           </div>
         </section>
 
@@ -1850,7 +2324,7 @@ export function ArtistDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Add your social media channels and profiles</p>
           </div>
 
-          <SocialLinksForm />
+          <SocialLinksForm appliedTheme={appliedTheme} />
         </section>
 
         <section className="mb-8">
@@ -1864,6 +2338,22 @@ export function ArtistDashboard() {
           </div>
         )}
 
+        {activeSection === 'talent' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            <section className="mb-10 sm:mb-20">
+              <div className="mb-5 sm:mb-7">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Discover Talent</h2>
+                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Find and connect with talented creators</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
+                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+              </div>
+            </section>
+          </div>
+        )}
+
         {activeSection === 'explore' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <section className="mb-10 sm:mb-20">
@@ -1873,8 +2363,8 @@ export function ArtistDashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
-                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} />
+                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
+                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
           </div>
@@ -1885,6 +2375,7 @@ export function ArtistDashboard() {
       <CampaignDetailModal 
         campaign={selectedCampaign} 
         onClose={() => setSelectedCampaign(null)} 
+        backgroundTheme={backgroundTheme}
       />
     </div>
     </>

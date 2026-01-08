@@ -6,10 +6,11 @@ import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../DefaultAva
 interface AnimatedIconProps {
   className?: string;
   style?: React.CSSProperties;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
 }
 
 // Video Camera Icon Component
-function VideoCameraIcon({ className, style }: AnimatedIconProps) {
+function VideoCameraIcon({ className, style, backgroundTheme }: AnimatedIconProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -194,7 +195,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
 }
 
 // Drawer Icon Component
-function DrawerIcon({ className, style }: AnimatedIconProps) {
+function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: AnimatedIconProps & { isDrawerOpen?: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -234,9 +235,9 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
           style={{ opacity: 0.6 }} 
         />
         
-        {/* Middle section - slides down on hover */}
+        {/* Middle section - slides down on hover or when drawer is open */}
         <g style={{ 
-          transform: isHovered ? "translateY(12px) scale(1.05)" : "translateY(0) scale(1)", 
+          transform: (isHovered || isDrawerOpen) ? "translateY(12px) scale(1.05)" : "translateY(0) scale(1)", 
           transformOrigin: "24px 24px", 
           transition: "transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)" 
         }}>
@@ -244,7 +245,7 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
             x="10" y="20" width="28" height="8" rx="1" 
             stroke="white" 
             strokeWidth="3" 
-            fill="rgba(0,0,0,0.9)" 
+            fill={backgroundTheme === 'light' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(0,0,0,0.9)'} 
           />
           <line 
             x1="20" y1="24" x2="28" y2="24" 
@@ -253,17 +254,17 @@ function DrawerIcon({ className, style }: AnimatedIconProps) {
             strokeLinecap="round" 
           />
           
-          {/* Content items that appear on hover */}
-          <g style={{ opacity: isHovered ? 1 : 0, transition: "opacity 0.3s ease 0.15s" }}>
+          {/* Content items that appear on hover or when drawer is open */}
+          <g style={{ opacity: (isHovered || isDrawerOpen) ? 1 : 0, transition: "opacity 0.3s ease 0.15s" }}>
             {/* Document icons */}
             <rect x="12" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.7" />
             <rect x="17" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.5" />
             <rect x="22" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.6" />
             
             {/* Small details on documents */}
-            <line x1="13" y1="23.5" x2="15" y2="23.5" stroke="rgba(0,0,0,0.5)" strokeWidth="0.5" />
-            <line x1="18" y1="23.5" x2="20" y2="23.5" stroke="rgba(0,0,0,0.5)" strokeWidth="0.5" />
-            <line x1="23" y1="23.5" x2="25" y2="23.5" stroke="rgba(0,0,0,0.5)" strokeWidth="0.5" />
+            <line x1="13" y1="23.5" x2="15" y2="23.5" stroke={backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.5)' : 'rgba(0,0,0,0.5)'} strokeWidth="0.5" />
+            <line x1="18" y1="23.5" x2="20" y2="23.5" stroke={backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.5)' : 'rgba(0,0,0,0.5)'} strokeWidth="0.5" />
+            <line x1="23" y1="23.5" x2="25" y2="23.5" stroke={backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.5)' : 'rgba(0,0,0,0.5)'} strokeWidth="0.5" />
           </g>
         </g>
         
@@ -315,19 +316,21 @@ interface ChatHeaderProps {
   onVideoCall?: () => void;
   onScheduleMeeting?: () => void;
   onOpenDrawer?: () => void;
+  isDrawerOpen?: boolean;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
 }
 
-export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer }: ChatHeaderProps) {
+export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer, isDrawerOpen, backgroundTheme = 'dark' }: ChatHeaderProps) {
   console.log('🎯 ChatHeader rendering with user:', user?.name, user);
   
   return (
-    <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
+    <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
       <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
         {showBackButton && (
           <button
             onClick={onBack}
             className="p-1.5 lg:p-2 -ml-1 lg:-ml-2 rounded-full hover:brightness-110 transition-colors lg:hidden"
-            style={{ color: '#64748B' }}
+            style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}
           >
             <ArrowLeft className="w-4 h-4 lg:w-5 lg:h-5" />
           </button>
@@ -341,9 +344,9 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
           />
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: '#F8FAFC' }}>{user.name}</h2>
+          <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>{user.name}</h2>
           {isTyping && (
-            <p className="text-[10px] lg:text-xs" style={{ color: '#64748B' }}>typing...</p>
+            <p className="text-[10px] lg:text-xs" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>typing...</p>
           )}
         </div>
       </div>
@@ -355,7 +358,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
           className="p-2.5 rounded-lg transition-colors"
           aria-label="Video call"
         >
-          <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
+          <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} backgroundTheme={backgroundTheme} />
         </button>
         <button
           onClick={onScheduleMeeting}
@@ -369,7 +372,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
           className="p-2.5 rounded-lg transition-colors"
           aria-label="View details"
         >
-          <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
+          <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} isDrawerOpen={isDrawerOpen} backgroundTheme={backgroundTheme} />
         </button>
       </div>
     </div>
