@@ -1,28 +1,28 @@
-// Conversation cache utility to store conversations locally for instant loading
+// Admin conversation cache utility for instant loading
 import type { Conversation, Profile } from '../types/chat';
 
-const CACHE_KEY = 'conversations_cache';
+const CACHE_KEY = 'admin_conversations_cache';
 const CACHE_VERSION = '1';
 const MAX_CACHE_AGE = 10 * 60 * 1000; // 10 minutes
 
-type ConversationWithAdmin = Conversation & { admin: Profile };
+type ConversationWithCustomer = Conversation & { customer: Profile };
 
-interface CachedConversations {
-  conversations: ConversationWithAdmin[];
+interface CachedAdminConversations {
+  conversations: ConversationWithCustomer[];
   timestamp: number;
   version: string;
-  customerId: string;
+  adminId: string;
 }
 
-// Get cached conversations for a customer
-export function getCachedConversations(customerId: string): ConversationWithAdmin[] | null {
+// Get cached conversations for an admin
+export function getCachedAdminConversations(adminId: string): ConversationWithCustomer[] | null {
   try {
     const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
-      const data: CachedConversations = JSON.parse(cached);
+      const data: CachedAdminConversations = JSON.parse(cached);
 
-      // Check version and customer match
-      if (data.version !== CACHE_VERSION || data.customerId !== customerId) {
+      // Check version and admin match
+      if (data.version !== CACHE_VERSION || data.adminId !== adminId) {
         return null;
       }
 
@@ -41,14 +41,14 @@ export function getCachedConversations(customerId: string): ConversationWithAdmi
   return null;
 }
 
-// Cache conversations for a customer
-export function cacheConversations(customerId: string, conversations: ConversationWithAdmin[]): void {
+// Cache conversations for an admin
+export function cacheAdminConversations(adminId: string, conversations: ConversationWithCustomer[]): void {
   try {
-    const data: CachedConversations = {
+    const data: CachedAdminConversations = {
       conversations,
       timestamp: Date.now(),
       version: CACHE_VERSION,
-      customerId,
+      adminId,
     };
     sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
   } catch {
@@ -56,8 +56,8 @@ export function cacheConversations(customerId: string, conversations: Conversati
   }
 }
 
-// Clear cached conversations
-export function clearCachedConversations(): void {
+// Clear cached admin conversations
+export function clearCachedAdminConversations(): void {
   try {
     sessionStorage.removeItem(CACHE_KEY);
   } catch {
