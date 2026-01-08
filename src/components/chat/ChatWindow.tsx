@@ -258,7 +258,7 @@ export const ChatWindow = memo(function ChatWindow({
             }}
           >
           {/* Skeleton messages area */}
-          <div className="flex-1 pt-2 lg:pt-4 pb-2 lg:pb-3 flex flex-col justify-end animate-pulse">
+          <div className="flex-1 py-2 lg:py-4 flex flex-col justify-end animate-pulse">
             <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-4">
               {/* Received message skeleton */}
               <div className="flex justify-start px-2 lg:px-4 py-0.5">
@@ -347,7 +347,7 @@ export const ChatWindow = memo(function ChatWindow({
           }
         }}
       >
-        <div className="pt-2 lg:pt-4 min-h-full flex flex-col justify-end">
+        <div className="py-2 lg:py-4 min-h-full flex flex-col justify-end">
           {messages.length === 0 && !loading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center px-4 lg:px-6">
@@ -395,7 +395,7 @@ export const ChatWindow = memo(function ChatWindow({
           )}
 
           {otherUserTyping && <TypingIndicator />}
-          <div ref={messagesEndRef} className="h-2 lg:h-3 flex-shrink-0" />
+          <div ref={messagesEndRef} />
         </div>
         </div>
       </div>

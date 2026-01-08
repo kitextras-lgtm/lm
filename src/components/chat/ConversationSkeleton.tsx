@@ -76,7 +76,7 @@ export function ChatWindowSkeleton() {
       </div>
 
       {/* Messages area skeleton - matches actual message layout */}
-      <div className="flex-1 pt-2 lg:pt-4 pb-2 lg:pb-3 flex flex-col justify-end">
+      <div className="flex-1 py-2 lg:py-4 flex flex-col justify-end">
         <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-4">
           {/* Received message - matches MessageBubble layout */}
           <div className="flex justify-start px-2 lg:px-4 py-0.5">
