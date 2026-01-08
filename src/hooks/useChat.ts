@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import type { Message, Profile, Conversation, ReplyTo } from '../types/chat';
 import { getCachedMessages, cacheMessages } from '../utils/messageCache';
 import { getCachedConversations, cacheConversations } from '../utils/conversationCache';
+import { getCachedAdminConversations, cacheAdminConversations } from '../utils/adminConversationCache';
 import { preloadAndCacheImage } from '../utils/imageCache';
 
 interface UseChatOptions {
@@ -689,8 +690,20 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
 
 // Hook for admin to see all customer conversations
 export function useAdminConversations(adminId: string) {
-  const [conversations, setConversations] = useState<(Conversation & { customer: Profile })[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [conversations, setConversations] = useState<(Conversation & { customer: Profile })[]>(() => {
+    if (typeof window !== 'undefined' && adminId) {
+      const cached = getCachedAdminConversations(adminId);
+      return cached || [];
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== 'undefined' && adminId) {
+      const cached = getCachedAdminConversations(adminId);
+      return !cached || cached.length === 0;
+    }
+    return true;
+  });
   const hasInitiallyLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -700,8 +713,15 @@ export function useAdminConversations(adminId: string) {
       return;
     }
 
+    // Check cache first
+    const cached = getCachedAdminConversations(adminId);
+    if (cached && cached.length > 0) {
+      setConversations(cached);
+      setLoading(false);
+    }
+
     const fetchConversations = async () => {
-      if (!hasInitiallyLoadedRef.current) {
+      if (!hasInitiallyLoadedRef.current && !cached) {
         setLoading(true);
       }
 
@@ -790,6 +810,7 @@ export function useAdminConversations(adminId: string) {
       });
 
       setConversations(conversationsWithCustomers);
+      cacheAdminConversations(adminId, conversationsWithCustomers);
       setLoading(false);
       hasInitiallyLoadedRef.current = true;
     };
