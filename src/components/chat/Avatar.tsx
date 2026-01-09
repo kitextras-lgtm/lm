@@ -103,7 +103,7 @@ export function Avatar({ src, name, size = 'md', isOnline, showOnlineIndicator =
             className={`${sizeClasses[size].container} rounded-full object-cover absolute inset-0`}
             style={{
               opacity: showRealImage ? 1 : 0,
-              transition: showRealImage && !cachedImageUrl ? 'opacity 0.15s ease-in-out' : 'none'
+              transition: 'none'
             }}
             onLoad={() => {
               if (!cachedImageUrl) {
