@@ -2467,6 +2467,7 @@ export function CreatorDashboard() {
                 isMobile={true}
                 onBack={() => setActiveSection('home')}
                 appliedTheme={appliedTheme}
+                userType={userType}
               />
             </div>
 
@@ -2483,6 +2484,7 @@ export function CreatorDashboard() {
                 renderLogOut={renderLogOut}
                 isMobile={false}
                 appliedTheme={appliedTheme}
+                userType={userType}
               />
             </div>
           </>

@@ -20,6 +20,7 @@ interface SettingsViewProps {
   renderLogOut: () => React.ReactNode;
   isMobile?: boolean;
   onBack?: () => void;
+  userType?: string;
 }
 
 // Settings menu items with descriptions and animated icons
@@ -111,7 +112,8 @@ export function SettingsView({
   renderSendFeedback,
   renderLogOut,
   isMobile = false,
-  onBack
+  onBack,
+  userType
 }: SettingsViewProps) {
   const [activeSection, setActiveSection] = useState<string | null>('personal');
   const [searchQuery, setSearchQuery] = useState('');
@@ -138,6 +140,107 @@ export function SettingsView({
       default:
         return '';
     }
+  };
+
+  // Artist icon component (same as "What are you" page)
+  const ArtistIcon = () => (
+    <div className="w-5 h-5 flex-shrink-0">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+        <rect x="8" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="32" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="10" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+        <rect x="34" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+      </svg>
+    </div>
+  );
+
+  // Creator icon component (same as "What are you" page)
+  const CreatorIcon = () => (
+    <div className="w-5 h-5 flex-shrink-0">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <rect x="14" y="6" width="20" height="36" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="20" y="9" width="8" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+        <rect x="21" y="38" width="6" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+        <g className="app app-1">
+          <rect x="16" y="14" width="10" height="8" rx="2" fill="currentColor" opacity="0.2"/>
+          <path d="M20 16L23 18L20 20V16Z" fill="currentColor" opacity="0.8"/>
+        </g>
+        <g className="app app-2">
+          <rect x="26" y="14" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.8"/>
+          <circle cx="30" cy="18" r="2" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
+          <circle cx="32.5" cy="15.5" r="0.8" fill="currentColor" opacity="0.6"/>
+        </g>
+      </svg>
+    </div>
+  );
+
+  // Brand icon component (same as "What are you" page)
+  const BrandIcon = () => (
+    <div className="w-5 h-5 flex-shrink-0">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <rect x="6" y="18" width="36" height="22" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <path d="M18 18V14C18 12.8954 18.8954 12 20 12H28C29.1046 12 30 12.8954 30 14V18" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect className="lid" x="6" y="18" width="36" height="8" rx="3" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+        <rect className="clasp" x="21" y="24" width="6" height="4" rx="1" fill="currentColor"/>
+      </svg>
+    </div>
+  );
+
+  // Account type indicator component
+  const AccountTypeIndicator = () => {
+    if (!userType) return null;
+
+    const getAccountTypeInfo = (type: string) => {
+      switch (type?.toLowerCase()) {
+        case 'artist':
+          return {
+            label: 'Artist',
+            icon: ArtistIcon,
+            color: 'var(--text-primary)',
+            bgColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border-default)'
+          };
+        case 'creator':
+          return {
+            label: 'Creator',
+            icon: CreatorIcon,
+            color: 'var(--text-primary)',
+            bgColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border-default)'
+          };
+        case 'brand':
+        case 'business':
+          return {
+            label: 'Brand',
+            icon: BrandIcon,
+            color: 'var(--text-primary)',
+            bgColor: 'var(--bg-elevated)',
+            borderColor: 'var(--border-default)'
+          };
+        default:
+          return null;
+      }
+    };
+
+    const accountInfo = getAccountTypeInfo(userType);
+    if (!accountInfo) return null;
+
+    const Icon = accountInfo.icon;
+
+    return (
+      <div 
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border"
+        style={{ 
+          backgroundColor: accountInfo.bgColor,
+          color: accountInfo.color,
+          borderColor: accountInfo.borderColor
+        }}
+      >
+        <Icon />
+        <span>{accountInfo.label}</span>
+      </div>
+    );
   };
 
   const getSectionDescription = () => {
@@ -303,7 +406,10 @@ export function SettingsView({
           <>
             {/* Section Header */}
             <div className="p-6 border-b" style={{ borderColor: '#2f2f2f' }}>
-              <h2 className="text-xl font-bold mb-2" style={{ color: '#F8FAFC' }}>{getSectionTitle()}</h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl font-bold" style={{ color: '#F8FAFC' }}>{getSectionTitle()}</h2>
+                <AccountTypeIndicator />
+              </div>
               <p className="text-[15px] leading-relaxed" style={{ color: '#94A3B8' }}>{getSectionDescription()}</p>
             </div>
 

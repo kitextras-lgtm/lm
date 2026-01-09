@@ -6,6 +6,7 @@ import { TypingIndicator } from './TypingIndicator';
 import { ChatInfoDrawer } from './ChatInfoDrawer';
 import { useChat } from '../../hooks/useChat';
 import { useImageUpload } from '../../hooks/useImageUpload';
+import { supabase } from '../../lib/supabase';
 import type { Conversation, Profile, ReplyTo } from '../../types/chat';
 import { formatDate, isSameDay } from '../../utils/dateUtils';
 
@@ -247,6 +248,34 @@ const ChatWindowContent = memo(function ChatWindowContent({
       setContentReady(true);
     }
   }, [messagesWithImages, loading]);
+
+  // Handle delete message
+  const handleDeleteMessage = useCallback(async (messageId: string, forEveryone: boolean) => {
+    if (forEveryone) {
+      // Soft delete in database
+      try {
+        const { error } = await supabase
+          .from('messages')
+          .update({ 
+            deleted_at: new Date().toISOString(),
+            deleted_by: currentUserId 
+          })
+          .eq('id', messageId);
+        
+        if (error) {
+          console.error('Error deleting message:', error);
+          return;
+        }
+      } catch (error) {
+        console.error('Error deleting message:', error);
+        return;
+      }
+    }
+    
+    // Remove from local state (for both cases)
+    // This will be handled by the real-time subscription
+    // The message will be filtered out in the useChat hook
+  }, [currentUserId]);
 
   // Scroll to bottom after messages finish rendering
   // Uses bottom anchor ref (messagesEndRef) instead of scrollTop math
@@ -557,7 +586,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
                       onScrollToMessage={handleScrollToMessage}
                       senderName={getSenderName(message.sender_id)}
                       onImageLoad={handleImageLoad}
-                      backgroundTheme={backgroundTheme}
+                      onDelete={handleDeleteMessage}
                     />
                   </div>
                 );
@@ -572,14 +601,13 @@ const ChatWindowContent = memo(function ChatWindowContent({
       </div>
 
       <ChatInput
-        onSendMessage={handleSendMessage}
-        onTyping={setTyping}
-        disabled={uploading}
-        replyTo={replyTo}
-        onCancelReply={handleCancelReply}
-        otherUserName={otherUser.name}
-        backgroundTheme={backgroundTheme}
-      />
+            onSendMessage={handleSendMessage}
+            onTyping={setTyping}
+            disabled={loading}
+            replyTo={replyTo}
+            onCancelReply={() => setReplyTo(null)}
+            otherUserName={otherUser?.username || ''}
+          />
 
       {/* Info Drawer */}
       <ChatInfoDrawer
