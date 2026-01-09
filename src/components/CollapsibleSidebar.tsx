@@ -95,6 +95,117 @@ function HomeIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: bo
 function ExploreIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
   const shouldAnimate = isHovered || isActive;
   return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
+      <circle cx="24" cy="24" r="20" stroke="white" strokeWidth="3.5" fill="none" />
+      <circle cx="24" cy="24" r="16" stroke="white" strokeWidth="1" strokeOpacity="0.4" fill="none" />
+      <line x1="24" y1="4" x2="24" y2="8" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="24" y1="40" x2="24" y2="44" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="4" y1="24" x2="8" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="40" y1="24" x2="44" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="38.1" y1="9.9" x2="36" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="38.1" y1="38.1" x2="36" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="9.9" y1="38.1" x2="12" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <line x1="9.9" y1="9.9" x2="12" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <g style={{
+        transform: shouldAnimate ? "rotate(180deg)" : "rotate(0deg)",
+        transformOrigin: "24px 24px",
+        transition: "transform 0.5s ease-in-out",
+      }}>
+        <path d="M24 10L28 24H20L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="white" />
+        <path d="M24 38L28 24H20L24 38Z" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="none" />
+      </g>
+      <circle cx="24" cy="24" r="2.5" fill="white" />
+    </svg>
+  );
+}
+
+function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
+      {[0, 1, 2, 3, 4].map((i) => {
+        const cx = 8 + i * 8;
+        return (
+          <polygon
+            key={i}
+            points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
+            fill="white"
+            style={{
+              opacity: shouldAnimate ? 1 : 0,
+              transform: shouldAnimate ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
+              transformOrigin: `${cx}px 6px`,
+              transition: `all 0.3s ease ${i * 0.06}s`,
+            }}
+          />
+        );
+      })}
+      <circle cx="12" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <path d="M4 44C4 37 7 32 12 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <circle cx="36" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <path d="M44 44C44 37 41 32 36 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
+        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
+      <circle cx="24" cy="20" r="6" stroke="white" strokeWidth="3.5" fill="none"
+        style={{ transform: shouldAnimate ? "scale(1.05)" : "scale(1)", transformOrigin: "24px 20px", transition: "transform 0.3s ease" }} />
+      <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
+
+function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
+  return (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
+      {/* Left puzzle piece with tab */}
+      <path
+        d="M6 12 H20 V18 C20 20.2 18.2 22 16 22 C13.8 22 12 20.2 12 18 V12 H6 V36 H20 V30 C20 27.8 18.2 26 16 26 C13.8 26 12 27.8 12 30 V36 H6 Z"
+        stroke="white"
+        strokeWidth="3"
+        strokeLinejoin="round"
+        fill="none"
+        style={{
+          transform: shouldAnimate ? "translateX(2px)" : "translateX(-3px)",
+          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}
+      />
+
+      {/* Right puzzle piece with slot */}
+      <path
+        d="M42 12 H28 V18 C28 20.2 29.8 22 32 22 C34.2 22 36 20.2 36 18 V12 H42 V36 H28 V30 C28 27.8 29.8 26 32 26 C34.2 26 36 27.8 36 30 V36 H42 Z"
+        stroke="white"
+        strokeWidth="3"
+        strokeLinejoin="round"
+        fill="none"
+        style={{
+          transform: shouldAnimate ? "translateX(-2px)" : "translateX(3px)",
+          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}
+      />
+
+      {/* Connection glow when pieces meet */}
+      <line
+        x1="24"
+        y1="12"
+        x2="24"
+        y2="36"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        style={{
+          opacity: shouldAnimate ? 0.6 : 0,
+          transition: "opacity 0.3s ease 0.2s",
+        }}
+      />
+    </svg>
+  );
+}
+
+// Artist-specific icons
+function ArtistDistributionIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+  const shouldAnimate = isHovered || isActive;
+  return (
     <div className={`relative ${ICON_SIZE}`}>
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
         {/* Central chip body */}
@@ -155,7 +266,7 @@ function ExploreIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive:
   );
 }
 
-function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+function ArtistPublishingIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
   const shouldAnimate = isHovered || isActive;
   return (
     <div className={`relative ${ICON_SIZE}`}>
@@ -200,7 +311,7 @@ function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: 
   );
 }
 
-function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
+function ArtistSyncIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
   const shouldAnimate = isHovered || isActive;
   return (
     <div className={`relative ${ICON_SIZE}`}>
@@ -475,18 +586,18 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
 // Get nav items based on user type
 const getNavItems = (userType?: 'artist' | 'creator') => {
   if (userType === 'artist') {
-    // Artist-specific labels
+    // Artist-specific labels and icons
     return [
       { id: 'home', label: 'Home', Icon: HomeIconSVG },
-      { id: 'explore', label: 'Distribution', Icon: ExploreIconSVG },
-      { id: 'talent', label: 'Publishing', Icon: TalentIconSVG },
-      { id: 'deals', label: 'Sync', Icon: DealsIconSVG },
+      { id: 'explore', label: 'Distribution', Icon: ArtistDistributionIconSVG },
+      { id: 'talent', label: 'Publishing', Icon: ArtistPublishingIconSVG },
+      { id: 'deals', label: 'Sync', Icon: ArtistSyncIconSVG },
       { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
       { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
       { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
     ];
   } else {
-    // Creator labels (default)
+    // Creator labels (default) - use original icons
     return [
       { id: 'home', label: 'Home', Icon: HomeIconSVG },
       { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },

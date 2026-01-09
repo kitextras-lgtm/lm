@@ -13,9 +13,10 @@ type FilterType = 'all' | 'unread' | 'pinned';
 interface MessagesPageProps {
   currentUserId: string;
   backgroundTheme?: 'light' | 'grey' | 'dark';
+  userType?: 'artist' | 'creator' | 'business';
 }
 
-export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: MessagesPageProps) {
+export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType }: MessagesPageProps) {
   // Get cached user profile for username display
   const { profile: cachedProfile } = useUserProfile();
 
@@ -44,6 +45,12 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
   const { profile: customerProfile } = useProfile(currentUserId);
 
   usePresence(currentUserId);
+
+  // Safety check to prevent modal opening for artists
+  const handleNewMessageClick = () => {
+    if (userType === 'artist') return;
+    setIsNewMessageModalOpen(true);
+  };
 
   // Instagram/X pattern: Cancel pending conversation on Escape key
   useEffect(() => {
@@ -251,10 +258,12 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
           <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {cachedProfile?.username || customerProfile?.name || 'Messages'}
           </span>
-          <EditIcon
-            onClick={() => setIsNewMessageModalOpen(true)}
-            className="p-2 rounded-lg transition-colors"
-          />
+          {userType !== 'artist' && (
+            <EditIcon
+              onClick={handleNewMessageClick}
+              className="p-2 rounded-lg transition-colors"
+            />
+          )}
         </div>
       )}
 
@@ -279,35 +288,37 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
               />
             </div>
 
-            <div className="flex gap-1.5 lg:gap-2">
-              <button
-                onClick={() => setFilter('all')}
-                className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
-                  filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                }`}
-                style={filter === 'all' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
-              >
-                Primary
-              </button>
-              <button
-                onClick={() => setFilter('unread')}
-                className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
-                  filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                }`}
-                style={filter === 'unread' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
-              >
-                General
-              </button>
-              <button
-                onClick={() => setFilter('pinned')}
-                className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
-                  filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                }`}
-                style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
-              >
-                Requests
-              </button>
-            </div>
+            {userType !== 'artist' && (
+              <div className="flex gap-1.5 lg:gap-2">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
+                    filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                  }`}
+                  style={filter === 'all' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
+                >
+                  Primary
+                </button>
+                <button
+                  onClick={() => setFilter('unread')}
+                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
+                    filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                  }`}
+                  style={filter === 'unread' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
+                >
+                  General
+                </button>
+                <button
+                  onClick={() => setFilter('pinned')}
+                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
+                    filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                  }`}
+                  style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
+                >
+                  Requests
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
@@ -318,8 +329,17 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
                   <MessageSquare className="w-8 h-8" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }} />
                 </div>
-                <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
-                <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Start a conversation to get help</p>
+                {userType === 'artist' ? (
+                  <>
+                    <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No messages yet</p>
+                    <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Our support team will reach out to you here when needed.</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
+                    <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Start a conversation to get help</p>
+                  </>
+                )}
               </div>
             ) : (
               filteredConversations.map((conv) => (
@@ -348,10 +368,12 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
           <span className="text-xl font-bold" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>
             {cachedProfile?.username || customerProfile?.name || 'Messages'}
           </span>
-          <EditIcon
-            onClick={() => setIsNewMessageModalOpen(true)}
-            className="p-2 rounded-lg transition-colors"
-          />
+          {userType !== 'artist' && (
+            <EditIcon
+              onClick={handleNewMessageClick}
+              className="p-2 rounded-lg transition-colors"
+            />
+          )}
         </div>
 
         <div className="px-5 pb-4" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
@@ -372,35 +394,37 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
             />
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFilter('all')}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-              }`}
-              style={filter === 'all' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
-            >
-              Primary
-            </button>
-            <button
-              onClick={() => setFilter('unread')}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-              }`}
-              style={filter === 'unread' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
-            >
-              General
-            </button>
-            <button
-              onClick={() => setFilter('pinned')}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-              }`}
-              style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
-            >
-              Requests
-            </button>
-          </div>
+          {userType !== 'artist' && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilter('all')}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                }`}
+                style={filter === 'all' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
+              >
+                Primary
+              </button>
+              <button
+                onClick={() => setFilter('unread')}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                }`}
+                style={filter === 'unread' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
+              >
+                General
+              </button>
+              <button
+                onClick={() => setFilter('pinned')}
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                }`}
+                style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
+              >
+                Requests
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
@@ -411,8 +435,17 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
                 <MessageSquare className="w-8 h-8" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }} />
               </div>
-              <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
-              <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Start a conversation to get help</p>
+              {userType === 'artist' ? (
+                <>
+                  <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No messages yet</p>
+                  <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Our support team will reach out to you here when needed.</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
+                  <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Start a conversation to get help</p>
+                </>
+              )}
             </div>
           ) : (
             filteredConversations.map((conv) => (

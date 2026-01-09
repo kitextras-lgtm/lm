@@ -72,12 +72,13 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId }
       setLoading(true);
       try {
         // Fix 3: Use unified_users view for consistent data
-        // Search for exact username match first, then prefix match
+        // Only search for admin/support accounts - users can only message support
         const { data: exactMatch, error: exactError } = await supabase
           .from('unified_users')
           .select('id, display_name, username, avatar_url')
           .neq('id', currentUserId)
           .eq('username', cleanQuery)
+          .eq('is_admin', true) // Only show admin/support accounts
           .limit(1);
 
         if (!exactError && exactMatch && exactMatch.length > 0) {
@@ -92,11 +93,13 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId }
         }
 
         // If no exact match, try prefix search (for autocomplete)
+        // Only search for admin/support accounts - users can only message support
         const { data: prefixMatch, error: prefixError } = await supabase
           .from('unified_users')
           .select('id, display_name, username, avatar_url')
           .neq('id', currentUserId)
           .ilike('username', `${cleanQuery}%`)
+          .eq('is_admin', true) // Only show admin/support accounts
           .limit(10);
 
         if (!prefixError && prefixMatch) {

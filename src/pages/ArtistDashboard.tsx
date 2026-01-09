@@ -2348,7 +2348,7 @@ export function ArtistDashboard() {
         {activeSection === 'messages' && (
           <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden h-[calc(100vh-80px)] lg:h-screen">
             {currentUserId ? (
-              <MessagesPage currentUserId={currentUserId} backgroundTheme={backgroundTheme} />
+              <MessagesPage currentUserId={currentUserId} backgroundTheme={backgroundTheme} userType="artist" />
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="flex items-center gap-3">
