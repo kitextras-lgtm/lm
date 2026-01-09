@@ -324,7 +324,8 @@ interface ChatHeaderProps {
 export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer, isDrawerOpen, backgroundTheme = 'dark' }: ChatHeaderProps) {
   console.log('🎯 ChatHeader rendering with user:', user?.name, user);
   const { profile } = useUserProfile();
-  const isArtist = profile?.user_type === 'artist';
+  // Only show icons if profile is loaded AND user is not an artist
+  const shouldShowIcons = profile && profile.user_type !== 'artist';
 
   return (
     <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
@@ -355,7 +356,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
       </div>
       
       {/* Action Icons - Hidden for artist accounts */}
-      {!isArtist && (
+      {shouldShowIcons && (
         <div className="flex items-center gap-1 lg:gap-2">
           <button
             onClick={onVideoCall}
