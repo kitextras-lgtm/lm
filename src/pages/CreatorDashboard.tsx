@@ -2294,7 +2294,7 @@ export function CreatorDashboard() {
         <CollapsibleSidebar
           activeSection={activeSection}
           setActiveSection={setActiveSection}
-          userProfile={userProfile}
+          userProfile={userProfile || cachedProfile}
           unreadCount={unreadCount}
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarCollapsed}
