@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import type { Profile } from '../../types/chat';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../DefaultAvatar';
+import { useUserProfile } from '../../contexts/UserProfileContext';
 
 interface AnimatedIconProps {
   className?: string;
@@ -322,7 +323,9 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer, isDrawerOpen, backgroundTheme = 'dark' }: ChatHeaderProps) {
   console.log('🎯 ChatHeader rendering with user:', user?.name, user);
-  
+  const { profile } = useUserProfile();
+  const isArtist = profile?.user_type === 'artist';
+
   return (
     <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
       <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
@@ -351,30 +354,32 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
         </div>
       </div>
       
-      {/* Action Icons */}
-      <div className="flex items-center gap-1 lg:gap-2">
-        <button
-          onClick={onVideoCall}
-          className="p-2.5 rounded-lg transition-colors"
-          aria-label="Video call"
-        >
-          <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} backgroundTheme={backgroundTheme} />
-        </button>
-        <button
-          onClick={onScheduleMeeting}
-          className="p-2.5 rounded-lg transition-colors"
-          aria-label="Schedule meeting"
-        >
-          <CalendarIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
-        </button>
-        <button
-          onClick={onOpenDrawer}
-          className="p-2.5 rounded-lg transition-colors"
-          aria-label="View details"
-        >
-          <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} isDrawerOpen={isDrawerOpen} backgroundTheme={backgroundTheme} />
-        </button>
-      </div>
+      {/* Action Icons - Hidden for artist accounts */}
+      {!isArtist && (
+        <div className="flex items-center gap-1 lg:gap-2">
+          <button
+            onClick={onVideoCall}
+            className="p-2.5 rounded-lg transition-colors"
+            aria-label="Video call"
+          >
+            <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} backgroundTheme={backgroundTheme} />
+          </button>
+          <button
+            onClick={onScheduleMeeting}
+            className="p-2.5 rounded-lg transition-colors"
+            aria-label="Schedule meeting"
+          >
+            <CalendarIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
+          </button>
+          <button
+            onClick={onOpenDrawer}
+            className="p-2.5 rounded-lg transition-colors"
+            aria-label="View details"
+          >
+            <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} isDrawerOpen={isDrawerOpen} backgroundTheme={backgroundTheme} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
