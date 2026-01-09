@@ -2,6 +2,35 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
 
+// CSS for new icon animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes data-transmit {
+    0% { opacity: 0; transform: scale(0.5); }
+    20% { opacity: 1; transform: scale(1); }
+    80% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(1.5); }
+  }
+
+  .group:hover .group-hover\\:animate-data-transmit-up { animation: data-transmit 2s ease-out infinite; }
+  .group:hover .group-hover\\:animate-data-transmit-down { animation: data-transmit 2s ease-out infinite; }
+  .group:hover .group-hover\\:animate-data-transmit-left { animation: data-transmit 2s ease-out infinite; }
+  .group:hover .group-hover\\:animate-data-transmit-right { animation: data-transmit 2s ease-out infinite; }
+
+  @keyframes clapper-open-close {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(-30deg); }
+    30% { transform: rotate(0deg); }
+    45% { transform: rotate(-30deg); }
+    60% { transform: rotate(0deg); }
+  }
+
+  .animate-clapper-open-close {
+    animation: clapper-open-close 1.2s ease-in-out infinite;
+  }
+`;
+document.head.appendChild(style);
+
 interface CollapsibleSidebarProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
@@ -15,6 +44,7 @@ interface CollapsibleSidebarProps {
   cachedProfilePic?: string | null;
   isCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
+  userType?: 'artist' | 'creator';
 }
 
 // Consistent icon size for all icons - 28px
@@ -65,111 +95,146 @@ function HomeIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: bo
 function ExploreIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
   const shouldAnimate = isHovered || isActive;
   return (
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
-      <circle cx="24" cy="24" r="20" stroke="white" strokeWidth="3.5" fill="none" />
-      <circle cx="24" cy="24" r="16" stroke="white" strokeWidth="1" strokeOpacity="0.4" fill="none" />
-      <line x1="24" y1="4" x2="24" y2="8" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="24" y1="40" x2="24" y2="44" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="4" y1="24" x2="8" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="40" y1="24" x2="44" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="38.1" y1="9.9" x2="36" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <line x1="38.1" y1="38.1" x2="36" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <line x1="9.9" y1="38.1" x2="12" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <line x1="9.9" y1="9.9" x2="12" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <g style={{
-        transform: shouldAnimate ? "rotate(180deg)" : "rotate(0deg)",
-        transformOrigin: "24px 24px",
-        transition: "transform 0.5s ease-in-out",
-      }}>
-        <path d="M24 10L28 24H20L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="white" />
-        <path d="M24 38L28 24H20L24 38Z" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="none" />
-      </g>
-      <circle cx="24" cy="24" r="2.5" fill="white" />
-    </svg>
+    <div className={`relative ${ICON_SIZE}`}>
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
+        {/* Central chip body */}
+        <rect
+          x="14"
+          y="14"
+          width="20"
+          height="20"
+          rx="2"
+          stroke="white"
+          strokeWidth="3.5"
+          fill="white"
+          fillOpacity="0.1"
+          style={{
+            transform: shouldAnimate ? "scale(1.05)" : "scale(1)",
+            transformOrigin: "24px 24px",
+            transition: "transform 0.3s ease",
+          }}
+        />
+
+        {/* Internal circuit pattern - cross lines */}
+        <line x1="19" y1="24" x2="29" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.3, transition: 'opacity 0.3s ease' }} />
+        <line x1="24" y1="19" x2="24" y2="29" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.3, transition: 'opacity 0.3s ease' }} />
+
+        {/* Connection pins - Top */}
+        <line x1="19" y1="14" x2="19" y2="7" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+        <line x1="29" y1="14" x2="29" y2="7" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+
+        {/* Connection pins - Bottom */}
+        <line x1="19" y1="34" x2="19" y2="41" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+        <line x1="29" y1="34" x2="29" y2="41" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+
+        {/* Connection pins - Left */}
+        <line x1="14" y1="19" x2="7" y2="19" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+        <line x1="14" y1="29" x2="7" y2="29" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+
+        {/* Connection pins - Right */}
+        <line x1="34" y1="19" x2="41" y2="19" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+        <line x1="34" y1="29" x2="41" y2="29" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
+
+        {/* Data packets - refined animation */}
+        <circle cx="19" cy="4" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease' }} />
+        <circle cx="29" cy="44" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.1s' }} />
+        <circle cx="4" cy="19" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.2s' }} />
+        <circle cx="44" cy="29" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.3s' }} />
+      </svg>
+    </div>
   );
 }
 
 function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
   const shouldAnimate = isHovered || isActive;
   return (
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
-      {[0, 1, 2, 3, 4].map((i) => {
-        const cx = 8 + i * 8;
-        return (
-          <polygon
-            key={i}
-            points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
-            fill="white"
-            style={{
-              opacity: shouldAnimate ? 1 : 0,
-              transform: shouldAnimate ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
-              transformOrigin: `${cx}px 6px`,
-              transition: `all 0.3s ease ${i * 0.06}s`,
-            }}
+    <div className={`relative ${ICON_SIZE}`}>
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
+        {/* Magnifying glass */}
+        <g style={{
+          transform: shouldAnimate ? 'scale(1.05)' : 'scale(1)',
+          transformOrigin: '24px 24px',
+          transition: 'transform 0.3s ease'
+        }}>
+          <circle cx="20" cy="20" r="12" stroke="white" strokeWidth="3.5" fill="none" />
+          <line x1="30" y1="30" x2="42" y2="42" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          {/* Shine on glass */}
+          <path
+            d="M14 15C16 12 19 11 22 12"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            style={{ opacity: shouldAnimate ? 0.7 : 0.3, transition: 'opacity 0.3s ease' }}
           />
-        );
-      })}
-      <circle cx="12" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
-        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <path d="M4 44C4 37 7 32 12 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
-        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <circle cx="36" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
-        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <path d="M44 44C44 37 41 32 36 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
-        style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <circle cx="24" cy="20" r="6" stroke="white" strokeWidth="3.5" fill="none"
-        style={{ transform: shouldAnimate ? "scale(1.05)" : "scale(1)", transformOrigin: "24px 20px", transition: "transform 0.3s ease" }} />
-      <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-    </svg>
+        </g>
+
+        {/* Hidden dollar sign - revealed on hover */}
+        <text
+          x="20"
+          y="25"
+          textAnchor="middle"
+          fill="white"
+          fontSize="16"
+          fontWeight="bold"
+          style={{
+            opacity: shouldAnimate ? 1 : 0,
+            transform: shouldAnimate ? "scale(1.1)" : "scale(0.8)",
+            transformOrigin: "20px 25px",
+            transition: 'all 0.3s ease'
+          }}
+        >
+          $
+        </text>
+      </svg>
+    </div>
   );
 }
 
-// New puzzle piece Deals icon with animations
 function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: boolean }) {
   const shouldAnimate = isHovered || isActive;
   return (
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${ICON_SIZE} overflow-visible`}>
-      {/* Left puzzle piece with tab */}
-      <path
-        d="M6 12 H20 V18 C20 20.2 18.2 22 16 22 C13.8 22 12 20.2 12 18 V12 H6 V36 H20 V30 C20 27.8 18.2 26 16 26 C13.8 26 12 27.8 12 30 V36 H6 Z"
-        stroke="white"
-        strokeWidth="3"
-        strokeLinejoin="round"
-        fill="none"
-        style={{
-          transform: shouldAnimate ? "translateX(2px)" : "translateX(-3px)",
-          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        }}
-      />
+    <div className={`relative ${ICON_SIZE}`}>
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
+        {/* Bottom slate base */}
+        <rect x="8" y="24" width="32" height="16" rx="2" stroke="white" strokeWidth="3.5" fill="none" />
 
-      {/* Right puzzle piece with slot */}
-      <path
-        d="M42 12 H28 V18 C28 20.2 29.8 22 32 22 C34.2 22 36 20.2 36 18 V12 H42 V36 H28 V30 C28 27.8 29.8 26 32 26 C34.2 26 36 27.8 36 30 V36 H42 Z"
-        stroke="white"
-        strokeWidth="3"
-        strokeLinejoin="round"
-        fill="none"
-        style={{
-          transform: shouldAnimate ? "translateX(-2px)" : "translateX(3px)",
-          transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        }}
-      />
+        {/* Text lines on slate */}
+        <line x1="12" y1="30" x2="28" y2="30" stroke="white" strokeWidth="3" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 0.8 : 0.3, transition: 'opacity 0.3s ease' }} />
+        <line x1="12" y1="36" x2="22" y2="36" stroke="white" strokeWidth="3" strokeLinecap="round" 
+              style={{ opacity: shouldAnimate ? 0.8 : 0.3, transition: 'opacity 0.3s ease' }} />
 
-      {/* Connection glow when pieces meet */}
-      <line
-        x1="24"
-        y1="12"
-        x2="24"
-        y2="36"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-        style={{
-          opacity: shouldAnimate ? 0.6 : 0,
-          transition: "opacity 0.3s ease 0.2s",
-        }}
-      />
-    </svg>
+        {/* Top clapper - opens and closes on hover */}
+        <g style={{
+          transform: shouldAnimate ? 'rotate(-15deg)' : 'rotate(0deg)',
+          transformOrigin: '8px 24px',
+          transition: 'transform 0.3s ease'
+        }}>
+          {/* Clapper board */}
+          <path
+            d="M8 24V16C8 14.8954 8.89543 14 10 14H38C38.1046 14 40 14.8954 40 16V24"
+            stroke="white"
+            strokeWidth="3.5"
+            fill="none"
+            strokeLinejoin="round"
+          />
+          {/* Diagonal stripes */}
+          <line x1="14" y1="14" x2="20" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="22" y1="14" x2="28" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="30" y1="14" x2="36" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+        </g>
+      </svg>
+    </div>
   );
 }
 
@@ -407,16 +472,32 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
 }
 
 
-// Nav items with their animated icon components
-const navItems = [
-  { id: 'home', label: 'Home', Icon: HomeIconSVG },
-  { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },
-  { id: 'talent', label: 'Talent', Icon: TalentIconSVG },
-  { id: 'deals', label: 'Deals', Icon: DealsIconSVG },
-  { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
-  { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
-  { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
-];
+// Get nav items based on user type
+const getNavItems = (userType?: 'artist' | 'creator') => {
+  if (userType === 'artist') {
+    // Artist-specific labels
+    return [
+      { id: 'home', label: 'Home', Icon: HomeIconSVG },
+      { id: 'explore', label: 'Distribution', Icon: ExploreIconSVG },
+      { id: 'talent', label: 'Publishing', Icon: TalentIconSVG },
+      { id: 'deals', label: 'Sync', Icon: DealsIconSVG },
+      { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
+      { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
+      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+    ];
+  } else {
+    // Creator labels (default)
+    return [
+      { id: 'home', label: 'Home', Icon: HomeIconSVG },
+      { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },
+      { id: 'talent', label: 'Talent', Icon: TalentIconSVG },
+      { id: 'deals', label: 'Deals', Icon: DealsIconSVG },
+      { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
+      { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
+      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+    ];
+  }
+};
 
 // Expanded width in pixels
 const EXPANDED_WIDTH = 240;
@@ -429,7 +510,8 @@ export function CollapsibleSidebar({
   unreadCount = 0,
   cachedProfilePic,
   isCollapsed: externalCollapsed,
-  onCollapsedChange
+  onCollapsedChange,
+  userType
 }: CollapsibleSidebarProps) {
   const navigate = useNavigate();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
@@ -527,7 +609,7 @@ export function CollapsibleSidebar({
 
       {/* Navigation */}
       <nav className="flex-1 px-3">
-        {navItems.map((item) => {
+        {getNavItems(userType).map((item: any) => {
           const isHovered = hoveredItem === item.id;
           const isActive = activeSection === item.id;
           const IconComponent = item.Icon;

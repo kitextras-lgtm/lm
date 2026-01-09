@@ -2308,6 +2308,7 @@ export function CreatorDashboard() {
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
+          userType="creator"
         />
 
         {/* Mobile Bottom Navigation */}
@@ -2345,11 +2346,11 @@ export function CreatorDashboard() {
         )}
 
         {activeSection === 'messages' && (
-          <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden" style={{ height: 'calc(100vh - 80px)' }}>
+          <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden h-[calc(100vh-80px)] lg:h-screen">
             {currentUserId ? (
               <MessagesPage currentUserId={currentUserId} backgroundTheme={backgroundTheme} />
             ) : (
-              <div className="flex items-center justify-center" style={{ height: '100%' }}>
+              <div className="flex items-center justify-center h-full">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
                   <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
