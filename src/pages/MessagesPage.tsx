@@ -3,7 +3,7 @@ import { Search, MessageSquare } from 'lucide-react';
 import { EditIcon } from '../components/EditIcon';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton, NewMessageModal } from '../components/chat';
-import { useCustomerConversations, usePresence, useProfile, getOrCreateAdminConversation } from '../hooks/useChat';
+import { useCustomerConversations, usePresence, useProfile } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
 import { debounce } from '../utils/debounce';
@@ -19,7 +19,19 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
   // Get cached user profile for username display
   const { profile: cachedProfile } = useUserProfile();
 
-  const { conversations, loading, updateConversationUnreadCount, refetch } = useCustomerConversations(currentUserId);
+  // Fix 1: Use enhanced hook with selection locking + Instagram/X pattern
+  const {
+    conversations,
+    loading,
+    updateConversationUnreadCount,
+    refetch,
+    selectConversation: hookSelectConversation,
+    // Instagram/X pattern
+    pendingConversation,
+    startConversationWith,
+    sendMessageToConversation,
+    clearPendingConversation,
+  } = useCustomerConversations(currentUserId);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -33,29 +45,53 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
 
   usePresence(currentUserId);
 
-  // Initialize: Only auto-select conversation on desktop, not mobile
+  // Instagram/X pattern: Cancel pending conversation on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && pendingConversation) {
+        clearPendingConversation();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [pendingConversation, clearPendingConversation]);
+
+  // Fix 4: Selection is now handled by the hook with localStorage persistence
+  // No need to manually save to localStorage here - hookSelectConversation handles it
+
+  // Fix 4 & 12: Proper conversation selection on load
+  // Fix 12: Removed auto-creation of admin conversation - let user initiate
   useEffect(() => {
     const initializeConversation = async () => {
       if (!loading && currentUserId) {
-        try {
-          const conv = await getOrCreateAdminConversation(currentUserId);
-          if (conv) {
-            const isMobile = window.innerWidth < 1024;
-            if (!isMobile) {
-              setSelectedConversation(conv);
+        const isMobile = window.innerWidth < 1024;
+        
+        if (conversations.length > 0) {
+          // Try to restore last conversation from localStorage
+          const lastConvId = localStorage.getItem(`lastConversation_${currentUserId}`);
+          if (lastConvId) {
+            const lastConv = conversations.find(c => c.id === lastConvId);
+            if (lastConv) {
+              setSelectedConversation(lastConv);
+              hookSelectConversation(lastConvId);
+              setInitializing(false);
+              return;
             }
-            await refetch();
           }
-        } catch (error) {
-          console.error('Error initializing admin conversation:', error);
-        } finally {
-          setInitializing(false);
+          
+          // No last conversation found, select first conversation (desktop only)
+          if (!isMobile) {
+            setSelectedConversation(conversations[0]);
+            hookSelectConversation(conversations[0].id);
+          }
         }
+        // Fix 12: Don't auto-create admin conversation - show empty state instead
+        setInitializing(false);
       }
     };
 
     initializeConversation();
-  }, [currentUserId, loading, refetch]);
+  }, [currentUserId, loading, conversations.length, hookSelectConversation]);
 
   const debouncedSearch = useMemo(
     () => debounce((value: string) => setDebouncedSearchQuery(value), 300),
@@ -135,6 +171,11 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
   );
 
   const handleSelectConversation = async (conv: Conversation & { admin: Profile }) => {
+    // Instagram/X pattern: Clear pending conversation when selecting existing
+    clearPendingConversation();
+    
+    // Fix 1: Lock selection to prevent race conditions
+    hookSelectConversation(conv.id, true);
     setSelectedConversation(conv);
     const isMobile = window.innerWidth < 1024;
 
@@ -395,7 +436,28 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
 
       {/* Desktop Chat Window */}
       <div className="hidden lg:flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', height: '100%', overflow: 'hidden' }}>
-        {selectedConversation && selectedConversation.admin ? (
+        {pendingConversation ? (
+          /* Instagram/X pattern: Show pending conversation UI */
+          <ChatWindow
+            key={`pending-${pendingConversation.recipientId}`}
+            isPending={true}
+            pendingRecipient={pendingConversation.recipientUser}
+            currentUserId={currentUserId}
+            getSenderName={getSenderName}
+            backgroundTheme={backgroundTheme}
+            onSendPendingMessage={async (content: string) => {
+              const result = await sendMessageToConversation(null, content);
+              if (result.newConversationId) {
+                // Find the newly created conversation and select it
+                const newConv = conversations.find(c => c.id === result.newConversationId);
+                if (newConv) {
+                  setSelectedConversation(newConv);
+                }
+              }
+            }}
+            onCancelPending={clearPendingConversation}
+          />
+        ) : selectedConversation && selectedConversation.admin ? (
           <ChatWindow
             key={selectedConversation.id}
             conversation={selectedConversation}
@@ -424,8 +486,18 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
       <NewMessageModal
         isOpen={isNewMessageModalOpen}
         onClose={() => setIsNewMessageModalOpen(false)}
-        onSelectUser={() => {
+        onSelectUser={async (user) => {
           setIsNewMessageModalOpen(false);
+          // Instagram/X pattern: Start conversation (no DB write until first message)
+          const result = await startConversationWith(user);
+          if (result.type === 'existing' && result.conversation) {
+            setSelectedConversation(result.conversation);
+            setShowChatOnMobile(true);
+          } else if (result.type === 'pending') {
+            // Clear selected conversation - UI will show pending state
+            setSelectedConversation(null);
+            setShowChatOnMobile(true);
+          }
         }}
         currentUserId={currentUserId}
       />

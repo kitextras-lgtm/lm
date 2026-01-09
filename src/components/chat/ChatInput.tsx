@@ -1,3 +1,4 @@
+// Fix 22 & 23: Input State Preservation (Drafts) and Typing Indicators
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, ImagePlus, AlertCircle } from 'lucide-react';
 import { ImageUploadPreview } from './ImageUploadPreview';
@@ -12,16 +13,39 @@ interface ChatInputProps {
   replyTo?: ReplyTo | null;
   onCancelReply?: () => void;
   otherUserName?: string;
+  // Fix 22: Draft support
+  conversationId?: string;
+  initialDraft?: string;
+  onDraftChange?: (conversationId: string, content: string) => void;
+  onDraftClear?: (conversationId: string) => void;
 }
 
-export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancelReply, otherUserName }: ChatInputProps) {
-  const [message, setMessage] = useState('');
+export function ChatInput({ 
+  onSendMessage, 
+  onTyping, 
+  disabled, 
+  replyTo, 
+  onCancelReply, 
+  otherUserName,
+  conversationId,
+  initialDraft = '',
+  onDraftChange,
+  onDraftClear,
+}: ChatInputProps) {
+  // Fix 22: Initialize with draft if provided
+  const [message, setMessage] = useState(initialDraft);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageButtonRef = useRef<HTMLButtonElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const draftTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fix 22: Update message when conversation changes (restore draft)
+  useEffect(() => {
+    setMessage(initialDraft);
+  }, [conversationId, initialDraft]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -53,6 +77,7 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
     }
   }, []);
 
+  // Fix 23: Handle typing indicator
   const handleTyping = () => {
     onTyping(true);
     if (typingTimeoutRef.current) {
@@ -63,6 +88,18 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
     }, 2000);
   };
 
+  // Fix 22: Save draft with debounce
+  const handleDraftSave = useCallback((content: string) => {
+    if (!conversationId || !onDraftChange) return;
+    
+    if (draftTimeoutRef.current) {
+      clearTimeout(draftTimeoutRef.current);
+    }
+    draftTimeoutRef.current = setTimeout(() => {
+      onDraftChange(conversationId, content);
+    }, 500);
+  }, [conversationId, onDraftChange]);
+
   const handleSend = () => {
     if ((!message.trim() && !imageFile) || disabled) return;
     onSendMessage(message.trim(), imageFile || undefined, replyTo || undefined);
@@ -71,6 +108,10 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
     onTyping(false);
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
+    }
+    // Fix 22: Clear draft after sending
+    if (conversationId && onDraftClear) {
+      onDraftClear(conversationId);
     }
   };
 
@@ -161,6 +202,8 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
           onChange={(e) => {
             setMessage(e.target.value);
             handleTyping();
+            // Fix 22: Save draft on change
+            handleDraftSave(e.target.value);
           }}
           onKeyDown={handleKeyDown}
           placeholder={otherUserName ? `Message @${otherUserName}` : 'Send a message...'}

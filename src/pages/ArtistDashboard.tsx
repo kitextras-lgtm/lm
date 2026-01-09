@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, X, MessageSquare, ChevronRight, ChevronDown } from 'lucide-react';
-import { BetaBadge } from '../components/BetaBadge';
+import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
+import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
 import { DoorTransition } from '../components/DoorTransition';
@@ -31,7 +31,7 @@ import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
 import MoreView from '../components/MoreView';
 
-function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
+function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -41,7 +41,7 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
           width="32" 
           height="24" 
           rx="6" 
-          stroke={isHovered ? "#FF0000" : "#64748B"} 
+          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')} 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -50,10 +50,10 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
         />
         <path
           d="M20 18L32 24L20 30V18Z"
-          stroke={isHovered ? "#FF0000" : "#64748B"}
+          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
           strokeWidth="2.5"
           strokeLinejoin="round"
-          fill={isHovered ? "#FF0000" : "#64748B"}
+          fill={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
           style={{
             transform: isHovered ? "scale(1.15)" : "scale(1)",
             transformOrigin: "24px 24px",
@@ -65,7 +65,7 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
   );
 }
 
-function TikTokIcon({ isHovered }: { isHovered: boolean }) {
+function TikTokIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
   const notePath = "M32 8V28C32 34.6 26.6 40 20 40C13.4 40 8 34.6 8 28C8 21.4 13.4 16 20 16V22C16.7 22 14 24.7 14 28C14 31.3 16.7 34 20 34C23.3 34 26 31.3 26 28V8H32Z";
   const wavePath = "M32 8C32 8 36 9 38 12C40 15 40 18 40 18";
 
@@ -115,20 +115,20 @@ function TikTokIcon({ isHovered }: { isHovered: boolean }) {
         >
           <path
             d={notePath}
-            stroke="#64748B"
+            stroke={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <path d={wavePath} stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d={wavePath} stroke={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
   );
 }
 
-function InstagramIconAnimated({ isHovered }: { isHovered: boolean }) {
+function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -147,7 +147,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean }) {
           width="28" 
           height="28" 
           rx="8" 
-          stroke={isHovered ? "url(#igGradient)" : "#64748B"}
+          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -158,7 +158,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean }) {
           cx="24"
           cy="24"
           r="7"
-          stroke={isHovered ? "url(#igGradient)" : "#64748B"}
+          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -171,7 +171,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean }) {
           cx="32"
           cy="16"
           r="2"
-          fill={isHovered ? "#64748B" : "#64748B"}
+          fill={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'}
           style={{
             opacity: isHovered ? 1 : 0.6,
             transition: "opacity 0.3s ease-in-out",
@@ -247,6 +247,72 @@ const CAMPAIGNS: CampaignData[] = [
   }
 ];
 
+const OPPORTUNITIES: CampaignData[] = [
+  {
+    id: 'nova-beats',
+    name: 'Nova Beats',
+    timeAgo: '5d ago',
+    title: 'Future Sound',
+    description: 'Nova Beats is pushing the boundaries of electronic music. Create viral content with their tracks and earn from every view!',
+    status: 'Active',
+    endsIn: '14d',
+    paidOutPercent: '23.50%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$1.20 cpm',
+    rules: [
+      'Allowed Content: Use footage from provided music videos only.',
+      'Minimum video length: 10 seconds',
+      'Must include audio from the official track',
+      'Creative transitions encouraged'
+    ],
+    requiredHashtags: ['#NovaBeats', '#FutureSound']
+  },
+  {
+    id: 'electronic-vibes',
+    name: 'Electronic Vibes',
+    timeAgo: '2d ago',
+    title: 'Digital Dreams',
+    description: 'Electronic Vibes creates immersive electronic experiences. Join their latest campaign and showcase your creativity with cutting-edge sound design!',
+    status: 'Active',
+    endsIn: '8d',
+    paidOutPercent: '15.30%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$1.50 cpm',
+    rules: [
+      'Allowed Content: Electronic music videos and performances only.',
+      'Minimum video length: 20 seconds',
+      'Must include audio from the official track',
+      'Visual effects and transitions encouraged'
+    ],
+    requiredHashtags: ['#ElectronicVibes', '#DigitalDreams']
+  },
+  {
+    id: 'urban-beats',
+    name: 'Urban Beats',
+    timeAgo: '1d ago',
+    title: 'Street Culture',
+    description: 'Urban Beats brings authentic hip-hop and street culture to life. Create content that captures the essence of urban music and lifestyle!',
+    status: 'Active',
+    endsIn: '12d',
+    paidOutPercent: '8.75%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$0.90 cpm',
+    rules: [
+      'Allowed Content: Hip-hop and urban music content only.',
+      'Minimum video length: 30 seconds',
+      'Must include audio from the official track',
+      'Street style and authenticity required'
+    ],
+    requiredHashtags: ['#UrbanBeats', '#StreetCulture']
+  }
+];
+
 function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
   const [showFullRules, setShowFullRules] = useState(false);
 
@@ -262,7 +328,8 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
         className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
         style={{ 
           backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
           animation: 'popOut 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}
         onClick={(e) => e.stopPropagation()}
@@ -287,45 +354,32 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
             <div className="flex-1 min-w-0 pt-1">
               <div className="flex items-center gap-2 mb-1.5">
                 <h2 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{campaign.name}</h2>
-                <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                   <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
                   </svg>
                 </div>
               </div>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>{campaign.timeAgo}</p>
+              <p className="text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>{campaign.timeAgo}</p>
               <p className="text-base font-medium mt-1.5" style={{ color: '#94A3B8' }}>{campaign.title}</p>
-            </div>
-            <div 
-              className="px-4 py-2 rounded-full text-sm font-semibold flex-shrink-0"
-              style={{ 
-                backgroundColor: campaign.status === 'Active' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(251, 191, 36, 0.15)',
-                color: campaign.status === 'Active' ? '#22c55e' : '#fbbf24',
-                border: `1px solid ${campaign.status === 'Active' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(251, 191, 36, 0.3)'}`
-              }}
-            >
-              {campaign.status}
             </div>
           </div>
         </div>
 
         {/* Stats row */}
-        <div className="mx-7 mb-7 rounded-2xl overflow-hidden" style={{ backgroundColor: '#000000', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-          <div className="grid grid-cols-5 divide-x" style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}>
-            <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Ends</p>
+        <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+          <div className="flex items-start">
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
-              {campaign.paidOutPercent && (
-                <p className="text-xs font-medium mt-1" style={{ color: '#3b82f6' }}>{campaign.paidOutPercent} PAID OUT</p>
-              )}
             </div>
-            <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Language</p>
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
             </div>
-            <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Platforms</p>
-              <div className="flex items-center justify-center gap-2 mt-1">
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-2" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Platforms</p>
+              <div className="flex items-center justify-center gap-2">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
                     <InstagramIconAnimated isHovered={true} />
@@ -343,12 +397,12 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
                 )}
               </div>
             </div>
-            <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Pay Type</p>
+            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Pay Type</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
             </div>
-            <div className="p-4 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Payout</p>
+            <div className="flex-1 text-center">
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Payout</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
             </div>
           </div>
@@ -381,13 +435,13 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
 
         {/* What to include */}
         {campaign.requiredHashtags && campaign.requiredHashtags.length > 0 && (
-          <div className="px-7 pb-7 pt-5 mt-2" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <div className="px-7 pb-6">
             <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>What to include</h3>
             <div className="flex items-start gap-4">
-              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#94A3B8' }} />
+              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
               <div>
                 <p className="text-base font-medium" style={{ color: '#F8FAFC' }}>Caption, tags, text</p>
-                <p className="text-xs font-semibold mt-2" style={{ color: '#3b82f6' }}>REQUIRED HASHTAGS</p>
+                <p className="text-xs font-semibold mt-2" style={{ color: '#94A3B8' }}>REQUIRED HASHTAGS</p>
                 <p className="text-sm mt-1.5" style={{ color: '#94A3B8' }}>{campaign.requiredHashtags.join(' ')}</p>
               </div>
             </div>
@@ -413,36 +467,36 @@ function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; b
   
   return (
     <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer" 
-      style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
           <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#F8FAFC' }}>Fighter Music</h3>
-            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
               <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#94A3B8' }}>13d ago • Varied</p>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago • Varied</p>
         </div>
       </div>
 
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: '#F8FAFC' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
+      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
 
       <div className="flex items-center">
         <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} />
-          <TikTokIcon isHovered={isCardHovered} />
-          <YouTubeIcon isHovered={isCardHovered} />
+          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
         </div>
       </div>
     </div>
@@ -454,36 +508,77 @@ function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; ba
   
   return (
     <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer" 
-      style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
           <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#F8FAFC' }}>Asta Violina</h3>
-            <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Asta Violina</h3>
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
               <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#94A3B8' }}>13d ago • Varied</p>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago • Varied</p>
         </div>
       </div>
 
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: '#F8FAFC' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
+      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
 
       <div className="flex items-center">
         <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} />
-          <TikTokIcon isHovered={isCardHovered} />
-          <YouTubeIcon isHovered={isCardHovered} />
+          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NovaBeatsCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
+  const [isCardHovered, setIsCardHovered] = useState(false);
+  
+  return (
+    <div 
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+      onMouseEnter={() => setIsCardHovered(true)}
+      onMouseLeave={() => setIsCardHovered(false)}
+      onClick={onClick}
+    >
+      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
+          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Nova Beats</h3>
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
+              <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>5d ago • Varied</p>
+        </div>
+      </div>
+
+      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Nova Beats is pushing the boundaries of electronic music with futuristic sounds.</p>
+
+      <div className="flex items-center">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
         </div>
       </div>
     </div>
@@ -494,12 +589,14 @@ const SettingsNavButton = ({
   onClick, 
   isActive, 
   icon, 
-  label 
+  label,
+  backgroundTheme 
 }: { 
   onClick: () => void; 
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
+  backgroundTheme: 'light' | 'grey' | 'dark';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -512,12 +609,56 @@ const SettingsNavButton = ({
         isActive ? 'shadow-md' : 'hover:brightness-105'
       }`}
       style={{
-        backgroundColor: isActive ? '#0f0f13' : 'transparent',
-        color: '#F8FAFC'
+        backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent',
+        color: 'var(--text-primary)'
       }}
     >
       {React.cloneElement(icon, { isHovered })}
       {label}
+    </button>
+  );
+};
+
+const MobileSettingsButton = ({ 
+  onClick, 
+  isActive, 
+  icon, 
+  label,
+  backgroundTheme 
+}: { 
+  onClick: () => void; 
+  isActive: boolean; 
+  icon: React.ReactElement; 
+  label: string;
+  backgroundTheme: 'light' | 'grey' | 'dark';
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
+      className="lg:hidden w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200"
+      style={{ 
+        backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : (isHovered ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent'),
+        transform: isHovered ? 'scale(0.98)' : 'scale(1)'
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <div 
+          className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200" 
+          style={{ 
+            backgroundColor: isActive || isHovered ? 'rgba(148, 163, 184, 0.1)' : 'rgba(75, 85, 99, 0.1)'
+          }}
+        >
+          {React.cloneElement(icon, { isHovered: isHovered || isActive })}
+        </div>
+        <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
+      </div>
+      <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: '#64748B', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
     </button>
   );
 };
@@ -547,7 +688,7 @@ const MobileSettingsMenuItem = ({
         <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
         <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
       </div>
-      <svg className="w-5 h-5" style={{ color: '#94A3B8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     </button>
@@ -642,11 +783,13 @@ export function ArtistDashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('personal');
   const [mobileSettingsView, setMobileSettingsView] = useState<'menu' | SettingsSection>('menu');
   const [isEditing, setIsEditing] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<CampaignData | null>(null);
   const [userType, setUserType] = useState<string>('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
@@ -657,6 +800,7 @@ export function ArtistDashboard() {
     firstName: '',
     lastName: '',
     username: '',
+    bio: '',
     location: '',
     language: '',
     email: ''
@@ -676,7 +820,6 @@ export function ArtistDashboard() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [cachedProfilePic, setCachedProfilePic] = useState<string | null>(null);
-  const [selectedCampaign, setSelectedCampaign] = useState<CampaignData | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -737,6 +880,7 @@ export function ArtistDashboard() {
         firstName: cachedProfile.first_name || '',
         lastName: cachedProfile.last_name || '',
         username: cachedProfile.username || '',
+        bio: cachedProfile.bio || '',
         location: cachedProfile.location || '',
         language: cachedProfile.primary_language || '',
         email: cachedProfile.email || ''
@@ -748,25 +892,12 @@ export function ArtistDashboard() {
   }, [cachedProfile, cachedUserId, userProfile]);
 
   useEffect(() => {
-    console.log('[ArtistDashboard] Component mounted');
     localStorage.setItem('currentDashboard', '/dashboard/artist');
     // Only fetch if no cached profile (background refresh happens in context)
     if (!cachedProfile) {
       fetchUserProfile();
     }
   }, [cachedProfile]);
-  
-  // Debug: Log when activeSection changes
-  useEffect(() => {
-    console.log('[ArtistDashboard] activeSection changed:', activeSection);
-    if (activeSection === 'messages') {
-      console.log('[ArtistDashboard] Messages section activated!', {
-        currentUserId,
-        hasCurrentUserId: !!currentUserId,
-        conversationsCount: conversations.length
-      });
-    }
-  }, [activeSection, currentUserId, conversations.length]);
 
   // Update cached image when userProfile changes
   useEffect(() => {
@@ -827,6 +958,13 @@ export function ArtistDashboard() {
       
       let userId = user?.id || verifiedUserId;
       
+      console.log('🔍 User ID resolution:', {
+        'auth user id': user?.id,
+        'verifiedUserId from localStorage': verifiedUserId,
+        'verifiedEmail from localStorage': verifiedEmail,
+        'final userId': userId
+      });
+      
       // If we have email but no userId, try to find user by email
       if (!userId && verifiedEmail) {
         console.log('No userId found, trying to find user by email:', verifiedEmail);
@@ -837,7 +975,13 @@ export function ArtistDashboard() {
           .maybeSingle();
         
         if (emailLookupError) {
-          console.error('Error looking up user by email:', emailLookupError);
+          console.error('❌ Error looking up user by email:', emailLookupError);
+          console.error('Error details:', {
+            message: emailLookupError.message,
+            details: emailLookupError.details,
+            hint: emailLookupError.hint,
+            code: emailLookupError.code
+          });
         }
         
         if (usersByEmail?.id) {
@@ -858,11 +1002,10 @@ export function ArtistDashboard() {
       }
 
       setCurrentUserId(userId);
-      
-      console.log('[ArtistDashboard] ✅ Setting currentUserId:', userId);
-      console.log('[ArtistDashboard] Fetching profile for userId:', userId);
-      console.log('[ArtistDashboard] Auth user:', user?.id);
-      console.log('[ArtistDashboard] Is authenticated:', !!user);
+
+      console.log('📥 Fetching profile for userId:', userId);
+      console.log('Auth user:', user?.id);
+      console.log('Is authenticated:', !!user);
 
       // Try Edge Function first (bypasses RLS) - more reliable
       let profile = null;
@@ -871,6 +1014,8 @@ export function ArtistDashboard() {
       try {
         console.log('Attempting to fetch via Edge Function...');
         const fetchUrl = `${SUPABASE_URL}/functions/v1/get-profile?userId=${userId}`;
+        console.log('Edge Function URL:', fetchUrl);
+        
         const fetchResponse = await fetch(fetchUrl, {
           method: 'GET',
           headers: {
@@ -880,42 +1025,89 @@ export function ArtistDashboard() {
         });
         
         console.log('Edge Function response status:', fetchResponse.status);
+        console.log('Edge Function response headers:', Object.fromEntries(fetchResponse.headers.entries()));
         
-        if (fetchResponse.ok) {
+        const contentType = fetchResponse.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const textResponse = await fetchResponse.text();
+          console.warn('⚠️ Edge Function returned non-JSON response (likely HTML error page)');
+          console.warn('Response preview:', textResponse.substring(0, 200));
+          console.warn('This usually means the Edge Function does not exist or is misconfigured');
+          // Don't throw error, just skip Edge Function and use direct query
+        } else if (fetchResponse.ok) {
           const fetchData = await fetchResponse.json();
-          console.log('Edge Function response data:', fetchData);
+          console.log('✅ Edge Function response data:', fetchData);
           
           if (fetchData.success) {
             profile = fetchData.profile;
             userData = fetchData.user;
-            console.log('Successfully fetched via Edge Function');
+            console.log('✅ Successfully fetched via Edge Function');
             console.log('Profile:', profile);
             console.log('User:', userData);
             console.log('Profile picture URL from database:', profile?.profile_picture_url || userData?.profile_picture_url);
             console.log('All profile keys:', profile ? Object.keys(profile) : 'null');
           } else {
-            console.warn('Edge Function returned success:false', fetchData.message);
+            console.warn('⚠️ Edge Function returned success:false', fetchData.message);
           }
         } else {
           const errorText = await fetchResponse.text();
-          console.error('Edge Function fetch failed:', fetchResponse.status, errorText);
+          console.error('❌ Edge Function fetch failed:', fetchResponse.status, errorText.substring(0, 200));
         }
       } catch (fetchErr) {
-        console.error('Error fetching via Edge Function:', fetchErr);
+        console.error('❌ Error fetching via Edge Function:', fetchErr);
+        // Continue to direct query fallback
       }
 
       // Fallback: Try direct query if Edge Function didn't work
       if (!profile) {
-        console.log('Edge Function didn\'t return data, trying direct query...');
+        console.log('🔍 Edge Function didn\'t return data, trying direct query...');
+        console.log('Querying users table for userId:', userId);
+        
+        // First try by ID
         const userResult = await supabase
           .from('users')
           .select('*')
           .eq('id', userId)
           .maybeSingle();
+        
+        // If no result by ID, try by email as fallback
+        if (!userResult.data && !userResult.error) {
+          const verifiedEmail = localStorage.getItem('verifiedEmail');
+          if (verifiedEmail) {
+            console.log('🔍 User not found by ID, trying email:', verifiedEmail);
+            const emailResult = await supabase
+              .from('users')
+              .select('*')
+              .eq('email', verifiedEmail)
+              .maybeSingle();
+            
+            if (emailResult.data) {
+              console.log('✅ Found user by email:', emailResult.data);
+              console.log('📦 Username from users table:', emailResult.data.username);
+              // Use this data
+              userResult.data = emailResult.data;
+            } else {
+              console.warn('⚠️ User not found by email either');
+              // List some users for debugging
+              const { data: sampleUsers } = await supabase
+                .from('users')
+                .select('id, email, username, first_name')
+                .limit(5);
+              console.log('📋 Sample users in table:', sampleUsers);
+            }
+          }
+        }
+
+        console.log('📊 Users table query result:', {
+          hasData: !!userResult.data,
+          hasError: !!userResult.error,
+          data: userResult.data,
+          error: userResult.error
+        });
 
         // Log any errors with full details
         if (userResult.error) {
-          console.error('Error fetching users table:', userResult.error);
+          console.error('❌ Error fetching users table:', userResult.error);
           console.error('Error details:', {
             message: userResult.error.message,
             details: userResult.error.details,
@@ -923,25 +1115,61 @@ export function ArtistDashboard() {
             code: userResult.error.code
           });
         } else {
-          console.log('users table query successful, data:', userResult.data);
+          console.log('✅ users table query successful');
           if (userResult.data) {
-            profile = userResult.data;
-          }
-        }
-        
-        if (userResult.error) {
-          console.error('Error fetching users:', userResult.error);
-          console.error('Error details:', {
-            message: userResult.error.message,
-            details: userResult.error.details,
-            hint: userResult.error.hint,
-            code: userResult.error.code
-          });
-        } else {
-          console.log('users query successful, data:', userResult.data);
-          if (userResult.data) {
+            console.log('📦 User data found:', Object.keys(userResult.data));
             profile = userResult.data;
             userData = userResult.data;
+          } else {
+            console.warn('⚠️ users table query returned no data (null)');
+            console.warn('Trying profiles table as fallback...');
+            
+            // Try profiles table as fallback
+            const profileResult = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .maybeSingle();
+            
+            console.log('📊 Profiles table query result:', {
+              hasData: !!profileResult.data,
+              hasError: !!profileResult.error,
+              data: profileResult.data,
+              error: profileResult.error
+            });
+            
+            if (profileResult.error) {
+              console.error('❌ Error fetching profiles table:', profileResult.error);
+            } else if (profileResult.data) {
+              console.log('✅ Found user in profiles table');
+              const profileData = profileResult.data;
+              
+              // Map profiles table structure to users table structure
+              // Profiles has: name, avatar_url
+              // Users has: first_name, last_name, profile_picture_url
+              const nameParts = profileData.name ? profileData.name.split(' ') : [];
+              const mappedProfile = {
+                ...profileData,
+                // Map to users table structure
+                first_name: nameParts[0] || '',
+                last_name: nameParts.slice(1).join(' ') || '',
+                username: profileData.name || '',
+                profile_picture_url: profileData.avatar_url || '',
+                // Keep original fields too
+                name: profileData.name,
+                avatar_url: profileData.avatar_url,
+              };
+              
+              console.log('📦 Mapped profile data:', mappedProfile);
+              profile = mappedProfile;
+              userData = mappedProfile;
+            } else {
+              console.warn('⚠️ User not found in either users or profiles table');
+              console.warn('This could mean:');
+              console.warn('1. User does not exist in database');
+              console.warn('2. RLS policy is blocking access');
+              console.warn('3. userId mismatch');
+            }
           }
         }
       }
@@ -952,9 +1180,22 @@ export function ArtistDashboard() {
       // Prioritize userData from users table (new primary source of truth)
       const profileData = userData || profile;
       
+      // Preload profile picture immediately when profile data is available
+      // Check both profile_picture_url (users table) and avatar_url (profiles table)
+      const profilePicUrl = profileData?.profile_picture_url || profileData?.avatar_url;
+      if (profilePicUrl && !profilePicUrl.startsWith('blob:')) {
+        const cachedImage = getCachedImage(profilePicUrl);
+        if (cachedImage) {
+          setCachedProfilePic(cachedImage);
+        } else {
+          // Start preloading immediately
+          preloadAndCacheImage(profilePicUrl);
+        }
+      }
+      
       // Always set profile data, even if empty (use defaults)
       setUserProfile(profileData);
-      // Tag should always match the dashboard route (Artist Dashboard = ARTIST)
+      // Tag should always match the dashboard route (Creator Dashboard = CREATOR)
       setUserType('ARTIST');
       
       // Set form data from users table (primary source)
@@ -962,6 +1203,7 @@ export function ArtistDashboard() {
         firstName: profileData?.first_name || '',
         lastName: profileData?.last_name || '',
         username: profileData?.username || '',
+        bio: profileData?.bio || '',
         location: profileData?.location || '',
         language: profileData?.primary_language || '',
         email: profileData?.email || user?.email || verifiedEmail || ''
@@ -978,14 +1220,16 @@ export function ArtistDashboard() {
       }
       
       // Only set profilePicturePreview from database URL (for settings page preview)
-      // Header avatar will use userProfile.profile_picture_url directly
-      if (profileData?.profile_picture_url && !profileData.profile_picture_url.startsWith('blob:')) {
-        console.log('Setting profile picture preview from database:', profileData.profile_picture_url);
-        setProfilePicturePreview(profileData.profile_picture_url);
+      // Header avatar will use userProfile.profile_picture_url or avatar_url directly
+      const picUrl = profileData?.profile_picture_url || profileData?.avatar_url;
+      if (picUrl && !picUrl.startsWith('blob:')) {
+        console.log('Setting profile picture preview from database:', picUrl);
+        setProfilePicturePreview(picUrl);
       } else {
         console.log('No valid profile picture URL found in profile data');
         console.log('Profile data keys:', profileData ? Object.keys(profileData) : 'null');
         console.log('profile_picture_url value:', profileData?.profile_picture_url);
+        console.log('avatar_url value:', profileData?.avatar_url);
         setProfilePicturePreview(null);
       }
       
@@ -1039,66 +1283,41 @@ export function ArtistDashboard() {
     setSaveError(null);
 
     try {
-      // Get user ID using same fallback logic as fetchUserProfile
-      const { data: { user } } = await supabase.auth.getUser();
-      const verifiedUserId = localStorage.getItem('verifiedUserId');
-      const verifiedEmail = localStorage.getItem('verifiedEmail');
+      // Use cached user ID for instant access
+      const userId = currentUserId || localStorage.getItem('verifiedUserId');
       
-      let userId = user?.id || verifiedUserId;
-      
-      // If we have email but no userId, try to find user by email
-      if (!userId && verifiedEmail) {
-        const { data: usersByEmail } = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', verifiedEmail)
-          .maybeSingle();
-        
-        if (usersByEmail?.id) {
-          userId = usersByEmail.id;
-          localStorage.setItem('verifiedUserId', userId);
-        }
-      }
-
       if (!userId) {
         setSaveError('You must be logged in to save changes');
         setIsSaving(false);
         return;
       }
 
-      // Convert profile picture to base64 to send via Edge Function
-      // Edge Function will upload it using service role (bypasses RLS)
+      // Only process image if there's actually a new one
       let profilePictureBase64 = null;
       let profilePictureFileName = null;
+      
       if (profilePicture) {
         try {
-          console.log('🖼️ Converting profile picture to base64...');
-          console.log('File:', profilePicture.name, 'Size:', profilePicture.size);
-          
           // Convert file to base64
           const reader = new FileReader();
           profilePictureBase64 = await new Promise<string>((resolve, reject) => {
             reader.onload = () => {
               const result = reader.result as string;
-              // Remove data:image/...;base64, prefix
               const base64 = result.split(',')[1];
               resolve(base64);
             };
             reader.onerror = reject;
             reader.readAsDataURL(profilePicture);
           });
-          
           profilePictureFileName = profilePicture.name;
-          console.log('✅ Profile picture converted to base64');
         } catch (convertErr: any) {
-          console.error('❌ Failed to convert image:', convertErr);
-          setSaveError(`Failed to process profile picture: ${convertErr.message}`);
+          setSaveError('Failed to process profile picture');
           setIsSaving(false);
           return;
         }
       }
 
-      // Save profile using Edge Function (bypasses RLS)
+      // Save profile using Edge Function
       const apiUrl = `${SUPABASE_URL}/functions/v1/save-profile`;
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -1110,11 +1329,11 @@ export function ArtistDashboard() {
           userId: userId,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          // Username is not included - it cannot be changed after onboarding
+          bio: formData.bio,
           location: formData.location,
           primaryLanguage: formData.language,
-          profilePictureBase64: profilePictureBase64, // Send base64 instead of URL
-          profilePictureFileName: profilePictureFileName,
+          profilePictureBase64,
+          profilePictureFileName,
         }),
       });
 
@@ -1124,17 +1343,27 @@ export function ArtistDashboard() {
         throw new Error(data.message || 'Failed to save changes');
       }
 
-      // Update cache with new profile data for instant loading next time
+      // Update cache instantly (no need to refresh from server)
       updateCachedProfile({
         first_name: formData.firstName,
         last_name: formData.lastName,
+        bio: formData.bio,
         location: formData.location,
         primary_language: formData.language,
         profile_picture_url: data.profilePictureUrl || userProfile?.profile_picture_url || null,
       });
       
-      // Refresh profile data
-      await fetchUserProfile();
+      // Update local state instantly
+      setUserProfile((prev: any) => prev ? {
+        ...prev,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        bio: formData.bio,
+        location: formData.location,
+        primary_language: formData.language,
+        profile_picture_url: data.profilePictureUrl || prev.profile_picture_url,
+      } : null);
+      
       setProfilePicture(null);
       setProfilePicturePreview(null);
       setIsEditing(false);
@@ -1235,12 +1464,12 @@ export function ArtistDashboard() {
   const scrollToSection = (section: SettingsSection) => {
     setSettingsSection(section);
     const refs = {
-      personal: personalRef,
-      accounts: accountsRef,
-      payout: payoutRef,
-      notifications: notificationsRef
-    };
-    refs[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        personal: personalRef,
+        accounts: accountsRef,
+        payout: payoutRef,
+        notifications: notificationsRef
+      };
+      refs[section]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   useEffect(() => {
@@ -1264,11 +1493,11 @@ export function ArtistDashboard() {
 
   const renderPersonalInfo = () => (
     <div ref={personalRef} className="scroll-mt-6 space-y-3 lg:space-y-4">
-        <div className="mb-2 lg:mb-0">
-          <div className="flex items-center gap-2.5 lg:gap-4">
+        <div className="mb-1 lg:mb-0">
+          <div className="flex items-center gap-2 lg:gap-3">
             <div
               onClick={handleProfilePictureClick}
-              className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-md cursor-pointer hover:brightness-110 transition-all duration-200"
+              className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-md cursor-pointer hover:brightness-110 transition-all duration-200"
             >
               {profilePicturePreview ? (
                 <img 
@@ -1283,16 +1512,16 @@ export function ArtistDashboard() {
                   className="w-full h-full object-cover rounded-full"
                 />
               ) : (
-                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 lg:w-8 lg:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               )}
             </div>
             <div>
-              <h3 className="text-lg lg:text-xl font-semibold mb-0.5 lg:mb-1" style={{ color: '#F8FAFC' }}>
+              <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: '#F8FAFC' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
-              <p className="text-base lg:text-sm" style={{ color: '#94A3B8' }}>
+              <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
                 {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : 'No username'}
               </p>
             </div>
@@ -1306,10 +1535,10 @@ export function ArtistDashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5 lg:gap-5">
+        <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>First name</label>
-            <div className="flex items-center gap-1 lg:gap-3">
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>First name</label>
+            <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
                 value={formData.firstName}
@@ -1320,63 +1549,45 @@ export function ArtistDashboard() {
                   }
                 }}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                className="flex-1 min-w-0 h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
                   color: '#F8FAFC',
-                  background: '#0f0f13',
-                  border: '1px solid rgba(75, 85, 99, 0.2)',
+                  background: 'transparent',
+                  border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
               />
-              {!isEditing && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                  style={{ color: '#94A3B8' }}
-                >
-                  <EditIcon />
-                </button>
-              )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Last name</label>
-            <div className="flex items-center gap-1 lg:gap-3">
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Last name</label>
+            <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                className="flex-1 min-w-0 h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
                   color: '#F8FAFC',
-                  background: '#0f0f13',
-                  border: '1px solid rgba(75, 85, 99, 0.2)',
+                  background: 'transparent',
+                  border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
               />
-              {!isEditing && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                  style={{ color: '#94A3B8' }}
-                >
-                  <EditIcon />
-                </button>
-              )}
             </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Username</label>
-          <div className="flex items-center gap-1.5 lg:gap-3">
-            <div className="flex-1 flex items-center h-11 lg:h-12 px-3 lg:px-4 rounded-xl" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <span className="text-sm lg:text-sm" style={{ color: '#94A3B8' }}>@</span>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Username</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+              <span className="text-xs lg:text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
                 disabled
-                className="flex-1 bg-transparent text-sm lg:text-sm focus:outline-none ml-1 opacity-50"
+                className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1 opacity-50"
                 style={{ color: '#F8FAFC' }}
               />
             </div>
@@ -1384,10 +1595,28 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Location</label>
-          <div className="flex items-center gap-1.5 lg:gap-3">
-            <div className="flex-1 min-w-0 flex items-center h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <MapPin className="w-4 h-4 lg:w-4 lg:h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#94A3B8' }} />
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Bio</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <textarea
+              value={formData.bio || ''}
+              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              disabled={!isEditing}
+              placeholder="Tell us about yourself..."
+              className="flex-1 min-w-0 h-20 lg:h-24 px-2 lg:px-3 py-2 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
+              style={{
+                color: '#F8FAFC',
+                background: 'transparent',
+                border: '1px solid rgba(75, 85, 99, 0.5)',
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Location</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -1397,31 +1626,22 @@ export function ArtistDashboard() {
                   }
                 }}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 bg-transparent text-sm lg:text-sm focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
               >
                 {COUNTRIES.map(country => (
-                  <option key={country} value={country} style={{ background: '#0f0f13' }}>{country}</option>
+                  <option key={country} value={country} style={{ background: 'var(--bg-card)' }}>{country}</option>
                 ))}
               </select>
             </div>
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                style={{ color: '#94A3B8' }}
-              >
-                <EditIcon />
-              </button>
-            )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
-          <div className="flex items-center gap-1.5 lg:gap-3">
-            <div className="flex-1 min-w-0 flex items-center h-11 lg:h-12 px-2.5 lg:px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <Globe className="w-4 h-4 mr-1.5 lg:mr-2 flex-shrink-0" style={{ color: '#94A3B8' }} />
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
+          <div className="flex items-center gap-1 lg:gap-2">
+            <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -1431,37 +1651,28 @@ export function ArtistDashboard() {
                   }
                 }}
                 disabled={!isEditing}
-                className="flex-1 min-w-0 bg-transparent text-sm focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
                 style={{ color: '#F8FAFC' }}
               >
                 {LANGUAGES.map(language => (
-                  <option key={language} value={language} style={{ background: '#0f0f13' }}>{language}</option>
+                  <option key={language} value={language} style={{ background: 'var(--bg-card)' }}>{language}</option>
                 ))}
               </select>
             </div>
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-1 lg:p-2.5 hover:brightness-110 transition-all rounded-lg flex-shrink-0"
-                style={{ color: '#94A3B8' }}
-              >
-                <EditIcon />
-              </button>
-            )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm lg:text-sm font-medium mb-2 lg:mb-2.5" style={{ color: '#94A3B8' }}>Email</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Email</label>
           <input
             type="email"
             value={formData.email}
             disabled
-            className="w-full h-11 lg:h-12 px-3 lg:px-4 rounded-xl text-sm lg:text-sm focus:outline-none opacity-50"
+            className="w-full h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none opacity-50"
             style={{
               color: '#F8FAFC',
-              background: '#0f0f13',
-              border: '1px solid rgba(75, 85, 99, 0.2)',
+              background: 'transparent',
+              border: '1px solid rgba(75, 85, 99, 0.5)',
             }}
           />
         </div>
@@ -1490,7 +1701,7 @@ export function ArtistDashboard() {
                 fetchUserProfile();
               }}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13', color: backgroundTheme === 'light' ? '#000000' : '#F8FAFC' }}
+              style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', color: backgroundTheme === 'light' ? '#000000' : 'var(--text-primary)' }}
             >
               Cancel
             </button>
@@ -1498,7 +1709,7 @@ export function ArtistDashboard() {
               onClick={handleSaveChanges}
               disabled={isSaving}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ backgroundColor: '#E8E8E8', color: '#000000' }}
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
             >
               {isSaving ? 'Saving...' : 'Save changes'}
             </button>
@@ -1516,7 +1727,7 @@ export function ArtistDashboard() {
   const renderPayoutMethods = () => (
     <div ref={payoutRef} className="scroll-mt-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:gap-4">
-        <button className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
+        <button className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>
           <Plus className="w-5 h-5" />
           Connect an account
         </button>
@@ -1582,7 +1793,7 @@ export function ArtistDashboard() {
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Email</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#0f0f13' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Notify me about new platform features and updates</p>
@@ -1814,7 +2025,7 @@ export function ArtistDashboard() {
                 <div 
                   className="w-10 h-10 rounded-full overflow-hidden"
                   style={{ 
-                    backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : '#2f2f2f',
+                    backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#2f2f2f',
                   }}
                 >
                   <img
@@ -1967,12 +2178,13 @@ export function ArtistDashboard() {
 
   const renderLanguages = () => (
     <div className="scroll-mt-6">
+
       <div className="space-y-3 lg:space-y-8">
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface Language</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: '#2f2f2f' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               <div className="min-w-0 flex-1">
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Display language</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Choose your preferred interface language</p>
@@ -1982,9 +2194,9 @@ export function ArtistDashboard() {
                   type="button"
                   onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                   className="w-full px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
-                  style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
+                  style={{ backgroundColor: 'transparent', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: '#F8FAFC' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#0a0a0a';
+                    e.currentTarget.style.backgroundColor = backgroundTheme === 'light' ? 'rgba(255, 255, 255, 0.1)' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0a0a0a';
                     e.currentTarget.style.transform = 'translateY(-1px)';
                   }}
                   onMouseLeave={(e) => {
@@ -2005,7 +2217,7 @@ export function ArtistDashboard() {
                 {isLanguageDropdownOpen && (
                   <div
                     className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
-                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)', border: '1px solid rgba(75, 85, 99, 0.5)' }}
+                    style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : 'rgba(0, 0, 0, 0.95)', border: backgroundTheme === 'light' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.5)' }}
                   >
                     <div className="max-h-60 overflow-y-auto">
                       {languageOptions.map((option) => {
@@ -2051,6 +2263,28 @@ export function ArtistDashboard() {
             </div>
           </div>
         </div>
+
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Content Preferences</h3>
+
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Auto-translate content</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Automatically translate posts to your language</p>
+              </div>
+              <button
+                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
+                style={{ backgroundColor: '#64748B' }}
+              >
+                <div 
+                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  style={{ transform: 'translateX(0px)' }}
+                ></div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -2093,35 +2327,36 @@ export function ArtistDashboard() {
             color: 'var(--text-primary)'
           }}
         >
+
+        {activeSection === 'profile' && (
+          <ProfileView
+            userProfile={userProfile}
+            cachedProfilePic={cachedProfilePic}
+            onBack={() => setActiveSection('home')}
+            onUpdateProfile={handleUpdateProfile}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            onEditProfile={() => {
+              setActiveSection('settings');
+              setIsEditing(true);
+            }}
+            appliedTheme={backgroundTheme}
+          />
+        )}
+
         {activeSection === 'messages' && (
           <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden" style={{ height: 'calc(100vh - 80px)' }}>
-            {(() => {
-              console.log('🔴🔴🔴 [ArtistDashboard] RENDERING MESSAGES SECTION:', {
-                activeSection,
-                currentUserId,
-                hasCurrentUserId: !!currentUserId,
-                currentUserIdLength: currentUserId?.length || 0,
-                conversationsCount: conversations.length,
-                timestamp: new Date().toISOString()
-              });
-              
-              if (currentUserId) {
-                console.log('🔴🔴🔴 [ArtistDashboard] Passing currentUserId to MessagesPage:', currentUserId);
-                return <MessagesPage currentUserId={currentUserId} backgroundTheme={backgroundTheme} />;
-              } else {
-                console.warn('🔴🔴🔴 [ArtistDashboard] ❌ NO currentUserId - showing loading spinner');
-                console.warn('🔴🔴🔴 [ArtistDashboard] This means fetchUserProfile has not set currentUserId yet');
-                return (
-                  <div className="flex items-center justify-center flex-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
-                      <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
-                      <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
+            {currentUserId ? (
+              <MessagesPage currentUserId={currentUserId} backgroundTheme={backgroundTheme} />
+            ) : (
+              <div className="flex items-center justify-center" style={{ height: '100%' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
+                </div>
               </div>
-            </div>
-                );
-              }
-            })()}
+            )}
           </div>
         )}
 
@@ -2130,10 +2365,10 @@ export function ArtistDashboard() {
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Available balance</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
                 </div>
                 <div className="mt-auto">
                   <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
@@ -2141,66 +2376,66 @@ export function ArtistDashboard() {
               </div>
 
               {/* Pending Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Lifetime Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Affiliate earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
             </div>
 
             {/* Transaction History Section */}
-            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#1a1a1e' }}>
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               {/* Tabs */}
               <div className="flex gap-2 mb-6">
                 <button 
                   onClick={() => setEarningsTab('available')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
-                  style={{ backgroundColor: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#FFFFFF' : '#0f0f13') : 'transparent', color: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Available
                 </button>
                 <button 
                   onClick={() => setEarningsTab('pending')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#FFFFFF' : '#0f0f13') : 'transparent', color: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Pending
                 </button>
                 <button 
                   onClick={() => setEarningsTab('paidout')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#FFFFFF' : '#0f0f13') : 'transparent', color: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Paid out
                 </button>
               </div>
 
               {/* Table Headers */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#0f0f13' }}>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Date</div>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Clip</div>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Campaign/Description</div>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Amount</div>
+              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Date</div>
+                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Clip</div>
+                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Campaign/Description</div>
+                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Amount</div>
               </div>
 
               {/* Empty State */}
@@ -2241,9 +2476,9 @@ export function ArtistDashboard() {
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
                 renderPayoutMethods={renderPayoutMethods}
-                renderNotifications={renderNotifications}
                 renderDisplay={renderDisplay}
                 renderLanguages={renderLanguages}
+                renderNotifications={renderNotifications}
                 renderSendFeedback={renderSendFeedback}
                 renderLogOut={renderLogOut}
                 isMobile={false}
@@ -2254,22 +2489,6 @@ export function ArtistDashboard() {
         )}
 
         
-        {activeSection === 'profile' && (
-          <ProfileView
-            userProfile={userProfile}
-            cachedProfilePic={cachedProfilePic}
-            onBack={() => setActiveSection('home')}
-            onUpdateProfile={handleUpdateProfile}
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            onEditProfile={() => {
-              setActiveSection('settings');
-              setIsEditing(true);
-            }}
-            appliedTheme={appliedTheme}
-          />
-        )}
-
         {activeSection === 'home' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <AnnouncementBanner userId={currentUserId} userType="artist" />
@@ -2279,10 +2498,12 @@ export function ArtistDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
             <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
 
             <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+
+            <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
           </div>
         </section>
 
@@ -2327,12 +2548,12 @@ export function ArtistDashboard() {
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Opportunities</h2>
-                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and collaborations</p>
+                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
-                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+                <NovaBeatsCard onClick={() => setSelectedCampaign(OPPORTUNITIES[0])} backgroundTheme={backgroundTheme} />
+                <FighterMusicCard onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
           </div>

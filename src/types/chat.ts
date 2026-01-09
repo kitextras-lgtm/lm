@@ -1,12 +1,13 @@
 export interface Profile {
   id: string;
   name: string;
+  username?: string;
   avatar_url: string;
   is_admin: boolean;
   is_online: boolean;
-  last_seen: string;
-  created_at: string;
-  updated_at: string;
+  last_seen?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Conversation {
@@ -19,6 +20,8 @@ export interface Conversation {
   unread_count_admin: number;
   unread_count_customer: number;
   is_pinned: boolean;
+  is_ephemeral?: boolean;
+  has_messages?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +38,8 @@ export interface Message {
   reply_to_id: string | null;
   reply_to_sender_name: string;
   reply_to_content: string;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 }
 
 export interface ReplyTo {

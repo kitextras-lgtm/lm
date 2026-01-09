@@ -9,15 +9,28 @@ import { useImageUpload } from '../../hooks/useImageUpload';
 import type { Conversation, Profile, ReplyTo } from '../../types/chat';
 import { formatDate, isSameDay } from '../../utils/dateUtils';
 
+// Instagram/X pattern: Pending recipient type
+interface PendingRecipient {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+}
+
 interface ChatWindowProps {
-  conversation: Conversation;
-  otherUser: Profile;
+  conversation?: Conversation;
+  otherUser?: Profile;
   currentUserId: string;
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
   backgroundTheme?: 'light' | 'grey' | 'dark';
   onBack?: () => void;
   showBackButton?: boolean;
+  // Instagram/X pattern: Pending conversation props
+  isPending?: boolean;
+  pendingRecipient?: PendingRecipient;
+  onSendPendingMessage?: (content: string) => Promise<void>;
+  onCancelPending?: () => void;
 }
 
 export const ChatWindow = memo(function ChatWindow({
@@ -29,7 +42,125 @@ export const ChatWindow = memo(function ChatWindow({
   backgroundTheme = 'dark',
   onBack,
   showBackButton = false,
+  // Instagram/X pattern
+  isPending = false,
+  pendingRecipient,
+  onSendPendingMessage,
+  onCancelPending,
 }: ChatWindowProps) {
+  // Instagram/X pattern: Handle pending conversation state (no DB conversation yet)
+  if (isPending && pendingRecipient) {
+    return (
+      <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        {/* Header for pending conversation */}
+        <div 
+          className="flex items-center gap-3 px-4 py-3 border-b"
+          style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-sidebar)' }}
+        >
+          {onCancelPending && (
+            <button
+              onClick={onCancelPending}
+              className="p-1 rounded-lg hover:bg-white/5 transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              ←
+            </button>
+          )}
+          <img
+            src={pendingRecipient.avatar_url || '/default-avatar.png'}
+            alt={pendingRecipient.display_name}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <div>
+            <h3 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+              {pendingRecipient.display_name}
+            </h3>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              @{pendingRecipient.username}
+            </p>
+          </div>
+        </div>
+
+        {/* Empty messages area with prompt */}
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <div 
+              className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden"
+              style={{ border: '3px solid var(--border-default)' }}
+            >
+              <img
+                src={pendingRecipient.avatar_url || '/default-avatar.png'}
+                alt={pendingRecipient.display_name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <h3 className="text-lg font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+              {pendingRecipient.display_name}
+            </h3>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
+              @{pendingRecipient.username}
+            </p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              Send a message to start the conversation
+            </p>
+          </div>
+        </div>
+
+        {/* Input for pending conversation */}
+        <div style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-sidebar)', padding: '12px 16px' }}>
+          <ChatInput
+            onSendMessage={async (content) => {
+              if (onSendPendingMessage && content.trim()) {
+                await onSendPendingMessage(content);
+              }
+            }}
+            onTyping={() => {}}
+            disabled={false}
+            otherUserName={pendingRecipient.username}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Normal conversation flow - requires conversation to be defined
+  if (!conversation || !otherUser) {
+    return null;
+  }
+
+  // Normal conversation rendering continues below...
+  return <ChatWindowContent
+    conversation={conversation}
+    otherUser={otherUser}
+    currentUserId={currentUserId}
+    getSenderName={getSenderName}
+    onMarkAsRead={onMarkAsRead}
+    backgroundTheme={backgroundTheme}
+    onBack={onBack}
+    showBackButton={showBackButton}
+  />;
+});
+
+// Separate component for actual conversation content
+const ChatWindowContent = memo(function ChatWindowContent({
+  conversation,
+  otherUser,
+  currentUserId,
+  getSenderName,
+  onMarkAsRead,
+  backgroundTheme = 'dark',
+  onBack,
+  showBackButton = false,
+}: {
+  conversation: Conversation;
+  otherUser: Profile;
+  currentUserId: string;
+  getSenderName: (senderId: string) => string;
+  onMarkAsRead?: (conversationId: string) => void;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
+  onBack?: () => void;
+  showBackButton?: boolean;
+}) {
   const { messages, loading, otherUserTyping, sendMessage, setTyping, markMessagesAsSeen } = useChat({
     conversationId: conversation.id,
     currentUserId,
@@ -349,15 +480,55 @@ export const ChatWindow = memo(function ChatWindow({
       >
         <div className="py-2 lg:py-4 min-h-full flex flex-col justify-end">
           {messages.length === 0 && !loading ? (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-start justify-center pt-12 lg:pt-16">
               <div className="text-center px-4 lg:px-6">
-                <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto mb-4 lg:mb-5 rounded-xl lg:rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
-                  <svg className="w-8 h-8 lg:w-10 lg:h-10" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
+                {/* Profile Avatar */}
+                <div className="w-20 h-20 lg:w-24 lg:h-24 mx-auto mb-4 rounded-full overflow-hidden" style={{ border: '3px solid var(--border-default)' }}>
+                  {otherUser.avatar_url ? (
+                    <img 
+                      src={otherUser.avatar_url} 
+                      alt={otherUser.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                      <svg className="w-10 h-10 lg:w-12 lg:h-12" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs lg:text-sm font-medium" style={{ color: '#94A3B8' }}>No messages yet</p>
-                <p className="text-[10px] lg:text-xs mt-1" style={{ color: '#64748B' }}>Start the conversation by sending a message</p>
+                
+                {/* Name */}
+                <h3 className="text-base lg:text-lg font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+                  {otherUser.name}
+                </h3>
+                
+                {/* Username */}
+                {otherUser.username && (
+                  <p className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>
+                    @{otherUser.username}
+                  </p>
+                )}
+                
+                {/* Joined Date */}
+                {otherUser.created_at && (
+                  <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+                    Joined {new Date(otherUser.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </p>
+                )}
+                
+                {/* View Profile Button */}
+                <button
+                  onClick={() => setIsDrawerOpen(true)}
+                  className="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 hover:brightness-110"
+                  style={{ 
+                    backgroundColor: 'var(--text-primary)', 
+                    color: 'var(--bg-primary)'
+                  }}
+                >
+                  View Profile
+                </button>
               </div>
             </div>
           ) : (

@@ -5,6 +5,7 @@ import { getCachedMessages, cacheMessages } from '../utils/messageCache';
 import { getCachedConversations, cacheConversations } from '../utils/conversationCache';
 import { getCachedAdminConversations, cacheAdminConversations } from '../utils/adminConversationCache';
 import { preloadAndCacheImage } from '../utils/imageCache';
+import { MessagingError, ErrorCodes, retry } from '../types/errors';
 
 interface UseChatOptions {
   conversationId: string;
@@ -164,7 +165,7 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
       if (data) {
         const { data: convData } = await supabase
           .from('conversations')
-          .select('customer_id, admin_id, unread_count_admin, unread_count_customer')
+          .select('customer_id, admin_id, unread_count_admin, unread_count_customer, is_ephemeral')
           .eq('id', conversationId)
           .single();
 
@@ -184,6 +185,9 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
             last_message: lastMessageText,
             last_message_at: new Date().toISOString(),
             last_message_sender_id: currentUserId,
+            // Fix 2: Mark conversation as non-ephemeral when first message is sent
+            is_ephemeral: false,
+            has_messages: true,
           };
 
           if (isCustomer) {
@@ -266,13 +270,41 @@ export function useChat({ conversationId, currentUserId }: UseChatOptions) {
   };
 }
 
+// Fix 1: Enhanced state with selection locking to prevent race conditions
+interface CustomerConversationsState {
+  conversations: (Conversation & { admin: Profile })[];
+  selectedConversationId: string | null;
+  isSelectionLocked: boolean;
+  connectionStatus: 'connected' | 'connecting' | 'disconnected';
+  error: MessagingError | null;
+}
+
+// Instagram/X pattern: Pending conversation (not yet created in DB)
+export interface PendingConversation {
+  recipientId: string;
+  recipientUser: {
+    id: string;
+    username: string;
+    display_name: string;
+    avatar_url: string | null;
+  };
+}
+
 export function useCustomerConversations(customerId: string) {
-  const [conversations, setConversations] = useState<(Conversation & { admin: Profile })[]>(() => {
-    if (typeof window !== 'undefined' && customerId) {
-      const cached = getCachedConversations(customerId);
-      return (cached as (Conversation & { admin: Profile })[]) || [];
-    }
-    return [];
+  // Instagram/X pattern: Pending conversation state (local only, not in DB)
+  const [pendingConversation, setPendingConversation] = useState<PendingConversation | null>(null);
+
+  const [state, setState] = useState<CustomerConversationsState>(() => {
+    const cached = typeof window !== 'undefined' && customerId
+      ? getCachedConversations(customerId) as (Conversation & { admin: Profile })[] || []
+      : [];
+    return {
+      conversations: cached,
+      selectedConversationId: null,
+      isSelectionLocked: false,
+      connectionStatus: 'connecting',
+      error: null,
+    };
   });
   const [loading, setLoading] = useState(() => {
     if (typeof window !== 'undefined' && customerId) {
@@ -282,63 +314,168 @@ export function useCustomerConversations(customerId: string) {
     return true;
   });
 
+  // Expose conversations from state for backward compatibility
+  const conversations = state.conversations;
+
+  // Fix 1: Select conversation with optional lock to prevent race conditions
+  const selectConversation = useCallback((conversationId: string, lock = false) => {
+    setState(prev => ({
+      ...prev,
+      selectedConversationId: conversationId,
+      isSelectionLocked: lock,
+    }));
+
+    // Unlock after a short delay to allow UI to stabilize
+    if (lock) {
+      setTimeout(() => {
+        setState(prev => ({ ...prev, isSelectionLocked: false }));
+      }, 1000);
+    }
+
+    // Persist to localStorage
+    if (customerId) {
+      localStorage.setItem(`lastConversation_${customerId}`, conversationId);
+    }
+  }, [customerId]);
+
   const updateConversationUnreadCount = useCallback((conversationId: string, unreadCount: number) => {
-    setConversations((prev) => {
-      return prev.map((conv) =>
+    setState(prev => ({
+      ...prev,
+      conversations: prev.conversations.map((conv) =>
         conv.id === conversationId ? { ...conv, unread_count_customer: unreadCount } : conv
-      );
-    });
+      ),
+    }));
   }, []);
 
+  // Fix 3: Use unified_users view for user data
   const fetchConversations = useCallback(async () => {
     if (!customerId) {
-      setConversations([]);
+      setState(prev => ({ ...prev, conversations: [] }));
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('conversations')
-      .select(`
-        *,
-        admin:profiles!conversations_admin_id_fkey(*)
-      `)
-      .eq('customer_id', customerId)
-      .order('last_message_at', { ascending: false });
+    try {
 
-    if (error) {
-      console.error('Error fetching conversations:', error);
-    }
+      const { data, error } = await supabase
+        .from('conversations')
+        .select(`
+          *,
+          admin:profiles!conversations_admin_id_fkey(*)
+        `)
+        .or(`customer_id.eq.${customerId},admin_id.eq.${customerId}`)
+        .order('last_message_at', { ascending: false });
 
-    if (!error && data) {
-      const conversationsData = data as (Conversation & { admin: Profile })[];
-      setConversations([...conversationsData]);
-      cacheConversations(customerId, conversationsData);
+      if (error) {
+        console.error('Error fetching conversations:', error);
+        setState(prev => ({
+          ...prev,
+          error: new MessagingError('Failed to load conversations', ErrorCodes.NETWORK_ERROR, true, error),
+        }));
+        setLoading(false);
+        return;
+      }
 
-      // Preload avatar images
-      conversationsData.forEach((conv) => {
-        if (conv.admin?.avatar_url) {
-          preloadAndCacheImage(conv.admin.avatar_url);
+      if (data) {
+        let conversationsData = data as (Conversation & { admin: Profile })[];
+
+        // Instagram/X pattern: No ephemeral filtering needed
+        // Conversations only exist in DB when they have messages
+
+        // Fix 3: Fetch up-to-date profile data from unified_users view
+        const otherUserIds = conversationsData.map(conv => 
+          conv.customer_id === customerId ? conv.admin_id : conv.customer_id
+        ).filter(Boolean);
+
+        if (otherUserIds.length > 0) {
+          const { data: usersData, error: usersError } = await supabase
+            .from('unified_users')
+            .select('id, first_name, last_name, username, avatar_url, display_name, is_admin, is_online, last_seen')
+            .in('id', otherUserIds);
+
+          if (!usersError && usersData) {
+            const usersMap = new Map(usersData.map(u => [u.id, u]));
+
+            // Enrich conversations with up-to-date user data
+            conversationsData = conversationsData.map(conv => {
+              const otherUserId = conv.customer_id === customerId ? conv.admin_id : conv.customer_id;
+              const userData = usersMap.get(otherUserId || '');
+              if (userData) {
+                return {
+                  ...conv,
+                  admin: {
+                    id: userData.id,
+                    name: userData.display_name || [userData.first_name, userData.last_name].filter(Boolean).join(' ') || 'User',
+                    username: userData.username || '',
+                    avatar_url: userData.avatar_url || '',
+                    is_admin: userData.is_admin || false,
+                    is_online: userData.is_online || false,
+                    last_seen: userData.last_seen,
+                  } as Profile,
+                };
+              }
+              return conv;
+            });
+          }
         }
-      });
+
+        // Fix 17: Sort conversations - pinned first, then by last_message_at
+        conversationsData.sort((a, b) => {
+          if (a.is_pinned && !b.is_pinned) return -1;
+          if (!a.is_pinned && b.is_pinned) return 1;
+          return new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime();
+        });
+
+        setState(prev => ({
+          ...prev,
+          conversations: conversationsData,
+          error: null,
+        }));
+        cacheConversations(customerId, conversationsData);
+
+        // Preload avatar images
+        conversationsData.forEach((conv) => {
+          if (conv.admin?.avatar_url) {
+            preloadAndCacheImage(conv.admin.avatar_url);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching conversations:', err);
+      setState(prev => ({
+        ...prev,
+        error: new MessagingError('Failed to load conversations', ErrorCodes.NETWORK_ERROR, true, err),
+      }));
     }
     setLoading(false);
   }, [customerId]);
 
+  // Fix 8: Real-time subscription with proper handling
   useEffect(() => {
     if (!customerId) {
-      setConversations([]);
+      setState(prev => ({ ...prev, conversations: [] }));
       setLoading(false);
       return;
     }
 
+    // Track session start for ephemeral filtering
+    if (!sessionStorage.getItem('session_start')) {
+      sessionStorage.setItem('session_start', new Date().toISOString());
+    }
+
     const cached = getCachedConversations(customerId);
     if (cached && cached.length > 0) {
-      setConversations(cached as (Conversation & { admin: Profile })[]);
+      setState(prev => ({
+        ...prev,
+        conversations: cached as (Conversation & { admin: Profile })[],
+      }));
       setLoading(false);
     }
 
     fetchConversations();
+
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
 
     const channel = supabase
       .channel(`customer-conversations:${customerId}`)
@@ -353,15 +490,27 @@ export function useCustomerConversations(customerId: string) {
         (payload) => {
           const newData = payload.new as Conversation | null;
 
+          // Fix 1: Respect selection lock during real-time updates
           if (payload.eventType === 'UPDATE' && newData?.id) {
             const updatedConv = newData as Conversation;
-            setConversations((prev) => {
-              const existingIndex = prev.findIndex(c => c.id === updatedConv.id);
+            setState(prev => {
+              // ✅ CHECK: If selection is locked, don't change selectedConversationId
+              // Only update the conversations array
+              const existingIndex = prev.conversations.findIndex(c => c.id === updatedConv.id);
               if (existingIndex >= 0) {
-                const updated = [...prev];
-                const adminProfile = prev[existingIndex].admin;
+                const updated = [...prev.conversations];
+                const adminProfile = prev.conversations[existingIndex].admin;
                 updated[existingIndex] = { ...updatedConv, admin: adminProfile } as Conversation & { admin: Profile };
-                return updated;
+
+                // Fix 17: Re-sort after update
+                updated.sort((a, b) => {
+                  if (a.is_pinned && !b.is_pinned) return -1;
+                  if (!a.is_pinned && b.is_pinned) return 1;
+                  return new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime();
+                });
+
+                // ✅ IMPORTANT: Only update conversations, NOT selectedConversationId
+                return { ...prev, conversations: updated };
               }
               return prev;
             });
@@ -371,14 +520,202 @@ export function useCustomerConversations(customerId: string) {
           fetchConversations();
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversations',
+          filter: `admin_id=eq.${customerId}`,
+        },
+        () => {
+          fetchConversations();
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setState(prev => ({ ...prev, connectionStatus: 'connected' }));
+          reconnectAttempts = 0;
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          setState(prev => ({ ...prev, connectionStatus: 'disconnected' }));
+          // Attempt reconnection with exponential backoff
+          if (reconnectAttempts < maxReconnectAttempts) {
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+            reconnectAttempts++;
+            setTimeout(() => {
+              channel.subscribe();
+            }, delay);
+          }
+        }
+      });
 
     return () => {
       channel.unsubscribe();
     };
   }, [customerId, fetchConversations]);
 
-  return { conversations, loading, updateConversationUnreadCount, refetch: fetchConversations };
+  // Instagram/X pattern: Start conversation with user (no DB write until first message)
+  const startConversationWith = useCallback(async (otherUser: {
+    id: string;
+    username: string;
+    display_name: string;
+    avatar_url: string | null;
+  }): Promise<{ type: 'existing' | 'pending'; conversation?: Conversation & { admin: Profile }; recipientId?: string }> => {
+    // First check if conversation already exists in our loaded conversations
+    const existing = state.conversations.find(c => 
+      (c.customer_id === customerId && c.admin_id === otherUser.id) ||
+      (c.customer_id === otherUser.id && c.admin_id === customerId)
+    );
+    
+    if (existing) {
+      // Conversation exists, select it and clear any pending
+      selectConversation(existing.id, true);
+      setPendingConversation(null);
+      return { type: 'existing', conversation: existing };
+    }
+    
+    // Also check database for existing conversation (in case not loaded yet)
+    const { data: existingConv } = await supabase
+      .from('conversations')
+      .select(`*, admin:profiles!conversations_admin_id_fkey(*)`)
+      .or(`and(customer_id.eq.${customerId},admin_id.eq.${otherUser.id}),and(customer_id.eq.${otherUser.id},admin_id.eq.${customerId})`)
+      .maybeSingle();
+    
+    if (existingConv) {
+      // Found in DB, add to state and select
+      const enrichedConv = existingConv as Conversation & { admin: Profile };
+      setState(prev => ({
+        ...prev,
+        conversations: [enrichedConv, ...prev.conversations.filter(c => c.id !== enrichedConv.id)],
+        selectedConversationId: enrichedConv.id,
+        isSelectionLocked: true,
+      }));
+      setPendingConversation(null);
+      setTimeout(() => setState(prev => ({ ...prev, isSelectionLocked: false })), 1000);
+      return { type: 'existing', conversation: enrichedConv };
+    }
+    
+    // NO DATABASE WRITE - just set pending state
+    setPendingConversation({
+      recipientId: otherUser.id,
+      recipientUser: otherUser,
+    });
+    
+    // Clear selected conversation so UI shows pending
+    setState(prev => ({
+      ...prev,
+      selectedConversationId: null,
+    }));
+    
+    return { type: 'pending', recipientId: otherUser.id };
+  }, [state.conversations, customerId, selectConversation]);
+
+  // Instagram/X pattern: Send message (creates conversation if pending)
+  const sendMessageToConversation = useCallback(async (
+    conversationId: string | null,
+    content: string,
+    type: 'text' | 'image' = 'text',
+    imageUrl?: string,
+    replyTo?: ReplyTo
+  ) => {
+    // If we have a pending conversation (no conversationId), create it now
+    if (!conversationId && pendingConversation) {
+      try {
+        // Create conversation AND message together
+        const { data: newConversation, error: convError } = await supabase
+          .from('conversations')
+          .insert({
+            customer_id: customerId,
+            admin_id: pendingConversation.recipientId,
+            last_message: content.length > 80 ? content.substring(0, 80) + '...' : content,
+            last_message_at: new Date().toISOString(),
+            last_message_sender_id: customerId,
+            unread_count_admin: 1,
+            unread_count_customer: 0,
+            is_ephemeral: false,  // NOT ephemeral - has message from start
+            has_messages: true,
+          })
+          .select()
+          .single();
+        
+        if (convError) throw convError;
+        
+        // Insert the message
+        const { data: newMessage, error: msgError } = await supabase
+          .from('messages')
+          .insert({
+            conversation_id: newConversation.id,
+            sender_id: customerId,
+            content,
+            type,
+            image_url: imageUrl || null,
+            status: 'sent',
+            reply_to_id: replyTo?.id || null,
+            reply_to_sender_name: replyTo?.senderName || '',
+            reply_to_content: replyTo?.content || '',
+          })
+          .select()
+          .single();
+        
+        if (msgError) throw msgError;
+        
+        // Enrich conversation with recipient user data as Profile
+        const enrichedConversation = {
+          ...newConversation,
+          admin: {
+            id: pendingConversation.recipientUser.id,
+            name: pendingConversation.recipientUser.display_name,
+            username: pendingConversation.recipientUser.username,
+            avatar_url: pendingConversation.recipientUser.avatar_url || '',
+            is_admin: false,
+            is_online: false,
+          } as Profile,
+        } as Conversation & { admin: Profile };
+        
+        // Clear pending, add to conversations, select it
+        setPendingConversation(null);
+        setState(prev => ({
+          ...prev,
+          conversations: [enrichedConversation, ...prev.conversations],
+          selectedConversationId: newConversation.id,
+          isSelectionLocked: true,
+        }));
+        
+        setTimeout(() => setState(prev => ({ ...prev, isSelectionLocked: false })), 1000);
+        
+        return { data: newMessage, error: null, newConversationId: newConversation.id };
+      } catch (error) {
+        console.error('Failed to create conversation with message:', error);
+        return { data: null, error, newConversationId: null };
+      }
+    }
+    
+    // Normal flow - conversation already exists (handled by useChat hook)
+    return { data: null, error: new Error('Use useChat hook for existing conversations'), newConversationId: null };
+  }, [pendingConversation, customerId]);
+
+  // Clear pending conversation
+  const clearPendingConversation = useCallback(() => {
+    setPendingConversation(null);
+  }, []);
+
+  return {
+    conversations,
+    loading,
+    updateConversationUnreadCount,
+    refetch: fetchConversations,
+    selectConversation,
+    selectedConversationId: state.selectedConversationId,
+    isSelectionLocked: state.isSelectionLocked,
+    connectionStatus: state.connectionStatus,
+    error: state.error,
+    // Instagram/X pattern exports
+    pendingConversation,
+    setPendingConversation,
+    startConversationWith,
+    sendMessageToConversation,
+    clearPendingConversation,
+  };
 }
 
 export function useProfile(userId: string) {
@@ -684,6 +1021,218 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
     return null;
   } catch (error) {
     console.error('Error in getOrCreateAdminConversation:', error);
+    return null;
+  }
+}
+
+// Get or create a conversation between two users (for direct messaging)
+export async function getOrCreateUserConversation(
+  currentUserId: string, 
+  otherUserId: string
+): Promise<Conversation & { admin: Profile } | null> {
+  try {
+    // Ensure both profiles exist
+    for (const userId of [currentUserId, otherUserId]) {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error(`Error checking profile for ${userId}:`, profileError);
+        return null;
+      }
+
+      if (!profile) {
+        // Get user data to populate profile
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('email, first_name, last_name, full_name, username, profile_picture_url')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (userError) {
+          console.error(`Error fetching user data for ${userId}:`, userError);
+          return null;
+        }
+
+        const profileName = userData?.full_name ||
+          (userData?.first_name && userData?.last_name ? `${userData.first_name} ${userData.last_name}`.trim() : null) ||
+          userData?.username ||
+          userData?.email?.split('@')[0] ||
+          'User';
+
+        const { error: createProfileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: userId,
+            name: profileName,
+            username: userData?.username || '',
+            avatar_url: userData?.profile_picture_url || '',
+            is_admin: false,
+            is_online: false,
+          });
+
+        if (createProfileError) {
+          console.error(`Error creating profile for ${userId}:`, createProfileError);
+          // Continue anyway - profile might have been created by another process
+        }
+      }
+    }
+
+    // Check if conversation already exists (in either direction)
+    // Convention: customer_id is the one who initiated, admin_id is the recipient
+    const { data: existingConv, error: fetchError } = await supabase
+      .from('conversations')
+      .select('*')
+      .or(`and(customer_id.eq.${currentUserId},admin_id.eq.${otherUserId}),and(customer_id.eq.${otherUserId},admin_id.eq.${currentUserId})`)
+      .maybeSingle();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('Error fetching conversation:', fetchError);
+      return null;
+    }
+
+    if (existingConv) {
+      // Get the other user's profile - prioritize users table for most up-to-date data
+      const otherUserInConv = existingConv.customer_id === currentUserId ? existingConv.admin_id : existingConv.customer_id;
+      
+      // First try users table for most up-to-date info
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, username, profile_picture_url')
+        .eq('id', otherUserInConv)
+        .single();
+
+      if (!userError && userData) {
+        const profile: Profile = {
+          id: userData.id,
+          name: [userData.first_name, userData.last_name].filter(Boolean).join(' ') || 'User',
+          username: userData.username || '',
+          avatar_url: userData.profile_picture_url || '',
+          is_admin: false,
+          is_online: false,
+        };
+        return { ...existingConv, admin: profile } as Conversation & { admin: Profile };
+      }
+
+      // Fallback to profiles table
+      const { data: otherProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', otherUserInConv)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching other user profile:', profileError);
+        return null;
+      }
+
+      if (otherProfile) {
+        return { ...existingConv, admin: otherProfile } as Conversation & { admin: Profile };
+      }
+      return null;
+    }
+
+    // Create new conversation - current user is customer (initiator), other user is admin (recipient)
+    // Fix 2: Mark as ephemeral until first message is sent
+    const { data: newConv, error: createError } = await supabase
+      .from('conversations')
+      .insert({
+        customer_id: currentUserId,
+        admin_id: otherUserId,
+        last_message: '',
+        unread_count_admin: 0,
+        unread_count_customer: 0,
+        is_ephemeral: true,
+        has_messages: false,
+      })
+      .select('*')
+      .single();
+
+    if (createError) {
+      console.error('Error creating conversation:', createError);
+
+      // Handle conflict - conversation already exists
+      const isConflictError =
+        createError.code === '23505' ||
+        createError.code === '409' ||
+        createError.message?.toLowerCase().includes('duplicate') ||
+        createError.message?.toLowerCase().includes('conflict');
+
+      if (isConflictError) {
+        // Try fetching again
+        const { data: existingConv } = await supabase
+          .from('conversations')
+          .select('*')
+          .or(`and(customer_id.eq.${currentUserId},admin_id.eq.${otherUserId}),and(customer_id.eq.${otherUserId},admin_id.eq.${currentUserId})`)
+          .maybeSingle();
+
+        if (existingConv) {
+          const otherUserInConv = existingConv.customer_id === currentUserId ? existingConv.admin_id : existingConv.customer_id;
+          
+          // Prioritize users table for up-to-date data
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id, first_name, last_name, username, profile_picture_url')
+            .eq('id', otherUserInConv)
+            .single();
+
+          if (userData) {
+            const profile: Profile = {
+              id: userData.id,
+              name: [userData.first_name, userData.last_name].filter(Boolean).join(' ') || 'User',
+              username: userData.username || '',
+              avatar_url: userData.profile_picture_url || '',
+              is_admin: false,
+              is_online: false,
+            };
+            return { ...existingConv, admin: profile } as Conversation & { admin: Profile };
+          }
+        }
+      }
+      return null;
+    }
+
+    // Get the other user's profile from users table (most up-to-date)
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id, first_name, last_name, username, profile_picture_url')
+      .eq('id', otherUserId)
+      .single();
+
+    if (!userError && userData && newConv) {
+      const profile: Profile = {
+        id: userData.id,
+        name: [userData.first_name, userData.last_name].filter(Boolean).join(' ') || 'User',
+        username: userData.username || '',
+        avatar_url: userData.profile_picture_url || '',
+        is_admin: false,
+        is_online: false,
+      };
+      return { ...newConv, admin: profile } as Conversation & { admin: Profile };
+    }
+
+    // Fallback to profiles table
+    const { data: otherProfile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', otherUserId)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching other user profile after creation:', profileError);
+      return null;
+    }
+
+    if (otherProfile && newConv) {
+      return { ...newConv, admin: otherProfile } as Conversation & { admin: Profile };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error in getOrCreateUserConversation:', error);
     return null;
   }
 }

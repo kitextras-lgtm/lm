@@ -574,7 +574,9 @@ export function CollapsibleSidebar({
 
       {/* Profile Section - Pinned to bottom */}
       <div 
-        className="p-3 mb-4 mx-3 rounded-full cursor-pointer transition-all duration-200 hover:bg-white/10"
+        className={`p-3 mb-4 mx-3 rounded-full cursor-pointer transition-all duration-200 ${
+          isCollapsed ? '' : 'hover:bg-white/10'
+        }`}
         onClick={() => {
           setActiveSection('profile');
           setIsCollapsed(false);
