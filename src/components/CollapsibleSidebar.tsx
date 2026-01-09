@@ -406,22 +406,6 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
   );
 }
 
-function MoreIconSVG({ isHovered }: { isHovered: boolean }) {
-  const dots = [
-    { cx: 8, cy: 8 }, { cx: 24, cy: 8 }, { cx: 40, cy: 8 },
-    { cx: 8, cy: 24 }, { cx: 24, cy: 24 }, { cx: 40, cy: 24 },
-    { cx: 8, cy: 40 }, { cx: 24, cy: 40 }, { cx: 40, cy: 40 },
-  ];
-  return (
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}
-      style={{ transform: isHovered ? "rotate(90deg)" : "rotate(0deg)", transformOrigin: "50% 50%", transition: "transform 0.4s ease-in-out" }}>
-      {dots.map((dot, i) => (
-        <circle key={i} cx={dot.cx} cy={dot.cy} r="4" fill="white"
-          style={{ transform: isHovered ? "scale(1.15)" : "scale(1)", transformOrigin: `${dot.cx}px ${dot.cy}px`, transition: `transform 0.3s ease ${i * 0.03}s` }} />
-      ))}
-    </svg>
-  );
-}
 
 // Nav items with their animated icon components
 const navItems = [
@@ -432,7 +416,6 @@ const navItems = [
   { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
   { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
   { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
-  { id: 'more', label: 'More', Icon: MoreIconSVG },
 ];
 
 // Expanded width in pixels

@@ -54,16 +54,16 @@ interface CollapsibleSectionProps {
 
 function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSectionProps) {
   return (
-    <div style={{ borderBottom: '1px solid #2a2a2a' }}>
+    <div style={{ borderBottom: '1px solid var(--border-subtle)' }}>
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/5 transition-colors"
       >
-        <span className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{title}</span>
+        <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{title}</span>
         {isOpen ? (
-          <ChevronDown className="w-4 h-4" style={{ color: '#64748B' }} />
+          <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
         ) : (
-          <ChevronRight className="w-4 h-4" style={{ color: '#64748B' }} />
+          <ChevronRight className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
         )}
       </button>
       <div
@@ -172,34 +172,34 @@ export function ChatInfoDrawer({
       {/* Drawer */}
       <div
         className={`fixed top-0 right-0 z-50 h-full w-full sm:w-[360px] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ backgroundColor: '#0a0a0a' }}
+        style={{ backgroundColor: 'var(--bg-primary)' }}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-4" style={{ borderBottom: '1px solid #2a2a2a' }}>
-            <h2 className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Details</h2>
+          <div className="flex items-center justify-between px-4 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+            <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Details</h2>
             <button
               onClick={onClose}
               className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
               aria-label="Close"
             >
-              <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+              <X className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
             </button>
           </div>
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent' }}>
             {/* User Profile (Fixed, not collapsible) */}
-            <div className="px-4 py-6 text-center" style={{ borderBottom: '1px solid #2a2a2a' }}>
+            <div className="px-4 py-6 text-center" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
               <img
                 src={user.is_admin ? ELEVATE_ADMIN_AVATAR_URL : (user.avatar_url || DEFAULT_AVATAR_DATA_URI)}
                 alt={user.name}
                 className="w-20 h-20 rounded-full object-cover mx-auto mb-3"
-                style={{ backgroundColor: '#0f0f13' }}
+                style={{ backgroundColor: 'var(--bg-elevated)' }}
               />
-              <h3 className="text-lg font-semibold mb-1" style={{ color: '#F8FAFC' }}>{user.name}</h3>
-              <p className="text-sm mb-1" style={{ color: '#64748B' }}>Creator</p>
-              <p className="text-xs mb-4" style={{ color: '#64748B' }}>PST (UTC-8)</p>
+              <h3 className="text-lg font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
+              <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>Creator</p>
+              <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>PST (UTC-8)</p>
               <button
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/10"
                 style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px solid rgba(59, 130, 246, 0.3)' }}
@@ -226,15 +226,15 @@ export function ChatInfoDrawer({
                         }}
                       />
                       {index < mockActivities.length - 1 && (
-                        <div className="w-0.5 flex-1 mt-1" style={{ backgroundColor: '#2a2a2a' }} />
+                        <div className="w-0.5 flex-1 mt-1" style={{ backgroundColor: 'var(--border-subtle)' }} />
                       )}
                     </div>
                     <div className="flex-1 pb-3">
-                      <p className="text-sm" style={{ color: '#F8FAFC' }}>{activity.title}</p>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{activity.title}</p>
                       {activity.description && (
-                        <p className="text-xs" style={{ color: '#64748B' }}>{activity.description}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{activity.description}</p>
                       )}
-                      <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{activity.date}</p>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{activity.date}</p>
                     </div>
                   </div>
                 ))}
@@ -248,7 +248,7 @@ export function ChatInfoDrawer({
               onToggle={() => toggleSection('search')}
             >
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#64748B' }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                 <input
                   type="text"
                   value={searchQuery}
@@ -257,9 +257,9 @@ export function ChatInfoDrawer({
                   placeholder="Search in conversation..."
                   className="w-full pl-10 pr-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-1"
                   style={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #2a2a2a',
-                    color: '#F8FAFC'
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-subtle)',
+                    color: 'var(--text-primary)'
                   }}
                 />
               </div>
@@ -276,15 +276,15 @@ export function ChatInfoDrawer({
                   <div
                     key={meeting.id}
                     className="p-3 rounded-lg"
-                    style={{ backgroundColor: '#1a1a1a' }}
+                    style={{ backgroundColor: 'var(--bg-elevated)' }}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="w-3.5 h-3.5" style={{ color: '#64748B' }} />
-                      <span className="text-xs" style={{ color: '#64748B' }}>{meeting.date}</span>
+                      <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--text-secondary)' }} />
+                      <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{meeting.date}</span>
                     </div>
-                    <p className="text-sm font-medium mb-1" style={{ color: '#F8FAFC' }}>{meeting.title}</p>
+                    <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{meeting.title}</p>
                     {meeting.summary && (
-                      <p className="text-xs" style={{ color: '#94A3B8' }}>{meeting.summary}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{meeting.summary}</p>
                     )}
                   </div>
                 ))}
@@ -304,12 +304,12 @@ export function ChatInfoDrawer({
                       src={participant.avatar_url || DEFAULT_AVATAR_DATA_URI}
                       alt={participant.name}
                       className="w-9 h-9 rounded-full object-cover"
-                      style={{ backgroundColor: '#0f0f13' }}
+                      style={{ backgroundColor: 'var(--bg-elevated)' }}
                     />
                     <div>
-                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{participant.name}</p>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{participant.name}</p>
                       {participant.role && (
-                        <p className="text-xs" style={{ color: '#64748B' }}>{participant.role}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{participant.role}</p>
                       )}
                     </div>
                   </div>
@@ -333,18 +333,18 @@ export function ChatInfoDrawer({
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors"
                   >
                     {file.type === 'file' ? (
-                      <FileText className="w-5 h-5" style={{ color: '#64748B' }} />
+                      <FileText className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
                     ) : (
-                      <Link2 className="w-5 h-5" style={{ color: '#64748B' }} />
+                      <Link2 className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm truncate" style={{ color: '#F8FAFC' }}>{file.name}</p>
-                      <p className="text-xs" style={{ color: '#64748B' }}>
+                      <p className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{file.name}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                         {file.size ? `${file.size} • ` : ''}{file.date}
                       </p>
                     </div>
                     {file.type === 'file' && (
-                      <Download className="w-4 h-4 flex-shrink-0" style={{ color: '#64748B' }} />
+                      <Download className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-secondary)' }} />
                     )}
                   </a>
                 ))}
@@ -363,12 +363,12 @@ export function ChatInfoDrawer({
                 placeholder="Add private notes about this conversation..."
                 className="w-full h-32 p-3 rounded-lg text-sm resize-none focus:outline-none focus:ring-1"
                 style={{
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #2a2a2a',
-                  color: '#F8FAFC'
+                  backgroundColor: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-primary)'
                 }}
               />
-              <p className="text-xs mt-2" style={{ color: '#64748B' }}>
+              <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
                 Notes are saved automatically and only visible to you.
               </p>
             </CollapsibleSection>

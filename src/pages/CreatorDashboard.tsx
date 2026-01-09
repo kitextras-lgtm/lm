@@ -244,7 +244,10 @@ const CAMPAIGNS: CampaignData[] = [
       'Family-friendly content only'
     ],
     requiredHashtags: ['#AstaViolina', '#ClassicalVibes']
-  },
+  }
+];
+
+const OPPORTUNITIES: CampaignData[] = [
   {
     id: 'nova-beats',
     name: 'Nova Beats',
@@ -265,6 +268,48 @@ const CAMPAIGNS: CampaignData[] = [
       'Creative transitions encouraged'
     ],
     requiredHashtags: ['#NovaBeats', '#FutureSound']
+  },
+  {
+    id: 'electronic-vibes',
+    name: 'Electronic Vibes',
+    timeAgo: '2d ago',
+    title: 'Digital Dreams',
+    description: 'Electronic Vibes creates immersive electronic experiences. Join their latest campaign and showcase your creativity with cutting-edge sound design!',
+    status: 'Active',
+    endsIn: '8d',
+    paidOutPercent: '15.30%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$1.50 cpm',
+    rules: [
+      'Allowed Content: Electronic music videos and performances only.',
+      'Minimum video length: 20 seconds',
+      'Must include audio from the official track',
+      'Visual effects and transitions encouraged'
+    ],
+    requiredHashtags: ['#ElectronicVibes', '#DigitalDreams']
+  },
+  {
+    id: 'urban-beats',
+    name: 'Urban Beats',
+    timeAgo: '1d ago',
+    title: 'Street Culture',
+    description: 'Urban Beats brings authentic hip-hop and street culture to life. Create content that captures the essence of urban music and lifestyle!',
+    status: 'Active',
+    endsIn: '12d',
+    paidOutPercent: '8.75%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$0.90 cpm',
+    rules: [
+      'Allowed Content: Hip-hop and urban music content only.',
+      'Minimum video length: 30 seconds',
+      'Must include audio from the official track',
+      'Street style and authenticity required'
+    ],
+    requiredHashtags: ['#UrbanBeats', '#StreetCulture']
   }
 ];
 
@@ -2490,10 +2535,9 @@ export function CreatorDashboard() {
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Find and connect with talented creators</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
                 <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
-                <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
           </div>
@@ -2507,21 +2551,15 @@ export function CreatorDashboard() {
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
-                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
-                <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                <NovaBeatsCard onClick={() => setSelectedCampaign(OPPORTUNITIES[0])} backgroundTheme={backgroundTheme} />
+                <FighterMusicCard onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
           </div>
         )}
 
-        {activeSection === 'more' && (
-          <div className="animate-fade-in h-full">
-            <MoreView />
-          </div>
-        )}
-      </main>
+              </main>
 
       {/* Campaign Detail Modal */}
       <CampaignDetailModal 

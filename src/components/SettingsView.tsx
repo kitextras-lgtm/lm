@@ -6,6 +6,8 @@ import { CreditCardIcon } from './CreditCardIcon';
 import { BellIcon } from './BellIcon';
 import { DisplayIcon } from './DisplayIcon';
 import { LanguageIcon } from './LanguageIcon';
+import { SendFeedbackIcon } from './SendFeedbackIcon';
+import { LogOutIcon } from './LogOutIcon';
 
 interface SettingsViewProps {
   renderPersonalInfo: () => React.ReactNode;
@@ -14,6 +16,8 @@ interface SettingsViewProps {
   renderDisplay: () => React.ReactNode;
   renderLanguages: () => React.ReactNode;
   renderNotifications: () => React.ReactNode;
+  renderSendFeedback: () => React.ReactNode;
+  renderLogOut: () => React.ReactNode;
   isMobile?: boolean;
   onBack?: () => void;
 }
@@ -49,6 +53,16 @@ const settingsMenuItems = [
     id: 'notifications',
     label: 'Notifications',
     IconComponent: BellIcon,
+  },
+  {
+    id: 'feedback',
+    label: 'Send feedback',
+    IconComponent: SendFeedbackIcon,
+  },
+  {
+    id: 'logout',
+    label: 'Log out',
+    IconComponent: LogOutIcon,
   },
 ];
 
@@ -94,6 +108,8 @@ export function SettingsView({
   renderDisplay,
   renderLanguages,
   renderNotifications,
+  renderSendFeedback,
+  renderLogOut,
   isMobile = false,
   onBack
 }: SettingsViewProps) {
@@ -115,6 +131,10 @@ export function SettingsView({
         return 'Languages';
       case 'notifications':
         return 'Notifications';
+      case 'feedback':
+        return 'Send feedback';
+      case 'logout':
+        return 'Log out';
       default:
         return '';
     }
@@ -134,6 +154,10 @@ export function SettingsView({
         return 'Set your language preferences and regional settings.';
       case 'notifications':
         return 'Select the kinds of notifications you get about your activities and recommendations.';
+      case 'feedback':
+        return 'Help us improve the platform by sharing your feedback and suggestions.';
+      case 'logout':
+        return 'Sign out of your account and return to the login page.';
       default:
         return '';
     }
@@ -153,6 +177,10 @@ export function SettingsView({
         return renderLanguages();
       case 'notifications':
         return renderNotifications();
+      case 'feedback':
+        return renderSendFeedback();
+      case 'logout':
+        return renderLogOut();
       default:
         return null;
     }

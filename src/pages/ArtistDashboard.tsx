@@ -2338,12 +2338,7 @@ export function ArtistDashboard() {
           </div>
         )}
 
-        {activeSection === 'more' && (
-          <div className="animate-fade-in h-full">
-            <MoreView />
-          </div>
-        )}
-      </main>
+              </main>
 
       {/* Campaign Detail Modal */}
       <CampaignDetailModal 

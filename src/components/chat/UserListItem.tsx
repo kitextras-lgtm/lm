@@ -51,7 +51,7 @@ export const UserListItem = memo(function UserListItem({ user, conversation, isA
         className={`w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 transition-colors text-left ${
           isActive ? '' : 'hover:brightness-110'
         }`}
-        style={isActive ? { backgroundColor: '#0f0f13' } : { backgroundColor: 'transparent' }}
+        style={isActive ? { backgroundColor: 'var(--bg-elevated)' } : { backgroundColor: 'transparent' }}
       >
         <Avatar
           src={user.avatar_url}
@@ -62,13 +62,13 @@ export const UserListItem = memo(function UserListItem({ user, conversation, isA
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-0.5">
-            <span className="text-sm lg:text-base font-medium truncate" style={{ color: '#F8FAFC' }}>{user.name}</span>
-            <span className="text-[10px] lg:text-xs flex-shrink-0 ml-2" style={{ color: '#64748B' }}>
+            <span className="text-sm lg:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</span>
+            <span className="text-[10px] lg:text-xs flex-shrink-0 ml-2" style={{ color: 'var(--text-secondary)' }}>
               {formatLastMessageTime(conversation.last_message_at)}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-xs lg:text-sm truncate pr-2" style={{ color: '#94A3B8' }}>
+            <p className="text-xs lg:text-sm truncate pr-2" style={{ color: 'var(--text-secondary)' }}>
               {lastMessagePreview}
             </p>
             {count > 0 && (
