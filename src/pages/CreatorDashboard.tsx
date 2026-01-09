@@ -905,15 +905,6 @@ export function CreatorDashboard() {
       const cachedImage = getCachedImage(userProfile.profile_picture_url);
       if (cachedImage && cachedImage !== cachedProfilePic) {
         setCachedProfilePic(cachedImage);
-      } else if (!cachedImage) {
-        // If not cached yet, check again after a short delay (in case caching completed)
-        const timeoutId = setTimeout(() => {
-          const newlyCached = getCachedImage(userProfile.profile_picture_url);
-          if (newlyCached) {
-            setCachedProfilePic(newlyCached);
-          }
-        }, 500);
-        return () => clearTimeout(timeoutId);
       }
     } else {
       setCachedProfilePic(null);

@@ -72,10 +72,8 @@ export function ProfileView({
       try {
         await onUpdateProfile({ banner: file });
         console.log('✅ Banner uploaded successfully');
-        // Clear preview after a short delay to allow profile refresh
-        setTimeout(() => {
-          setBannerPreview(null);
-        }, 500);
+        // Clear preview immediately after successful upload
+        setBannerPreview(null);
       } catch (err) {
         console.error('❌ Banner upload failed:', err);
         // Revert preview on error
@@ -149,10 +147,13 @@ export function ProfileView({
         onClick={handleBannerClick}
       >
         {(bannerPreview || userProfile?.banner_url) && (
-          <img 
-            src={bannerPreview || userProfile?.banner_url} 
-            alt="Banner" 
+          <img
+            src={bannerPreview || userProfile?.banner_url}
+            alt="Banner"
             className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
           />
         )}
         <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${bannerHovered || isBannerUploading ? 'opacity-100' : 'opacity-0'}`}>
@@ -183,10 +184,13 @@ export function ProfileView({
           onMouseLeave={() => setAvatarHovered(false)}
           onClick={handleAvatarClick}
         >
-          <img 
-            src={avatarPreview || displayPic || DEFAULT_AVATAR_DATA_URI} 
-            alt="Profile" 
+          <img
+            src={avatarPreview || displayPic || DEFAULT_AVATAR_DATA_URI}
+            alt="Profile"
             className="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
           />
           <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${avatarHovered || isAvatarUploading ? 'opacity-100' : 'opacity-0'}`}>
             {isAvatarUploading ? (
