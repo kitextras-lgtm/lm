@@ -86,7 +86,7 @@ function SettingsMenuItem({
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`flex items-center gap-4 px-4 py-4 cursor-pointer transition-colors ${
+      className={`group flex items-center gap-4 px-4 py-4 cursor-pointer transition-colors ${
         isActive ? 'bg-white/5' : 'hover:bg-white/5'
       } ${showBorder ? 'border-b border-[#2f2f2f]' : ''}`}
     >

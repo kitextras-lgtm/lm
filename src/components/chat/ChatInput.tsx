@@ -151,7 +151,7 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
           className="shrink-0 hover:bg-transparent group h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ color: 'var(--text-secondary)', borderRadius: 0 }}
+          style={{ color: 'var(--text-secondary)', borderRadius: 0, border: '1px solid var(--border-default)' }}
         >
           <ImagePlus className="w-4 h-4 transition-transform duration-200 group-hover:scale-125" />
         </button>
@@ -175,7 +175,8 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
             color: 'var(--text-primary)',
             backgroundColor: 'var(--bg-input)',
             border: '1px solid var(--border-default)',
-            borderRadius: 0
+            borderRadius: 0,
+            opacity: 0.7
           }}
         />
         <button
@@ -183,7 +184,7 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
           type="submit"
           disabled={!hasContent || disabled}
           className="shrink-0 h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0 } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: 'var(--text-secondary)', borderRadius: 0 }}
+          style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0, border: '1px solid var(--border-default)' } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: 'var(--text-secondary)', borderRadius: 0, border: '1px solid var(--border-default)' }}
         >
           <Send className="w-4 h-4" />
         </button>
