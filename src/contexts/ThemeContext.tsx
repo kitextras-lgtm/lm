@@ -1,0 +1,60 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Theme, themeTokens, applyThemeToDOM } from '../lib/themeTokens';
+
+interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  tokens: typeof themeTokens[Theme];
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const saved = localStorage.getItem('theme') as Theme;
+    return saved || 'dark';
+  });
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    localStorage.setItem('theme', newTheme);
+    // Also update legacy keys for backward compatibility during migration
+    localStorage.setItem('backgroundTheme', newTheme);
+    localStorage.setItem('appliedTheme', newTheme);
+  };
+
+  useEffect(() => {
+    applyThemeToDOM(theme);
+  }, [theme]);
+
+  // Apply theme on initial mount
+  useEffect(() => {
+    applyThemeToDOM(theme);
+  }, []);
+
+  const value: ThemeContextType = {
+    theme,
+    setTheme,
+    tokens: themeTokens[theme],
+  };
+
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme(): ThemeContextType {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+}
+
+// Helper hook for backward compatibility - returns theme as backgroundTheme
+export function useBackgroundTheme(): Theme {
+  const { theme } = useTheme();
+  return theme;
+}

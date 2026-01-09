@@ -18,6 +18,7 @@ import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
@@ -28,6 +29,7 @@ import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
+import MoreView from '../components/MoreView';
 
 function YouTubeIcon({ isHovered }: { isHovered: boolean }) {
   return (
@@ -664,23 +666,12 @@ export function ArtistDashboard() {
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
-  const [backgroundTheme, setBackgroundTheme] = useState<'light' | 'grey' | 'dark'>(() => {
-    const saved = localStorage.getItem('backgroundTheme');
-    return (saved as 'light' | 'grey' | 'dark') || 'dark';
-  });
-  const [appliedTheme, setAppliedTheme] = useState<'light' | 'grey' | 'dark'>(() => {
-    const saved = localStorage.getItem('appliedTheme');
-    return (saved as 'light' | 'grey' | 'dark') || 'dark';
-  });
-
-  // Save theme to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('backgroundTheme', backgroundTheme);
-  }, [backgroundTheme]);
-
-  useEffect(() => {
-    localStorage.setItem('appliedTheme', appliedTheme);
-  }, [appliedTheme]);
+  
+  // Use centralized theme from context
+  const { theme: backgroundTheme, setTheme: setBackgroundTheme } = useTheme();
+  // appliedTheme is now the same as backgroundTheme (single source of truth)
+  const appliedTheme = backgroundTheme;
+  
   const [feedbackCategory, setFeedbackCategory] = useState<'suggestion' | 'bug-report' | 'feature-request' | 'other' | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -1605,7 +1596,7 @@ export function ArtistDashboard() {
                 <div
                   className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
                   style={{ 
-                    backgroundColor: emailNewFeatures ? (backgroundTheme === 'light' ? '#0F172A' : '#111111') : 'white',
+                    backgroundColor: emailNewFeatures ? 'var(--bg-card)' : 'white',
                     transform: emailNewFeatures ? 'translateX(20px)' : 'translateX(0px)'
                   }}
                 ></div>
@@ -1626,7 +1617,7 @@ export function ArtistDashboard() {
                 <div
                   className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
                   style={{ 
-                    backgroundColor: emailPlatformUpdates ? (backgroundTheme === 'light' ? '#0F172A' : '#111111') : 'white',
+                    backgroundColor: emailPlatformUpdates ? 'var(--bg-card)' : 'white',
                     transform: emailPlatformUpdates ? 'translateX(20px)' : 'translateX(0px)'
                   }}
                 ></div>
@@ -1735,7 +1726,7 @@ export function ArtistDashboard() {
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
             style={{
               backgroundColor: feedbackCategory ? '#F8FAFC' : 'transparent',
-              color: feedbackCategory ? '#111111' : '#94A3B8',
+              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-secondary)',
               border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
             }}
             disabled={!feedbackCategory}
@@ -1751,7 +1742,7 @@ export function ArtistDashboard() {
     <div className="scroll-mt-6 flex gap-3">
       <button 
         className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110" 
-        style={{ backgroundColor: 'white', color: '#111111' }}
+        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
         onClick={() => {
           // Clear user session and redirect to login
           localStorage.clear();
@@ -1946,28 +1937,6 @@ export function ArtistDashboard() {
               </div>
             </div>
           </div>
-
-          {/* Apply Button */}
-          <div className="flex justify-end pt-4">
-            <button
-              onClick={() => setAppliedTheme(backgroundTheme)}
-              disabled={backgroundTheme === appliedTheme}
-              className="px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: backgroundTheme !== appliedTheme 
-                  ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000')
-                  : 'transparent',
-                color: backgroundTheme !== appliedTheme 
-                  ? (backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC')
-                  : '#94A3B8',
-                border: backgroundTheme !== appliedTheme 
-                  ? (backgroundTheme === 'light' ? 'none' : '1px solid rgba(255, 255, 255, 0.2)')
-                  : '1px solid rgba(75, 85, 99, 0.25)',
-              }}
-            >
-              Apply Theme
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -2051,12 +2020,12 @@ export function ArtistDashboard() {
                             }}
                             className="w-full px-3 lg:px-4 py-2 lg:py-2.5 text-left text-sm lg:text-base transition-all duration-200 flex items-center gap-2 group/option relative"
                             style={{
-                              backgroundColor: isSelected ? '#111111' : 'transparent',
+                              backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent',
                               color: '#F8FAFC',
                             }}
                             onMouseEnter={(e) => {
                               if (!isSelected) {
-                                e.currentTarget.style.backgroundColor = '#111111';
+                                e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                               }
                               e.currentTarget.style.transform = 'translateX(4px)';
                             }}
@@ -2093,7 +2062,7 @@ export function ArtistDashboard() {
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
       />
-      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
+      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={location.state?.fromOnboarding === true} />
         
         {/* Left Sidebar - Desktop Only */}
@@ -2105,7 +2074,6 @@ export function ArtistDashboard() {
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
-          appliedTheme={appliedTheme}
         />
 
         {/* Mobile Bottom Navigation */}
@@ -2121,8 +2089,8 @@ export function ArtistDashboard() {
         <main 
           className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
           style={{ 
-            backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000',
-            color: appliedTheme === 'light' ? '#FFFFFF' : '#FFFFFF'
+            backgroundColor: 'var(--bg-primary)',
+            color: 'var(--text-primary)'
           }}
         >
         {activeSection === 'messages' && (
@@ -2367,6 +2335,12 @@ export function ArtistDashboard() {
                 <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
+          </div>
+        )}
+
+        {activeSection === 'more' && (
+          <div className="animate-fade-in h-full">
+            <MoreView />
           </div>
         )}
       </main>

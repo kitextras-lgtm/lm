@@ -136,7 +136,7 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
       <form 
         onSubmit={handleFormSubmit} 
         className="flex gap-2 items-center safe-area-inset-bottom"
-        style={{ borderTop: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111', padding: '12px 16px' }}
+        style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-sidebar)', padding: '12px 16px' }}
       >
         <input
           type="file"
@@ -151,7 +151,7 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
           className="shrink-0 hover:bg-transparent group h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ color: '#94A3B8', borderRadius: 0 }}
+          style={{ color: 'var(--text-secondary)', borderRadius: 0 }}
         >
           <ImagePlus className="w-4 h-4 transition-transform duration-200 group-hover:scale-125" />
         </button>
@@ -172,9 +172,9 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
           style={{ 
             minHeight: '32px',
             maxHeight: '120px',
-            color: '#F8FAFC',
-            backgroundColor: '#1a1a1e',
-            border: '1px solid rgba(75, 85, 99, 0.2)',
+            color: 'var(--text-primary)',
+            backgroundColor: 'var(--bg-input)',
+            border: '1px solid var(--border-default)',
             borderRadius: 0
           }}
         />
@@ -183,7 +183,7 @@ export function ChatInput({ onSendMessage, onTyping, disabled, replyTo, onCancel
           type="submit"
           disabled={!hasContent || disabled}
           className="shrink-0 h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0 } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: '#94A3B8', borderRadius: 0 }}
+          style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0 } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: 'var(--text-secondary)', borderRadius: 0 }}
         >
           <Send className="w-4 h-4" />
         </button>

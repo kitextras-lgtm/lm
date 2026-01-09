@@ -494,10 +494,12 @@ export function CollapsibleSidebar({
 
   return (
     <aside 
-      className="hidden lg:flex flex-col h-screen fixed left-0 top-0 border-r border-[#1a1a1a]/50 bg-[#111111] z-40"
+      className="hidden lg:flex flex-col h-screen fixed left-0 top-0 z-40"
       style={{ 
         width: isCollapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH,
-        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        backgroundColor: 'var(--bg-sidebar)',
+        borderRight: '1px solid var(--border-subtle)'
       }}
     >
       {/* Logo Section - matches original LeftSidebar */}

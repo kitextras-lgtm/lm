@@ -58,6 +58,7 @@ export function UserProfileProvider({ children }: UserProfileProviderProps) {
             last_name: userData.last_name || '',
             username: userData.username || '',
             profile_picture_url: userData.profile_picture_url || null,
+            banner_url: userData.banner_url || null,
             location: userData.location || '',
             primary_language: userData.primary_language || 'English',
             user_type: userData.user_type || '',
@@ -68,7 +69,7 @@ export function UserProfileProvider({ children }: UserProfileProviderProps) {
         }
       }
 
-      // Fallback: direct query
+      // Fallback: direct query from users table
       const { data: userResult, error: queryError } = await supabase
         .from('users')
         .select('*')
@@ -88,6 +89,7 @@ export function UserProfileProvider({ children }: UserProfileProviderProps) {
           last_name: userResult.last_name || '',
           username: userResult.username || '',
           profile_picture_url: userResult.profile_picture_url || null,
+          banner_url: userResult.banner_url || null,
           location: userResult.location || '',
           primary_language: userResult.primary_language || 'English',
           user_type: userResult.user_type || '',

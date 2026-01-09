@@ -37,7 +37,7 @@ Deno.serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Fetch ALL user data from users table (primary source of truth)
+    // Fetch user data from users table
     const { data: userData, error: userError } = await supabaseClient
       .from('users')
       .select('*')
@@ -64,6 +64,7 @@ Deno.serve(async (req: Request) => {
     console.log('✅ Fetched user data from users table');
     console.log('User data keys:', userData ? Object.keys(userData) : 'null');
     console.log('Profile picture URL:', userData?.profile_picture_url);
+    console.log('Banner URL:', userData?.banner_url);
 
     return new Response(
       JSON.stringify({

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import { UserProfileProvider } from './contexts/UserProfileContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { AdminProtectedRoute } from './components/AdminProtectedRoute';
 import { PremiumLoader } from './components/PremiumLoader';
 
@@ -24,11 +25,12 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(module =
 
 function App() {
   return (
-    <UserProfileProvider>
-      <AdminAuthProvider>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <Suspense fallback={<PremiumLoader />}>
-            <Routes>
+    <ThemeProvider>
+      <UserProfileProvider>
+        <AdminAuthProvider>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <Suspense fallback={<PremiumLoader />}>
+              <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MobileMenuPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -82,10 +84,11 @@ function App() {
             } 
           />
           </Routes>
-        </Suspense>
-      </Router>
-      </AdminAuthProvider>
-    </UserProfileProvider>
+            </Suspense>
+          </Router>
+        </AdminAuthProvider>
+      </UserProfileProvider>
+    </ThemeProvider>
   );
 }
 

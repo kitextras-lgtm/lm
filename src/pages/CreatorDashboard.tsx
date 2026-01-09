@@ -18,6 +18,7 @@ import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
@@ -28,6 +29,7 @@ import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
+import MoreView from '../components/MoreView';
 
 function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
   return (
@@ -242,6 +244,27 @@ const CAMPAIGNS: CampaignData[] = [
       'Family-friendly content only'
     ],
     requiredHashtags: ['#AstaViolina', '#ClassicalVibes']
+  },
+  {
+    id: 'nova-beats',
+    name: 'Nova Beats',
+    timeAgo: '5d ago',
+    title: 'Future Sound',
+    description: 'Nova Beats is pushing the boundaries of electronic music. Create viral content with their tracks and earn from every view!',
+    status: 'Active',
+    endsIn: '14d',
+    paidOutPercent: '23.50%',
+    language: 'English',
+    platforms: ['instagram', 'tiktok', 'youtube'],
+    payType: 'Per view',
+    payout: '$1.20 cpm',
+    rules: [
+      'Allowed Content: Use footage from provided music videos only.',
+      'Minimum video length: 10 seconds',
+      'Must include audio from the official track',
+      'Creative transitions encouraged'
+    ],
+    requiredHashtags: ['#NovaBeats', '#FutureSound']
   }
 ];
 
@@ -400,29 +423,29 @@ function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; b
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
-      style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
           <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#F8FAFC' }}>Fighter Music</h3>
-            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
               <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>13d ago • Varied</p>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago • Varied</p>
         </div>
       </div>
 
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: '#F8FAFC' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
+      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
 
       <div className="flex items-center">
         <div className="flex items-center gap-2 sm:gap-3">
@@ -441,29 +464,70 @@ function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; ba
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
-      style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
           <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: '#F8FAFC' }}>Asta Violina</h3>
-            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Asta Violina</h3>
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
               <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>13d ago • Varied</p>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago • Varied</p>
         </div>
       </div>
 
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: '#F8FAFC' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
+      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
+
+      <div className="flex items-center">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NovaBeatsCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
+  const [isCardHovered, setIsCardHovered] = useState(false);
+  
+  return (
+    <div 
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+      onMouseEnter={() => setIsCardHovered(true)}
+      onMouseLeave={() => setIsCardHovered(false)}
+      onClick={onClick}
+    >
+      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
+          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Nova Beats</h3>
+            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
+              <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>5d ago • Varied</p>
+        </div>
+      </div>
+
+      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Nova Beats is pushing the boundaries of electronic music with futuristic sounds.</p>
 
       <div className="flex items-center">
         <div className="flex items-center gap-2 sm:gap-3">
@@ -501,7 +565,7 @@ const SettingsNavButton = ({
       }`}
       style={{
         backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent',
-        color: backgroundTheme === 'light' ? '#111111' : '#F8FAFC'
+        color: 'var(--text-primary)'
       }}
     >
       {React.cloneElement(icon, { isHovered })}
@@ -701,23 +765,12 @@ export function CreatorDashboard() {
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
-  const [backgroundTheme, setBackgroundTheme] = useState<'light' | 'grey' | 'dark'>(() => {
-    const saved = localStorage.getItem('backgroundTheme');
-    return (saved as 'light' | 'grey' | 'dark') || 'dark';
-  });
-  const [appliedTheme, setAppliedTheme] = useState<'light' | 'grey' | 'dark'>(() => {
-    const saved = localStorage.getItem('appliedTheme');
-    return (saved as 'light' | 'grey' | 'dark') || 'dark';
-  });
-
-  // Save theme to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('backgroundTheme', backgroundTheme);
-  }, [backgroundTheme]);
-
-  useEffect(() => {
-    localStorage.setItem('appliedTheme', appliedTheme);
-  }, [appliedTheme]);
+  
+  // Use centralized theme from context
+  const { theme: backgroundTheme, setTheme: setBackgroundTheme } = useTheme();
+  // appliedTheme is now the same as backgroundTheme (single source of truth)
+  const appliedTheme = backgroundTheme;
+  
   const [feedbackCategory, setFeedbackCategory] = useState<'suggestion' | 'bug-report' | 'feature-request' | 'other' | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -1532,7 +1585,7 @@ export function CreatorDashboard() {
                 style={{ color: '#F8FAFC' }}
               >
                 {COUNTRIES.map(country => (
-                  <option key={country} value={country} style={{ background: '#111111' }}>{country}</option>
+                  <option key={country} value={country} style={{ background: 'var(--bg-card)' }}>{country}</option>
                 ))}
               </select>
             </div>
@@ -1557,7 +1610,7 @@ export function CreatorDashboard() {
                 style={{ color: '#F8FAFC' }}
               >
                 {LANGUAGES.map(language => (
-                  <option key={language} value={language} style={{ background: '#111111' }}>{language}</option>
+                  <option key={language} value={language} style={{ background: 'var(--bg-card)' }}>{language}</option>
                 ))}
               </select>
             </div>
@@ -1603,7 +1656,7 @@ export function CreatorDashboard() {
                 fetchUserProfile();
               }}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', color: backgroundTheme === 'light' ? '#111111' : '#F8FAFC' }}
+              style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', color: 'var(--text-primary)' }}
             >
               Cancel
             </button>
@@ -1611,7 +1664,7 @@ export function CreatorDashboard() {
               onClick={handleSaveChanges}
               disabled={isSaving}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ backgroundColor: backgroundTheme === 'light' ? '#111111' : backgroundTheme === 'grey' ? '#FFFFFF' : '#E8E8E8', color: backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#111111' : '#000000' }}
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
             >
               {isSaving ? 'Saving...' : 'Save changes'}
             </button>
@@ -1709,7 +1762,7 @@ export function CreatorDashboard() {
                 <div
                   className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
                   style={{ 
-                    backgroundColor: emailNewFeatures ? (backgroundTheme === 'light' ? '#0F172A' : '#111111') : 'white',
+                    backgroundColor: emailNewFeatures ? 'var(--bg-card)' : 'white',
                     transform: emailNewFeatures ? 'translateX(20px)' : 'translateX(0px)'
                   }}
                 ></div>
@@ -1730,7 +1783,7 @@ export function CreatorDashboard() {
                 <div
                   className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
                   style={{ 
-                    backgroundColor: emailPlatformUpdates ? (backgroundTheme === 'light' ? '#0F172A' : '#111111') : 'white',
+                    backgroundColor: emailPlatformUpdates ? 'var(--bg-card)' : 'white',
                     transform: emailPlatformUpdates ? 'translateX(20px)' : 'translateX(0px)'
                   }}
                 ></div>
@@ -1839,7 +1892,7 @@ export function CreatorDashboard() {
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
             style={{
               backgroundColor: feedbackCategory ? '#F8FAFC' : 'transparent',
-              color: feedbackCategory ? '#111111' : '#94A3B8',
+              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-secondary)',
               border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
             }}
             disabled={!feedbackCategory}
@@ -1855,7 +1908,7 @@ export function CreatorDashboard() {
     <div className="scroll-mt-6 flex gap-3">
       <button 
         className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110" 
-        style={{ backgroundColor: 'white', color: '#111111' }}
+        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
         onClick={() => {
           // Clear user session and redirect to login
           localStorage.clear();
@@ -2050,28 +2103,6 @@ export function CreatorDashboard() {
               </div>
             </div>
           </div>
-
-          {/* Apply Button */}
-          <div className="flex justify-end pt-4">
-            <button
-              onClick={() => setAppliedTheme(backgroundTheme)}
-              disabled={backgroundTheme === appliedTheme}
-              className="px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: backgroundTheme !== appliedTheme 
-                  ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000')
-                  : 'transparent',
-                color: backgroundTheme !== appliedTheme 
-                  ? (backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC')
-                  : '#94A3B8',
-                border: backgroundTheme !== appliedTheme 
-                  ? (backgroundTheme === 'light' ? 'none' : '1px solid rgba(255, 255, 255, 0.2)')
-                  : '1px solid rgba(75, 85, 99, 0.25)',
-              }}
-            >
-              Apply Theme
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -2156,12 +2187,12 @@ export function CreatorDashboard() {
                             }}
                             className="w-full px-3 lg:px-4 py-2 lg:py-2.5 text-left text-sm lg:text-base transition-all duration-200 flex items-center gap-2 group/option relative"
                             style={{
-                              backgroundColor: isSelected ? (backgroundTheme === 'light' ? '#1E293B' : '#111111') : 'transparent',
+                              backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent',
                               color: '#F8FAFC',
                             }}
                             onMouseEnter={(e) => {
                               if (!isSelected) {
-                                e.currentTarget.style.backgroundColor = backgroundTheme === 'light' ? '#1E293B' : '#111111';
+                                e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                               }
                               e.currentTarget.style.transform = 'translateX(4px)';
                             }}
@@ -2220,7 +2251,7 @@ export function CreatorDashboard() {
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
       />
-      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
+      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={location.state?.fromOnboarding === true} />
         
         {/* Left Sidebar - Desktop Only */}
@@ -2232,7 +2263,6 @@ export function CreatorDashboard() {
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
-          appliedTheme={appliedTheme}
         />
 
         {/* Mobile Bottom Navigation */}
@@ -2248,8 +2278,8 @@ export function CreatorDashboard() {
         <main 
           className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
           style={{ 
-            backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000',
-            color: appliedTheme === 'light' ? '#FFFFFF' : '#FFFFFF'
+            backgroundColor: 'var(--bg-primary)',
+            color: 'var(--text-primary)'
           }}
         >
 
@@ -2423,10 +2453,12 @@ export function CreatorDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
             <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
 
             <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+
+            <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
           </div>
         </section>
 
@@ -2458,9 +2490,10 @@ export function CreatorDashboard() {
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Find and connect with talented creators</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
                 <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
                 <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+                <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
           </div>
@@ -2474,11 +2507,18 @@ export function CreatorDashboard() {
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
                 <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
                 <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+                <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
+          </div>
+        )}
+
+        {activeSection === 'more' && (
+          <div className="animate-fade-in h-full">
+            <MoreView />
           </div>
         )}
       </main>

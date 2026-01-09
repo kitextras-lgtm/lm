@@ -11,6 +11,7 @@ export interface CachedUserProfile {
   last_name: string;
   username: string;
   profile_picture_url: string | null;
+  banner_url: string | null;
   location: string;
   primary_language: string;
   user_type: string;

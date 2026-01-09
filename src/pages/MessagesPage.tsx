@@ -183,7 +183,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
 
   if (isMobile && showChatOnMobile && selectedConversation) {
     return (
-      <div className="flex flex-col w-full" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', height: '100%', maxHeight: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div className="flex flex-col w-full" style={{ backgroundColor: 'var(--bg-primary)', height: '100%', maxHeight: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <div className="flex-1 min-h-0">
           {selectedConversation.admin && (
             <ChatWindow
@@ -203,11 +203,11 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark' }: Messag
   }
 
   return (
-    <div className="flex flex-col lg:flex-row rounded-2xl w-full shadow-2xl" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', height: '100%', maxHeight: '100%', border: '1px solid rgba(75, 85, 99, 0.1)', overflow: 'hidden', display: 'flex' }}>
+    <div className="flex flex-col lg:flex-row rounded-2xl w-full shadow-2xl" style={{ backgroundColor: 'var(--bg-primary)', height: '100%', maxHeight: '100%', border: '1px solid var(--border-default)', overflow: 'hidden', display: 'flex' }}>
       {/* Mobile header */}
       {isMobile && (
-        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
-          <span className="text-lg font-bold" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-primary)' }}>
+          <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {cachedProfile?.username || customerProfile?.name || 'Messages'}
           </span>
           <EditIcon
