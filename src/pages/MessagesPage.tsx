@@ -490,12 +490,10 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             backgroundTheme={backgroundTheme}
             onSendPendingMessage={async (content: string) => {
               const result = await sendMessageToConversation(null, content);
-              if (result.newConversationId) {
-                // Find the newly created conversation and select it
-                const newConv = conversations.find(c => c.id === result.newConversationId);
-                if (newConv) {
-                  setSelectedConversation(newConv);
-                }
+              if (result.newConversation) {
+                // Use the returned conversation directly (not stale conversations array)
+                setSelectedConversation(result.newConversation);
+                hookSelectConversation(result.newConversation.id, true);
               }
             }}
             onCancelPending={clearPendingConversation}
