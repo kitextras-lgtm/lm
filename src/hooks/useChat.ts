@@ -393,30 +393,66 @@ export function useCustomerConversations(customerId: string) {
             .select('id, first_name, last_name, username, avatar_url, display_name, is_admin, is_online, last_seen')
             .in('id', otherUserIds);
 
-          if (!usersError && usersData) {
-            const usersMap = new Map(usersData.map(u => [u.id, u]));
+          // Also fetch from profiles as fallback (for admin profiles that might not be in unified_users)
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, name, username, avatar_url, is_admin, is_online, last_seen')
+            .in('id', otherUserIds);
 
-            // Enrich conversations with up-to-date user data
-            conversationsData = conversationsData.map(conv => {
-              const otherUserId = conv.customer_id === customerId ? conv.admin_id : conv.customer_id;
-              const userData = usersMap.get(otherUserId || '');
-              if (userData) {
-                return {
-                  ...conv,
-                  admin: {
-                    id: userData.id,
-                    name: userData.display_name || [userData.first_name, userData.last_name].filter(Boolean).join(' ') || 'User',
-                    username: userData.username || '',
-                    avatar_url: userData.avatar_url || '',
-                    is_admin: userData.is_admin || false,
-                    is_online: userData.is_online || false,
-                    last_seen: userData.last_seen,
-                  } as Profile,
-                };
-              }
+          const usersMap = new Map((usersData || []).map(u => [u.id, u]));
+          const profilesMap = new Map((profilesData || []).map(p => [p.id, p]));
+
+          // Enrich conversations with up-to-date user data
+          conversationsData = conversationsData.map(conv => {
+            const otherUserId = conv.customer_id === customerId ? conv.admin_id : conv.customer_id;
+            const userData = usersMap.get(otherUserId || '');
+            const profileData = profilesMap.get(otherUserId || '');
+
+            if (userData) {
+              return {
+                ...conv,
+                admin: {
+                  id: userData.id,
+                  name: userData.display_name || [userData.first_name, userData.last_name].filter(Boolean).join(' ') || 'User',
+                  username: userData.username || '',
+                  avatar_url: userData.avatar_url || '',
+                  is_admin: userData.is_admin || false,
+                  is_online: userData.is_online || false,
+                  last_seen: userData.last_seen,
+                } as Profile,
+              };
+            } else if (profileData) {
+              // Fallback to profiles table data (for admin profiles like Team Elevate)
+              return {
+                ...conv,
+                admin: {
+                  id: profileData.id,
+                  name: profileData.name || 'User',
+                  username: profileData.username || '',
+                  avatar_url: profileData.avatar_url || '',
+                  is_admin: profileData.is_admin || false,
+                  is_online: profileData.is_online || false,
+                  last_seen: profileData.last_seen,
+                } as Profile,
+              };
+            } else if (conv.admin) {
+              // Keep existing admin data from FK join if available
               return conv;
-            });
-          }
+            }
+
+            // Last resort: create placeholder admin to prevent filtering
+            return {
+              ...conv,
+              admin: {
+                id: otherUserId || '',
+                name: 'User',
+                username: '',
+                avatar_url: '',
+                is_admin: false,
+                is_online: false,
+              } as Profile,
+            };
+          });
         }
 
         // Fix 17: Sort conversations - pinned first, then by last_message_at

@@ -110,21 +110,7 @@ export function VerifySetupPage() {
       ));
     }
 
-    addResult('user_profiles table', 'checking', 'Checking...');
-    try {
-      const { error } = await supabase.from('user_profiles').select('id').limit(1);
-      setResults(prev => prev.map(r => 
-        r.name === 'user_profiles table' 
-          ? { ...r, status: error ? 'fail' : 'pass', message: error ? '❌ Not accessible' : '✅ Accessible', details: error?.message }
-          : r
-      ));
-    } catch (error: any) {
-      setResults(prev => prev.map(r => 
-        r.name === 'user_profiles table' 
-          ? { ...r, status: 'fail', message: '❌ Error', details: error.message }
-          : r
-      ));
-    }
+    // Note: user_profiles table was removed (redundant - use 'users' table instead)
 
     // Test send-otp endpoint
     addResult('send-otp endpoint test', 'checking', 'Testing...');
