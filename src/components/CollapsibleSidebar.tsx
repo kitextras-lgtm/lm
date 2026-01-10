@@ -53,17 +53,18 @@ const ICON_SIZE = "w-7 h-7";
 // Sound wave bars icon for collapsed state - Elevate brand icon
 function ElevateIcon({ className = "w-8 h-8" }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 32 32" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg" 
+    <svg
+      viewBox="0 0 40 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <rect x="2" y="12" width="4" height="8" rx="2" fill="white" />
-      <rect x="8" y="8" width="4" height="16" rx="2" fill="white" />
-      <rect x="14" y="4" width="4" height="24" rx="2" fill="white" />
-      <rect x="20" y="8" width="4" height="16" rx="2" fill="white" />
-      <rect x="26" y="12" width="4" height="8" rx="2" fill="white" />
+      {/* 5 bars with proper spacing to match brand logo */}
+      <rect x="2" y="10" width="4" height="12" rx="2" fill="white" />
+      <rect x="10" y="6" width="4" height="20" rx="2" fill="white" />
+      <rect x="18" y="2" width="4" height="28" rx="2" fill="white" />
+      <rect x="26" y="6" width="4" height="20" rx="2" fill="white" />
+      <rect x="34" y="10" width="4" height="12" rx="2" fill="white" />
     </svg>
   );
 }
