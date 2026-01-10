@@ -474,154 +474,299 @@ Deno.serve(async (req: Request) => {
           if (!createUserResponse.ok) {
             console.error('❌ Error creating auth user - HTTP', createUserResponse.status, ':', responseText);
             let errorMessage = 'Failed to create account. Please try again.';
+            let errorDetails: any = null;
+
             try {
-              const errorData = JSON.parse(responseText);
-              errorMessage = errorData.message || errorData.error_description || errorMessage;
+              errorDetails = JSON.parse(responseText);
+              // Try multiple possible error message fields
+              errorMessage = errorDetails.message
+                || errorDetails.error_description
+                || errorDetails.error
+                || errorDetails.msg
+                || errorDetails.error_message
+                || errorMessage;
             } catch {
+              // If JSON parsing fails, use raw text if available
               errorMessage = responseText || errorMessage;
             }
-            return new Response(
-              JSON.stringify({ 
-                success: false, 
-                message: errorMessage 
-              }),
-              {
-                status: 500,
-                headers: {
-                  ...corsHeaders,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          }
 
-          let newUserData;
-          try {
-            newUserData = JSON.parse(responseText);
-          } catch (parseError) {
-            console.error('❌ Failed to parse auth API response:', parseError);
-            console.error('❌ Raw response:', responseText);
-            return new Response(
-              JSON.stringify({ 
-                success: false, 
-                message: 'Failed to create user account. Invalid response from server.' 
-              }),
-              {
-                status: 500,
-                headers: {
-                  ...corsHeaders,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          }
+            // Handle specific error codes with more helpful messages
+            if (createUserResponse.status === 409 || createUserResponse.status === 422) {
+              // User already exists - try to find the existing user
+              console.log('⚠️ User creation returned 409/422 - attempting to find existing user');
 
-          if (!newUserData?.id) {
-            console.error('❌ Error: New auth user created but no ID returned.');
-            console.error('❌ Full response:', JSON.stringify(newUserData, null, 2));
-            return new Response(
-              JSON.stringify({ 
-                success: false, 
-                message: 'Failed to create user account. Please try again.' 
-              }),
-              {
-                status: 500,
-                headers: {
-                  ...corsHeaders,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          }
-
-          authUserId = newUserData.id;
-          console.log('✅ Created NEW Supabase Auth user with ID:', authUserId, 'Email:', email);
-          console.log('✅ Full user data:', JSON.stringify(newUserData, null, 2));
-          
-          // CRITICAL: Verify the created user's email matches the requested email
-          if (newUserData.email?.toLowerCase() !== email.toLowerCase()) {
-            console.error('❌ CRITICAL ERROR: Created user email does not match requested email!');
-            console.error('❌ Requested email:', email);
-            console.error('❌ Created user email:', newUserData.email);
-            console.error('❌ Created user ID:', authUserId);
-            // Delete the incorrectly created auth user
-            try {
-              await fetch(
-                `${supabaseUrl}/auth/v1/admin/users/${authUserId}`,
+              // Try to get the existing user by email
+              const getUserResponse = await fetch(
+                `${supabaseUrl}/auth/v1/admin/users?email=${encodeURIComponent(email)}`,
                 {
-                  method: 'DELETE',
+                  method: 'GET',
                   headers: {
                     'apikey': serviceRoleKey,
                     'Authorization': `Bearer ${serviceRoleKey}`,
+                    'Content-Type': 'application/json',
                   },
                 }
               );
-              console.log('✅ Deleted incorrectly created auth user');
-            } catch (deleteError) {
-              console.error('❌ Failed to delete incorrectly created user:', deleteError);
-            }
-            return new Response(
-              JSON.stringify({ 
-                success: false, 
-                message: 'Failed to create user account. Please try again.' 
-              }),
-              {
-                status: 500,
-                headers: {
-                  ...corsHeaders,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          }
-          
-          // Verify the user was actually created (not returned as existing)
-          // Check if this user ID already exists in our users table - if so, it's an existing user
-          const { data: checkExisting } = await supabaseClient
-            .from('users')
-            .select('id, email, created_at')
-            .eq('id', authUserId)
-            .maybeSingle();
 
-          if (checkExisting) {
-            // User already exists in users table - this means Supabase returned an existing auth user
-            console.error('❌ ERROR: User ID already exists in users table!', {
-              userId: authUserId,
-              email: checkExisting.email,
-              created_at: checkExisting.created_at
-            });
-            // Delete the auth user since we can't use it
-            try {
-              await fetch(
-                `${supabaseUrl}/auth/v1/admin/users/${authUserId}`,
+              if (getUserResponse.ok) {
+                const usersData = await getUserResponse.json();
+                const matchingUser = usersData.users?.find((u: any) =>
+                  u.email && u.email.toLowerCase() === email.toLowerCase()
+                );
+
+                if (matchingUser) {
+                  console.log('✅ Found existing user after 409/422 error:', matchingUser.id);
+                  // Check if user has incomplete profile
+                  const { data: userProfile } = await supabaseClient
+                    .from('users')
+                    .select('id, user_type, profile_completed')
+                    .eq('id', matchingUser.id)
+                    .maybeSingle();
+
+                  if (!userProfile || !userProfile.user_type || !userProfile.profile_completed) {
+                    // User exists but profile is incomplete - allow them to continue
+                    console.log('✅ Existing user has incomplete profile - allowing signup to complete');
+                    authUserId = matchingUser.id;
+                    // Skip to the profile completion section
+                  } else {
+                    // User exists with complete profile - direct to login
+                    errorMessage = 'This email is already registered. Please log in instead.';
+                    return new Response(
+                      JSON.stringify({
+                        success: false,
+                        message: errorMessage
+                      }),
+                      {
+                        status: 400,
+                        headers: {
+                          ...corsHeaders,
+                          'Content-Type': 'application/json',
+                        },
+                      }
+                    );
+                  }
+                } else {
+                  errorMessage = 'This email is already registered. Please log in instead.';
+                  return new Response(
+                    JSON.stringify({
+                      success: false,
+                      message: errorMessage
+                    }),
+                    {
+                      status: 400,
+                      headers: {
+                        ...corsHeaders,
+                        'Content-Type': 'application/json',
+                      },
+                    }
+                  );
+                }
+              } else {
+                // Couldn't verify user - return generic error
+                if (errorMessage.toLowerCase().includes('email') ||
+                    errorMessage.toLowerCase().includes('already') ||
+                    errorMessage.toLowerCase().includes('exists') ||
+                    errorMessage.toLowerCase().includes('duplicate')) {
+                  errorMessage = 'This email is already registered. Please log in instead.';
+                }
+                return new Response(
+                  JSON.stringify({
+                    success: false,
+                    message: errorMessage
+                  }),
+                  {
+                    status: 400,
+                    headers: {
+                      ...corsHeaders,
+                      'Content-Type': 'application/json',
+                    },
+                  }
+                );
+              }
+            } else if (createUserResponse.status === 429) {
+              errorMessage = 'Too many signup attempts. Please try again later.';
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: errorMessage
+                }),
                 {
-                  method: 'DELETE',
+                  status: 429,
                   headers: {
-                    'apikey': serviceRoleKey,
-                    'Authorization': `Bearer ${serviceRoleKey}`,
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
                   },
                 }
               );
-              console.log('✅ Deleted duplicate auth user');
-            } catch (deleteError) {
-              console.error('❌ Failed to delete duplicate user:', deleteError);
+            } else if (createUserResponse.status === 401 || createUserResponse.status === 403) {
+              console.error('❌ CRITICAL: Authentication error - check service role key configuration');
+              errorMessage = 'Server configuration error. Please contact support.';
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: errorMessage
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+            } else {
+              // Other errors
+              console.error('❌ Final error message:', errorMessage);
+              console.error('❌ Error details:', errorDetails);
+
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: errorMessage
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
             }
-            return new Response(
-              JSON.stringify({ 
-                success: false, 
-                message: 'This email is already registered. Please log in instead.' 
-              }),
-              {
-                status: 400,
-                headers: {
-                  ...corsHeaders,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
           }
-          
-          console.log('✅ Verified: This is a truly new user (not in users table yet)');
+
+          // Only parse response if we didn't already set authUserId from 409/422 handler
+          if (!authUserId) {
+            let newUserData;
+            try {
+              newUserData = JSON.parse(responseText);
+            } catch (parseError) {
+              console.error('❌ Failed to parse auth API response:', parseError);
+              console.error('❌ Raw response:', responseText);
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: 'Failed to create user account. Invalid response from server.'
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+            }
+
+            if (!newUserData?.id) {
+              console.error('❌ Error: New auth user created but no ID returned.');
+              console.error('❌ Full response:', JSON.stringify(newUserData, null, 2));
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: 'Failed to create user account. Please try again.'
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+            }
+
+            authUserId = newUserData.id;
+            console.log('✅ Created NEW Supabase Auth user with ID:', authUserId, 'Email:', email);
+            console.log('✅ Full user data:', JSON.stringify(newUserData, null, 2));
+
+            // CRITICAL: Verify the created user's email matches the requested email
+            if (newUserData.email?.toLowerCase() !== email.toLowerCase()) {
+              console.error('❌ CRITICAL ERROR: Created user email does not match requested email!');
+              console.error('❌ Requested email:', email);
+              console.error('❌ Created user email:', newUserData.email);
+              console.error('❌ Created user ID:', authUserId);
+              // Delete the incorrectly created auth user
+              try {
+                await fetch(
+                  `${supabaseUrl}/auth/v1/admin/users/${authUserId}`,
+                  {
+                    method: 'DELETE',
+                    headers: {
+                      'apikey': serviceRoleKey,
+                      'Authorization': `Bearer ${serviceRoleKey}`,
+                    },
+                  }
+                );
+                console.log('✅ Deleted incorrectly created auth user');
+              } catch (deleteError) {
+                console.error('❌ Failed to delete incorrectly created user:', deleteError);
+              }
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: 'Failed to create user account. Please try again.'
+                }),
+                {
+                  status: 500,
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+            }
+
+            // Verify the user was actually created (not returned as existing)
+            // Check if this user ID already exists in our users table - if so, it's an existing user
+            const { data: checkExisting } = await supabaseClient
+              .from('users')
+              .select('id, email, created_at')
+              .eq('id', authUserId)
+              .maybeSingle();
+
+            if (checkExisting) {
+              // User already exists in users table - this means Supabase returned an existing auth user
+              console.error('❌ ERROR: User ID already exists in users table!', {
+                userId: authUserId,
+                email: checkExisting.email,
+                created_at: checkExisting.created_at
+              });
+              // Delete the auth user since we can't use it
+              try {
+                await fetch(
+                  `${supabaseUrl}/auth/v1/admin/users/${authUserId}`,
+                  {
+                    method: 'DELETE',
+                    headers: {
+                      'apikey': serviceRoleKey,
+                      'Authorization': `Bearer ${serviceRoleKey}`,
+                    },
+                  }
+                );
+                console.log('✅ Deleted duplicate auth user');
+              } catch (deleteError) {
+                console.error('❌ Failed to delete duplicate user:', deleteError);
+              }
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  message: 'This email is already registered. Please log in instead.'
+                }),
+                {
+                  status: 400,
+                  headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+            }
+
+            console.log('✅ Verified: This is a truly new user (not in users table yet)');
+          } else {
+            console.log('✅ Using existing user ID from 409/422 recovery:', authUserId);
+          }
         } catch (fetchError) {
           console.error('❌ Exception during user creation:', fetchError);
           return new Response(

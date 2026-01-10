@@ -148,12 +148,14 @@ export function SignupPage() {
       // Check if response is ok
       if (!res.ok) {
         const errorText = await res.text();
-        console.error('OTP verification failed - HTTP error:', res.status, errorText);
+        console.error('[ERROR] OTP verification failed - HTTP error:', res.status, errorText);
         let errorMessage = 'Failed to verify OTP';
         try {
           const errorData = JSON.parse(errorText);
+          console.error('[ERROR] Parsed error data:', JSON.stringify(errorData, null, 2));
           errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch {
+        } catch (parseErr) {
+          console.error('[ERROR] Failed to parse error response:', parseErr);
           errorMessage = errorText || `Server error (${res.status})`;
         }
         throw new Error(errorMessage);
@@ -186,7 +188,13 @@ export function SignupPage() {
       console.log('✅ Navigating to /make-profile');
       navigate('/make-profile');
     } catch (err: any) {
-      console.error('OTP verification error:', err);
+      console.error('[ERROR] OTP verification error:', err);
+      console.error('[ERROR] Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+        cause: err.cause
+      });
       const errorMessage = err.message || err.toString() || 'Failed to verify OTP. Please try again.';
       setError(errorMessage);
       setCode(['', '', '', '', '', '']);
