@@ -702,19 +702,18 @@ export function CollapsibleSidebar({
         </div>
 
         {/* Expanded logo - uses the same image as original */}
-        <div
-          className="absolute top-0 left-0 h-full flex items-center px-4 overflow-hidden"
-          style={{
+        <div 
+          className="absolute top-0 left-0 h-full flex items-center px-4"
+          style={{ 
             opacity: isCollapsed ? 0 : 1,
             transition: 'opacity 0.2s ease',
-            pointerEvents: isCollapsed ? 'none' : 'auto',
-            width: EXPANDED_WIDTH,
+            pointerEvents: isCollapsed ? 'none' : 'auto'
           }}
         >
-          <img
-            src="/elevate_transparent_white_.png"
-            alt="ELEVATE"
-            className="h-32 w-auto -my-4 cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0"
+          <img 
+            src="/elevate_transparent_white_.png" 
+            alt="ELEVATE" 
+            className="h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
             onClick={() => navigate('/')}
           />
         </div>
