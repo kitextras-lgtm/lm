@@ -375,9 +375,17 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
             <p className="text-sm sm:text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
               No links added yet
             </p>
-            <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
-              Distribute to get started
-            </p>
+            {userType === 'artist' ? (
+              <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
+                Accounts from distribution will up here
+              </p>
+            ) : (
+              userType === 'creator' || userType === 'business' ? null : (
+                <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
+                  Distribute to get started
+                </p>
+              )
+            )}
           </div>
         ) : (
           links.map((link) => {
