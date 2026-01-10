@@ -613,14 +613,28 @@ Deno.serve(async (req: Request) => {
                 }
               );
             } else {
-              // Other errors
+              // Other errors - include status code for debugging
               console.error('❌ Final error message:', errorMessage);
               console.error('❌ Error details:', errorDetails);
+              console.error('❌ HTTP Status:', createUserResponse.status);
+              console.error('❌ Raw response:', responseText);
+
+              // Provide more specific error message based on status
+              let userFacingMessage = errorMessage;
+              if (createUserResponse.status >= 500) {
+                userFacingMessage = 'Supabase service is temporarily unavailable. Please try again in a few minutes.';
+              } else if (createUserResponse.status === 400) {
+                userFacingMessage = errorMessage || 'Invalid request. Please check your email and try again.';
+              }
 
               return new Response(
                 JSON.stringify({
                   success: false,
-                  message: errorMessage
+                  message: userFacingMessage,
+                  debug: {
+                    status: createUserResponse.status,
+                    error: errorDetails?.error || errorDetails?.message || responseText?.substring(0, 200)
+                  }
                 }),
                 {
                   status: 500,
@@ -871,22 +885,28 @@ Deno.serve(async (req: Request) => {
         });
         
         // Create profile for chat system (required for conversations)
-        console.log('📝 Creating profile for new user:', authUserId);
+        // Use upsert to handle cases where profile might already exist from previous partial signup
+        console.log('📝 Creating/updating profile for new user:', authUserId);
         const { error: profileError } = await supabaseClient
           .from('profiles')
-          .insert({
+          .upsert({
             id: authUserId,
             name: email.split('@')[0] || 'User', // Default name from email
             avatar_url: '',
             is_admin: false,
             is_online: false,
+          }, {
+            onConflict: 'id',
+            ignoreDuplicates: false  // Update existing profile if it exists
           });
-        
+
         if (profileError) {
-          console.error('⚠️ Failed to create profile:', profileError);
+          console.error('⚠️ Failed to create/update profile:', profileError);
+          console.error('⚠️ Profile error details:', JSON.stringify(profileError, null, 2));
           // Don't fail signup if profile creation fails - user can still proceed
+          // But log extensively for debugging
         } else {
-          console.log('✅ Successfully created profile for new user');
+          console.log('✅ Successfully created/updated profile for new user');
         }
         
         // Create admin conversation and send welcome message (only for new signups)
