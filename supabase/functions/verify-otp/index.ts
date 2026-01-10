@@ -18,6 +18,33 @@ Deno.serve(async (req: Request) => {
   try {
     const { email, code, isSignup } = await req.json();
 
+    // DEBUG: Log environment variables status
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
+    console.log('🔧 DEBUG: Environment check:');
+    console.log('🔧 SUPABASE_URL exists:', !!supabaseUrl, supabaseUrl ? `(${supabaseUrl.substring(0, 30)}...)` : '(EMPTY!)');
+    console.log('🔧 SERVICE_ROLE_KEY exists:', !!serviceRoleKey, serviceRoleKey ? `(length: ${serviceRoleKey.length})` : '(EMPTY!)');
+    console.log('🔧 Request - email:', email, 'isSignup:', isSignup);
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error('❌ CRITICAL: Missing environment variables!');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'Server configuration error. Please contact support.',
+          debug: { hasUrl: !!supabaseUrl, hasKey: !!serviceRoleKey }
+        }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
     if (!email || !code) {
       return new Response(
         JSON.stringify({ success: false, message: 'Email and code required' }),
@@ -31,10 +58,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabaseClient = createClient(supabaseUrl, serviceRoleKey);
 
     const { data: otpRecord, error: fetchError } = await supabaseClient
       .from('otp_codes')
@@ -117,8 +141,7 @@ Deno.serve(async (req: Request) => {
 
     // Check if this is a signup (new user) or login (existing user)
     let authUserId: string | null = null;
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    // Note: supabaseUrl and serviceRoleKey are already defined at the top of the try block
 
     // Extract IP address and User-Agent for spam filtering
     const forwardedFor = req.headers.get('x-forwarded-for');
