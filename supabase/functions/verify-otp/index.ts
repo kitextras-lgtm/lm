@@ -346,15 +346,15 @@ Deno.serve(async (req: Request) => {
       if (!authUserId) {
         console.log('🚀 ENTERING USER CREATION BLOCK - authUserId is null, will create new user');
         
-        // SPAM FILTER DISABLED - Temporarily disabled for debugging
-        // Original spam filter code commented out to prevent 500 errors
-        /*
-        // SPAM FILTER: Check if a signup already exists from this IP/device (only for new signups)
-        console.log('🛡️ SPAM FILTER: Checking for existing signup from IP:', ipAddress);
+        // SPAM FILTER: Check if a signup already exists from this IP/device within the last 24 hours (only for new signups)
+        // This allows legitimate users who share IPs (households, offices, mobile carriers) while still preventing rapid spam signups
+        console.log('🛡️ SPAM FILTER: Checking for recent signup from IP:', ipAddress);
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { data: existingSignup, error: signupCheckError } = await supabaseClient
           .from('signup_tracking')
           .select('id, email, created_at')
           .eq('ip_address', ipAddress)
+          .gte('created_at', twentyFourHoursAgo)  // Only check signups in the last 24 hours
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -363,15 +363,15 @@ Deno.serve(async (req: Request) => {
           console.error('❌ Error checking signup tracking:', signupCheckError);
           // Don't block signup if we can't check - log error but continue
         } else if (existingSignup) {
-          console.error('❌ SPAM FILTER: Signup blocked - IP address already used for signup:', {
+          console.error('❌ SPAM FILTER: Signup blocked - recent signup from this IP address:', {
             ipAddress,
             previousEmail: existingSignup.email,
             previousSignupDate: existingSignup.created_at
           });
           return new Response(
-            JSON.stringify({ 
-              success: false, 
-              message: 'Only one signup is allowed per device/IP address. Please contact support if you need assistance.' 
+            JSON.stringify({
+              success: false,
+              message: 'A signup was recently completed from this network. Please wait 24 hours or contact support if you need assistance.'
             }),
             {
               status: 403,
@@ -382,10 +382,8 @@ Deno.serve(async (req: Request) => {
             }
           );
         } else {
-          console.log('✅ SPAM FILTER: No existing signup found for this IP - allowing new signup');
+          console.log('✅ SPAM FILTER: No recent signup found for this IP - allowing new signup');
         }
-        */
-        console.log('✅ SPAM FILTER: Disabled - allowing all signups for debugging');
         
         // Create new Supabase Auth user using REST API
         console.log('🚀 Starting user creation process for:', email);
