@@ -719,15 +719,15 @@ export function useCustomerConversations(customerId: string) {
         
         setTimeout(() => setState(prev => ({ ...prev, isSelectionLocked: false })), 1000);
         
-        return { data: newMessage, error: null, newConversationId: newConversation.id };
+        return { data: newMessage, error: null, newConversationId: newConversation.id, newConversation: enrichedConversation };
       } catch (error) {
         console.error('Failed to create conversation with message:', error);
-        return { data: null, error, newConversationId: null };
+        return { data: null, error, newConversationId: null, newConversation: null };
       }
     }
-    
+
     // Normal flow - conversation already exists (handled by useChat hook)
-    return { data: null, error: new Error('Use useChat hook for existing conversations'), newConversationId: null };
+    return { data: null, error: new Error('Use useChat hook for existing conversations'), newConversationId: null, newConversation: null };
   }, [pendingConversation, customerId]);
 
   // Clear pending conversation
