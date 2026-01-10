@@ -46,6 +46,16 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
   usePresence(currentUserId);
 
+  // Compute display name with comprehensive fallbacks
+  const displayUsername = useMemo(() => {
+    // Priority: username > first_name > profiles.name > email prefix > 'Messages'
+    if (cachedProfile?.username) return cachedProfile.username;
+    if (cachedProfile?.first_name) return cachedProfile.first_name;
+    if (customerProfile?.name) return customerProfile.name;
+    if (cachedProfile?.email) return cachedProfile.email.split('@')[0];
+    return 'Messages';
+  }, [cachedProfile, customerProfile]);
+
   // Safety check to prevent modal opening for artists
   const handleNewMessageClick = () => {
     if (userType === 'artist') return;
@@ -256,7 +266,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
       {isMobile && (
         <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-primary)' }}>
           <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-            {cachedProfile?.username || cachedProfile?.email?.split('@')[0] || 'Messages'}
+            {displayUsername}
           </span>
           {userType !== 'artist' && (
             <EditIcon
@@ -366,7 +376,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
       <div className="hidden lg:flex flex-col w-80 xl:w-96 min-h-0 flex-shrink-0 overflow-hidden border-r" style={{ borderRight: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', height: '100%' }}>
         <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
           <span className="text-xl font-bold" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>
-            {cachedProfile?.username || cachedProfile?.email?.split('@')[0] || 'Messages'}
+            {displayUsername}
           </span>
           {userType !== 'artist' && (
             <EditIcon
