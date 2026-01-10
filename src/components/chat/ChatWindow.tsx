@@ -61,7 +61,7 @@ export const ChatWindow = memo(function ChatWindow({
           {onCancelPending && (
             <button
               onClick={onCancelPending}
-              className="p-1 rounded-lg hover:bg-white/5 transition-colors"
+              className="p-1 rounded-lg hover:bg-white/5 transition-colors lg:hidden"
               style={{ color: 'var(--text-secondary)' }}
             >
               ←

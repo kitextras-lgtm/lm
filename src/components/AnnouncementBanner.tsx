@@ -14,7 +14,7 @@ interface Announcement {
 
 interface AnnouncementBannerProps {
   userId: string | null;
-  userType?: 'creator' | 'artist'; // Which dashboard is showing this
+  userType?: 'creator' | 'artist' | 'business'; // Which dashboard is showing this
 }
 
 // Type assertion for fetchpriority (it's valid HTML but TypeScript doesn't recognize it yet)
@@ -79,9 +79,9 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
           if (dismissedIds.has(announcement.id)) return false;
           
           const audience = announcement.target_audience || 'all';
-          // Show if: targeting all, OR targeting this user type (creators/artists)
+          // Show if: targeting all, OR targeting this user type (creators/artists/businesses)
           if (audience === 'all') return true;
-          if (audience === 'creators' && userType === 'creator') return true;
+          if (audience === 'creators' && (userType === 'creator' || userType === 'business')) return true;
           if (audience === 'artists' && userType === 'artist') return true;
           return false;
         }).slice(0, 5); // Limit to 5 after filtering
@@ -114,7 +114,7 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
           // AND if it's targeting this user type
           const audience = newAnnouncement.target_audience || 'all';
           const isForThisAudience = audience === 'all' || 
-            (audience === 'creators' && userType === 'creator') ||
+            (audience === 'creators' && (userType === 'creator' || userType === 'business')) ||
             (audience === 'artists' && userType === 'artist');
           
           if ((newAnnouncement.user_id === null || newAnnouncement.user_id === userId) && isForThisAudience) {

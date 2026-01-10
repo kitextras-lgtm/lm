@@ -25,9 +25,10 @@ interface NewMessageModalProps {
   onClose: () => void;
   onSelectUser: (user: StartConversationUser) => void;
   currentUserId: string;
+  userType?: 'artist' | 'creator' | 'business';
 }
 
-export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId }: NewMessageModalProps) {
+export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, userType }: NewMessageModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -72,14 +73,22 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId }
       setLoading(true);
       try {
         // Fix 3: Use unified_users view for consistent data
-        // Only search for admin/support accounts - users can only message support
-        const { data: exactMatch, error: exactError } = await supabase
+        // Artists can only message support, creators/business can message creators/businesses/support (not artists)
+        let query = supabase
           .from('unified_users')
           .select('id, display_name, username, avatar_url')
           .neq('id', currentUserId)
-          .eq('username', cleanQuery)
-          .eq('is_admin', true) // Only show admin/support accounts
-          .limit(1);
+          .eq('username', cleanQuery);
+
+        // Artists can only see admin/support accounts
+        if (userType === 'artist') {
+          query = query.eq('is_admin', true);
+        } else {
+          // Creators and businesses can see other creators/businesses and support, but not artists
+          query = query.not('user_type', 'eq', 'artist');
+        }
+
+        const { data: exactMatch, error: exactError } = await query.limit(1);
 
         if (!exactError && exactMatch && exactMatch.length > 0) {
           setUsers(exactMatch.map(u => ({
@@ -88,40 +97,20 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId }
             username: u.username || '',
             avatar_url: u.avatar_url
           })));
-          setLoading(false);
-          return;
-        }
-
-        // If no exact match, try prefix search (for autocomplete)
-        // Only search for admin/support accounts - users can only message support
-        const { data: prefixMatch, error: prefixError } = await supabase
-          .from('unified_users')
-          .select('id, display_name, username, avatar_url')
-          .neq('id', currentUserId)
-          .ilike('username', `${cleanQuery}%`)
-          .eq('is_admin', true) // Only show admin/support accounts
-          .limit(10);
-
-        if (!prefixError && prefixMatch) {
-          setUsers(prefixMatch.map(u => ({
-            id: u.id,
-            name: u.display_name || 'Unknown',
-            username: u.username || '',
-            avatar_url: u.avatar_url
-          })));
         } else {
           setUsers([]);
         }
+        setLoading(false);
       } catch (err) {
         console.error('Error searching users:', err);
         setUsers([]);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     const debounce = setTimeout(searchUsers, 300);
     return () => clearTimeout(debounce);
-  }, [searchQuery, currentUserId]);
+  }, [searchQuery, currentUserId, userType]);
 
   // Clear selection when search query changes
   useEffect(() => {

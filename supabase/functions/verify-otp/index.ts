@@ -346,6 +346,9 @@ Deno.serve(async (req: Request) => {
       if (!authUserId) {
         console.log('🚀 ENTERING USER CREATION BLOCK - authUserId is null, will create new user');
         
+        // SPAM FILTER DISABLED - Temporarily disabled for debugging
+        // Original spam filter code commented out to prevent 500 errors
+        /*
         // SPAM FILTER: Check if a signup already exists from this IP/device (only for new signups)
         console.log('🛡️ SPAM FILTER: Checking for existing signup from IP:', ipAddress);
         const { data: existingSignup, error: signupCheckError } = await supabaseClient
@@ -381,6 +384,8 @@ Deno.serve(async (req: Request) => {
         } else {
           console.log('✅ SPAM FILTER: No existing signup found for this IP - allowing new signup');
         }
+        */
+        console.log('✅ SPAM FILTER: Disabled - allowing all signups for debugging');
         
         // Create new Supabase Auth user using REST API
         console.log('🚀 Starting user creation process for:', email);

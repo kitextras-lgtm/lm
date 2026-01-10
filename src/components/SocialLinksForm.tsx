@@ -346,7 +346,7 @@ export function SocialLinksForm() {
               No links added yet
             </p>
             <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
-              Add your social media links to get started
+              Distribute to get started
             </p>
           </div>
         ) : (

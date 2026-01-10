@@ -12,6 +12,7 @@ interface ProfileViewProps {
     created_at?: string;
     bio?: string;
     banner_url?: string;
+    user_type?: 'artist' | 'creator' | 'business';
   } | null;
   cachedProfilePic?: string | null;
   onBack?: () => void;
@@ -21,6 +22,88 @@ interface ProfileViewProps {
   onEditProfile?: () => void;
   appliedTheme?: 'light' | 'grey' | 'dark';
 }
+
+// Account type icons with custom hover animations (matching UserTypeSelectionPage)
+const ArtistIcon = () => (
+  <div className="music-icon group w-5 h-5 flex-shrink-0">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      <rect x="8" y="26" width="8" height="12" rx="2" stroke="white" strokeWidth="2" fill="none"/>
+      <rect x="32" y="26" width="8" height="12" rx="2" stroke="white" strokeWidth="2" fill="none"/>
+      <rect x="10" y="28" width="4" height="8" rx="1" fill="white" opacity="0.3"/>
+      <rect x="34" y="28" width="4" height="8" rx="1" fill="white" opacity="0.3"/>
+    </svg>
+    <div className="note note-1">
+      <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
+        <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="2" cy="12" r="2" fill="white"/>
+      </svg>
+    </div>
+    <div className="note note-2">
+      <svg width="8" height="12" viewBox="0 0 10 14" fill="none">
+        <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="2" cy="12" r="2" fill="white"/>
+      </svg>
+    </div>
+    <div className="note note-3">
+      <svg width="6" height="10" viewBox="0 0 10 14" fill="none">
+        <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="2" cy="12" r="2" fill="white"/>
+      </svg>
+    </div>
+  </div>
+);
+
+const CreatorIcon = () => (
+  <div className="creators-icon group w-5 h-5 flex-shrink-0">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <rect x="14" y="6" width="20" height="36" rx="3" stroke="white" strokeWidth="2" fill="none"/>
+      <rect x="20" y="9" width="8" height="2" rx="1" fill="white" opacity="0.4"/>
+      <rect x="21" y="38" width="6" height="2" rx="1" fill="white" opacity="0.4"/>
+      <g className="app app-1">
+        <rect x="16" y="14" width="10" height="8" rx="2" fill="white" opacity="0.2"/>
+        <path d="M20 16L23 18L20 20V16Z" fill="white" opacity="0.8"/>
+      </g>
+      <g className="app app-2">
+        <rect x="26" y="14" width="8" height="8" rx="2" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8"/>
+        <circle cx="30" cy="18" r="2" stroke="white" strokeWidth="1" fill="none" opacity="0.8"/>
+        <circle cx="32.5" cy="15.5" r="0.8" fill="white" opacity="0.6"/>
+      </g>
+    </svg>
+  </div>
+);
+
+const BrandIcon = () => (
+  <div className="businesses-icon group w-5 h-5 flex-shrink-0">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <rect x="6" y="18" width="36" height="22" rx="3" stroke="white" strokeWidth="2" fill="none"/>
+      <path d="M18 18V14C18 12.8954 18.8954 12 20 12H28C29.1046 12 30 12.8954 30 14V18" stroke="white" strokeWidth="2" fill="none"/>
+      <rect className="lid" x="6" y="18" width="36" height="8" rx="3" stroke="white" strokeWidth="2" fill="black"/>
+      <rect className="clasp" x="21" y="24" width="6" height="4" rx="1" fill="white"/>
+      <g className="documents">
+        <rect x="12" y="22" width="10" height="14" rx="1" fill="white" opacity="0.2"/>
+        <line x1="14" y1="25" x2="20" y2="25" stroke="white" strokeWidth="1" opacity="0.6"/>
+        <line x1="14" y1="28" x2="18" y2="28" stroke="white" strokeWidth="1" opacity="0.6"/>
+        <line x1="14" y1="31" x2="20" y2="31" stroke="white" strokeWidth="1" opacity="0.6"/>
+        <rect x="26" y="22" width="10" height="14" rx="1" fill="white" opacity="0.2"/>
+        <path d="M28 33L31 28L33 30L36 25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
+      </g>
+    </svg>
+  </div>
+);
+
+const getAccountTypeIcon = (userType?: 'artist' | 'creator' | 'business') => {
+  switch (userType) {
+    case 'artist':
+      return <ArtistIcon />;
+    case 'creator':
+      return <CreatorIcon />;
+    case 'business':
+      return <BrandIcon />;
+    default:
+      return <CreatorIcon />; // Default to creator icon
+  }
+};
 
 export function ProfileView({ 
   userProfile, 
@@ -230,24 +313,7 @@ export function ProfileView({
                 ? `${userProfile.first_name} ${userProfile.last_name}`
                 : 'Your Name'}
             </h2>
-            <svg 
-              className="w-5 h-5" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ filter: 'drop-shadow(0 2px 4px rgba(26, 140, 255, 0.3))' }}
-            >
-              <path 
-                d="M12 2L22 8.5V15.5L12 22L2 15.5V8.5L12 2Z" 
-                fill="#1a8cff" 
-                stroke="#1a8cff" 
-                strokeWidth="0.5"
-              />
-              <path 
-                d="M10 13L8.5 11.5L7 13L10 16L17 9L15.5 7.5L10 13Z" 
-                fill="#000000"
-              />
-            </svg>
+            {getAccountTypeIcon(userProfile?.user_type)}
           </div>
           <p style={{ color: '#64748B' }}>@{userProfile?.username || 'username'}</p>
         </div>

@@ -44,7 +44,7 @@ interface CollapsibleSidebarProps {
   cachedProfilePic?: string | null;
   isCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
-  userType?: 'artist' | 'creator';
+  userType?: 'artist' | 'creator' | 'business';
 }
 
 // Consistent icon size for all icons - 28px
@@ -584,7 +584,7 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
 
 
 // Get nav items based on user type
-const getNavItems = (userType?: 'artist' | 'creator') => {
+const getNavItems = (userType?: 'artist' | 'creator' | 'business') => {
   if (userType === 'artist') {
     // Artist-specific labels and icons
     return [
@@ -597,7 +597,7 @@ const getNavItems = (userType?: 'artist' | 'creator') => {
       { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
     ];
   } else {
-    // Creator labels (default) - use original icons
+    // Creator/Business labels (default) - use original icons
     return [
       { id: 'home', label: 'Home', Icon: HomeIconSVG },
       { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },

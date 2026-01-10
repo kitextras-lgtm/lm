@@ -2288,7 +2288,7 @@ export function CreatorDashboard() {
         userId={currentUserId || ''}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <DoorTransition showTransition={location.state?.fromOnboarding === true} />
+        <DoorTransition showTransition={false} />
         
         {/* Left Sidebar - Desktop Only */}
         <CollapsibleSidebar

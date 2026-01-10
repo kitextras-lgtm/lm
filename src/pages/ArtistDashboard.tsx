@@ -2297,7 +2297,7 @@ export function ArtistDashboard() {
         userId={currentUserId || ''}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <DoorTransition showTransition={location.state?.fromOnboarding === true} />
+        <DoorTransition showTransition={false} />
         
         {/* Left Sidebar - Desktop Only */}
         <CollapsibleSidebar
@@ -2550,13 +2550,8 @@ export function ArtistDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Opportunities</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Create Submission</h2>
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <NovaBeatsCard onClick={() => setSelectedCampaign(OPPORTUNITIES[0])} backgroundTheme={backgroundTheme} />
-                <FighterMusicCard onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
               </div>
             </section>
           </div>
