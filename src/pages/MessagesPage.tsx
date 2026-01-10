@@ -3,7 +3,7 @@ import { Search, MessageSquare } from 'lucide-react';
 import { EditIcon } from '../components/EditIcon';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton, NewMessageModal } from '../components/chat';
-import { useCustomerConversations, usePresence, useProfile } from '../hooks/useChat';
+import { useCustomerConversations, usePresence, useProfile, getOrCreateAdminConversation } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
 import { debounce } from '../utils/debounce';
@@ -76,8 +76,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
   // Fix 4: Selection is now handled by the hook with localStorage persistence
   // No need to manually save to localStorage here - hookSelectConversation handles it
 
-  // Fix 4 & 12: Proper conversation selection on load
-  // Fix 12: Removed auto-creation of admin conversation - let user initiate
+  // Fix 4: Proper conversation selection on load
+  // Auto-create Team Elevate conversation for every user
   useEffect(() => {
     const initializeConversation = async () => {
       if (!loading && currentUserId) {
@@ -101,14 +101,21 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             setSelectedConversation(conversations[0]);
             hookSelectConversation(conversations[0].id);
           }
+        } else {
+          // No conversations exist - create Team Elevate conversation
+          console.log('No conversations found, creating Team Elevate conversation...');
+          const adminConv = await getOrCreateAdminConversation(currentUserId);
+          if (adminConv) {
+            // The conversation will be added to the list automatically by the hook
+            console.log('Team Elevate conversation created:', adminConv.id);
+          }
         }
-        // Fix 12: Don't auto-create admin conversation - show empty state instead
         setInitializing(false);
       }
     };
 
     initializeConversation();
-  }, [currentUserId, loading, conversations.length, hookSelectConversation]);
+  }, [currentUserId, loading, conversations.length, hookSelectConversation, getOrCreateAdminConversation]);
 
   const debouncedSearch = useMemo(
     () => debounce((value: string) => setDebouncedSearchQuery(value), 300),

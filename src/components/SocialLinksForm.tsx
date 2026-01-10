@@ -8,6 +8,7 @@ interface SocialLink {
   platform: string;
   url: string;
   display_name: string;
+  channel_description: string;
 }
 
 const platformIcons: { [key: string]: any } = {
@@ -136,13 +137,19 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
   );
 }
 
-export function SocialLinksForm() {
+interface SocialLinksFormProps {
+  appliedTheme?: string;
+  userType?: 'artist' | 'creator' | 'business';
+}
+
+export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps) {
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newLink, setNewLink] = useState({
     platform: 'YouTube',
     url: '',
     display_name: '',
+    channel_description: '',
   });
   const [loading, setLoading] = useState(true);
 
@@ -204,14 +211,21 @@ export function SocialLinksForm() {
         return;
       }
 
+      const insertData: any = {
+        user_id: user.id,
+        platform: newLink.platform,
+        url: normalizedUrl,
+        display_name: newLink.display_name.trim() || newLink.platform,
+      };
+
+      // Only include channel_description for creator accounts
+      if (userType === 'creator') {
+        insertData.channel_description = newLink.channel_description.trim();
+      }
+
       const { error } = await supabase
         .from('social_links')
-        .insert({
-          user_id: user.id,
-          platform: newLink.platform,
-          url: normalizedUrl,
-          display_name: newLink.display_name.trim() || newLink.platform,
-        });
+        .insert(insertData);
 
       if (error) {
         // Check if it's a unique constraint violation
@@ -224,7 +238,7 @@ export function SocialLinksForm() {
       }
 
       await loadLinks();
-      setNewLink({ platform: 'YouTube', url: '', display_name: '' });
+      setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_description: '' });
       setIsAdding(false);
     } catch (error) {
       console.error('Error adding link:', error);
@@ -315,6 +329,22 @@ export function SocialLinksForm() {
               />
             </div>
 
+            {userType === 'creator' && (
+              <div>
+                <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
+                  Channel Description (optional)
+                </label>
+                <textarea
+                  value={newLink.channel_description}
+                  onChange={(e) => setNewLink({ ...newLink, channel_description: e.target.value })}
+                  placeholder="Describe your channel content, style, or what makes it unique..."
+                  rows={3}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border resize-none"
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                />
+              </div>
+            )}
+
             <div className="flex gap-2 sm:gap-3 pt-2">
               <button
                 onClick={handleAddLink}
@@ -326,7 +356,7 @@ export function SocialLinksForm() {
               <button
                 onClick={() => {
                   setIsAdding(false);
-                  setNewLink({ platform: 'YouTube', url: '', display_name: '' });
+                  setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_description: '' });
                 }}
                 className="px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-90 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
