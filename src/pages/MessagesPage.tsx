@@ -18,7 +18,7 @@ interface MessagesPageProps {
 
 export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType }: MessagesPageProps) {
   // Get cached user profile for username display
-  const { profile: cachedProfile } = useUserProfile();
+  const { profile: cachedProfile, isLoading: profileLoading } = useUserProfile();
 
   // Fix 1: Use enhanced hook with selection locking + Instagram/X pattern
   const {
@@ -53,8 +53,9 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
     if (cachedProfile?.first_name) return cachedProfile.first_name;
     if (customerProfile?.name) return customerProfile.name;
     if (cachedProfile?.email) return cachedProfile.email.split('@')[0];
-    return 'Messages';
-  }, [cachedProfile, customerProfile]);
+    // Show 'Messages' as fallback, but only after profile has tried loading
+    return profileLoading ? '' : 'Messages';
+  }, [cachedProfile, customerProfile, profileLoading]);
 
   // Safety check to prevent modal opening for artists
   const handleNewMessageClick = () => {
