@@ -1717,7 +1717,7 @@ export function BusinessDashboard() {
 
   const renderConnectedAccounts = () => (
     <div ref={accountsRef} className="scroll-mt-6">
-      <SocialLinksForm appliedTheme={appliedTheme} />
+      <SocialLinksForm appliedTheme={appliedTheme} userType="business" />
     </div>
   );
 
@@ -2513,7 +2513,7 @@ export function BusinessDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Add your social media channels and profiles</p>
           </div>
 
-          <SocialLinksForm appliedTheme={appliedTheme} />
+          <SocialLinksForm appliedTheme={appliedTheme} userType="business" />
         </section>
 
         <section className="mb-8">

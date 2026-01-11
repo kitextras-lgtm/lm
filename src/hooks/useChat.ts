@@ -866,6 +866,8 @@ export async function getAdminId(): Promise<string | null> {
 // Get or create a conversation with admin for a customer
 export async function getOrCreateAdminConversation(customerId: string): Promise<Conversation & { admin: Profile } | null> {
   try {
+    console.log('🔍 getOrCreateAdminConversation called for customerId:', customerId);
+    
     // Ensure customer profile exists before creating conversation
     const { data: customerProfile, error: profileCheckError } = await supabase
       .from('profiles')
@@ -873,18 +875,24 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
       .eq('id', customerId)
       .maybeSingle();
 
+    console.log('🔍 Customer profile check:', { data: customerProfile, error: profileCheckError });
+
     if (profileCheckError) {
       console.error('Error checking customer profile:', profileCheckError);
       return null;
     }
 
     if (!customerProfile) {
+      console.log('🔍 Customer profile does not exist, creating...');
+      
       // Get user data to populate profile
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('email, first_name, last_name, full_name')
         .eq('id', customerId)
         .maybeSingle();
+
+      console.log('🔍 User data for profile:', { data: userData, error: userError });
 
       if (userError) {
         console.error('Error fetching user data:', userError);
@@ -896,6 +904,8 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
                          userData?.email?.split('@')[0] ||
                          'User';
 
+      console.log('🔍 Creating profile with name:', profileName);
+
       const { error: createProfileError } = await supabase
         .from('profiles')
         .insert({
@@ -905,6 +915,8 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
           is_admin: false,
           is_online: false,
         });
+
+      console.log('🔍 Profile creation result:', { error: createProfileError });
 
       if (createProfileError) {
         console.error('Error creating customer profile:', createProfileError);
@@ -950,6 +962,8 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
     }
 
     // Create new conversation
+    console.log('🔍 Creating conversation with:', { customerId, adminId });
+    
     const { data: newConv, error: createError } = await supabase
       .from('conversations')
       .insert({
@@ -961,6 +975,8 @@ export async function getOrCreateAdminConversation(customerId: string): Promise<
       })
       .select('*')
       .single();
+
+    console.log('🔍 Conversation creation result:', { data: newConv, error: createError });
 
     if (createError) {
       console.error('Error creating conversation:', createError);

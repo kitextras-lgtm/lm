@@ -30,7 +30,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           height="28" 
           rx="3" 
           stroke="white" 
-          stroke-width="3.5" 
+          strokeWidth="3.5" 
           fill="none"
         />
         
@@ -38,7 +38,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
         <path
           d="M36 10 L36 16 L30 16"
           stroke="white"
-          stroke-width="3.5"
+          strokeWidth="3.5"
           fill="none"
         />
 
@@ -54,7 +54,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           <path
             d="M40 8 L28 20 L22 14 L34 2 C34.8 1.2 36.2 1.2 37 2 L40 5 C40.8 5.8 40.8 7.2 40 8 Z"
             stroke="white"
-            stroke-width="3.5"
+            strokeWidth="3.5"
             fill="rgba(0,0,0,0.9)"
             strokeLinejoin="round"
           />

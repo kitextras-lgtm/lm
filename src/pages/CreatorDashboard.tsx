@@ -1717,7 +1717,7 @@ export function CreatorDashboard() {
 
   const renderConnectedAccounts = () => (
     <div ref={accountsRef} className="scroll-mt-6">
-      <SocialLinksForm appliedTheme={appliedTheme} />
+      <SocialLinksForm appliedTheme={appliedTheme} userType="creator" />
     </div>
   );
 
@@ -2513,7 +2513,7 @@ export function CreatorDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Add your social media channels and profiles</p>
           </div>
 
-          <SocialLinksForm appliedTheme={appliedTheme} />
+          <SocialLinksForm appliedTheme={appliedTheme} userType="creator" />
         </section>
 
         <section className="mb-8">
