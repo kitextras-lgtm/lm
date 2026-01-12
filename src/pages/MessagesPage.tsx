@@ -186,11 +186,15 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
   const getSenderName = useCallback(
     (senderId: string) => {
       if (senderId === currentUserId) {
-        return customerProfile?.name || 'You';
+        // Use cachedProfile from useUserProfile (fetches from users table)
+        const displayName = cachedProfile?.first_name
+          ? `${cachedProfile.first_name}${cachedProfile.last_name ? ` ${cachedProfile.last_name}` : ''}`
+          : cachedProfile?.username || 'You';
+        return displayName;
       }
       return selectedConversation?.admin?.name || 'Support';
     },
-    [customerProfile, selectedConversation, currentUserId]
+    [cachedProfile, selectedConversation, currentUserId]
   );
 
   const handleSelectConversation = async (conv: Conversation & { admin: Profile }) => {
