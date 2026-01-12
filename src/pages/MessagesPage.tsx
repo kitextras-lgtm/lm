@@ -3,7 +3,7 @@ import { Search, MessageSquare } from 'lucide-react';
 import { EditIcon } from '../components/EditIcon';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton, NewMessageModal } from '../components/chat';
-import { useCustomerConversations, usePresence, getOrCreateAdminConversation } from '../hooks/useChat';
+import { useCustomerConversations, usePresence, useProfile, getOrCreateAdminConversation } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
 import { debounce } from '../utils/debounce';
@@ -18,7 +18,7 @@ interface MessagesPageProps {
 
 export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType }: MessagesPageProps) {
   // Get cached user profile for username display
-  const { profile: cachedProfile, isLoading: profileLoading } = useUserProfile();
+  const { profile: cachedProfile } = useUserProfile();
 
   // Fix 1: Use enhanced hook with selection locking + Instagram/X pattern
   const {
@@ -42,18 +42,19 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
   const [filter, setFilter] = useState<FilterType>('all');
   const [initializing, setInitializing] = useState(true);
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
+  const { profile: customerProfile } = useProfile(currentUserId);
 
   usePresence(currentUserId);
 
-  // Compute display name from users table (via useUserProfile)
+  // Compute display name with comprehensive fallbacks
   const displayUsername = useMemo(() => {
-    // Priority: username > first_name > email prefix > 'Messages'
+    // Priority: username > first_name > profiles.name > email prefix > 'Messages'
     if (cachedProfile?.username) return cachedProfile.username;
     if (cachedProfile?.first_name) return cachedProfile.first_name;
+    if (customerProfile?.name) return customerProfile.name;
     if (cachedProfile?.email) return cachedProfile.email.split('@')[0];
-    // Show empty while loading, 'Messages' as final fallback
-    return profileLoading ? '' : 'Messages';
-  }, [cachedProfile, profileLoading]);
+    return 'Messages';
+  }, [cachedProfile, customerProfile]);
 
   // Safety check to prevent modal opening for artists
   const handleNewMessageClick = () => {

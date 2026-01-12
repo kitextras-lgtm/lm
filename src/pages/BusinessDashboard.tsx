@@ -834,20 +834,17 @@ export function BusinessDashboard() {
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
   
-  // Calculate unreadCount - check if user is customer_id or admin_id and use appropriate unread field
-  const unreadCountsString = JSON.stringify(conversations.map(c => ({
-    id: c.id,
-    unread: c.customer_id === currentUserId ? (c.unread_count_customer || 0) : (c.unread_count_admin || 0)
-  })));
+  // Calculate unreadCount - use JSON.stringify of unread counts as dependency to force recalculation
+  // This ensures we detect changes even if the array reference doesn't change
+  const unreadCountsString = JSON.stringify(conversations.map(c => ({ id: c.id, unread: c.unread_count_customer || 0 })));
   const unreadCount = useMemo(() => {
     if (!currentUserId || conversations.length === 0) return 0;
-    const total = conversations.reduce((sum, conv) => {
-      // Use the correct unread count based on which side of the conversation the user is on
-      const unread = conv.customer_id === currentUserId
-        ? (conv.unread_count_customer || 0)
-        : (conv.unread_count_admin || 0);
-      return sum + unread;
-    }, 0);
+    const total = conversations.reduce((total, conv) => total + (conv.unread_count_customer || 0), 0);
+    console.log('🏷️ [BusinessDashboard] Calculating unreadCount from conversations:', {
+      conversationsArray: conversations.map(c => ({ id: c.id, unread: c.unread_count_customer })),
+      calculatedTotal: total,
+      unreadCountsString
+    });
     return total;
   }, [currentUserId, conversations, unreadCountsString]);
   
@@ -864,10 +861,7 @@ export function BusinessDashboard() {
       shouldShowBadge,
       conversations: conversations.map(c => ({
         id: c.id,
-        customer_id: c.customer_id,
         unread_count_customer: c.unread_count_customer,
-        unread_count_admin: c.unread_count_admin,
-        effectiveUnread: c.customer_id === currentUserId ? c.unread_count_customer : c.unread_count_admin,
         last_message: c.last_message?.substring(0, 30)
       }))
     });

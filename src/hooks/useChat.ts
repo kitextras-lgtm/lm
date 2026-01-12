@@ -341,17 +341,11 @@ export function useCustomerConversations(customerId: string) {
   const updateConversationUnreadCount = useCallback((conversationId: string, unreadCount: number) => {
     setState(prev => ({
       ...prev,
-      conversations: prev.conversations.map((conv) => {
-        if (conv.id !== conversationId) return conv;
-        // Update the correct unread field based on which side of the conversation the user is on
-        if (conv.customer_id === customerId) {
-          return { ...conv, unread_count_customer: unreadCount };
-        } else {
-          return { ...conv, unread_count_admin: unreadCount };
-        }
-      }),
+      conversations: prev.conversations.map((conv) =>
+        conv.id === conversationId ? { ...conv, unread_count_customer: unreadCount } : conv
+      ),
     }));
-  }, [customerId]);
+  }, []);
 
   // Fix 3: Use unified_users view for user data
   const fetchConversations = useCallback(async () => {
