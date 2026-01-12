@@ -339,6 +339,7 @@ export function useCustomerConversations(customerId: string) {
   }, [customerId]);
 
   const updateConversationUnreadCount = useCallback((conversationId: string, unreadCount: number) => {
+    if (!customerId) return;
     setState(prev => ({
       ...prev,
       conversations: prev.conversations.map((conv) => {
