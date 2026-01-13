@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, X, User, Link2, CreditCard, Bell } from 'lucide-react';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
@@ -6,7 +6,6 @@ import { useAdmin } from '../hooks/useAdmin';
 import { AnimatedBarsLoader } from '../components/AnimatedBarsLoader';
 import { AdminMessagesPage } from './AdminMessagesPage';
 import { getAdminId } from '../hooks/useChat';
-import { NotificationSender } from '../components/NotificationSender';
 import { AnnouncementSender } from '../components/AnnouncementSender';
 import { ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 
@@ -301,7 +300,11 @@ export function AdminDashboard() {
               src="/elevate_transparent_white_.png" 
               alt="ELEVATE" 
               className="h-20 sm:h-28 cursor-pointer hover:opacity-80 transition-opacity" 
-              onClick={() => navigate('/')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveSection('home');
+              }}
             />
             <span className="inline-flex items-center justify-center px-1 py-0.5 text-[7px] sm:px-1.5 sm:text-[8px] font-medium uppercase tracking-wider text-white bg-[#1e1e1e] rounded border border-border/50 cursor-default transition-all duration-300 ease-out hover:bg-[#2a2a2a] hover:text-white hover:border-foreground/30 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)] hover:scale-105 select-none -ml-1">
               Admin
@@ -807,7 +810,7 @@ export function AdminDashboard() {
                         lastFetchedSectionRef.current = null;
                         setUsersError(null);
                         // Trigger fetch by setting loading state and calling fetch
-                        if (activeSection === 'users' && adminFetch) {
+                        if (activeSection === 'users') {
                           const fetchUsers = async () => {
                             fetchingUsersRef.current = true;
                             setUsersLoading(true);

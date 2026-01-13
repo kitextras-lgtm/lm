@@ -25,7 +25,6 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
     conversations,
     loading,
     updateConversationUnreadCount,
-    refetch,
     selectConversation: hookSelectConversation,
     // Instagram/X pattern
     pendingConversation,
@@ -37,7 +36,6 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<(Conversation & { admin: Profile }) | null>(null);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [showChatOnMobile, setShowChatOnMobile] = useState(false);
   const [filter, setFilter] = useState<FilterType>('all');
   const [initializing, setInitializing] = useState(true);
@@ -127,27 +125,34 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
   // Ensure admin conversation is always selected when conversations load (desktop only)
   useEffect(() => {
-    const isMobile = window.innerWidth < 1024;
+    const initializeConversation = async () => {
+      const isMobile = window.innerWidth < 1024;
 
-    if (!initializing && conversations.length > 0 && !selectedConversation && !isMobile) {
-      const adminConv = conversations[0];
-      setSelectedConversation(adminConv);
+      if (!initializing && conversations.length > 0 && !selectedConversation && !isMobile) {
+        const adminConv = conversations[0];
+        setSelectedConversation(adminConv);
 
-      if (adminConv.unread_count_customer > 0) {
-        supabase
-          .from('conversations')
-          .update({ unread_count_customer: 0 })
-          .eq('id', adminConv.id)
-          .catch((error) => console.error('Error marking conversation as read:', error));
+        if (adminConv.unread_count_customer > 0) {
+          try {
+            await supabase
+              .from('conversations')
+              .update({ unread_count_customer: 0 })
+              .eq('id', adminConv.id);
+          } catch (error: any) {
+            console.error('Error marking conversation as read:', error);
+          }
+        }
+      } else if (!initializing && conversations.length > 0 && selectedConversation) {
+        const updatedConv = conversations.find(c => c.id === selectedConversation.id);
+        if (updatedConv) {
+          setSelectedConversation(updatedConv);
+        } else if (!isMobile) {
+          setSelectedConversation(conversations[0]);
+        }
       }
-    } else if (!initializing && conversations.length > 0 && selectedConversation) {
-      const updatedConv = conversations.find(c => c.id === selectedConversation.id);
-      if (updatedConv) {
-        setSelectedConversation(updatedConv);
-      } else if (!isMobile) {
-        setSelectedConversation(conversations[0]);
-      }
-    }
+    };
+    
+    initializeConversation();
   }, [conversations, initializing, selectedConversation]);
 
   const filteredConversations = useMemo(() => {
@@ -208,18 +213,19 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
     if (isMobile) {
       setShowChatOnMobile(true);
-      setShowSidebar(false);
-    } else {
-      setShowSidebar(false);
     }
 
-    if (conv.unread_count_customer > 0) {
+    // Fix: Check the correct unread field based on which side of the conversation the user is on
+    const isCustomer = conv.customer_id === currentUserId;
+    const unreadCount = isCustomer ? conv.unread_count_customer : conv.unread_count_admin;
+    
+    if (unreadCount > 0) {
       updateConversationUnreadCount(conv.id, 0);
 
       try {
         await supabase
           .from('conversations')
-          .update({ unread_count_customer: 0 })
+          .update(isCustomer ? { unread_count_customer: 0 } : { unread_count_admin: 0 })
           .eq('id', conv.id);
       } catch (error) {
         console.error('Error marking conversation as read:', error);
@@ -272,8 +278,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
   return (
     <div className="flex flex-col lg:flex-row rounded-2xl w-full shadow-2xl" style={{ backgroundColor: 'var(--bg-primary)', height: '100%', maxHeight: '100%', border: '1px solid var(--border-default)', overflow: 'hidden', display: 'flex' }}>
-      {/* Mobile header */}
-      {isMobile && (
+      {/* Mobile header - Hidden on dashboard */}
+      {isMobile && false && (
         <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-primary)' }}>
           <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             {displayUsername}
@@ -371,9 +377,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                     isActive={selectedConversation?.id === conv.id}
                     onClick={() => handleSelectConversation(conv)}
                     onPin={handlePinConversation}
-                    unreadCount={conv.unread_count_customer}
+                    unreadCount={conv.customer_id === currentUserId ? conv.unread_count_customer : conv.unread_count_admin}
                     currentUserId={currentUserId}
-                    backgroundTheme={backgroundTheme}
                   />
                 )
               ))
@@ -477,9 +482,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   isActive={selectedConversation?.id === conv.id}
                   onClick={() => handleSelectConversation(conv)}
                   onPin={handlePinConversation}
-                  unreadCount={conv.unread_count_customer}
+                  unreadCount={conv.customer_id === currentUserId ? conv.unread_count_customer : conv.unread_count_admin}
                   currentUserId={currentUserId}
-                  backgroundTheme={backgroundTheme}
                 />
               )
             ))

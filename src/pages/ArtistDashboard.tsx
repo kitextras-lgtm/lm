@@ -886,7 +886,7 @@ export function ArtistDashboard() {
         firstName: cachedProfile.first_name || '',
         lastName: cachedProfile.last_name || '',
         username: cachedProfile.username || '',
-        bio: cachedProfile.bio || '',
+        bio: '',
         location: cachedProfile.location || '',
         language: cachedProfile.primary_language || '',
         email: cachedProfile.email || ''
@@ -1000,14 +1000,14 @@ export function ArtistDashboard() {
           console.warn('Query result:', usersByEmail);
         }
       }
-      
-      if (!userId) {
+
+      if (userId) {
+        setCurrentUserId(userId);
+      } else {
         console.warn('❌ No user ID found. Auth error:', authError);
         console.warn('Verified email:', verifiedEmail);
         return;
       }
-
-      setCurrentUserId(userId);
 
       console.log('📥 Fetching profile for userId:', userId);
       console.log('Auth user:', user?.id);
@@ -1353,7 +1353,6 @@ export function ArtistDashboard() {
       updateCachedProfile({
         first_name: formData.firstName,
         last_name: formData.lastName,
-        bio: formData.bio,
         location: formData.location,
         primary_language: formData.language,
         profile_picture_url: data.profilePictureUrl || userProfile?.profile_picture_url || null,
@@ -1955,6 +1954,24 @@ export function ArtistDashboard() {
     </div>
   );
 
+  const renderGuides = () => (
+    <div className="scroll-mt-6 px-4 lg:px-6 py-6">
+      <h3 className="text-xl font-bold mb-4" style={{ color: '#F8FAFC' }}>Guides</h3>
+      <p className="text-sm mb-6" style={{ color: '#94A3B8' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 rounded-xl border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+          <h4 className="font-semibold mb-2" style={{ color: '#F8FAFC' }}>Getting Started</h4>
+          <p className="text-sm" style={{ color: '#94A3B8' }}>Learn the basics of using Elevate and setting up your profile.</p>
+        </div>
+        <div className="p-4 rounded-xl border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+          <h4 className="font-semibold mb-2" style={{ color: '#F8FAFC' }}>Campaign Tips</h4>
+          <p className="text-sm" style={{ color: '#94A3B8' }}>Discover best practices for creating successful campaign submissions.</p>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderLogOut = () => (
     <div className="scroll-mt-6 flex gap-3">
       <button 
@@ -2470,6 +2487,7 @@ export function ArtistDashboard() {
                 renderLanguages={renderLanguages}
                 renderNotifications={renderNotifications}
                 renderSendFeedback={renderSendFeedback}
+                renderGuides={renderGuides}
                 renderLogOut={renderLogOut}
                 isMobile={true}
                 onBack={() => setActiveSection('home')}
@@ -2488,6 +2506,7 @@ export function ArtistDashboard() {
                 renderLanguages={renderLanguages}
                 renderNotifications={renderNotifications}
                 renderSendFeedback={renderSendFeedback}
+                renderGuides={renderGuides}
                 renderLogOut={renderLogOut}
                 isMobile={false}
                 appliedTheme={appliedTheme}

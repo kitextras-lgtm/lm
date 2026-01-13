@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
 
 // CSS for new icon animations
@@ -53,19 +52,12 @@ const ICON_SIZE = "w-7 h-7";
 // Sound wave bars icon for collapsed state - Elevate brand icon
 function ElevateIcon({ className = "w-8 h-8" }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 40 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      {/* 5 bars with proper spacing to match brand logo */}
-      <rect x="2" y="10" width="4" height="12" rx="2" fill="white" />
-      <rect x="10" y="6" width="4" height="20" rx="2" fill="white" />
-      <rect x="18" y="2" width="4" height="28" rx="2" fill="white" />
-      <rect x="26" y="6" width="4" height="20" rx="2" fill="white" />
-      <rect x="34" y="10" width="4" height="12" rx="2" fill="white" />
-    </svg>
+    <img
+      src="https://hlcpoqxzqgbghsadouef.supabase.co/storage/v1/object/public/avatars/pic/elevate%20solid%20white%20logo%20ver.jpeg"
+      alt="Elevate"
+      className={`${className} rounded-lg object-contain default-avatar-shake`}
+      style={{ backgroundColor: '#0f0f13' }}
+    />
   );
 }
 
@@ -625,7 +617,6 @@ export function CollapsibleSidebar({
   onCollapsedChange,
   userType
 }: CollapsibleSidebarProps) {
-  const navigate = useNavigate();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   
@@ -695,9 +686,13 @@ export function CollapsibleSidebar({
         >
           <div 
             className="cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate('/')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveSection('home');
+            }}
           >
-            <ElevateIcon className="w-7 h-7" />
+            <ElevateIcon className="w-9 h-9" />
           </div>
         </div>
 
@@ -714,7 +709,11 @@ export function CollapsibleSidebar({
             src="/elevate_transparent_white_.png" 
             alt="ELEVATE" 
             className="h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
-            onClick={() => navigate('/')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveSection('home');
+            }}
           />
         </div>
       </div>

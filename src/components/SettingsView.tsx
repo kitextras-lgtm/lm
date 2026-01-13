@@ -7,6 +7,7 @@ import { BellIcon } from './BellIcon';
 import { DisplayIcon } from './DisplayIcon';
 import { LanguageIcon } from './LanguageIcon';
 import { SendFeedbackIcon } from './SendFeedbackIcon';
+import { GuidebookIcon } from './GuidebookIcon';
 import { LogOutIcon } from './LogOutIcon';
 
 interface SettingsViewProps {
@@ -17,10 +18,12 @@ interface SettingsViewProps {
   renderLanguages: () => React.ReactNode;
   renderNotifications: () => React.ReactNode;
   renderSendFeedback: () => React.ReactNode;
+  renderGuides?: () => React.ReactNode;
   renderLogOut: () => React.ReactNode;
   isMobile?: boolean;
   onBack?: () => void;
   userType?: string;
+  appliedTheme?: 'light' | 'grey' | 'dark';
 }
 
 // Settings menu items with descriptions and animated icons
@@ -59,6 +62,11 @@ const settingsMenuItems = [
     id: 'feedback',
     label: 'Send feedback',
     IconComponent: SendFeedbackIcon,
+  },
+  {
+    id: 'guides',
+    label: 'Guides',
+    IconComponent: GuidebookIcon,
   },
   {
     id: 'logout',
@@ -110,10 +118,12 @@ export function SettingsView({
   renderLanguages,
   renderNotifications,
   renderSendFeedback,
+  renderGuides,
   renderLogOut,
   isMobile = false,
   onBack,
-  userType
+  userType,
+  appliedTheme
 }: SettingsViewProps) {
   const [activeSection, setActiveSection] = useState<string | null>('personal');
   const [searchQuery, setSearchQuery] = useState('');
@@ -135,6 +145,8 @@ export function SettingsView({
         return 'Notifications';
       case 'feedback':
         return 'Send feedback';
+      case 'guides':
+        return 'Guides';
       case 'logout':
         return 'Log out';
       default:
@@ -259,6 +271,8 @@ export function SettingsView({
         return 'Select the kinds of notifications you get about your activities and recommendations.';
       case 'feedback':
         return 'Help us improve the platform by sharing your feedback and suggestions.';
+      case 'guides':
+        return 'Access helpful guides and tutorials to get the most out of Elevate.';
       case 'logout':
         return 'Sign out of your account and return to the login page.';
       default:
@@ -282,6 +296,13 @@ export function SettingsView({
         return renderNotifications();
       case 'feedback':
         return renderSendFeedback();
+      case 'guides':
+        return renderGuides ? renderGuides() : (
+          <div className="px-4 py-8">
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>Guides</h3>
+            <p className="text-sm" style={{ color: '#94A3B8' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
+          </div>
+        );
       case 'logout':
         return renderLogOut();
       default:

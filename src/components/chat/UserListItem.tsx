@@ -15,7 +15,12 @@ interface UserListItemProps {
 }
 
 export const UserListItem = memo(function UserListItem({ user, conversation, isActive, onClick, onPin, unreadCount, currentUserId }: UserListItemProps) {
-  const count = unreadCount !== undefined ? unreadCount : conversation.unread_count_customer;
+  // Fix: Use the correct unread field based on user's role in the conversation
+  const count = unreadCount !== undefined 
+    ? unreadCount 
+    : (currentUserId && conversation.customer_id === currentUserId 
+        ? conversation.unread_count_customer 
+        : conversation.unread_count_admin);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
   const handleContextMenu = (e: React.MouseEvent) => {
