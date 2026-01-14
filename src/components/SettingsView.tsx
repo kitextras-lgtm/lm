@@ -75,6 +75,20 @@ const settingsMenuItems = [
   },
 ];
 
+// Admin settings menu items (only Display and Log out)
+const adminSettingsMenuItems = [
+  {
+    id: 'display',
+    label: 'Display',
+    IconComponent: DisplayIcon,
+  },
+  {
+    id: 'logout',
+    label: 'Log out',
+    IconComponent: LogOutIcon,
+  },
+];
+
 function SettingsMenuItem({ 
   label, 
   IconComponent, 
@@ -125,7 +139,7 @@ export function SettingsView({
   userType,
   appliedTheme
 }: SettingsViewProps) {
-  const [activeSection, setActiveSection] = useState<string | null>('personal');
+  const [activeSection, setActiveSection] = useState<string | null>(userType === 'admin' ? 'display' : 'personal');
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileDetailView, setMobileDetailView] = useState<string | null>(null);
 
@@ -366,7 +380,7 @@ export function SettingsView({
 
         {/* Menu Items */}
         <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'transparent' }}>
-          {settingsMenuItems.map((item, index) => (
+          {(userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).map((item, index) => (
             <SettingsMenuItem
               key={item.id}
               label={item.label}
@@ -375,7 +389,7 @@ export function SettingsView({
                 setActiveSection(item.id);
                 setMobileDetailView(item.id);
               }}
-              showBorder={index < settingsMenuItems.length - 1}
+              showBorder={index < (userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).length - 1}
             />
           ))}
         </div>
@@ -408,14 +422,14 @@ export function SettingsView({
 
         {/* Menu Items */}
         <div className="flex-1 overflow-y-auto">
-          {settingsMenuItems.map((item, index) => (
+          {(userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).map((item, index) => (
             <SettingsMenuItem
               key={item.id}
               label={item.label}
               IconComponent={item.IconComponent}
               onClick={() => setActiveSection(item.id)}
               isActive={activeSection === item.id}
-              showBorder={index < settingsMenuItems.length - 1}
+              showBorder={index < (userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).length - 1}
             />
           ))}
         </div>

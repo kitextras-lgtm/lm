@@ -1,4 +1,11 @@
 import { useState, useEffect } from 'react';
+import { 
+  AdminApplicationsIconSVG, 
+  AdminAlertsIconSVG, 
+  AdminMessagesIconSVG, 
+  AdminUsersIconSVG, 
+  AdminDataIconSVG
+} from './AdminIcons';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
 
 // CSS for new icon animations
@@ -43,7 +50,7 @@ interface CollapsibleSidebarProps {
   cachedProfilePic?: string | null;
   isCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
-  userType?: 'artist' | 'creator' | 'business';
+  userType?: 'artist' | 'creator' | 'business' | 'admin';
 }
 
 // Consistent icon size for all icons - 28px
@@ -577,7 +584,19 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
 
 
 // Get nav items based on user type
-const getNavItems = (userType?: 'artist' | 'creator' | 'business') => {
+const getNavItems = (userType?: 'artist' | 'creator' | 'business' | 'admin') => {
+  if (userType === 'admin') {
+    // Admin-specific labels and icons - using same Home/Settings icons as creator
+    return [
+      { id: 'home', label: 'Home', Icon: HomeIconSVG },
+      { id: 'applications', label: 'Applications', Icon: AdminApplicationsIconSVG },
+      { id: 'alerts', label: 'Alerts', Icon: AdminAlertsIconSVG },
+      { id: 'messages', label: 'Messages', Icon: AdminMessagesIconSVG },
+      { id: 'users', label: 'Users', Icon: AdminUsersIconSVG },
+      { id: 'data', label: 'Data', Icon: AdminDataIconSVG },
+      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+    ];
+  }
   if (userType === 'artist') {
     // Artist-specific labels and icons
     return [
@@ -589,8 +608,17 @@ const getNavItems = (userType?: 'artist' | 'creator' | 'business') => {
       { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
       { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
     ];
+  } else if (userType === 'business') {
+    // Business-specific labels - remove explore and earnings
+    return [
+      { id: 'home', label: 'Home', Icon: HomeIconSVG },
+      { id: 'talent', label: 'Talent', Icon: TalentIconSVG },
+      { id: 'deals', label: 'Deals', Icon: DealsIconSVG },
+      { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
+      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+    ];
   } else {
-    // Creator/Business labels (default) - use original icons
+    // Creator labels (default) - use original icons
     return [
       { id: 'home', label: 'Home', Icon: HomeIconSVG },
       { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },
@@ -729,7 +757,7 @@ export function CollapsibleSidebar({
           return (
             <div
               key={item.id}
-              className="cursor-pointer flex items-center gap-5 px-4 py-3 rounded-full transition-all duration-200 my-0.5"
+              className={`cursor-pointer flex items-center gap-5 px-4 py-3 rounded-full transition-all duration-200 my-0.5 ${userType === 'admin' ? 'group' : ''}`}
               onMouseEnter={() => setHoveredItem(item.id)}
               onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleNavClick(item.id)}
@@ -765,44 +793,46 @@ export function CollapsibleSidebar({
         })}
       </nav>
 
-      {/* Profile Section - Pinned to bottom */}
-      <div 
-        className={`p-3 mb-4 mx-3 rounded-full cursor-pointer transition-all duration-200 ${
-          isCollapsed ? '' : 'hover:bg-white/10'
-        }`}
-        onClick={() => {
-          setActiveSection('profile');
-          setIsCollapsed(false);
-        }}
-      >
-        <div className="flex items-center gap-3">
-          {/* Avatar - fixed position */}
-          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-            <img 
-              src={displayPic || DEFAULT_AVATAR_DATA_URI} 
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-          
-          {/* User info - fades out */}
-          <div 
-            className="flex-1 min-w-0 overflow-hidden"
-            style={{
-              opacity: isCollapsed ? 0 : 1,
-              width: isCollapsed ? 0 : 'auto',
-              transition: 'opacity 0.2s ease, width 0.3s ease'
-            }}
-          >
-            <div className="font-semibold text-[#F8FAFC] text-sm truncate">
-              {displayName}
+      {/* Profile Section - Pinned to bottom (hidden for admin) */}
+      {userType !== 'admin' && (
+        <div 
+          className={`p-3 mb-4 mx-3 rounded-full cursor-pointer transition-all duration-200 ${
+            isCollapsed ? '' : 'hover:bg-white/10'
+          }`}
+          onClick={() => {
+            setActiveSection('profile');
+            setIsCollapsed(false);
+          }}
+        >
+          <div className="flex items-center gap-3">
+            {/* Avatar - fixed position */}
+            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+              <img 
+                src={displayPic || DEFAULT_AVATAR_DATA_URI} 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+              />
             </div>
-            <div className="text-[#94A3B8] text-sm truncate">
-              @{username}
+            
+            {/* User info - fades out */}
+            <div 
+              className="flex-1 min-w-0 overflow-hidden"
+              style={{
+                opacity: isCollapsed ? 0 : 1,
+                width: isCollapsed ? 0 : 'auto',
+                transition: 'opacity 0.2s ease, width 0.3s ease'
+              }}
+            >
+              <div className="font-semibold text-[#F8FAFC] text-sm truncate">
+                {displayName}
+              </div>
+              <div className="text-[#94A3B8] text-sm truncate">
+                @{username}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </aside>
   );
 }

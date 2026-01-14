@@ -1,4 +1,11 @@
 import { useState, useCallback } from 'react';
+import { 
+  AdminApplicationsIconSVG, 
+  AdminAlertsIconSVG, 
+  AdminMessagesIconSVG, 
+  AdminUsersIconSVG, 
+  AdminDataIconSVG 
+} from './AdminIcons';
 
 interface MobileBottomNavProps {
   activeSection: string;
@@ -6,6 +13,7 @@ interface MobileBottomNavProps {
   unreadCount?: number;
   profilePicture?: string | null;
   backgroundTheme?: 'light' | 'grey' | 'dark';
+  userType?: 'artist' | 'creator' | 'business' | 'admin';
 }
 
 // Haptic feedback utility for iOS
@@ -24,7 +32,7 @@ const triggerHaptic = (style: 'light' | 'medium' | 'heavy' = 'light') => {
   }
 };
 
-export function MobileBottomNav({ activeSection, setActiveSection, unreadCount = 0, profilePicture, backgroundTheme = 'dark' }: MobileBottomNavProps) {
+export function MobileBottomNav({ activeSection, setActiveSection, unreadCount = 0, profilePicture, backgroundTheme = 'dark', userType }: MobileBottomNavProps) {
   const [pressedItem, setPressedItem] = useState<string | null>(null);
 
   // Get theme-consistent colors
@@ -44,13 +52,33 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
     }
   };
 
-  const navItems = [
+  // Admin-specific nav items - matching original admin nav order
+  const adminNavItems = [
+    { id: 'applications' },
+    { id: 'alerts' },
+    { id: 'messages' },
+    { id: 'users' },
+    { id: 'data' },
+  ];
+
+  const creatorNavItems = [
     { id: 'home' },
     { id: 'explore' },
     { id: 'talent' },
     { id: 'messages' },
     { id: 'profile' },
   ];
+
+  const businessNavItems = [
+    { id: 'home' },
+    { id: 'talent' },
+    { id: 'messages' },
+    { id: 'profile' },
+  ];
+
+  const navItems = userType === 'admin' ? adminNavItems : 
+                   userType === 'business' ? businessNavItems : 
+                   creatorNavItems;
 
   const handleTabPress = useCallback((id: string) => {
     triggerHaptic('light');
@@ -192,6 +220,62 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
             </div>
           </div>
         );
+      case 'users':
+        return (
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+            <circle cx="12" cy="22" r="5" stroke={color} strokeWidth="2.5" fill="none" style={{ opacity: 0.5 }} />
+            <path d="M4 44C4 37 7 32 12 32" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" style={{ opacity: 0.5 }} />
+            <circle cx="36" cy="22" r="5" stroke={color} strokeWidth="2.5" fill="none" style={{ opacity: 0.5 }} />
+            <path d="M44 44C44 37 41 32 36 32" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" style={{ opacity: 0.5 }} />
+            <circle cx="24" cy="20" r="6" stroke={color} strokeWidth="2.5" fill={isActive ? color : 'none'} style={{ opacity: isActive ? 0.3 : 1 }} />
+            <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          </svg>
+        );
+      case 'alerts':
+        return (
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+            <path d="M8 24L40 12L32 36L24 28L8 24Z" stroke={color} strokeWidth="2.5" strokeLinejoin="round" fill={isActive ? color : 'none'} style={{ opacity: isActive ? 0.2 : 1 }} />
+            <path d="M8 24L40 12L24 28" stroke={color} strokeWidth="2.5" strokeLinejoin="round" />
+            <path d="M24 28L32 36" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+        );
+      case 'settings':
+        return (
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+            <path d="M24 6V10M24 38V42M42 24H38M10 24H6M37.5 10.5L34.5 13.5M13.5 34.5L10.5 37.5M37.5 37.5L34.5 34.5M13.5 13.5L10.5 10.5" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="24" cy="24" r="8" stroke={color} strokeWidth="2.5" fill={isActive ? color : 'none'} style={{ opacity: isActive ? 0.2 : 1 }} />
+          </svg>
+        );
+      case 'applications':
+        return (
+          <div className="messages-icon-wrapper">
+            <AdminApplicationsIconSVG />
+          </div>
+        );
+      case 'data':
+        return (
+          <div className="messages-icon-wrapper">
+            <AdminDataIconSVG />
+          </div>
+        );
+      case 'users':
+        return (
+          <div className="messages-icon-wrapper">
+            <AdminUsersIconSVG />
+          </div>
+        );
+      case 'alerts':
+        return (
+          <div className="messages-icon-wrapper">
+            <AdminAlertsIconSVG />
+          </div>
+        );
+      case 'messages':
+        return (
+          <div className="messages-icon-wrapper">
+            <AdminMessagesIconSVG />
+          </div>
+        );
       default:
         return null;
     }
@@ -218,9 +302,11 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               onTouchStart={() => handleTouchStart(item.id)}
               onTouchEnd={handleTouchEnd}
               onTouchCancel={handleTouchEnd}
-              className="flex items-center justify-center rounded-full"
+              className={`flex flex-col items-center justify-center flex-1 py-1.5 transition-all duration-200 group ${
+                isActive ? '' : 'hover:opacity-70 active:scale-[0.95]'
+              }`}
               style={{ 
-                width: '52px',
+                color: isActive ? '#ffffff' : '#64748B',
                 height: '52px',
                 transform: isPressed ? 'scale(0.9)' : 'scale(1)',
                 transition: 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',

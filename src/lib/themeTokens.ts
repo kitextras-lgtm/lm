@@ -4,11 +4,11 @@ export const themeTokens = {
   light: {
     bg: {
       primary: '#0F172A',
-      secondary: '#020617',
-      elevated: '#1E293B',
-      active: '#334155',
+      secondary: '#0F172A',
+      elevated: '#0F172A',
+      active: '#1E293B',
       sidebar: '#0F172A',
-      input: '#1E293B',
+      input: '#0F172A',
       card: '#0F172A',
       modal: '#0F172A',
     },
@@ -26,8 +26,8 @@ export const themeTokens = {
   grey: {
     bg: {
       primary: '#1A1A1E',
-      secondary: '#111114',
-      elevated: '#2A2A2E',
+      secondary: '#1A1A1E',
+      elevated: '#1A1A1E',
       active: '#2A2A2E',
       sidebar: '#1A1A1E',
       input: '#1A1A1E',

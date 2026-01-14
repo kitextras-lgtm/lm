@@ -886,7 +886,7 @@ export function BusinessDashboard() {
         firstName: cachedProfile.first_name || '',
         lastName: cachedProfile.last_name || '',
         username: cachedProfile.username || '',
-        bio: cachedProfile.bio || '',
+        bio: '',
         location: cachedProfile.location || '',
         language: cachedProfile.primary_language || '',
         email: cachedProfile.email || ''
@@ -984,7 +984,9 @@ export function BusinessDashboard() {
         if (usersByEmail?.id) {
           userId = usersByEmail.id;
           localStorage.setItem('verifiedUserId', userId);
-          setCurrentUserId(userId);
+          if (userId) {
+            setCurrentUserId(userId);
+          }
           console.log('✅ Found user by email, userId:', userId);
         } else {
           console.warn('⚠️ User not found in users table with email:', verifiedEmail);
@@ -1344,7 +1346,6 @@ export function BusinessDashboard() {
       updateCachedProfile({
         first_name: formData.firstName,
         last_name: formData.lastName,
-        bio: formData.bio,
         location: formData.location,
         primary_language: formData.language,
         profile_picture_url: data.profilePictureUrl || userProfile?.profile_picture_url || null,
@@ -2038,7 +2039,7 @@ export function BusinessDashboard() {
               
               <div className="mb-4">
                 <p className="mb-3" style={{ color: getPreviewTextColor() }}>
-                  Explore opportunities to earn, invest, and connect with top talent. Elevate brings everything you need to scale and succeed into one unified ecosystem.
+                  Elevate helps brands thrive by connecting them with the right talent and environment for maximum impact. Growing and scaling has never been easier.
                 </p>
               </div>
             </div>

@@ -6,21 +6,21 @@ import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
 import { debounce } from '../utils/debounce';
 import { AnimatedBarsLoader } from '../components/AnimatedBarsLoader';
+import { useTheme } from '../contexts/ThemeContext';
 
-type FilterType = 'all' | 'unread' | 'pinned';
 
 interface AdminMessagesPageProps {
   currentAdminId: string;
 }
 
 export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
+  const { tokens, theme } = useTheme();
   const { conversations, loading } = useAdminConversations(currentAdminId);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<(Conversation & { customer: Profile }) | null>(null);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [filter, setFilter] = useState<FilterType>('all');
-  const { profile: adminProfile } = useProfile(currentAdminId);
+    const { profile: adminProfile } = useProfile(currentAdminId);
 
   usePresence(currentAdminId);
 
@@ -60,17 +60,9 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
       conversations.filter((conv) => {
         if (!conv.customer) return false;
         const matchesSearch = conv.customer.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
-        if (!matchesSearch) return false;
-
-        if (filter === 'unread') {
-          return conv.unread_count_admin > 0;
-        }
-        if (filter === 'pinned') {
-          return conv.is_pinned === true;
-        }
-        return true;
+        return matchesSearch;
       }),
-    [conversations, debouncedSearchQuery, filter]
+    [conversations, debouncedSearchQuery]
   );
 
   const getSenderName = useCallback(
@@ -117,23 +109,23 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
   // This ensures a single, smooth loading animation without flickering
   if (loading && conversations.length === 0) {
     return (
-      <div className="flex items-center justify-center rounded-2xl w-full shadow-2xl" style={{ minHeight: 'calc(100vh - 160px)', backgroundColor: '#111111', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
+      <div className="flex items-center justify-center rounded-2xl w-full shadow-2xl" style={{ minHeight: 'calc(100vh - 160px)', backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}>
         <AnimatedBarsLoader text="Loading conversations..." />
       </div>
     );
   }
 
   return (
-    <div className="flex overflow-hidden rounded-2xl w-full shadow-2xl" style={{ backgroundColor: '#111111', height: 'calc(100vh - 160px)', maxHeight: 'calc(100vh - 160px)', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
+    <div className="flex overflow-hidden rounded-2xl w-full shadow-2xl h-full" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}>
       <div
         className={`${
           showSidebar ? 'flex' : 'hidden lg:flex'
         } flex-col w-full lg:w-80 xl:w-96 min-h-0 flex-shrink-0 overflow-hidden`}
-        style={{ borderRight: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}
+        style={{ borderRight: `1px solid ${tokens.border.default}`, backgroundColor: tokens.bg.primary }}
       >
-        <div className="p-5 pb-4" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: '#111111' }}>
+        <div className="p-5 pb-4" style={{ borderBottom: `1px solid ${tokens.border.default}`, backgroundColor: tokens.bg.primary }}>
           <div className="relative mb-4">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#64748B' }} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: tokens.text.muted }} />
             <input
               type="text"
               value={searchQuery}
@@ -142,59 +134,25 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
               aria-label="Search customers"
               className="w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
               style={{ 
-                backgroundColor: '#0f0f13', 
-                border: '1px solid rgba(75, 85, 99, 0.25)',
-                color: '#F8FAFC',
-                focusRingColor: 'rgba(148, 163, 184, 0.3)'
+                backgroundColor: tokens.bg.input, 
+                border: `1px solid ${tokens.border.default}`,
+                color: tokens.text.primary,
+                outlineColor: 'rgba(148, 163, 184, 0.3)',
+                boxShadow: '0 0 0 1px rgba(148, 163, 184, 0.3)'
               }}
             />
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFilter('all')}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'all'
-                  ? ''
-                  : 'hover:brightness-110 active:scale-[0.98]'
-              }`}
-              style={filter === 'all' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('unread')}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'unread'
-                  ? ''
-                  : 'hover:brightness-110 active:scale-[0.98]'
-              }`}
-              style={filter === 'unread' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
-            >
-              Unread
-            </button>
-            <button
-              onClick={() => setFilter('pinned')}
-              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'pinned'
-                  ? ''
-                  : 'hover:brightness-110 active:scale-[0.98]'
-              }`}
-              style={filter === 'pinned' ? { backgroundColor: '#0f0f13', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: '#F8FAFC', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' } : { backgroundColor: '#0f0f13', color: '#64748B', border: '1px solid transparent' }}
-            >
-              Pinned
-            </button>
-          </div>
-        </div>
+                  </div>
 
         <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent' }}>
           {filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f0f13' }}>
-                <MessageSquare className="w-8 h-8" style={{ color: '#64748B' }} />
+                <MessageSquare className="w-8 h-8" style={{ color: tokens.text.muted }} />
               </div>
-              <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
-              <p className="text-xs mt-1" style={{ color: '#64748B' }}>Customer conversations will appear here</p>
+              <p className="text-sm font-medium" style={{ color: tokens.text.secondary }}>No conversations found</p>
+              <p className="text-xs mt-1" style={{ color: tokens.text.muted }}>Customer conversations will appear here</p>
             </div>
           ) : (
             filteredConversations.map((conv) => (
@@ -215,7 +173,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
         </div>
       </div>
 
-      <div className={`${!showSidebar ? 'flex' : 'hidden lg:flex'} flex-col flex-1 min-h-0 min-w-0 overflow-hidden`} style={{ backgroundColor: '#111111' }}>
+      <div className={`${!showSidebar ? 'flex' : 'hidden lg:flex'} flex-col flex-1 min-h-0 min-w-0 overflow-hidden`} style={{ backgroundColor: tokens.bg.primary }}>
         {selectedConversation && selectedConversation.customer ? (
           <ChatWindow
             key={selectedConversation.id}
@@ -223,15 +181,16 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
             otherUser={selectedConversation.customer}
             currentUserId={currentAdminId}
             getSenderName={getSenderName}
+            backgroundTheme={theme}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center px-6">
-              <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
-                <MessageSquare className="w-10 h-10" style={{ color: '#64748B' }} />
+              <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}>
+                <MessageSquare className="w-10 h-10" style={{ color: tokens.text.muted }} />
               </div>
-              <h2 className="text-xl font-semibold mb-2" style={{ color: '#F8FAFC' }}>Select a conversation</h2>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>Choose a customer from the list to start chatting</p>
+              <h2 className="text-xl font-semibold mb-2" style={{ color: tokens.text.primary }}>Select a conversation</h2>
+              <p className="text-sm" style={{ color: tokens.text.secondary }}>Choose a customer from the list to start chatting</p>
             </div>
           </div>
         )}
