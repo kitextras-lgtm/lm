@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, AlertTriangle, Users, User, Loader2, X, Search, Palette, Music, AlertCircle, Bell } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { debounce } from '../utils/debounce';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface AnnouncementSenderProps {
   adminId: string;
@@ -19,6 +20,7 @@ type AnnouncementType = 'normal' | 'serious';
 type TargetAudience = 'all' | 'creators' | 'artists';
 
 export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps) {
+  const { tokens } = useTheme();
   const [sendToAll, setSendToAll] = useState(true);
   const [username, setUsername] = useState('');
   const [title, setTitle] = useState('');
@@ -189,12 +191,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
     <div className="animate-fade-in">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#1a1a1e' }}>
-            <AlertTriangle className="w-5 h-5" style={{ color: '#F8FAFC' }} />
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
+            <AlertTriangle className="w-5 h-5" style={{ color: tokens.text.primary }} />
           </div>
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: '#F8FAFC' }}>Send Announcement</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: tokens.text.primary }}>Send Announcement</h2>
+            <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>
               Send announcements to all users or specific users
             </p>
           </div>
@@ -203,8 +205,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
       <div className="space-y-6">
         {/* Announcement Type */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
             Announcement Type
           </label>
           <div className="flex gap-4">
@@ -214,7 +216,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 announcementType === 'normal' ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: announcementType === 'normal' ? '#0f0f13' : 'transparent',
+                backgroundColor: announcementType === 'normal' ? tokens.bg.active : 'transparent',
                 color: '#F8FAFC',
                 border: announcementType === 'normal' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
@@ -240,8 +242,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         </div>
 
         {/* Send To Toggle */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
             Recipients
           </label>
           <div className="flex gap-4">
@@ -256,7 +258,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 sendToAll ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: sendToAll ? '#0f0f13' : 'transparent',
+                backgroundColor: sendToAll ? tokens.bg.active : 'transparent',
                 color: '#F8FAFC',
                 border: sendToAll ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
@@ -274,7 +276,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 !sendToAll ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: !sendToAll ? '#0f0f13' : 'transparent',
+                backgroundColor: !sendToAll ? tokens.bg.active : 'transparent',
                 color: '#F8FAFC',
                 border: !sendToAll ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
@@ -287,8 +289,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
         {/* Target Audience (only shown when broadcasting) */}
         {sendToAll && (
-          <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-            <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
+          <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
+            <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
               Target Audience
             </label>
             <div className="flex gap-4">
@@ -298,7 +300,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'all' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'all' ? '#0f0f13' : 'transparent',
+                  backgroundColor: targetAudience === 'all' ? tokens.bg.active : 'transparent',
                   color: '#F8FAFC',
                   border: targetAudience === 'all' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
@@ -312,7 +314,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'creators' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'creators' ? '#0f0f13' : 'transparent',
+                  backgroundColor: targetAudience === 'creators' ? tokens.bg.active : 'transparent',
                   color: '#F8FAFC',
                   border: targetAudience === 'creators' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
@@ -326,7 +328,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'artists' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'artists' ? '#0f0f13' : 'transparent',
+                  backgroundColor: targetAudience === 'artists' ? tokens.bg.active : 'transparent',
                   color: '#F8FAFC',
                   border: targetAudience === 'artists' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
@@ -340,13 +342,13 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
         {/* Username Field (only shown when not sending to all) */}
         {!sendToAll && (
-          <div className="rounded-2xl p-6 shadow-xl relative" style={{ backgroundColor: '#1a1a1e' }}>
-            <label className="block text-sm font-medium mb-3" style={{ color: '#94A3B8' }}>
+          <div className="rounded-2xl p-6 shadow-xl relative" style={{ backgroundColor: tokens.bg.elevated }}>
+            <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.secondary }}>
               Username
             </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <Search className="w-4 h-4" style={{ color: '#64748B' }} />
+                <Search className="w-4 h-4" style={{ color: tokens.text.muted }} />
               </div>
               <input
                 ref={inputRef}
@@ -361,15 +363,15 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 placeholder="Type username to search..."
                 className="w-full h-12 pl-10 pr-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
-                  color: '#F8FAFC',
-                  background: '#0f0f13',
-                  border: '1px solid rgba(75, 85, 99, 0.2)',
+                  color: tokens.text.primary,
+                  background: tokens.bg.input,
+                  border: `1px solid ${tokens.border.default}`,
                 }}
                 disabled={isSending}
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#64748B' }} />
+                  <Loader2 className="w-4 h-4 animate-spin" style={{ color: tokens.text.muted }} />
                 </div>
               )}
             </div>
@@ -380,8 +382,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 ref={suggestionsRef}
                 className="absolute left-6 right-6 mt-2 rounded-xl shadow-2xl border z-50 max-h-64 overflow-y-auto"
                 style={{
-                  backgroundColor: '#1a1a1e',
-                  borderColor: 'rgba(75, 85, 99, 0.2)',
+                  backgroundColor: tokens.bg.elevated,
+                  borderColor: tokens.border.default,
                 }}
               >
                 {userSuggestions.map((user) => (
@@ -396,15 +398,15 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                     }}
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold truncate" style={{ color: '#F8FAFC' }}>
+                      <div className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>
                         @{user.username}
                       </div>
                       {user.full_name && (
-                        <div className="text-xs truncate mt-0.5" style={{ color: '#94A3B8' }}>
+                        <div className="text-xs truncate mt-0.5" style={{ color: tokens.text.secondary }}>
                           {user.full_name}
                         </div>
                       )}
-                      <div className="text-xs truncate mt-0.5" style={{ color: '#64748B' }}>
+                      <div className="text-xs truncate mt-0.5" style={{ color: tokens.text.muted }}>
                         {user.email}
                       </div>
                     </div>
@@ -417,19 +419,19 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               <div
                 className="absolute left-6 right-6 mt-2 rounded-xl shadow-2xl border p-4 text-center"
                 style={{
-                  backgroundColor: '#1a1a1e',
-                  borderColor: 'rgba(75, 85, 99, 0.2)',
+                  backgroundColor: tokens.bg.elevated,
+                  borderColor: tokens.border.default,
                 }}
               >
-                <p className="text-sm" style={{ color: '#94A3B8' }}>No users found</p>
+                <p className="text-sm" style={{ color: tokens.text.secondary }}>No users found</p>
               </div>
             )}
           </div>
         )}
 
         {/* Title Input */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-3" style={{ color: '#94A3B8' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.secondary }}>
             Title
           </label>
           <input
@@ -440,7 +442,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
             style={{
               color: '#F8FAFC',
-              background: '#0f0f13',
+              background: tokens.bg.input,
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
             disabled={isSending}
@@ -448,8 +450,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         </div>
 
         {/* Content Textarea */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-3" style={{ color: '#94A3B8' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.secondary }}>
             Content
           </label>
           <textarea
@@ -460,7 +462,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
             style={{
               color: '#F8FAFC',
-              background: '#0f0f13',
+              background: tokens.bg.input,
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
             disabled={isSending}
@@ -499,9 +501,9 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               onClick={onClose}
               className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110"
               style={{
-                backgroundColor: '#1a1a1e',
-                color: '#F8FAFC',
-                border: '1px solid rgba(75, 85, 99, 0.2)',
+                backgroundColor: tokens.bg.elevated,
+                color: tokens.text.primary,
+                border: `1px solid ${tokens.border.default}`,
               }}
               disabled={isSending}
             >

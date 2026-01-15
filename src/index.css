@@ -412,6 +412,33 @@ spline-viewer > * {
   background-color: transparent;
 }
 
+/* Admin icon active state - triggers hover animations when active */
+.admin-icon-active g:first-child {
+  transform: translateX(8px) translateY(-4px) rotate(6deg) !important;
+}
+
+.admin-icon-active g:nth-child(2) {
+  opacity: 1 !important;
+}
+
+.admin-icon-active path[stroke-dashoffset] {
+  stroke-dashoffset: 0 !important;
+}
+
+.admin-icon-active circle[class*="opacity-0"] {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.admin-icon-active circle:not([class*="opacity-0"]) {
+  transform: scale(1.25) !important;
+}
+
+.admin-icon-active .back-bubble,
+.admin-icon-active .front-bubble {
+  transform: scale(1.1) !important;
+}
+
 .messages-icon svg {
   width: 34px;
   height: 34px;
@@ -869,6 +896,19 @@ spline-viewer > * {
 
 .animate-slide-in-right {
   animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes messageFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.05);
+  }
+}
+
+.animate-message-float {
+  animation: messageFloat 2s ease-in-out infinite;
 }
 
 @keyframes premium-pulse {

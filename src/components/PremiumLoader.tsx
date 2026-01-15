@@ -1,8 +1,11 @@
 import React from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export function PremiumLoader() {
+  const { tokens } = useTheme();
+  
   return (
-    <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: '#000000' }}>
+    <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: tokens.bg.primary }}>
       <div className="relative" style={{ width: '100px', height: '100px' }}>
         {/* Outer subtle glow */}
         <div

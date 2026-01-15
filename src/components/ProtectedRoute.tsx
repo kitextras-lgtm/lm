@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { AnimatedBarsLoader } from './AnimatedBarsLoader';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -10,6 +11,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { theme, tokens } = useTheme();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -76,12 +78,12 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (isLoading) {
     return (
       <div style={{ 
-        backgroundColor: '#000', 
+        backgroundColor: tokens.bg.primary, 
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#fff'
+        color: tokens.text.primary
       }}>
         <AnimatedBarsLoader text="Loading..." />
       </div>

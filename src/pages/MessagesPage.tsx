@@ -353,7 +353,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             ) : filteredConversations.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
-                  <MessageSquare className="w-8 h-8" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }} />
+                  <MessageSquare className="w-8 h-8 animate-message-float" style={{ color: '#F8FAFC' }} />
                 </div>
                 {userType === 'artist' ? (
                   <>
@@ -362,8 +362,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   </>
                 ) : (
                   <>
-                    <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
-                    <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Start a conversation to get help</p>
+                    <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>No conversations found</p>
                   </>
                 )}
               </div>
@@ -458,7 +457,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
           ) : filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
-                <MessageSquare className="w-8 h-8" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }} />
+                <MessageSquare className="w-8 h-8 animate-message-float" style={{ color: '#F8FAFC' }} />
               </div>
               {userType === 'artist' ? (
                 <>
@@ -467,8 +466,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No conversations found</p>
-                  <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Start a conversation to get help</p>
+                  <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>No conversations found</p>
                 </>
               )}
             </div>

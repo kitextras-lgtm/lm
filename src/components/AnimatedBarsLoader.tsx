@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface AnimatedBarsLoaderProps {
   text?: string;
@@ -11,6 +12,8 @@ export function AnimatedBarsLoader({
   barCount = 5,
   className = '' 
 }: AnimatedBarsLoaderProps) {
+  const { tokens } = useTheme();
+  
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
       <div className="flex items-end gap-1.5 mb-4">
@@ -19,7 +22,7 @@ export function AnimatedBarsLoader({
             key={index}
             className="w-1.5 rounded-full animate-bar"
             style={{
-              backgroundColor: '#F8FAFC',
+              backgroundColor: tokens.text.primary,
               height: '32px',
               animationDelay: `${index * 0.05}s`,
             }}
@@ -27,7 +30,7 @@ export function AnimatedBarsLoader({
         ))}
       </div>
       {text && (
-        <p className="text-sm" style={{ color: '#64748B' }}>
+        <p className="text-sm" style={{ color: tokens.text.secondary }}>
           {text}
         </p>
       )}

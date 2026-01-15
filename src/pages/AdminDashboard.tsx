@@ -516,7 +516,7 @@ export function AdminDashboard() {
                               </div>
                               
                               <h4 className="font-semibold text-white mb-1">Navy</h4>
-                              <p className="text-sm text-gray-400">Default color scheme</p>
+                              <p className="text-sm text-gray-400">Navy blue background</p>
                             </div>
 
                             {/* Grey Option */}
@@ -712,7 +712,7 @@ export function AdminDashboard() {
                               </div>
                               
                               <h4 className="font-semibold text-white mb-1">Navy</h4>
-                              <p className="text-sm text-gray-400">Default color scheme</p>
+                              <p className="text-sm text-gray-400">Navy blue background</p>
                             </div>
 
                             {/* Grey Option */}

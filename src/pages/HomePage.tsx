@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Hero } from '../components/Hero';
@@ -8,13 +8,20 @@ import { CallToAction } from '../components/CallToAction';
 
 export function HomePage() {
   const navigate = useNavigate();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     const currentDashboard = localStorage.getItem('currentDashboard');
     if (currentDashboard && window.location.pathname === '/') {
+      setIsRedirecting(true);
       navigate(currentDashboard);
     }
   }, [navigate]);
+
+  // Don't render anything if redirecting
+  if (isRedirecting) {
+    return null;
+  }
 
   return (
     <div

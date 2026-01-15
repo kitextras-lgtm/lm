@@ -58,7 +58,15 @@
       }
     </style>
   </head>
-  <body>
+  <body style="background-color: #000000; margin: 0;">
+    <script>
+      // Apply saved theme immediately to prevent flash
+      (function() {
+        var theme = localStorage.getItem('theme') || 'dark';
+        var bgColors = { dark: '#000000', light: '#0F172A', grey: '#1A1A1E' };
+        document.body.style.backgroundColor = bgColors[theme] || '#000000';
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
