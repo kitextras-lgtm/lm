@@ -349,7 +349,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
           <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
             {showConversationSkeletons ? (
-              <ConversationListSkeleton count={4} />
+              <ConversationListSkeleton count={4} backgroundTheme={backgroundTheme} />
             ) : filteredConversations.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
@@ -453,7 +453,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
         <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
           {showConversationSkeletons ? (
-            <ConversationListSkeleton count={5} />
+            <ConversationListSkeleton count={5} backgroundTheme={backgroundTheme} />
           ) : filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
@@ -521,7 +521,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             backgroundTheme={backgroundTheme}
           />
         ) : showChatSkeleton ? (
-          <ChatWindowSkeleton />
+          <ChatWindowSkeleton backgroundTheme={backgroundTheme} />
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center px-6">

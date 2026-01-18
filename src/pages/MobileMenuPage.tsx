@@ -10,7 +10,7 @@ export function MobileMenuPage() {
         <div className="h-16 px-6 flex items-center justify-between">
           <div className="flex items-center flex-shrink-0">
             <img
-              src="/elevate_black.png"
+              src="/elevate text logo v2.png"
               alt="Elevate Logo"
               className="h-20 w-auto"
             />

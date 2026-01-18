@@ -9,6 +9,7 @@ import { useImageUpload } from '../../hooks/useImageUpload';
 import { supabase } from '../../lib/supabase';
 import type { Conversation, Profile, ReplyTo } from '../../types/chat';
 import { formatDate, isSameDay } from '../../utils/dateUtils';
+import { getTheme } from '../../utils/chatTheme';
 
 // Instagram/X pattern: Pending recipient type
 interface PendingRecipient {
@@ -162,6 +163,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   onBack?: () => void;
   showBackButton?: boolean;
 }) {
+  const theme = getTheme(backgroundTheme);
   const { messages, loading, otherUserTyping, sendMessage, setTyping, markMessagesAsSeen } = useChat({
     conversationId: conversation.id,
     currentUserId,
@@ -411,7 +413,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
           <div 
             className="absolute inset-0 z-10 flex flex-col"
             style={{ 
-              backgroundColor: 'var(--bg-primary)',
+              backgroundColor: theme.background,
               transition: 'opacity 150ms ease-out',
               opacity: 1,
               pointerEvents: 'none'
@@ -426,11 +428,11 @@ const ChatWindowContent = memo(function ChatWindowContent({
                   <div className="flex flex-col gap-1">
                     <div
                       className="rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', minHeight: '2.5rem', width: '180px' }}
+                      style={{ backgroundColor: theme.skeletonSecondary, minHeight: '2.5rem', width: '180px' }}
                     />
                     <div
                       className="h-3 rounded px-1"
-                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                      style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
                     />
                   </div>
                 </div>
@@ -442,11 +444,11 @@ const ChatWindowContent = memo(function ChatWindowContent({
                   <div className="flex flex-col gap-1">
                     <div
                       className="rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: 'rgba(248, 250, 252, 0.1)', minHeight: '2.5rem', width: '140px' }}
+                      style={{ backgroundColor: theme.skeletonPrimary, minHeight: '2.5rem', width: '140px' }}
                     />
                     <div
                       className="h-3 rounded px-1 ml-auto"
-                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                      style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
                     />
                   </div>
                 </div>
@@ -458,11 +460,11 @@ const ChatWindowContent = memo(function ChatWindowContent({
                   <div className="flex flex-col gap-1">
                     <div
                       className="rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', minHeight: '3.5rem', width: '220px' }}
+                      style={{ backgroundColor: theme.skeletonSecondary, minHeight: '3.5rem', width: '220px' }}
                     />
                     <div
                       className="h-3 rounded px-1"
-                      style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                      style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
                     />
                   </div>
                 </div>
@@ -587,6 +589,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
                       senderName={getSenderName(message.sender_id)}
                       onImageLoad={handleImageLoad}
                       onDelete={handleDeleteMessage}
+                      backgroundTheme={backgroundTheme}
                     />
                   </div>
                 );

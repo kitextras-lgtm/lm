@@ -4,6 +4,7 @@ import type { Message, ReplyTo } from '../../types/chat';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { formatTime } from '../../utils/dateUtils';
 import { AnimatedWave } from './AnimatedWave';
+import { getTheme } from '../../utils/chatTheme';
 
 interface MessageBubbleProps {
   message: Message;
@@ -13,9 +14,11 @@ interface MessageBubbleProps {
   onScrollToMessage?: (messageId: string) => void;
   senderName?: string;
   onImageLoad?: (messageId: string, loaded: boolean) => void;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
 }
 
-export const MessageBubble = memo(function MessageBubble({ message, isOwn, onReply, onScrollToMessage, senderName, onImageLoad, onDelete }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({ message, isOwn, onReply, onScrollToMessage, senderName, onImageLoad, onDelete, backgroundTheme = 'dark' }: MessageBubbleProps) {
+  const theme = getTheme(backgroundTheme);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -132,7 +135,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
               className={`relative rounded-2xl overflow-hidden transition-all duration-200 min-w-0 ${
                 message.type === 'image' && !message.content ? 'p-0' : ''
               }`}
-              style={isOwn ? { backgroundColor: '#F8FAFC', color: '#111111' } : { backgroundColor: '#1a1a1e', color: '#F8FAFC' }}
+              style={isOwn ? { backgroundColor: theme.messageBubbleOwn, color: theme.messageBubbleOwnText } : { backgroundColor: theme.backgroundSecondary, color: theme.messageBubbleOtherText }}
             >
               {message.type === 'image' && message.image_url && (
                 <div className={`relative ${message.content ? 'px-4 pt-3' : 'p-0'}`}>

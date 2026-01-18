@@ -57,10 +57,10 @@ interface CollapsibleSidebarProps {
 const ICON_SIZE = "w-7 h-7";
 
 // Sound wave bars icon for collapsed state - Elevate brand icon
-function ElevateIcon({ className = "w-8 h-8" }: { className?: string }) {
+function ElevateIcon({ className = "w-7 h-7" }: { className?: string }) {
   return (
     <img
-      src="https://hlcpoqxzqgbghsadouef.supabase.co/storage/v1/object/public/avatars/pic/elevate%20solid%20white%20logo%20ver.jpeg"
+      src="/elevate transparent logo..png"
       alt="Elevate"
       className={`${className} rounded-lg object-contain default-avatar-shake`}
       style={{ backgroundColor: '#0f0f13' }}
@@ -734,7 +734,7 @@ export function CollapsibleSidebar({
           }}
         >
           <img 
-            src="/elevate_transparent_white_.png" 
+            src="/elevate text logo v2.png" 
             alt="ELEVATE" 
             className="h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
             onClick={(e) => {

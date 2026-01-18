@@ -26,6 +26,11 @@ interface ThemeColors {
   // Input
   inputBackground: string;
   inputBorder: string;
+
+  // Skeleton loading
+  skeletonPrimary: string;
+  skeletonSecondary: string;
+  skeletonLight: string;
 }
 
 const themes: Record<BackgroundTheme, ThemeColors> = {
@@ -43,6 +48,9 @@ const themes: Record<BackgroundTheme, ThemeColors> = {
     messageBubbleOtherText: '#F8FAFC',
     inputBackground: '#1a1a1e',
     inputBorder: 'rgba(75, 85, 99, 0.2)',
+    skeletonPrimary: 'rgba(30, 41, 59, 0.5)',
+    skeletonSecondary: 'rgba(30, 41, 59, 0.35)',
+    skeletonLight: 'rgba(30, 41, 59, 0.25)',
   },
   grey: {
     background: '#1A1A1E',
@@ -58,6 +66,9 @@ const themes: Record<BackgroundTheme, ThemeColors> = {
     messageBubbleOtherText: '#F8FAFC',
     inputBackground: '#1a1a1e',
     inputBorder: 'rgba(75, 85, 99, 0.2)',
+    skeletonPrimary: 'rgba(75, 85, 99, 0.25)',
+    skeletonSecondary: 'rgba(75, 85, 99, 0.18)',
+    skeletonLight: 'rgba(75, 85, 99, 0.12)',
   },
   dark: {
     background: '#000000',
@@ -73,6 +84,9 @@ const themes: Record<BackgroundTheme, ThemeColors> = {
     messageBubbleOtherText: '#F8FAFC',
     inputBackground: '#1a1a1e',
     inputBorder: 'rgba(75, 85, 99, 0.2)',
+    skeletonPrimary: 'rgba(26, 26, 30, 0.8)',
+    skeletonSecondary: 'rgba(26, 26, 30, 0.6)',
+    skeletonLight: 'rgba(26, 26, 30, 0.4)',
   },
 };
 

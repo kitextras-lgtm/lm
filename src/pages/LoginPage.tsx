@@ -77,14 +77,7 @@ export function LoginPage() {
 
         console.log('📨 OTP response status:', response.status);
         
-        // Check if response is OK
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('❌ OTP request failed:', response.status, errorText);
-          throw new Error(`Server error: ${response.status}`);
-        }
-        
-        // Try to parse JSON, handle empty response
+        // Parse response
         const responseText = await response.text();
         console.log('📝 OTP response text:', responseText);
         
@@ -92,7 +85,19 @@ export function LoginPage() {
           throw new Error('Empty response from server');
         }
         
-        const data = JSON.parse(responseText);
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          console.error('❌ Failed to parse response:', responseText);
+          throw new Error('Invalid response from server');
+        }
+        
+        // Check if response is OK
+        if (!response.ok) {
+          console.error('❌ OTP request failed:', response.status, responseText);
+          throw new Error(data.message || `Server error: ${response.status}`);
+        }
         if (!data.success) {
           throw new Error(data.message || 'Failed to send OTP');
         }

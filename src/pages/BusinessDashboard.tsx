@@ -796,6 +796,17 @@ export function BusinessDashboard() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isTipaltiConnected, setIsTipaltiConnected] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentFormData, setPaymentFormData] = useState({
+    paymentType: 'card' as 'card' | 'paypal' | 'apple',
+    nameOnCard: '',
+    cardNumber: '',
+    expiryMonth: '',
+    expiryYear: '',
+    cvc: '',
+    city: '',
+    billingAddress: ''
+  });
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -983,8 +994,8 @@ export function BusinessDashboard() {
         
         if (usersByEmail?.id) {
           userId = usersByEmail.id;
-          localStorage.setItem('verifiedUserId', userId);
           if (userId) {
+            localStorage.setItem('verifiedUserId', userId);
             setCurrentUserId(userId);
           }
           console.log('✅ Found user by email, userId:', userId);
@@ -1260,7 +1271,15 @@ export function BusinessDashboard() {
 
   const handleLogout = () => {
     clearProfileCache(); // Clear cached profile state
+    // Clear all localStorage except theme
+    const theme = localStorage.getItem('theme');
+    const backgroundTheme = localStorage.getItem('backgroundTheme');
+    const appliedTheme = localStorage.getItem('appliedTheme');
     localStorage.clear();
+    // Restore theme settings
+    if (theme) localStorage.setItem('theme', theme);
+    if (backgroundTheme) localStorage.setItem('backgroundTheme', backgroundTheme);
+    if (appliedTheme) localStorage.setItem('appliedTheme', appliedTheme);
     navigate('/');
   };
 
@@ -1724,18 +1743,252 @@ export function BusinessDashboard() {
 
   const renderPayoutMethods = () => (
     <div ref={payoutRef} className="scroll-mt-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:gap-4">
-        <button className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>
-          <Plus className="w-5 h-5" />
-          Connect an account
-        </button>
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-          <span className="text-sm" style={{ color: '#94A3B8' }}>
-            Tipalti: {isTipaltiConnected ? 'Connected' : 'Not connected'}
-          </span>
-        </div>
+      {/* Tipalti Status at the top */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+        <span className="text-sm" style={{ color: '#94A3B8' }}>
+          Tipalti: {isTipaltiConnected ? 'Connected' : 'Not connected'}
+        </span>
       </div>
+      
+      {/* Connect Account Button */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 lg:gap-4">
+        <button 
+          onClick={() => setShowPaymentForm(true)}
+          className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110 border" 
+          style={{ 
+            backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', 
+            borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', 
+            color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' 
+          }}
+        >
+          <Plus className="w-5 h-5" />
+          Connect your payment method
+        </button>
+      </div>
+
+      {/* Payment Method Form */}
+      {showPaymentForm && (
+        <div className="mt-8 w-full max-w-[450px] mx-auto">
+          <div className="rounded-2xl border p-6" style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(15, 23, 42, 0.5)' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>Payment Method</h3>
+                <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>Add a new payment method to your account.</p>
+              </div>
+              <button 
+                onClick={() => setShowPaymentForm(false)}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+              </button>
+            </div>
+
+            {/* Error Message */}
+            {saveError && (
+              <div className="text-red-500 text-sm p-3 rounded-lg mb-6" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+                {saveError}
+              </div>
+            )}
+
+            <div className="space-y-6">
+              {/* Payment Type Selection */}
+              <div className="grid grid-cols-3 gap-4">
+                <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'card' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'card' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="card"
+                    checked={paymentFormData.paymentType === 'card'}
+                    onChange={(e) => setPaymentFormData({ ...paymentFormData, paymentType: e.target.value as 'card' | 'paypal' | 'apple' })}
+                    className="sr-only"
+                  />
+                  <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="2" y="5" width="20" height="14" rx="2" strokeWidth="2"/>
+                    <path d="M2 10h20" strokeWidth="2"/>
+                  </svg>
+                  <span className="text-sm" style={{ color: '#F8FAFC' }}>Card</span>
+                </label>
+
+                <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'paypal' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'paypal' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="paypal"
+                    checked={paymentFormData.paymentType === 'paypal'}
+                    onChange={(e) => setPaymentFormData({ ...paymentFormData, paymentType: e.target.value as 'card' | 'paypal' | 'apple' })}
+                    className="sr-only"
+                  />
+                  <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
+                  </svg>
+                  <span className="text-sm" style={{ color: '#F8FAFC' }}>Paypal</span>
+                </label>
+
+                <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'apple' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'apple' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
+                  <input
+                    type="radio"
+                    name="paymentType"
+                    value="apple"
+                    checked={paymentFormData.paymentType === 'apple'}
+                    onChange={(e) => setPaymentFormData({ ...paymentFormData, paymentType: e.target.value as 'card' | 'paypal' | 'apple' })}
+                    className="sr-only"
+                  />
+                  <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+                  </svg>
+                  <span className="text-sm" style={{ color: '#F8FAFC' }}>Apple</span>
+                </label>
+              </div>
+
+              {/* Card Details */}
+              {paymentFormData.paymentType === 'card' && (
+                <>
+                  {/* Name on Card */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Name on the card</label>
+                    <input
+                      type="text"
+                      value={paymentFormData.nameOnCard}
+                      onChange={(e) => setPaymentFormData({ ...paymentFormData, nameOnCard: e.target.value })}
+                      className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                      style={{
+                        color: '#F8FAFC',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(75, 85, 99, 0.5)',
+                      }}
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  {/* City */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>City</label>
+                    <input
+                      type="text"
+                      value={paymentFormData.city}
+                      onChange={(e) => setPaymentFormData({ ...paymentFormData, city: e.target.value })}
+                      className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                      style={{
+                        color: '#F8FAFC',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(75, 85, 99, 0.5)',
+                      }}
+                      placeholder=""
+                    />
+                  </div>
+
+                  {/* Card Number */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Card number</label>
+                    <input
+                      type="text"
+                      value={paymentFormData.cardNumber}
+                      onChange={(e) => setPaymentFormData({ ...paymentFormData, cardNumber: e.target.value })}
+                      className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                      style={{
+                        color: '#F8FAFC',
+                        backgroundColor: 'transparent',
+                        border: '1px solid rgba(75, 85, 99, 0.5)',
+                      }}
+                      placeholder=""
+                    />
+                  </div>
+
+                  {/* Expiry and CVC */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Expiry Month */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Expires</label>
+                      <select
+                        value={paymentFormData.expiryMonth}
+                        onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
+                        className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                        style={{
+                          color: '#F8FAFC',
+                          backgroundColor: 'transparent',
+                          border: '1px solid rgba(75, 85, 99, 0.5)',
+                        }}
+                      >
+                        <option value="" style={{ background: 'var(--bg-card)' }}>Month</option>
+                        <option value="1" style={{ background: 'var(--bg-card)' }}>January</option>
+                        <option value="2" style={{ background: 'var(--bg-card)' }}>February</option>
+                        <option value="3" style={{ background: 'var(--bg-card)' }}>March</option>
+                        <option value="4" style={{ background: 'var(--bg-card)' }}>April</option>
+                        <option value="5" style={{ background: 'var(--bg-card)' }}>May</option>
+                        <option value="6" style={{ background: 'var(--bg-card)' }}>June</option>
+                        <option value="7" style={{ background: 'var(--bg-card)' }}>July</option>
+                        <option value="8" style={{ background: 'var(--bg-card)' }}>August</option>
+                        <option value="9" style={{ background: 'var(--bg-card)' }}>September</option>
+                        <option value="10" style={{ background: 'var(--bg-card)' }}>October</option>
+                        <option value="11" style={{ background: 'var(--bg-card)' }}>November</option>
+                        <option value="12" style={{ background: 'var(--bg-card)' }}>December</option>
+                      </select>
+                    </div>
+
+                    {/* Expiry Year */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Year</label>
+                      <select
+                        value={paymentFormData.expiryYear}
+                        onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
+                        className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                        style={{
+                          color: '#F8FAFC',
+                          backgroundColor: 'transparent',
+                          border: '1px solid rgba(75, 85, 99, 0.5)',
+                        }}
+                      >
+                        <option value="" style={{ background: 'var(--bg-card)' }}>Year</option>
+                        {Array.from({ length: 10 }, (_, i) => (
+                          <option key={i} value={`${new Date().getFullYear() + i}`} style={{ background: 'var(--bg-card)' }}>
+                            {new Date().getFullYear() + i}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* CVC */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>CVC</label>
+                      <input
+                        type="text"
+                        value={paymentFormData.cvc}
+                        onChange={(e) => setPaymentFormData({ ...paymentFormData, cvc: e.target.value })}
+                        className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                        style={{
+                          color: '#F8FAFC',
+                          backgroundColor: 'transparent',
+                          border: '1px solid rgba(75, 85, 99, 0.5)',
+                        }}
+                        placeholder="CVC"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* PayPal/Apple Pay placeholder */}
+              {(paymentFormData.paymentType === 'paypal' || paymentFormData.paymentType === 'apple') && (
+                <div className="text-center py-8" style={{ color: '#94A3B8' }}>
+                  <p className="text-sm">You will be redirected to {paymentFormData.paymentType === 'paypal' ? 'PayPal' : 'Apple Pay'} to complete the payment setup.</p>
+                </div>
+              )}
+
+              {/* Action Button */}
+              <button
+                onClick={handleSavePaymentMethod}
+                disabled={isSaving}
+                className="w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              >
+                {isSaving ? 'Processing...' : 'Add Payment Method'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -1749,6 +2002,55 @@ export function BusinessDashboard() {
     const newValue = !emailPlatformUpdates;
     setEmailPlatformUpdates(newValue);
     await saveNotificationPreference('email_platform_updates', newValue);
+  };
+
+  const handleSavePaymentMethod = async () => {
+    if (!currentUserId) return;
+    
+    setIsSaving(true);
+    setSaveError(null);
+    
+    try {
+      // Validate required fields
+      if (paymentFormData.paymentType === 'card') {
+        if (!paymentFormData.nameOnCard || !paymentFormData.cardNumber || !paymentFormData.expiryMonth || !paymentFormData.expiryYear || !paymentFormData.cvc) {
+          setSaveError('Please fill in all card details');
+          return;
+        }
+      }
+      
+      // Here you would typically send the payment method data to your backend
+      // For now, we'll just simulate a successful save
+      console.log('Saving payment method:', paymentFormData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Show success message
+      alert('Payment method added successfully!');
+      
+      // Reset form and close
+      setPaymentFormData({
+        paymentType: 'card',
+        nameOnCard: '',
+        cardNumber: '',
+        expiryMonth: '',
+        expiryYear: '',
+        cvc: '',
+        city: '',
+        billingAddress: ''
+      });
+      setShowPaymentForm(false);
+      
+      // Update Tipalti status to connected
+      setIsTipaltiConnected(true);
+      
+    } catch (error: any) {
+      console.error('Error saving payment method:', error);
+      setSaveError(error.message || 'Failed to save payment method');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const saveNotificationPreference = async (field: 'email_new_features' | 'email_platform_updates', value: boolean) => {
@@ -1954,7 +2256,15 @@ export function BusinessDashboard() {
         style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
         onClick={() => {
           // Clear user session and redirect to login
+          // Clear all localStorage except theme
+          const theme = localStorage.getItem('theme');
+          const backgroundTheme = localStorage.getItem('backgroundTheme');
+          const appliedTheme = localStorage.getItem('appliedTheme');
           localStorage.clear();
+          // Restore theme settings
+          if (theme) localStorage.setItem('theme', theme);
+          if (backgroundTheme) localStorage.setItem('backgroundTheme', backgroundTheme);
+          if (appliedTheme) localStorage.setItem('appliedTheme', appliedTheme);
           sessionStorage.clear();
           window.location.href = '/login';
         }}

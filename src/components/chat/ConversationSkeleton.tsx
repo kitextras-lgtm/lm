@@ -1,13 +1,21 @@
 // Skeleton loader for conversation list items
 // Matches the exact layout of UserListItem to prevent layout shift
 
-export function ConversationSkeleton() {
+import { BackgroundTheme, getTheme } from '../../utils/chatTheme';
+
+interface SkeletonProps {
+  backgroundTheme?: BackgroundTheme;
+}
+
+export function ConversationSkeleton({ backgroundTheme = 'dark' }: SkeletonProps) {
+  const theme = getTheme(backgroundTheme);
+  
   return (
     <div className="flex items-center gap-3 px-4 py-3 animate-pulse">
       {/* Avatar skeleton */}
       <div
         className="w-12 h-12 rounded-full flex-shrink-0"
-        style={{ backgroundColor: 'rgba(75, 85, 99, 0.2)' }}
+        style={{ backgroundColor: theme.skeletonPrimary }}
       />
 
       {/* Text content skeleton */}
@@ -16,7 +24,7 @@ export function ConversationSkeleton() {
         <div
           className="h-4 rounded mb-2"
           style={{
-            backgroundColor: 'rgba(75, 85, 99, 0.2)',
+            backgroundColor: theme.skeletonPrimary,
             width: '60%'
           }}
         />
@@ -24,7 +32,7 @@ export function ConversationSkeleton() {
         <div
           className="h-3 rounded"
           style={{
-            backgroundColor: 'rgba(75, 85, 99, 0.15)',
+            backgroundColor: theme.skeletonSecondary,
             width: '85%'
           }}
         />
@@ -34,7 +42,7 @@ export function ConversationSkeleton() {
       <div
         className="h-3 rounded flex-shrink-0"
         style={{
-          backgroundColor: 'rgba(75, 85, 99, 0.15)',
+          backgroundColor: theme.skeletonSecondary,
           width: '40px'
         }}
       />
@@ -42,11 +50,11 @@ export function ConversationSkeleton() {
   );
 }
 
-export function ConversationListSkeleton({ count = 3 }: { count?: number }) {
+export function ConversationListSkeleton({ count = 3, backgroundTheme = 'dark' }: { count?: number; backgroundTheme?: BackgroundTheme }) {
   return (
     <div className="space-y-1">
       {Array.from({ length: count }).map((_, i) => (
-        <ConversationSkeleton key={i} />
+        <ConversationSkeleton key={i} backgroundTheme={backgroundTheme} />
       ))}
     </div>
   );
@@ -54,23 +62,25 @@ export function ConversationListSkeleton({ count = 3 }: { count?: number }) {
 
 // Skeleton for the chat window area
 // Matches the exact layout of ChatWindow to prevent layout shift
-export function ChatWindowSkeleton() {
+export function ChatWindowSkeleton({ backgroundTheme = 'dark' }: SkeletonProps) {
+  const theme = getTheme(backgroundTheme);
+  
   return (
-    <div className="flex flex-col h-full animate-pulse" style={{ backgroundColor: '#111111' }}>
+    <div className="flex flex-col h-full animate-pulse" style={{ backgroundColor: theme.background }}>
       {/* Header skeleton - matches ChatHeader layout */}
-      <div className="flex items-center gap-3 p-4 border-b" style={{ borderColor: 'rgba(75, 85, 99, 0.2)' }}>
+      <div className="flex items-center gap-3 p-4 border-b" style={{ borderColor: theme.border }}>
         <div
           className="w-10 h-10 rounded-full flex-shrink-0"
-          style={{ backgroundColor: 'rgba(75, 85, 99, 0.2)' }}
+          style={{ backgroundColor: theme.skeletonPrimary }}
         />
         <div className="flex-1">
           <div
             className="h-4 rounded mb-1.5"
-            style={{ backgroundColor: 'rgba(75, 85, 99, 0.2)', width: '120px' }}
+            style={{ backgroundColor: theme.skeletonPrimary, width: '120px' }}
           />
           <div
             className="h-3 rounded"
-            style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', width: '80px' }}
+            style={{ backgroundColor: theme.skeletonSecondary, width: '80px' }}
           />
         </div>
       </div>
@@ -84,11 +94,11 @@ export function ChatWindowSkeleton() {
               <div className="flex flex-col gap-1">
                 <div
                   className="rounded-2xl px-4 py-3"
-                  style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', minHeight: '2.5rem', width: '180px' }}
+                  style={{ backgroundColor: theme.skeletonSecondary, minHeight: '2.5rem', width: '180px' }}
                 />
                 <div
                   className="h-3 rounded px-1"
-                  style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                  style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
                 />
               </div>
             </div>
@@ -100,11 +110,11 @@ export function ChatWindowSkeleton() {
               <div className="flex flex-col gap-1">
                 <div
                   className="rounded-2xl px-4 py-3"
-                  style={{ backgroundColor: 'rgba(248, 250, 252, 0.1)', minHeight: '2.5rem', width: '140px' }}
+                  style={{ backgroundColor: theme.skeletonPrimary, minHeight: '2.5rem', width: '140px' }}
                 />
                 <div
                   className="h-3 rounded px-1 ml-auto"
-                  style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                  style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
                 />
               </div>
             </div>
@@ -116,11 +126,11 @@ export function ChatWindowSkeleton() {
               <div className="flex flex-col gap-1">
                 <div
                   className="rounded-2xl px-4 py-3"
-                  style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)', minHeight: '3.5rem', width: '220px' }}
+                  style={{ backgroundColor: theme.skeletonSecondary, minHeight: '3.5rem', width: '220px' }}
                 />
                 <div
                   className="h-3 rounded px-1"
-                  style={{ backgroundColor: 'rgba(75, 85, 99, 0.1)', width: '40px' }}
+                  style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
                 />
               </div>
             </div>
@@ -129,10 +139,10 @@ export function ChatWindowSkeleton() {
       </div>
 
       {/* Input area skeleton - matches ChatInput layout */}
-      <div className="p-4 border-t" style={{ borderColor: 'rgba(75, 85, 99, 0.2)' }}>
+      <div className="p-4 border-t" style={{ borderColor: theme.border }}>
         <div
           className="h-12 rounded-xl"
-          style={{ backgroundColor: 'rgba(75, 85, 99, 0.15)' }}
+          style={{ backgroundColor: theme.skeletonSecondary }}
         />
       </div>
     </div>
