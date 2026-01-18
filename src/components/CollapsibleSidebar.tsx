@@ -60,10 +60,9 @@ const ICON_SIZE = "w-7 h-7";
 function ElevateIcon({ className = "w-7 h-7" }: { className?: string }) {
   return (
     <img
-      src="/elevate transparent logo..png"
+      src="/elevate l0.png"
       alt="Elevate"
       className={`${className} rounded-lg object-contain default-avatar-shake`}
-      style={{ backgroundColor: '#0f0f13' }}
     />
   );
 }
@@ -734,7 +733,7 @@ export function CollapsibleSidebar({
           }}
         >
           <img 
-            src="/elevate text logo v2.png" 
+            src="/elevate_transparent_white_.png" 
             alt="ELEVATE" 
             className="h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
             onClick={(e) => {

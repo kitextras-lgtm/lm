@@ -462,6 +462,61 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
   );
 }
 
+function RevenueAnalyticsCard() {
+  return (
+    <div 
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    >
+      <div className="mb-6 sm:mb-8">
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Monthly Recurring Revenue</h3>
+      </div>
+
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Revenue</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$2,847.50</span>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Change</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+6.1%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActiveCollaborationsCard() {
+  return (
+    <div 
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    >
+      <div className="mb-6 sm:mb-8">
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Active Collaborations</h3>
+      </div>
+
+      <div className="space-y-4 sm:space-y-5">
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total:</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>12</span>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Pending:</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: '#ef4444' }}>4</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Active:</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>8</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
   const [isCardHovered, setIsCardHovered] = useState(false);
   
@@ -497,6 +552,161 @@ function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; b
           <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
           <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
           <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface GearProps {
+  cx: number
+  cy: number
+  outerRadius: number
+  innerRadius: number
+  holeRadius: number
+  teeth: number
+  rotation: number
+  color: string
+  id: string
+}
+
+function Gear({ cx, cy, outerRadius, innerRadius, holeRadius, teeth, rotation, color, id }: GearProps) {
+  const toothWidth = (2 * Math.PI) / teeth / 2
+
+  let pathD = ""
+
+  for (let i = 0; i < teeth; i++) {
+    const angle = (i * 2 * Math.PI) / teeth
+
+    const outerStart = angle - toothWidth * 0.4
+    const outerEnd = angle + toothWidth * 0.4
+    const innerStart = angle + toothWidth * 0.6
+    const innerEnd = angle + toothWidth * 1.4
+
+    if (i === 0) {
+      pathD += `M ${cx + Math.cos(outerStart) * outerRadius} ${cy + Math.sin(outerStart) * outerRadius} ` 
+    }
+
+    pathD += `A ${outerRadius} ${outerRadius} 0 0 1 ${cx + Math.cos(outerEnd) * outerRadius} ${cy + Math.sin(outerEnd) * outerRadius} ` 
+    pathD += `L ${cx + Math.cos(innerStart) * innerRadius} ${cy + Math.sin(innerStart) * innerRadius} ` 
+    pathD += `A ${innerRadius} ${innerRadius} 0 0 1 ${cx + Math.cos(innerEnd) * innerRadius} ${cy + Math.sin(innerEnd) * innerRadius} ` 
+
+    if (i < teeth - 1) {
+      const nextOuterStart = ((i + 1) * 2 * Math.PI) / teeth - toothWidth * 0.4
+      pathD += `L ${cx + Math.cos(nextOuterStart) * outerRadius} ${cy + Math.sin(nextOuterStart) * outerRadius} ` 
+    }
+  }
+
+  pathD += "Z"
+
+  return (
+    <g style={{ transform: `rotate(${rotation}deg)`, transformOrigin: `${cx}px ${cy}px` }}>
+      <defs>
+        <linearGradient id={`gear-gradient-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="1" />
+          <stop offset="50%" stopColor={color} stopOpacity="0.85" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.7" />
+        </linearGradient>
+      </defs>
+
+      {/* Main gear body */}
+      <path d={pathD} fill={`url(#gear-gradient-${id})`} opacity="0.3" />
+
+      {/* Inner ring */}
+      <circle cx={cx} cy={cy} r={innerRadius * 0.7} fill="none" stroke={color} strokeWidth="0.3" opacity="0.2" />
+
+      {/* Center hub */}
+      <circle cx={cx} cy={cy} r={holeRadius + 4} fill={color} opacity="0.25" />
+
+      {/* Center highlight dot */}
+      <circle cx={cx - 1} cy={cy - 1} r={holeRadius * 0.3} fill={color} opacity="0.15" />
+
+      {/* Spokes */}
+      {[0, 90, 180, 270].map((spokeAngle) => (
+        <line
+          key={spokeAngle}
+          x1={cx + Math.cos((spokeAngle * Math.PI) / 180) * (holeRadius + 5)}
+          y1={cy + Math.sin((spokeAngle * Math.PI) / 180) * (holeRadius + 5)}
+          x2={cx + Math.cos((spokeAngle * Math.PI) / 180) * (innerRadius * 0.65)}
+          y2={cy + Math.sin((spokeAngle * Math.PI) / 180) * (innerRadius * 0.65)}
+          stroke={color}
+          strokeWidth="2"
+          opacity="0.2"
+          strokeLinecap="round"
+        />
+      ))}
+    </g>
+  )
+}
+
+function GearsWidget() {
+  const [rotation, setRotation] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotation((prev) => (prev + 0.05) % 360)
+    }, 16)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <svg width="200" height="140" viewBox="0 0 200 140" className="overflow-visible">
+      {/* Large gear - rotates clockwise */}
+      <Gear
+        cx={65}
+        cy={70}
+        outerRadius={42}
+        innerRadius={34}
+        holeRadius={8}
+        teeth={16}
+        rotation={rotation}
+        color="#666666"
+        id="large"
+      />
+
+      {/* Medium gear - rotates counter-clockwise */}
+      <Gear
+        cx={135}
+        cy={70}
+        outerRadius={32}
+        innerRadius={25}
+        holeRadius={6}
+        teeth={12}
+        rotation={-rotation * 1.33}
+        color="#666666"
+        id="medium"
+      />
+
+      {/* Small gear - rotates clockwise faster */}
+      <Gear
+        cx={158}
+        cy={35}
+        outerRadius={20}
+        innerRadius={15}
+        holeRadius={4}
+        teeth={8}
+        rotation={rotation * 1.6}
+        color="#666666"
+        id="small"
+      />
+    </svg>
+  )
+}
+
+function ActiveOpportunitiesCard() {
+  return (
+    <div 
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    >
+      <div className="mb-4">
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Active Opportunities</h3>
+      </div>
+
+      <div className="flex flex-col items-center justify-center">
+        <GearsWidget />
+        <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Status: <span style={{ color: '#ef4444' }}>Disabled</span>
         </div>
       </div>
     </div>
@@ -2801,15 +3011,14 @@ export function CreatorDashboard() {
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Overview</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
+            <RevenueAnalyticsCard />
 
-            <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+            <ActiveCollaborationsCard />
 
-            <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
+            <ActiveOpportunitiesCard />
           </div>
         </section>
 
