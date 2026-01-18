@@ -1842,6 +1842,8 @@ export function CreatorDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder="John Doe"
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
@@ -1859,6 +1861,8 @@ export function CreatorDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
@@ -1876,6 +1880,8 @@ export function CreatorDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
@@ -1893,6 +1899,8 @@ export function CreatorDashboard() {
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>Month</option>
                         <option value="1" style={{ background: 'var(--bg-card)' }}>January</option>
@@ -1922,6 +1930,8 @@ export function CreatorDashboard() {
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>Year</option>
                         {Array.from({ length: 10 }, (_, i) => (
@@ -1946,6 +1956,8 @@ export function CreatorDashboard() {
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
                         placeholder="CVC"
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       />
                     </div>
                   </div>
@@ -2345,7 +2357,7 @@ export function CreatorDashboard() {
               {/* Light Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'light' ? 'border-blue-500' : 'border-gray-600'
+                  backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#0F172A' }}
                 onClick={() => setBackgroundTheme('light')}
@@ -2353,7 +2365,7 @@ export function CreatorDashboard() {
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     backgroundTheme === 'light' 
-                      ? 'bg-blue-500 border-blue-500' 
+                      ? 'bg-white border-white' 
                       : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'light' && (
@@ -2377,7 +2389,7 @@ export function CreatorDashboard() {
               {/* Grey Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'grey' ? 'border-blue-500' : 'border-gray-600'
+                  backgroundTheme === 'grey' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#1A1A1E' }}
                 onClick={() => setBackgroundTheme('grey')}
@@ -2385,7 +2397,7 @@ export function CreatorDashboard() {
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     backgroundTheme === 'grey' 
-                      ? 'bg-blue-500 border-blue-500' 
+                      ? 'bg-white border-white' 
                       : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'grey' && (
@@ -2409,7 +2421,7 @@ export function CreatorDashboard() {
               {/* Dark Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'dark' ? 'border-blue-500' : 'border-gray-600'
+                  backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#000000' }}
                 onClick={() => setBackgroundTheme('dark')}
@@ -2417,7 +2429,7 @@ export function CreatorDashboard() {
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     backgroundTheme === 'dark' 
-                      ? 'bg-blue-500 border-blue-500' 
+                      ? 'bg-white border-white' 
                       : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'dark' && (

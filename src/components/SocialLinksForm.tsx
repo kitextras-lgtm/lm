@@ -312,6 +312,8 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                 onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
               />
             </div>
 
@@ -326,6 +328,8 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                 placeholder="My Channel"
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
               />
             </div>
 
@@ -341,6 +345,8 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                   rows={3}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border resize-none"
                   style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                  onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
                 />
               </div>
             )}

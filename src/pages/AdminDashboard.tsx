@@ -13,7 +13,6 @@ import { MobileBottomNav } from '../components/MobileBottomNav';
 import { SettingsView } from '../components/SettingsView';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeTokens } from '../lib/themeTokens';
-import type { Theme } from '../lib/themeTokens';
 
 interface User {
   id: string;
@@ -249,7 +248,7 @@ export function AdminDashboard() {
             {activeSection === 'home' && (
               <div className="animate-fade-in">
                 <div className="mb-8">
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2" style={{ color: tokens.text.primary }}>Welcome back, Admin</h1>
+                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2" style={{ color: tokens.text.primary }}>Welcome back, Super Admin</h1>
                   <p className="text-base" style={{ color: tokens.text.secondary }}>Manage your platform from here</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -490,7 +489,7 @@ export function AdminDashboard() {
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'light' ? 'border-blue-500' : 'border-gray-600'
+                                theme === 'light' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#0F172A' }}
                               onClick={() => setTheme('light')}
@@ -498,7 +497,7 @@ export function AdminDashboard() {
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
                                   theme === 'light' 
-                                    ? 'bg-blue-500 border-blue-500' 
+                                    ? 'bg-white border-white' 
                                     : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'light' && (
@@ -522,7 +521,7 @@ export function AdminDashboard() {
                             {/* Grey Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'grey' ? 'border-blue-500' : 'border-gray-600'
+                                theme === 'grey' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#1A1A1E' }}
                               onClick={() => setTheme('grey')}
@@ -530,7 +529,7 @@ export function AdminDashboard() {
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
                                   theme === 'grey' 
-                                    ? 'bg-blue-500 border-blue-500' 
+                                    ? 'bg-white border-white' 
                                     : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'grey' && (
@@ -554,7 +553,7 @@ export function AdminDashboard() {
                             {/* Dark Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'dark' ? 'border-blue-500' : 'border-gray-600'
+                                theme === 'dark' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#000000' }}
                               onClick={() => setTheme('dark')}
@@ -562,7 +561,7 @@ export function AdminDashboard() {
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
                                   theme === 'dark' 
-                                    ? 'bg-blue-500 border-blue-500' 
+                                    ? 'bg-white border-white' 
                                     : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'dark' && (
@@ -686,7 +685,7 @@ export function AdminDashboard() {
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'light' ? 'border-blue-500' : 'border-gray-600'
+                                theme === 'light' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#0F172A' }}
                               onClick={() => setTheme('light')}
@@ -694,7 +693,7 @@ export function AdminDashboard() {
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
                                   theme === 'light' 
-                                    ? 'bg-blue-500 border-blue-500' 
+                                    ? 'bg-white border-white' 
                                     : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'light' && (
@@ -718,7 +717,7 @@ export function AdminDashboard() {
                             {/* Grey Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'grey' ? 'border-blue-500' : 'border-gray-600'
+                                theme === 'grey' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#1A1A1E' }}
                               onClick={() => setTheme('grey')}
@@ -726,7 +725,7 @@ export function AdminDashboard() {
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
                                   theme === 'grey' 
-                                    ? 'bg-blue-500 border-blue-500' 
+                                    ? 'bg-white border-white' 
                                     : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'grey' && (
@@ -750,7 +749,7 @@ export function AdminDashboard() {
                             {/* Dark Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'dark' ? 'border-blue-500' : 'border-gray-600'
+                                theme === 'dark' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#000000' }}
                               onClick={() => setTheme('dark')}
@@ -758,7 +757,7 @@ export function AdminDashboard() {
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
                                   theme === 'dark' 
-                                    ? 'bg-blue-500 border-blue-500' 
+                                    ? 'bg-white border-white' 
                                     : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'dark' && (

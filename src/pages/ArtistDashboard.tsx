@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare } from 'lucide-react';
+import { Video, Instagram, Music2, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare, User } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
 import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
@@ -462,123 +462,321 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
   );
 }
 
-function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-  
+function RevenueAnalyticsCard() {
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
-      onClick={onClick}
     >
-      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
-            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-              <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-              </svg>
-            </div>
-          </div>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago • Varied</p>
-        </div>
+      <div className="mb-6 sm:mb-8">
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Monthly Recurring Revenue</h3>
       </div>
 
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
-
-      <div className="flex items-center">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Revenue</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$2,847.50</span>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Change</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+6.1%</span>
         </div>
       </div>
     </div>
   );
 }
 
-function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-  
+interface ElectricArc {
+  id: number
+  path: string
+  opacity: number
+  duration: number
+  delay: number
+}
+
+interface PowerWidgetDischargedProps {
+}
+
+function PowerWidgetDischarged({ }: PowerWidgetDischargedProps) {
+  const [arcs, setArcs] = useState<ElectricArc[]>([])
+  const [sparks, setSparks] = useState<{ id: number; x: number; y: number; scale: number }[]>([])
+
+  const generateArcPath = useCallback(() => {
+    const startX = 0
+    const endX = 24
+    const midY = 12
+    const segments = 4 + Math.floor(Math.random() * 3)
+    
+    let path = `M ${startX} ${midY + (Math.random() - 0.5) * 8}` 
+    
+    for (let i = 1; i <= segments; i++) {
+      const x = (endX / segments) * i
+      const y = midY + (Math.random() - 0.5) * 16
+      path += ` L ${x} ${y}` 
+    }
+    
+    return path
+  }, [])
+
+  useEffect(() => {
+    const generateArc = () => {
+      const newArc: ElectricArc = {
+        id: Date.now() + Math.random(),
+        path: generateArcPath(),
+        opacity: 0.6 + Math.random() * 0.4,
+        duration: 80 + Math.random() * 120,
+        delay: 0,
+      }
+      
+      setArcs(prev => [...prev.slice(-4), newArc])
+      
+      setTimeout(() => {
+        setArcs(prev => prev.filter(a => a.id !== newArc.id))
+      }, newArc.duration + 100)
+    }
+
+    generateArc()
+    setTimeout(generateArc, 100)
+    setTimeout(generateArc, 200)
+
+    const interval = setInterval(() => {
+      if (Math.random() > 0.3) {
+        generateArc()
+        if (Math.random() > 0.5) {
+          setTimeout(generateArc, 50 + Math.random() * 100)
+        }
+      }
+    }, 200 + Math.random() * 300)
+
+    return () => clearInterval(interval)
+  }, [generateArcPath])
+
+  useEffect(() => {
+    const generateSpark = () => {
+      const newSpark = {
+        id: Date.now() + Math.random(),
+        x: 10 + Math.random() * 4,
+        y: 8 + Math.random() * 8,
+        scale: 0.3 + Math.random() * 0.7,
+      }
+      
+      setSparks(prev => [...prev.slice(-6), newSpark])
+      
+      setTimeout(() => {
+        setSparks(prev => prev.filter(s => s.id !== newSpark.id))
+      }, 300)
+    }
+
+    const interval = setInterval(() => {
+      if (Math.random() > 0.4) {
+        generateSpark()
+      }
+    }, 150)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div
+      className="relative flex items-center gap-1.5 p-1.5 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_20px_rgba(0,0,0,0.5)]"
+      style={{ 
+        backgroundColor: 'var(--bg-card)',
+        border: '1px solid var(--border-subtle)'
+      }}
+    >
+      {/* Left - Person Button with Cracks */}
+      <div className="relative z-10">
+        <button
+          className="relative flex items-center justify-center w-14 h-14 rounded-xl transition-all duration-300 overflow-hidden"
+          style={{ 
+            backgroundColor: 'var(--bg-input)',
+            border: '1px solid var(--border-subtle)'
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-hover)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-input)')}
+        >
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 56 56">
+            <defs>
+              <linearGradient id="crackGradientLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(80,80,80,0.6)" />
+                <stop offset="50%" stopColor="rgba(60,60,60,0.8)" />
+                <stop offset="100%" stopColor="rgba(40,40,40,0.5)" />
+              </linearGradient>
+            </defs>
+            <path d="M 44 8 L 38 16 L 42 22 L 36 30 L 40 36 L 32 48" fill="none" stroke="url(#crackGradientLeft)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M 38 16 L 32 14 L 28 18" fill="none" stroke="rgba(70,70,70,0.5)" strokeWidth="1" strokeLinecap="round" />
+            <path d="M 36 30 L 30 32 L 26 28" fill="none" stroke="rgba(70,70,70,0.5)" strokeWidth="1" strokeLinecap="round" />
+            <path d="M 44 8 L 38 16 L 42 22 L 36 30 L 40 36 L 32 48" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeLinecap="round" transform="translate(-0.5, -0.5)" />
+          </svg>
+          <User className="w-6 h-6 relative z-10" style={{ color: "#525252", filter: "none" }} />
+        </button>
+      </div>
+
+      {/* Center - Split Display with Gap */}
+      <div className="relative flex items-center h-14">
+        {/* Left half with cracks */}
+        <div className="relative flex items-center justify-end w-[72px] h-14 rounded-l-xl overflow-hidden" style={{ 
+          background: 'var(--bg-input)',
+          border: '1px solid var(--border-subtle)',
+          borderRight: 'none'
+        }}>
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 72 56">
+            <path d="M 60 0 L 52 12 L 58 20 L 50 32 L 56 42 L 48 56" fill="none" stroke="rgba(80,80,80,0.5)" strokeWidth="1" strokeLinecap="round" />
+            <path d="M 52 12 L 44 16 L 40 12" fill="none" stroke="rgba(70,70,70,0.4)" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 50 32 L 42 36 L 38 32" fill="none" stroke="rgba(70,70,70,0.4)" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 60 0 L 52 12 L 58 20 L 50 32 L 56 42 L 48 56" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" strokeLinecap="round" transform="translate(-0.5, -0.5)" />
+          </svg>
+        </div>
+
+        {/* Gap with electricity */}
+        <div className="relative w-8 h-14 flex items-center justify-center overflow-visible">
+          <div className="absolute inset-0" style={{ background: 'var(--bg-card)' }} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute left-0 w-1 h-8 rounded-r-sm" style={{ background: "linear-gradient(to bottom, transparent, #404040, #505050, #404040, transparent)", boxShadow: "inset -1px 0 2px rgba(0,0,0,0.5)" }} />
+            <div className="absolute right-0 w-1 h-8 rounded-l-sm" style={{ background: "linear-gradient(to bottom, transparent, #404040, #505050, #404040, transparent)", boxShadow: "inset 1px 0 2px rgba(0,0,0,0.5)" }} />
+          </div>
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 24 24" style={{ overflow: "visible" }}>
+            <defs>
+              <filter id="electricGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <linearGradient id="arcGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="50%" stopColor="#60a5fa" />
+                <stop offset="100%" stopColor="#3b82f6" />
+              </linearGradient>
+            </defs>
+            {arcs.map((arc) => (
+              <g key={arc.id}>
+                <path d={arc.path} fill="none" stroke="#60a5fa" strokeWidth="4" strokeLinecap="round" opacity={arc.opacity * 0.3} filter="url(#electricGlow)" style={{ animation: `arcFlash ${arc.duration}ms ease-out forwards` }} />
+                <path d={arc.path} fill="none" stroke="url(#arcGradient)" strokeWidth="1.5" strokeLinecap="round" opacity={arc.opacity} filter="url(#electricGlow)" style={{ animation: `arcFlash ${arc.duration}ms ease-out forwards` }} />
+                <path d={arc.path} fill="none" stroke="#ffffff" strokeWidth="0.5" strokeLinecap="round" opacity={arc.opacity * 0.8} style={{ animation: `arcFlash ${arc.duration}ms ease-out forwards` }} />
+              </g>
+            ))}
+            {sparks.map((spark) => (
+              <g key={spark.id} transform={`translate(${spark.x}, ${spark.y}) scale(${spark.scale})`}>
+                <circle cx="0" cy="0" r="1.5" fill="#93c5fd" opacity="0.9" style={{ animation: "sparkPop 300ms ease-out forwards" }} />
+                <circle cx="0" cy="0" r="3" fill="#3b82f6" opacity="0.4" style={{ animation: "sparkPop 300ms ease-out forwards" }} />
+              </g>
+            ))}
+          </svg>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%)", animation: "ambientPulse 1.5s ease-in-out infinite" }} />
+        </div>
+
+        {/* Right half with cracks */}
+        <div className="relative flex items-center justify-start w-[72px] h-14 rounded-r-xl overflow-hidden" style={{ 
+          background: 'var(--bg-input)',
+          border: '1px solid var(--border-subtle)',
+          borderLeft: 'none'
+        }}>
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 72 56">
+            <path d="M 12 0 L 20 10 L 14 18 L 22 28 L 16 38 L 24 48 L 18 56" fill="none" stroke="rgba(80,80,80,0.5)" strokeWidth="1" strokeLinecap="round" />
+            <path d="M 20 10 L 28 14 L 32 10" fill="none" stroke="rgba(70,70,70,0.4)" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 22 28 L 30 32 L 34 28" fill="none" stroke="rgba(70,70,70,0.4)" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 12 0 L 20 10 L 14 18 L 22 28 L 16 38 L 24 48 L 18 56" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" strokeLinecap="round" transform="translate(0.5, -0.5)" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Right - Briefcase Button with Cracks */}
+      <div className="relative z-10">
+        <button
+          className="relative flex items-center justify-center w-14 h-14 rounded-xl transition-all duration-300 overflow-hidden"
+          style={{ 
+            backgroundColor: 'var(--bg-input)',
+            border: '1px solid var(--border-subtle)'
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-hover)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-input)')}
+        >
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 56 56">
+            <defs>
+              <linearGradient id="crackGradientRight" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="rgba(80,80,80,0.6)" />
+                <stop offset="50%" stopColor="rgba(60,60,60,0.8)" />
+                <stop offset="100%" stopColor="rgba(40,40,40,0.5)" />
+              </linearGradient>
+            </defs>
+            <path d="M 12 6 L 18 14 L 14 20 L 20 28 L 16 34 L 22 44 L 18 52" fill="none" stroke="url(#crackGradientRight)" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M 18 14 L 24 12 L 28 16" fill="none" stroke="rgba(70,70,70,0.5)" strokeWidth="1" strokeLinecap="round" />
+            <path d="M 20 28 L 26 30 L 30 26" fill="none" stroke="rgba(70,70,70,0.5)" strokeWidth="1" strokeLinecap="round" />
+            <path d="M 16 34 L 10 38 L 8 44" fill="none" stroke="rgba(70,70,70,0.4)" strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M 12 6 L 18 14 L 14 20 L 20 28 L 16 34 L 22 44 L 18 52" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeLinecap="round" transform="translate(0.5, -0.5)" />
+          </svg>
+          <svg className="w-6 h-6 relative z-10" style={{ color: "#525252", filter: "none" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <circle cx="11" cy="11" r="8"></circle>
+  <path d="m21 21-4.35-4.35"></path>
+  <text x="11" y="14" textAnchor="middle" fontSize="10" fill="currentColor" stroke="none">$</text>
+</svg>
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes arcFlash {
+          0% { opacity: 1; stroke-width: 2; }
+          50% { opacity: 0.8; }
+          100% { opacity: 0; stroke-width: 0.5; }
+        }
+        @keyframes sparkPop {
+          0% { transform: scale(0); opacity: 1; }
+          50% { transform: scale(1.2); opacity: 0.8; }
+          100% { transform: scale(0.5); opacity: 0; }
+        }
+        @keyframes ambientPulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
+        }
+        @keyframes iconPulse {
+          0%, 100% { filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.5)); }
+          50% { filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.8)); }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+function FighterMusicCard({ onClick }: { onClick?: () => void }) {
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
       onClick={onClick}
     >
-      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Asta Violina</h3>
-            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-              <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-              </svg>
-            </div>
-          </div>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago • Varied</p>
-        </div>
+      <div className="mb-4 sm:mb-5">
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Publishing Revenue Status</h3>
       </div>
-
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
-
-      <div className="flex items-center">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+      
+      <div className="flex flex-col items-center gap-3 mt-8">
+        <PowerWidgetDischarged />
+        <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Status: <span style={{ color: '#ef4444' }}>Disconnected</span>
         </div>
       </div>
     </div>
   );
 }
 
-function NovaBeatsCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-  
+function TotalSongsDistributedCard() {
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
-      onClick={onClick}
     >
-      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Nova Beats</h3>
-            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-              <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-              </svg>
-            </div>
-          </div>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>5d ago • Varied</p>
-        </div>
+      <div className="mb-6 sm:mb-8">
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Total Songs Distributed</h3>
       </div>
 
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Nova Beats is pushing the boundaries of electronic music with futuristic sounds.</p>
-
-      <div className="flex items-center">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
+      <div className="space-y-6 sm:space-y-8">
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Songs</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>127</span>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>This Month</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+12</span>
         </div>
       </div>
     </div>
@@ -1581,6 +1779,8 @@ export function ArtistDashboard() {
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
           </div>
@@ -1599,6 +1799,8 @@ export function ArtistDashboard() {
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
           </div>
@@ -1634,6 +1836,8 @@ export function ArtistDashboard() {
                 background: 'transparent',
                 border: '1px solid rgba(75, 85, 99, 0.5)',
               }}
+              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+              onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
             />
           </div>
         </div>
@@ -1867,6 +2071,8 @@ export function ArtistDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder="John Doe"
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
@@ -1884,6 +2090,8 @@ export function ArtistDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
@@ -1901,6 +2109,8 @@ export function ArtistDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
@@ -1918,6 +2128,8 @@ export function ArtistDashboard() {
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>Month</option>
                         <option value="1" style={{ background: 'var(--bg-card)' }}>January</option>
@@ -1947,6 +2159,8 @@ export function ArtistDashboard() {
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>Year</option>
                         {Array.from({ length: 10 }, (_, i) => (
@@ -1971,6 +2185,8 @@ export function ArtistDashboard() {
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
                         placeholder="CVC"
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       />
                     </div>
                   </div>
@@ -2225,6 +2441,8 @@ export function ArtistDashboard() {
               border: '1px solid rgba(75, 85, 99, 0.5)',
               color: '#F8FAFC',
             }}
+            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+            onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
           />
         </div>
 
@@ -2388,7 +2606,7 @@ export function ArtistDashboard() {
               {/* Light Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'light' ? 'border-blue-500' : 'border-gray-600'
+                  backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#0F172A' }}
                 onClick={() => setBackgroundTheme('light')}
@@ -2396,7 +2614,7 @@ export function ArtistDashboard() {
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     backgroundTheme === 'light' 
-                      ? 'bg-blue-500 border-blue-500' 
+                      ? 'bg-white border-white' 
                       : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'light' && (
@@ -2420,7 +2638,7 @@ export function ArtistDashboard() {
               {/* Grey Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'grey' ? 'border-blue-500' : 'border-gray-600'
+                  backgroundTheme === 'grey' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#1A1A1E' }}
                 onClick={() => setBackgroundTheme('grey')}
@@ -2428,7 +2646,7 @@ export function ArtistDashboard() {
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     backgroundTheme === 'grey' 
-                      ? 'bg-blue-500 border-blue-500' 
+                      ? 'bg-white border-white' 
                       : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'grey' && (
@@ -2452,7 +2670,7 @@ export function ArtistDashboard() {
               {/* Dark Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'dark' ? 'border-blue-500' : 'border-gray-600'
+                  backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#000000' }}
                 onClick={() => setBackgroundTheme('dark')}
@@ -2460,7 +2678,7 @@ export function ArtistDashboard() {
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
                     backgroundTheme === 'dark' 
-                      ? 'bg-blue-500 border-blue-500' 
+                      ? 'bg-white border-white' 
                       : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'dark' && (
@@ -2834,15 +3052,14 @@ export function ArtistDashboard() {
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Overview</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
+            <RevenueAnalyticsCard />
 
-            <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+            <FighterMusicCard />
 
-            <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
+            <TotalSongsDistributedCard />
           </div>
         </section>
 
@@ -2875,8 +3092,7 @@ export function ArtistDashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
-                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
               </div>
             </section>
           </div>

@@ -375,6 +375,8 @@ export function SettingsView({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full border rounded-full py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#3B82F6]"
             style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
+            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+            onBlur={(e) => e.target.style.borderColor = '#2f2f2f'}
           />
         </div>
 
@@ -416,6 +418,8 @@ export function SettingsView({
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent border rounded-full py-2.5 pl-10 pr-4 text-[15px] focus:outline-none focus:border-[#3B82F6]"
               style={{ borderColor: '#2f2f2f', color: '#F8FAFC' }}
+              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+              onBlur={(e) => e.target.style.borderColor = '#2f2f2f'}
             />
           </div>
         </div>

@@ -184,6 +184,8 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
                 border: '1px solid rgba(75, 85, 99, 0.25)',
                 color: '#F8FAFC',
               }}
+              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+              onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.25)'}
             />
           </div>
 
