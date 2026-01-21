@@ -8,6 +8,7 @@ interface SocialLink {
   platform: string;
   url: string;
   display_name: string;
+  channel_type: string;
   channel_description: string;
 }
 
@@ -21,6 +22,7 @@ const platformIcons: { [key: string]: any } = {
 };
 
 const platformOptions = ['YouTube', 'Instagram', 'TikTok', 'Twitter', 'Twitch', 'Other'];
+const channelTypeOptions = ['Music', 'Gaming', 'Lifestyle', 'Education', 'Comedy', 'Sports', 'Technology', 'Art & Design', 'Fashion', 'Food & Cooking', 'Travel', 'Fitness', 'Business', 'Entertainment', 'Other'];
 
 interface CustomDropdownProps {
   value: string;
@@ -49,7 +51,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
     };
   }, [isOpen]);
 
-  const selectedIcon = platformIcons[value] || Link2;
+  const selectedIcon = platformIcons[value] || null;
   const SelectedIcon = selectedIcon;
 
   return (
@@ -69,10 +71,12 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
         }}
       >
         <div className="flex items-center gap-2">
-          <SelectedIcon 
-            className="w-4 h-4 transition-all duration-200 group-hover:scale-110" 
-            style={{ color: '#F8FAFC' }} 
-          />
+          {SelectedIcon && (
+            <SelectedIcon 
+              className="w-4 h-4 transition-all duration-200 group-hover:scale-110" 
+              style={{ color: '#F8FAFC' }} 
+            />
+          )}
           <span className="transition-all duration-200">{value}</span>
         </div>
         <ChevronDown 
@@ -88,7 +92,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
         >
           <div className="max-h-60 overflow-y-auto">
             {options.map((option) => {
-              const Icon = platformIcons[option] || Link2;
+              const Icon = platformIcons[option] || null;
               const isSelected = option === value;
               return (
                 <button
@@ -116,13 +120,15 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
                     e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
-                  <div className="relative group/icon">
-                    <Icon 
-                      className="w-4 h-4 transition-all duration-300 group-hover/option:scale-125 group-hover/option:rotate-12 group-hover/icon:scale-150 group-hover/icon:rotate-180" 
-                      style={{ color: '#F8FAFC' }} 
-                    />
-                    <div className="absolute inset-0 w-4 h-4 rounded-full opacity-0 group-hover/icon:opacity-20 group-hover/icon:scale-150 transition-all duration-300" style={{ backgroundColor: '#F8FAFC' }}></div>
-                  </div>
+                  {Icon && (
+                    <div className="relative group/icon">
+                      <Icon 
+                        className="w-4 h-4 transition-all duration-300 group-hover/option:scale-125 group-hover/option:rotate-12 group-hover/icon:scale-150 group-hover/icon:rotate-180" 
+                        style={{ color: '#F8FAFC' }} 
+                      />
+                      <div className="absolute inset-0 w-4 h-4 rounded-full opacity-0 group-hover/icon:opacity-20 group-hover/icon:scale-150 transition-all duration-300" style={{ backgroundColor: '#F8FAFC' }}></div>
+                    </div>
+                  )}
                   <span className="transition-all duration-200">{option}</span>
                   {isSelected && (
                     <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
@@ -149,6 +155,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
     platform: 'YouTube',
     url: '',
     display_name: '',
+    channel_type: '',
     channel_description: '',
   });
   const [loading, setLoading] = useState(true);
@@ -220,6 +227,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
 
       // Only include channel_description for creator accounts
       if (userType === 'creator') {
+        insertData.channel_type = newLink.channel_type.trim();
         insertData.channel_description = newLink.channel_description.trim();
       }
 
@@ -238,7 +246,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
       }
 
       await loadLinks();
-      setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_description: '' });
+      setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_type: '', channel_description: '' });
       setIsAdding(false);
     } catch (error) {
       console.error('Error adding link:', error);
@@ -334,21 +342,35 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
             </div>
 
             {userType === 'creator' && (
-              <div>
-                <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
-                  Channel Description (optional)
-                </label>
-                <textarea
-                  value={newLink.channel_description}
-                  onChange={(e) => setNewLink({ ...newLink, channel_description: e.target.value })}
-                  placeholder="Describe your channel content, style, or what makes it unique..."
-                  rows={3}
-                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border resize-none"
-                  style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
-                  onFocus={(e) => e.target.style.borderColor = '#ffffff'}
-                  onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
-                />
-              </div>
+              <>
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
+                    Channel Type
+                  </label>
+                  <CustomDropdown
+                    value={newLink.channel_type || 'Select channel type'}
+                    options={['Select channel type', ...channelTypeOptions]}
+                    onChange={(value) => setNewLink({ ...newLink, channel_type: value === 'Select channel type' ? '' : value })}
+                    platformIcons={{}}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
+                    Channel Description (optional)
+                  </label>
+                  <textarea
+                    value={newLink.channel_description}
+                    onChange={(e) => setNewLink({ ...newLink, channel_description: e.target.value })}
+                    placeholder="Describe your channel content, style, or what makes it unique..."
+                    rows={3}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border resize-none"
+                    style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
+                  />
+                </div>
+              </>
             )}
 
             <div className="flex gap-2 sm:gap-3 pt-2">
@@ -362,7 +384,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
               <button
                 onClick={() => {
                   setIsAdding(false);
-                  setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_description: '' });
+                  setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_type: '', channel_description: '' });
                 }}
                 className="px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-90 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}

@@ -148,17 +148,100 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
         );
       case 'talent':
         return (
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
-            {/* Left person (behind) */}
-            <circle cx="12" cy="22" r="5" stroke={color} strokeWidth="2.5" fill="none" style={{ opacity: 0.5 }} />
-            <path d="M4 44C4 37 7 32 12 32" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" style={{ opacity: 0.5 }} />
-            {/* Right person (behind) */}
-            <circle cx="36" cy="22" r="5" stroke={color} strokeWidth="2.5" fill="none" style={{ opacity: 0.5 }} />
-            <path d="M44 44C44 37 41 32 36 32" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" style={{ opacity: 0.5 }} />
-            {/* Center person (front) - stays white, no fill change */}
-            <circle cx="24" cy="20" r="6" stroke={color} strokeWidth="2.5" fill="none" />
-            <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          </svg>
+          <div className="relative">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 overflow-visible">
+              {/* 5 Stars - evenly spaced at top */}
+              {[0, 1, 2, 3, 4].map((i) => {
+                const cx = 8 + i * 8;
+                return (
+                  <polygon
+                    key={i}
+                    points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
+                    fill="white"
+                    style={{
+                      opacity: isActive ? 1 : 0,
+                      transform: isActive ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
+                      transformOrigin: `${cx}px 6px`,
+                      transition: `all 0.3s ease ${i * 0.06}s`,
+                    }}
+                  />
+                );
+              })}
+              {/* Left person (behind) */}
+              <circle
+                cx="12"
+                cy="22"
+                r="5"
+                stroke="white"
+                strokeWidth="2.5"
+                fill="none"
+                style={{
+                  opacity: 0.5,
+                  transform: isActive ? "translateX(-3px)" : "translateX(0)",
+                  transition: "all 0.3s ease",
+                }}
+              />
+              <path
+                d="M4 44C4 37 7 32 12 32"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+                style={{
+                  opacity: 0.5,
+                  transform: isActive ? "translateX(-3px)" : "translateX(0)",
+                  transition: "all 0.3s ease",
+                }}
+              />
+              {/* Right person (behind) */}
+              <circle
+                cx="36"
+                cy="22"
+                r="5"
+                stroke="white"
+                strokeWidth="2.5"
+                fill="none"
+                style={{
+                  opacity: 0.5,
+                  transform: isActive ? "translateX(3px)" : "translateX(0)",
+                  transition: "all 0.3s ease",
+                }}
+              />
+              <path
+                d="M44 44C44 37 41 32 36 32"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+                style={{
+                  opacity: 0.5,
+                  transform: isActive ? "translateX(3px)" : "translateX(0)",
+                  transition: "all 0.3s ease",
+                }}
+              />
+              {/* Center person (front) */}
+              <circle
+                cx="24"
+                cy="20"
+                r="6"
+                stroke="white"
+                strokeWidth="2.5"
+                fill="none"
+                style={{
+                  transform: isActive ? "scale(1.05)" : "scale(1)",
+                  transformOrigin: "24px 20px",
+                  transition: "transform 0.3s ease",
+                }}
+              />
+              <path
+                d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </svg>
+          </div>
         );
       case 'messages':
         return (
