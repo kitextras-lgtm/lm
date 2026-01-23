@@ -158,7 +158,7 @@ export function ReferralSection() {
   if (loading) {
     return (
       <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="text-center" style={{ color: '#94A3B8' }}>Loading...</div>
+        <div className="text-center" style={{ color: '#CBD5E1' }}>Loading...</div>
       </div>
     );
   }
@@ -208,13 +208,13 @@ export function ReferralSection() {
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-              <span className="text-sm" style={{ color: '#94A3B8' }}>Total uses</span>
+              <span className="text-sm" style={{ color: '#CBD5E1' }}>Total uses</span>
               <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
                 {referralData?.total_uses || 0}
               </span>
             </div>
             <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-              <span className="text-sm" style={{ color: '#94A3B8' }}>Total earned</span>
+              <span className="text-sm" style={{ color: '#CBD5E1' }}>Total earned</span>
               <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
                 ${referralData?.total_earnings?.toFixed(2) || '0.00'}
               </span>
@@ -286,11 +286,11 @@ export function ReferralSection() {
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-                  <span className="text-sm" style={{ color: '#94A3B8' }}>10% first campaign bonus</span>
+                  <span className="text-sm" style={{ color: '#CBD5E1' }}>10% first campaign bonus</span>
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
                 </div>
                 <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-                  <span className="text-sm" style={{ color: '#94A3B8' }}>Support the community</span>
+                  <span className="text-sm" style={{ color: '#CBD5E1' }}>Support the community</span>
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
                 </div>
               </div>

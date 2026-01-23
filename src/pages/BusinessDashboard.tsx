@@ -29,6 +29,7 @@ import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
+import { AccountTypeSection } from '../components/AccountTypeSection';
 import MoreView from '../components/MoreView';
 
 function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
@@ -836,6 +837,7 @@ export function BusinessDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const personalRef = useRef<HTMLDivElement>(null);
   const accountsRef = useRef<HTMLDivElement>(null);
+  const accountTypeRef = useRef<HTMLDivElement>(null);
   const payoutRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -1738,6 +1740,12 @@ export function BusinessDashboard() {
   const renderConnectedAccounts = () => (
     <div ref={accountsRef} className="scroll-mt-6">
       <SocialLinksForm appliedTheme={appliedTheme} userType="business" />
+    </div>
+  );
+
+  const renderAccountType = () => (
+    <div ref={accountTypeRef} className="scroll-mt-6">
+      <AccountTypeSection userType={userType} />
     </div>
   );
 
@@ -2779,6 +2787,7 @@ export function BusinessDashboard() {
               <SettingsView
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
+                renderAccountType={renderAccountType}
                 renderPayoutMethods={renderPayoutMethods}
                 renderDisplay={renderDisplay}
                 renderLanguages={renderLanguages}
@@ -2797,6 +2806,7 @@ export function BusinessDashboard() {
               <SettingsView
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
+                renderAccountType={renderAccountType}
                 renderPayoutMethods={renderPayoutMethods}
                 renderDisplay={renderDisplay}
                 renderLanguages={renderLanguages}

@@ -29,6 +29,7 @@ import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
+import { AccountTypeSection } from '../components/AccountTypeSection';
 import MoreView from '../components/MoreView';
 
 function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
@@ -41,7 +42,7 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
           width="32" 
           height="24" 
           rx="6" 
-          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')} 
+          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')} 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -50,10 +51,10 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
         />
         <path
           d="M20 18L32 24L20 30V18Z"
-          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
           strokeWidth="2.5"
           strokeLinejoin="round"
-          fill={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          fill={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
           style={{
             transform: isHovered ? "scale(1.15)" : "scale(1)",
             transformOrigin: "24px 24px",
@@ -115,13 +116,13 @@ function TikTokIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgr
         >
           <path
             d={notePath}
-            stroke={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'}
+            stroke={backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1'}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <path d={wavePath} stroke={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d={wavePath} stroke={backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
@@ -147,7 +148,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           width="28" 
           height="28" 
           rx="8" 
-          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -158,7 +159,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           cx="24"
           cy="24"
           r="7"
-          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -171,7 +172,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           cx="32"
           cy="16"
           r="2"
-          fill={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'}
+          fill={backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1'}
           style={{
             opacity: isHovered ? 1 : 0.6,
             transition: "opacity 0.3s ease-in-out",
@@ -343,7 +344,7 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
         >
-          <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+          <X className="w-5 h-5" style={{ color: '#CBD5E1' }} />
         </button>
 
         {/* Header */}
@@ -356,8 +357,8 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
               <div className="flex items-center gap-2 mb-1.5">
                 <h2 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{campaign.name}</h2>
               </div>
-              <p className="text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>{campaign.timeAgo}</p>
-              <p className="text-base font-medium mt-1.5" style={{ color: '#94A3B8' }}>{campaign.title}</p>
+              <p className="text-sm" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>{campaign.timeAgo}</p>
+              <p className="text-base font-medium mt-1.5" style={{ color: '#CBD5E1' }}>{campaign.title}</p>
             </div>
           </div>
         </div>
@@ -366,15 +367,15 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
         <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
           <div className="flex items-start">
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Ends</p>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Language</p>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-2" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Platforms</p>
+              <p className="text-xs mb-2" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
@@ -394,11 +395,11 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
               </div>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Pay Type</p>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Pay Type</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
             </div>
             <div className="flex-1 text-center">
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Payout</p>
+              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Payout</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
             </div>
           </div>
@@ -407,13 +408,13 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
         {/* Details section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Details</h3>
-          <p className="text-sm leading-relaxed" style={{ color: '#94A3B8' }}>{campaign.description}</p>
+          <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>{campaign.description}</p>
         </div>
 
         {/* Rules section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Rules</h3>
-          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#94A3B8' }}>
+          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#CBD5E1' }}>
             {campaign.rules.map((rule, index) => (
               <p key={index} className="mb-1.5">• {rule}</p>
             ))}
@@ -444,7 +445,7 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
   );
 }
 
-function RevenueAnalyticsCard() {
+function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full" 
@@ -456,18 +457,22 @@ function RevenueAnalyticsCard() {
 
       <div className="space-y-6 sm:space-y-8 flex-grow">
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Revenue</span>
+          <span className="text-sm" style={{ color: '#F8FAFC' }}>Total Revenue</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$2,847.50</span>
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Change</span>
+          <span className="text-sm" style={{ color: '#F8FAFC' }}>Change</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+6.1%</span>
         </div>
       </div>
 
       <div className="mt-6 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
         <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onViewMore) onViewMore();
+          }}
           className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
           style={{ color: '#F8FAFC' }}
         >
@@ -493,17 +498,17 @@ function ActiveCollaborationsCard({ setActiveSection }: { setActiveSection: (sec
 
       <div className="space-y-4 sm:space-y-5 flex-grow">
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total:</span>
+          <span className="text-sm" style={{ color: '#F8FAFC' }}>Total:</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>12</span>
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Pending:</span>
+          <span className="text-sm" style={{ color: '#F8FAFC' }}>Pending:</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: '#ef4444' }}>4</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Active:</span>
+          <span className="text-sm" style={{ color: '#F8FAFC' }}>Active:</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>8</span>
         </div>
       </div>
@@ -543,7 +548,7 @@ function FighterMusicCardActive({ onClick, backgroundTheme }: { onClick: () => v
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago </p>
+          <p className="text-xs sm:text-sm" style={{ color: '#F8FAFC' }}>13d ago </p>
         </div>
       </div>
 
@@ -581,7 +586,7 @@ function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; b
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago </p>
+          <p className="text-xs sm:text-sm" style={{ color: '#F8FAFC' }}>13d ago </p>
         </div>
       </div>
 
@@ -899,7 +904,7 @@ function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
       
       <div className="flex flex-col items-center gap-3 mt-8 flex-grow">
         <PowerWidget />
-        <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+        <div className="text-sm" style={{ color: '#F8FAFC' }}>
           Status: <span style={{ color: '#10b981' }}>Enabled</span>
         </div>
       </div>
@@ -944,7 +949,7 @@ function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; ba
               </svg>
             </div>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>13d ago </p>
+          <p className="text-xs sm:text-sm" style={{ color: '#F8FAFC' }}>13d ago </p>
         </div>
       </div>
 
@@ -1061,7 +1066,7 @@ const MobileSettingsMenuItem = ({
       style={{ borderBottom: showBorder ? '1px solid rgba(75, 85, 99, 0.2)' : 'none' }}
     >
       <div className="flex items-center gap-3">
-        <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
+        <span style={{ color: '#CBD5E1' }}>{React.cloneElement(icon, { isHovered })}</span>
         <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
       </div>
       <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1158,7 +1163,8 @@ export function CreatorDashboard() {
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [homeSubPage, setHomeSubPage] = useState<'main' | 'opportunities'>('main');
+  const [homeSubPage, setHomeSubPage] = useState<'main' | 'opportunities' | 'analytics'>('main');
+  const [analyticsView, setAnalyticsView] = useState<'weekly' | 'monthly' | 'lifetime'>('weekly');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
@@ -1180,6 +1186,14 @@ export function CreatorDashboard() {
   const [talentTypeFilterOpen, setTalentTypeFilterOpen] = useState(false);
   const [categoryFilterOpen, setCategoryFilterOpen] = useState(false);
   const [successRateFilterOpen, setSuccessRateFilterOpen] = useState(false);
+  const [socialMediaFilterOpen, setSocialMediaFilterOpen] = useState(false);
+  
+  // Selected filters state
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedTalentTypes, setSelectedTalentTypes] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSuccessRate, setSelectedSuccessRate] = useState<string>('');
+  const [selectedSocialMedia, setSelectedSocialMedia] = useState<string[]>([]);
   
   const [paymentFormData, setPaymentFormData] = useState({
     paymentType: 'card' as 'card' | 'paypal' | 'apple',
@@ -1220,6 +1234,7 @@ export function CreatorDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const personalRef = useRef<HTMLDivElement>(null);
   const accountsRef = useRef<HTMLDivElement>(null);
+  const accountTypeRef = useRef<HTMLDivElement>(null);
   const payoutRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -1906,7 +1921,7 @@ export function CreatorDashboard() {
               <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: '#F8FAFC' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
-              <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
+              <p className="text-xs lg:text-sm" style={{ color: '#CBD5E1' }}>
                 {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : 'No username'}
               </p>
             </div>
@@ -1922,7 +1937,7 @@ export function CreatorDashboard() {
 
         <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>First name</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>First name</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1940,12 +1955,14 @@ export function CreatorDashboard() {
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Last name</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Last name</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1958,16 +1975,18 @@ export function CreatorDashboard() {
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Username</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Username</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <span className="text-xs lg:text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>@</span>
+              <span className="text-xs lg:text-sm" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -1980,7 +1999,7 @@ export function CreatorDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Bio</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Bio</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <textarea
               value={formData.bio || ''}
@@ -1993,15 +2012,17 @@ export function CreatorDashboard() {
                 background: 'transparent',
                 border: '1px solid rgba(75, 85, 99, 0.5)',
               }}
+              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+              onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Location</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Location</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -2023,10 +2044,10 @@ export function CreatorDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Languages you post in</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -2048,7 +2069,7 @@ export function CreatorDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Email</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Email</label>
           <input
             type="email"
             value={formData.email}
@@ -2109,12 +2130,18 @@ export function CreatorDashboard() {
     </div>
   );
 
+  const renderAccountType = () => (
+    <div ref={accountTypeRef} className="scroll-mt-6">
+      <AccountTypeSection userType={userType} />
+    </div>
+  );
+
   const renderPayoutMethods = () => (
     <div ref={payoutRef} className="scroll-mt-6">
       {/* Tipalti Status at the top */}
       <div className="flex items-center gap-2 mb-6">
         <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-        <span className="text-sm" style={{ color: '#94A3B8' }}>
+        <span className="text-sm" style={{ color: '#CBD5E1' }}>
           Tipalti: {isTipaltiConnected ? 'Connected' : 'Not connected'}
         </span>
       </div>
@@ -2127,7 +2154,7 @@ export function CreatorDashboard() {
           style={{ 
             backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', 
             borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', 
-            color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' 
+            color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' 
           }}>
           <Plus className="w-5 h-5" />
           Connect your payment method
@@ -2142,13 +2169,13 @@ export function CreatorDashboard() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>Payment Method</h3>
-                <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>Add a new payment method to your account.</p>
+                <p className="text-sm mt-1" style={{ color: '#CBD5E1' }}>Add a new payment method to your account.</p>
               </div>
               <button 
                 onClick={() => setShowPaymentForm(false)}
                 className="p-2 rounded-full hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                <X className="w-5 h-5" style={{ color: '#CBD5E1' }} />
               </button>
             </div>
 
@@ -2214,7 +2241,7 @@ export function CreatorDashboard() {
                 <>
                   {/* Name on Card */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Name on the card</label>
+                    <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Name on the card</label>
                     <input
                       type="text"
                       value={paymentFormData.nameOnCard}
@@ -2233,7 +2260,7 @@ export function CreatorDashboard() {
 
                   {/* City */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>City</label>
+                    <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>City</label>
                     <input
                       type="text"
                       value={paymentFormData.city}
@@ -2252,7 +2279,7 @@ export function CreatorDashboard() {
 
                   {/* Card Number */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Card number</label>
+                    <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Card number</label>
                     <input
                       type="text"
                       value={paymentFormData.cardNumber}
@@ -2273,7 +2300,7 @@ export function CreatorDashboard() {
                   <div className="grid grid-cols-3 gap-4">
                     {/* Expiry Month */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Expires</label>
+                      <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Expires</label>
                       <select
                         value={paymentFormData.expiryMonth}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
@@ -2304,7 +2331,7 @@ export function CreatorDashboard() {
 
                     {/* Expiry Year */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Year</label>
+                      <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Year</label>
                       <select
                         value={paymentFormData.expiryYear}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
@@ -2328,7 +2355,7 @@ export function CreatorDashboard() {
 
                     {/* CVC */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>CVC</label>
+                      <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>CVC</label>
                       <input
                         type="text"
                         value={paymentFormData.cvc}
@@ -2350,7 +2377,7 @@ export function CreatorDashboard() {
 
               {/* PayPal/Apple Pay placeholder */}
               {(paymentFormData.paymentType === 'paypal' || paymentFormData.paymentType === 'apple') && (
-                <div className="text-center py-8" style={{ color: '#94A3B8' }}>
+                <div className="text-center py-8" style={{ color: '#CBD5E1' }}>
                   <p className="text-sm">You will be redirected to {paymentFormData.paymentType === 'paypal' ? 'PayPal' : 'Apple Pay'} to complete the payment setup.</p>
                 </div>
               )}
@@ -2475,7 +2502,7 @@ export function CreatorDashboard() {
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Notify me about new platform features and updates</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Notify me about new platform features and updates</p>
               </div>
               <button
                 onClick={handleToggleNewFeatures}
@@ -2496,7 +2523,7 @@ export function CreatorDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Platform Updates</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Send me updates about platform improvements</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Send me updates about platform improvements</p>
               </div>
               <button
                 onClick={handleTogglePlatformUpdates}
@@ -2607,7 +2634,7 @@ export function CreatorDashboard() {
             style={{
               backgroundColor: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.25)',
-              color: backgroundTheme === 'light' ? '#FFFFFF' : '#94A3B8',
+              color: backgroundTheme === 'light' ? '#FFFFFF' : '#CBD5E1',
             }}
           >
             Cancel
@@ -2691,7 +2718,7 @@ export function CreatorDashboard() {
         case 'grey':
         case 'dark':
         default:
-          return '#94A3B8';
+          return '#CBD5E1';
       }
     };
 
@@ -2874,7 +2901,7 @@ export function CreatorDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               <div className="min-w-0 flex-1">
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Display language</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Choose your preferred interface language</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Choose your preferred interface language</p>
               </div>
               <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
                 <button
@@ -2897,7 +2924,7 @@ export function CreatorDashboard() {
                   </div>
                   <ChevronDown 
                     className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
-                    style={{ color: '#94A3B8' }} 
+                    style={{ color: '#CBD5E1' }} 
                   />
                 </button>
 
@@ -2938,7 +2965,7 @@ export function CreatorDashboard() {
                             <span className="text-base transition-all duration-300 group-hover/option:scale-125">{option.icon}</span>
                             <span className="transition-all duration-200">{option.name}</span>
                             {isSelected && (
-                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
+                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#CBD5E1' }}>✓</span>
                             )}
                           </button>
                         );
@@ -2958,7 +2985,7 @@ export function CreatorDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Auto-translate content</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Automatically translate posts to your language</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Automatically translate posts to your language</p>
               </div>
               <button
                 className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
@@ -3051,89 +3078,183 @@ export function CreatorDashboard() {
         {activeSection === 'earnings' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             {/* Summary Cards Section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Available balance</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
                 </div>
                 <div className="mt-auto">
-                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>$12,847.50</div>
                 </div>
-              </div>
-
-              {/* Pending Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
-                <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
-                </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
-              </div>
-
-              {/* Lifetime Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
-                <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
-                </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Affiliate Earnings Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Affiliate earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>$2,450.00</div>
               </div>
             </div>
 
-            {/* Transaction History Section */}
+            {/* Transactions Section */}
             <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-bold" style={{ color: '#F8FAFC' }}>Transactions</h3>
+                  <p className="text-xs mt-1" style={{ color: '#CBD5E1' }}>Updated every several minutes</p>
+                </div>
+                <button className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-80" style={{ color: '#F8FAFC' }}>
+                  View all
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
               {/* Tabs */}
-              <div className="flex gap-2 mb-6">
+              <div className="flex gap-4 mb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <button 
                   onClick={() => setEarningsTab('available')}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
-                  style={{ backgroundColor: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
+                  style={{ 
+                    color: earningsTab === 'available' ? '#F8FAFC' : '#CBD5E1',
+                    borderColor: earningsTab === 'available' ? '#F8FAFC' : 'transparent'
+                  }}
                 >
-                  Available
+                  Latest
                 </button>
                 <button 
                   onClick={() => setEarningsTab('pending')}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
+                  style={{ 
+                    color: earningsTab === 'pending' ? '#F8FAFC' : '#CBD5E1',
+                    borderColor: earningsTab === 'pending' ? '#F8FAFC' : 'transparent'
+                  }}
                 >
-                  Pending
-                </button>
-                <button 
-                  onClick={() => setEarningsTab('paidout')}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
-                >
-                  Paid out
+                  Upcoming
                 </button>
               </div>
 
-              {/* Table Headers */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Date</div>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Clip</div>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Campaign/Description</div>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Amount</div>
-              </div>
+              {/* Transaction List */}
+              <div className="space-y-0">
+                {/* Transaction Row 1 */}
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>16 Aug 2025</span>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Withdrawal to JP Morgan Chase (0440)</p>
+                      <p className="text-xs" style={{ color: '#CBD5E1' }}>Completed</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-1,275.79 USD</span>
+                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
+                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
 
-              {/* Empty State */}
-              <div className="flex flex-col items-center justify-center py-12 sm:py-16">
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>
-                  {earningsTab === 'available' && 'No available earnings'}
-                  {earningsTab === 'pending' && 'No pending earnings'}
-                  {earningsTab === 'paidout' && 'No paid out earnings'}
-                </h3>
-                <p className="text-sm sm:text-base text-center" style={{ color: '#94A3B8' }}>Submit clips to campaigns and start earning!</p>
+                {/* Transaction Row 2 */}
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>5 Aug 2025</span>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Withdrawal to Citibank (2290)</p>
+                      <p className="text-xs" style={{ color: '#CBD5E1' }}>Completed</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-202.99 USD</span>
+                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
+                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Transaction Row 3 */}
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>4 Aug 2025</span>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Payment from Paddle</p>
+                      <p className="text-xs" style={{ color: '#CBD5E1' }}>Completed</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: '#10b981' }}>+5,651.56 USD</span>
+                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
+                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Transaction Row 4 */}
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>4 Aug 2025</span>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Withdrawal to HSBC (5522)</p>
+                      <p className="text-xs" style={{ color: '#CBD5E1' }}>Completed</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-1,679.35 USD</span>
+                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
+                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Transaction Row 5 */}
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>20 Aug 2025</span>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Withdrawal to JP Morgan Chase (1133)</p>
+                      <p className="text-xs" style={{ color: '#CBD5E1' }}>Completed</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-3,420.00 USD</span>
+                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
+                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Transaction Row 6 */}
+                <div className="flex items-center justify-between py-4">
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>18 Aug 2025</span>
+                    <div>
+                      <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Payment from Stripe</p>
+                      <p className="text-xs" style={{ color: '#CBD5E1' }}>Completed</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium" style={{ color: '#10b981' }}>+2,345.75 USD</span>
+                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
+                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -3146,6 +3267,7 @@ export function CreatorDashboard() {
               <SettingsView
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
+                renderAccountType={renderAccountType}
                 renderPayoutMethods={renderPayoutMethods}
                 renderDisplay={renderDisplay}
                 renderLanguages={renderLanguages}
@@ -3164,6 +3286,7 @@ export function CreatorDashboard() {
               <SettingsView
                 renderPersonalInfo={renderPersonalInfo}
                 renderConnectedAccounts={renderConnectedAccounts}
+                renderAccountType={renderAccountType}
                 renderPayoutMethods={renderPayoutMethods}
                 renderDisplay={renderDisplay}
                 renderLanguages={renderLanguages}
@@ -3190,7 +3313,7 @@ export function CreatorDashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            <RevenueAnalyticsCard />
+            <RevenueAnalyticsCard onViewMore={() => setHomeSubPage('analytics')} />
 
             <ActiveCollaborationsCard setActiveSection={setActiveSection} />
 
@@ -3201,7 +3324,7 @@ export function CreatorDashboard() {
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>My Accounts</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Add your social media channels and profiles</p>
+            <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>Add your social media channels and profiles</p>
           </div>
 
           <SocialLinksForm appliedTheme={appliedTheme} userType="creator" />
@@ -3210,7 +3333,7 @@ export function CreatorDashboard() {
         <section className="mb-8">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Referral Section</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Support creators by using their code. Share yours to earn together.</p>
+            <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>Support creators by using their code. Share yours to earn together.</p>
           </div>
 
           <ReferralSection />
@@ -3222,7 +3345,7 @@ export function CreatorDashboard() {
                   <button 
                     onClick={() => setHomeSubPage('main')}
                     className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
-                    style={{ color: 'var(--text-secondary)' }}
+                    style={{ color: '#F8FAFC' }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -3233,8 +3356,8 @@ export function CreatorDashboard() {
 
                 <section className="mb-10 sm:mb-20">
                   <div className="mb-5 sm:mb-7">
-                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Opportunities</h2>
-                    <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Campaign</h2>
+                    <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>Discover new opportunities and exclusive campaigns</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
@@ -3254,6 +3377,395 @@ export function CreatorDashboard() {
                   </div>
                 </section>
               </>
+            ) : homeSubPage === 'analytics' ? (
+              <>
+                <div className="mb-6">
+                  <button 
+                    onClick={() => setHomeSubPage('main')}
+                    className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+                    style={{ color: '#F8FAFC' }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Back</span>
+                  </button>
+                </div>
+
+                <section className="mb-10 sm:mb-20">
+                  <div className="mb-5 sm:mb-7">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: '#F8FAFC' }}>Advanced Analytics</h2>
+                      <div className="flex items-center gap-1 p-1 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                        <button
+                          onClick={() => setAnalyticsView('weekly')}
+                          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                            analyticsView === 'weekly'
+                              ? 'bg-white text-black'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          Weekly
+                        </button>
+                        <button
+                          onClick={() => setAnalyticsView('monthly')}
+                          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                            analyticsView === 'monthly'
+                              ? 'bg-white text-black'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          Monthly
+                        </button>
+                        <button
+                          onClick={() => setAnalyticsView('lifetime')}
+                          className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                            analyticsView === 'lifetime'
+                              ? 'bg-white text-black'
+                              : 'text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          Lifetime
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Revenue Breakdown - Animated Donut Chart */}
+                    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                      <h3 className="text-lg font-semibold mb-6" style={{ color: '#F8FAFC' }}>
+                        {analyticsView === 'monthly' ? 'Revenue Breakdown' : 'Revenue Sources'}
+                      </h3>
+                      
+                      {/* Donut Chart */}
+                      <div className="flex flex-col items-center">
+                        <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                          <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                            {/* Sponsorship - 48% - Cream/Beige */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="40"
+                              fill="transparent"
+                              stroke="#E8DFD0"
+                              strokeWidth="12"
+                              strokeDasharray={`${48 * 2.51} ${100 * 2.51}`}
+                              strokeDashoffset="0"
+                              className="donut-segment"
+                              style={{
+                                animation: 'donutGrow 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+                                opacity: 0,
+                              }}
+                            />
+                            {/* Campaign - 32% - White */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="40"
+                              fill="transparent"
+                              stroke="#FFFFFF"
+                              strokeWidth="12"
+                              strokeDasharray={`${32 * 2.51} ${100 * 2.51}`}
+                              strokeDashoffset={`${-48 * 2.51}`}
+                              className="donut-segment"
+                              style={{
+                                animation: 'donutGrow2 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards',
+                                opacity: 0,
+                              }}
+                            />
+                            {/* Affiliate - 13% - Gray */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="40"
+                              fill="transparent"
+                              stroke="#6B7280"
+                              strokeWidth="12"
+                              strokeDasharray={`${13 * 2.51} ${100 * 2.51}`}
+                              strokeDashoffset={`${-(48 + 32) * 2.51}`}
+                              className="donut-segment"
+                              style={{
+                                animation: 'donutGrow3 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards',
+                                opacity: 0,
+                              }}
+                            />
+                            {/* Remaining - 7% - Dark Gray */}
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="40"
+                              fill="transparent"
+                              stroke="#4B5563"
+                              strokeWidth="12"
+                              strokeDasharray={`${7 * 2.51} ${100 * 2.51}`}
+                              strokeDashoffset={`${-(48 + 32 + 13) * 2.51}`}
+                              className="donut-segment"
+                              style={{
+                                animation: 'donutGrow4 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards',
+                                opacity: 0,
+                              }}
+                            />
+                          </svg>
+                          
+                          {/* Center Total */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-2xl sm:text-3xl font-bold" style={{ color: '#F8FAFC' }}>
+                              {analyticsView === 'monthly' ? '$2,847' : '$64,473'}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Legend */}
+                        <div className="grid grid-cols-2 gap-3 mt-6 w-full">
+                          <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#E8DFD0' }}></div>
+                              <span className="text-sm" style={{ color: '#F8FAFC' }}>Sponsorship</span>
+                            </div>
+                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>48%</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FFFFFF' }}></div>
+                              <span className="text-sm" style={{ color: '#F8FAFC' }}>Campaign</span>
+                            </div>
+                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>32%</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#6B7280' }}></div>
+                              <span className="text-sm" style={{ color: '#F8FAFC' }}>Affiliate</span>
+                            </div>
+                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>13%</span>
+                          </div>
+                          <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#4B5563' }}></div>
+                              <span className="text-sm" style={{ color: '#F8FAFC' }}>Other</span>
+                            </div>
+                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>7%</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* CSS Animations */}
+                      <style>{`
+                        @keyframes donutGrow {
+                          0% { 
+                            stroke-dasharray: 0 251; 
+                            opacity: 0;
+                            transform: scale(0.95);
+                          }
+                          50% {
+                            opacity: 1;
+                          }
+                          100% { 
+                            stroke-dasharray: ${48 * 2.51} 251; 
+                            opacity: 1;
+                            transform: scale(1);
+                          }
+                        }
+                        @keyframes donutGrow2 {
+                          0% { 
+                            stroke-dasharray: 0 251; 
+                            opacity: 0;
+                            transform: scale(0.95);
+                          }
+                          50% {
+                            opacity: 1;
+                          }
+                          100% { 
+                            stroke-dasharray: ${32 * 2.51} 251; 
+                            opacity: 1;
+                            transform: scale(1);
+                          }
+                        }
+                        @keyframes donutGrow3 {
+                          0% { 
+                            stroke-dasharray: 0 251; 
+                            opacity: 0;
+                            transform: scale(0.95);
+                          }
+                          50% {
+                            opacity: 1;
+                          }
+                          100% { 
+                            stroke-dasharray: ${13 * 2.51} 251; 
+                            opacity: 1;
+                            transform: scale(1);
+                          }
+                        }
+                        @keyframes donutGrow4 {
+                          0% { 
+                            stroke-dasharray: 0 251; 
+                            opacity: 0;
+                            transform: scale(0.95);
+                          }
+                          50% {
+                            opacity: 1;
+                          }
+                          100% { 
+                            stroke-dasharray: ${7 * 2.51} 251; 
+                            opacity: 1;
+                            transform: scale(1);
+                          }
+                        }
+                        .donut-segment {
+                          transform-origin: center;
+                          transition: all 0.3s ease-out;
+                        }
+                        .donut-segment:hover {
+                          filter: brightness(1.1);
+                          transform: scale(1.02);
+                        }
+                      `}</style>
+                    </div>
+
+                    {/* Revenue Stat Chart */}
+                    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>Revenue Stat</h3>
+                      </div>
+                      
+                      {/* Total Amount and Percentage */}
+                      <div className="flex items-center justify-between mb-6">
+                        <p className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>
+                          {analyticsView === 'weekly' ? '$12,480.00' : analyticsView === 'monthly' ? '$48,320.00' : '$256,890.00'}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                            <path d="M23 6l-9.5 9.5-5-5L1 18" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M17 6h6v6" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          <span style={{ color: '#10b981' }} className="font-medium">
+                            {analyticsView === 'weekly' ? '16%' : analyticsView === 'monthly' ? '12%' : '24%'}
+                          </span>
+                          <span style={{ color: '#CBD5E1' }} className="text-sm">from last {analyticsView === 'weekly' ? 'week' : analyticsView === 'monthly' ? 'month' : 'year'}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Chart with Y-axis */}
+                      <div className="flex gap-4 h-72">
+                        {/* Y-axis labels */}
+                        <div className="flex flex-col justify-between text-right py-2" style={{ color: '#CBD5E1' }}>
+                          <span className="text-xs">{analyticsView === 'weekly' ? '10K' : analyticsView === 'monthly' ? '50K' : '100K'}</span>
+                          <span className="text-xs">{analyticsView === 'weekly' ? '8K' : analyticsView === 'monthly' ? '40K' : '80K'}</span>
+                          <span className="text-xs">{analyticsView === 'weekly' ? '6K' : analyticsView === 'monthly' ? '30K' : '60K'}</span>
+                          <span className="text-xs">{analyticsView === 'weekly' ? '4K' : analyticsView === 'monthly' ? '20K' : '40K'}</span>
+                          <span className="text-xs">{analyticsView === 'weekly' ? '2K' : analyticsView === 'monthly' ? '10K' : '20K'}</span>
+                          <span className="text-xs">0</span>
+                        </div>
+                        
+                        {/* Bars */}
+                        <div className="flex-1 flex items-end justify-between gap-3">
+                          {analyticsView === 'weekly' ? (
+                            // Weekly data (7 days)
+                            [{day: 'Sat', value: 2400}, {day: 'Sun', value: 5800}, {day: 'Mon', value: 3200}, {day: 'Tue', value: 7200}, {day: 'Wed', value: 4800}, {day: 'Thu', value: 5600}, {day: 'Fri', value: 3600}].map((item, i) => (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                <div 
+                                  className="w-full rounded-t-md transition-all duration-300 hover:opacity-80" 
+                                  style={{ 
+                                    backgroundColor: '#F8FAFC', 
+                                    height: `${(item.value / 10000) * 100}%`,
+                                    minHeight: '20px'
+                                  }} 
+                                />
+                                <span className="text-xs" style={{ color: '#CBD5E1' }}>{item.day}</span>
+                              </div>
+                            ))
+                          ) : analyticsView === 'monthly' ? (
+                            // Monthly data (4 weeks)
+                            [{week: 'Week 1', value: 12000}, {week: 'Week 2', value: 18000}, {week: 'Week 3', value: 15000}, {week: 'Week 4', value: 22000}].map((item, i) => (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                <div 
+                                  className="w-full rounded-t-md transition-all duration-300 hover:opacity-80" 
+                                  style={{ 
+                                    backgroundColor: '#F8FAFC', 
+                                    height: `${(item.value / 50000) * 100}%`,
+                                    minHeight: '20px'
+                                  }} 
+                                />
+                                <span className="text-xs" style={{ color: '#CBD5E1' }}>{item.week}</span>
+                              </div>
+                            ))
+                          ) : (
+                            // Lifetime data (12 months)
+                            [{month: 'Jan', value: 18000}, {month: 'Feb', value: 22000}, {month: 'Mar', value: 28000}, {month: 'Apr', value: 35000}, {month: 'May', value: 42000}, {month: 'Jun', value: 48000}, {month: 'Jul', value: 55000}, {month: 'Aug', value: 62000}, {month: 'Sep', value: 70000}, {month: 'Oct', value: 78000}, {month: 'Nov', value: 85000}, {month: 'Dec', value: 95000}].map((item, i) => (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                                <div 
+                                  className="w-full rounded-t-md transition-all duration-300 hover:opacity-80" 
+                                  style={{ 
+                                    backgroundColor: '#F8FAFC', 
+                                    height: `${(item.value / 100000) * 100}%`,
+                                    minHeight: '20px'
+                                  }} 
+                                />
+                                <span className="text-xs" style={{ color: '#CBD5E1' }}>{item.month}</span>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mt-6">
+                    {analyticsView === 'monthly' ? (
+                      // Monthly metrics
+                      <>
+                        <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Average Revenue Per User</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$47.23</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+12.3% from last month</p>
+                        </div>
+                        <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Churn Rate</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>2.1%</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>-0.5% from last month</p>
+                        </div>
+                        <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Lifetime Value</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$1,842</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+8.7% from last month</p>
+                        </div>
+                      </>
+                    ) : (
+                      // Creator metrics
+                      <>
+                        <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Total Collaborations</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>1,247</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+156 this year</p>
+                        </div>
+                        <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Total Referred</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$89.34</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+5.2% YoY</p>
+                          <div className="mt-6 pt-4 border-t flex items-center justify-start" style={{ borderColor: 'var(--border-subtle)' }}>
+                            <button 
+                              className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+                              style={{ color: '#F8FAFC' }}
+                              onClick={() => setHomeSubPage('analytics')}
+                            >
+                              <span>View more</span>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Client Retention</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>18.5 mo</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+2.3 months YoY</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </section>
+              </>
             ) : null}
           </div>
         )}
@@ -3262,8 +3774,8 @@ export function CreatorDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Discover Talent</h2>
-                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Find and connect with talented creators</p>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Discover Brands & Creators</h2>
+                <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>Connect with top talent and brands</p>
               </div>
 
               {/* Search Bar */}
@@ -3271,7 +3783,7 @@ export function CreatorDashboard() {
                 <div className="flex-1 relative">
                   <svg 
                     className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" 
-                    style={{ color: 'var(--text-secondary)' }} 
+                    style={{ color: '#F8FAFC' }} 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -3294,6 +3806,94 @@ export function CreatorDashboard() {
               <div className="flex gap-6">
                 {/* Left Sidebar Filters */}
                 <div className="hidden lg:block w-56 flex-shrink-0">
+                  {/* Active Filters */}
+                  {(selectedLocations.length > 0 || selectedTalentTypes.length > 0 || selectedCategories.length > 0 || selectedSuccessRate) && (
+                    <div className="mb-4">
+                      <div className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Active Filters</div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedLocations.map((location) => (
+                          <div
+                            key={`location-${location}`}
+                            className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border"
+                            style={{ 
+                              backgroundColor: 'var(--bg-elevated)', 
+                              borderColor: 'var(--border-subtle)', 
+                              color: 'var(--text-primary)' 
+                            }}
+                          >
+                            <span>{location}</span>
+                            <button
+                              onClick={() => setSelectedLocations(selectedLocations.filter(l => l !== location))}
+                              className="ml-1 text-xs hover:opacity-70"
+                              style={{ color: '#F8FAFC' }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                        {selectedTalentTypes.map((type) => (
+                          <div
+                            key={`type-${type}`}
+                            className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border"
+                            style={{ 
+                              backgroundColor: 'var(--bg-elevated)', 
+                              borderColor: 'var(--border-subtle)', 
+                              color: 'var(--text-primary)' 
+                            }}
+                          >
+                            <span>{type}</span>
+                            <button
+                              onClick={() => setSelectedTalentTypes(selectedTalentTypes.filter(t => t !== type))}
+                              className="ml-1 text-xs hover:opacity-70"
+                              style={{ color: '#F8FAFC' }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                        {selectedCategories.map((category) => (
+                          <div
+                            key={`category-${category}`}
+                            className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border"
+                            style={{ 
+                              backgroundColor: 'var(--bg-elevated)', 
+                              borderColor: 'var(--border-subtle)', 
+                              color: 'var(--text-primary)' 
+                            }}
+                          >
+                            <span>{category}</span>
+                            <button
+                              onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== category))}
+                              className="ml-1 text-xs hover:opacity-70"
+                              style={{ color: '#F8FAFC' }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                        {selectedSuccessRate && (
+                          <div
+                            className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border"
+                            style={{ 
+                              backgroundColor: 'var(--bg-elevated)', 
+                              borderColor: 'var(--border-subtle)', 
+                              color: 'var(--text-primary)' 
+                            }}
+                          >
+                            <span>{selectedSuccessRate}</span>
+                            <button
+                              onClick={() => setSelectedSuccessRate('')}
+                              className="ml-1 text-xs hover:opacity-70"
+                              style={{ color: '#F8FAFC' }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-3">
                     {/* Location Filter */}
                     <div>
@@ -3311,7 +3911,7 @@ export function CreatorDashboard() {
                         <span className="font-medium transition-all duration-200">Location</span>
                         <svg 
                           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${locationFilterOpen ? 'rotate-180' : ''}`} 
-                          style={{ color: 'var(--text-secondary)' }} 
+                          style={{ color: '#F8FAFC' }} 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -3330,7 +3930,18 @@ export function CreatorDashboard() {
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
-                              <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                              <input 
+                                type="checkbox" 
+                                className="rounded border-gray-600 bg-transparent" 
+                                checked={selectedLocations.includes(country)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedLocations([...selectedLocations, country]);
+                                  } else {
+                                    setSelectedLocations(selectedLocations.filter(l => l !== country));
+                                  }
+                                }}
+                              />
                               <span>{country}</span>
                             </label>
                           ))}
@@ -3354,7 +3965,7 @@ export function CreatorDashboard() {
                         <span className="font-medium transition-all duration-200">Talent type</span>
                         <svg 
                           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${talentTypeFilterOpen ? 'rotate-180' : ''}`} 
-                          style={{ color: 'var(--text-secondary)' }} 
+                          style={{ color: '#F8FAFC' }} 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -3367,14 +3978,25 @@ export function CreatorDashboard() {
                           className="mt-2 rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['YouTube', 'Instagram', 'TikTok'].map((platform) => (
+                          {['Creator', 'Brand', 'Freelancer'].map((type) => (
                             <label 
-                              key={platform} 
+                              key={type} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
-                              <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
-                              <span>{platform}</span>
+                              <input 
+                                type="checkbox" 
+                                className="rounded border-gray-600 bg-transparent" 
+                                checked={selectedTalentTypes.includes(type)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedTalentTypes([...selectedTalentTypes, type]);
+                                  } else {
+                                    setSelectedTalentTypes(selectedTalentTypes.filter(t => t !== type));
+                                  }
+                                }}
+                              />
+                              <span>{type}</span>
                             </label>
                           ))}
                         </div>
@@ -3397,7 +4019,7 @@ export function CreatorDashboard() {
                         <span className="font-medium transition-all duration-200">Category</span>
                         <svg 
                           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${categoryFilterOpen ? 'rotate-180' : ''}`} 
-                          style={{ color: 'var(--text-secondary)' }} 
+                          style={{ color: '#F8FAFC' }} 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -3416,7 +4038,18 @@ export function CreatorDashboard() {
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
-                              <input type="checkbox" className="rounded border-gray-600 bg-transparent" />
+                              <input 
+                                type="checkbox" 
+                                className="rounded border-gray-600 bg-transparent" 
+                                checked={selectedCategories.includes(category)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedCategories([...selectedCategories, category]);
+                                  } else {
+                                    setSelectedCategories(selectedCategories.filter(c => c !== category));
+                                  }
+                                }}
+                              />
                               <span>{category}</span>
                             </label>
                           ))}
@@ -3440,7 +4073,7 @@ export function CreatorDashboard() {
                         <span className="font-medium transition-all duration-200">Success rate</span>
                         <svg 
                           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${successRateFilterOpen ? 'rotate-180' : ''}`} 
-                          style={{ color: 'var(--text-secondary)' }} 
+                          style={{ color: '#F8FAFC' }} 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -3459,8 +4092,68 @@ export function CreatorDashboard() {
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
-                              <input type="radio" name="successRate" className="rounded border-gray-600 bg-transparent" />
+                              <input 
+                                type="radio" 
+                                name="successRate" 
+                                className="rounded border-gray-600 bg-transparent" 
+                                checked={selectedSuccessRate === rate}
+                                onChange={() => setSelectedSuccessRate(rate)}
+                              />
                               <span>{rate}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Social Media Filter */}
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ 
+                          backgroundColor: 'var(--bg-elevated)', 
+                          borderColor: 'var(--border-subtle)', 
+                          color: 'var(--text-primary)',
+                          transform: socialMediaFilterOpen ? 'translateY(-1px)' : 'none'
+                        }}
+                        onClick={() => setSocialMediaFilterOpen(!socialMediaFilterOpen)}
+                      >
+                        <span className="font-medium transition-all duration-200">Social media</span>
+                        <svg 
+                          className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${socialMediaFilterOpen ? 'rotate-180' : ''}`} 
+                          style={{ color: '#F8FAFC' }} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" />
+                        </svg>
+                      </button>
+                      {socialMediaFilterOpen && (
+                        <div 
+                          className="mt-2 rounded-lg border p-2"
+                          style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+                        >
+                          {['YouTube', 'Instagram', 'TikTok', 'Twitter', 'LinkedIn', 'Twitch'].map((platform) => (
+                            <label 
+                              key={platform} 
+                              className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
+                              style={{ color: 'white' }}
+                            >
+                              <input 
+                                type="checkbox" 
+                                className="rounded border-gray-600 bg-transparent"
+                                checked={selectedSocialMedia.includes(platform)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedSocialMedia([...selectedSocialMedia, platform]);
+                                  } else {
+                                    setSelectedSocialMedia(selectedSocialMedia.filter(s => s !== platform));
+                                  }
+                                }}
+                              />
+                              <span>{platform}</span>
                             </label>
                           ))}
                         </div>
@@ -3474,13 +4167,10 @@ export function CreatorDashboard() {
                   {/* Location Filter */}
                   <div className="flex items-center gap-3 mb-4">
                     <button 
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm border transition-all duration-200 hover:brightness-110"
-                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:brightness-110"
+                      style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
                     >
-                      Location
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      Suggested
                     </button>
                   </div>
 
@@ -3493,47 +4183,52 @@ export function CreatorDashboard() {
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Marcus J.</h4>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ backgroundColor: '#10b981', color: '#fff' }}>Boosted</span>
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Shawn Grows</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Content Creator | Video Editor | Social Media Expert</p>
-                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Los Angeles, USA</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Nature Blogger</p>
+                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
+                          <a 
+                            href="https://youtube.com/c/example" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="hover:opacity-80 transition-opacity"
+                            style={{ color: '#F8FAFC' }}
+                          >
+                            youtube.com/c/example
+                          </a>
+                        </p>
+                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 California, USA</p>
                         
-                        <div className="flex items-center gap-4 mb-3 flex-wrap">
-                          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>$45/hr</span>
-                          <div className="flex items-center gap-1">
-                            <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: '#10b981' }}>
-                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-                              </svg>
-                            </div>
-                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>98% Job Success</span>
-                          </div>
-                          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>$50K+ earned</span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium border" style={{ borderColor: '#10b981', color: '#10b981' }}>Available now</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {['Video Editing', 'Content Strategy', 'YouTube', 'TikTok', 'Instagram', '+3'].map((skill, i) => (
-                            <span 
-                              key={i} 
-                              className="px-3 py-1 rounded-full text-xs"
-                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {['Nature', 'YouTube', 'TikTok', 'Instagram'].map((skill, i) => (
+                            <div 
+                              key={i}
+                              className="px-3 py-1 rounded-lg border"
+                              style={{ 
+                                backgroundColor: 'var(--bg-elevated)', 
+                                borderColor: 'var(--border-subtle)',
+                                color: '#CBD5E1'
+                              }}
                             >
-                              {skill}
-                            </span>
+                              <span className="text-xs font-medium">{skill}</span>
+                            </div>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
-                          Professional content creator with 5+ years of experience. I specialize in <strong style={{ color: 'var(--text-primary)' }}>viral content</strong> and <strong style={{ color: 'var(--text-primary)' }}>brand storytelling</strong>. Let me help grow your audience...
+                        <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
+                          I'm Shawn, a nature content creator who makes highly engaging videos about fruits.
                         </p>
                       </div>
-                      <button className="flex-shrink-0 w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
-                        <svg className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
+                      <div className="flex gap-2">
+                        <button className="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
+                          <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                          See Profile
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -3548,45 +4243,50 @@ export function CreatorDashboard() {
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Sarah K.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Graphic Designer | Brand Identity | UI/UX</p>
-                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>London, UK</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Creative Designer</p>
+                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
+                          <a 
+                            href="https://youtube.com/c/example" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="hover:opacity-80 transition-opacity"
+                            style={{ color: '#F8FAFC' }}
+                          >
+                            youtube.com/c/example
+                          </a>
+                        </p>
+                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 London, UK</p>
                         
-                        <div className="flex items-center gap-4 mb-3 flex-wrap">
-                          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>$35/hr</span>
-                          <div className="flex items-center gap-1">
-                            <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: '#10b981' }}>
-                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-                              </svg>
-                            </div>
-                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>95% Job Success</span>
-                          </div>
-                          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>$25K+ earned</span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium border" style={{ borderColor: '#10b981', color: '#10b981' }}>Available now</span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium border" style={{ borderColor: 'var(--text-secondary)', color: 'var(--text-secondary)' }}>Offers consultations</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {['Graphic Design', 'Logo Design', 'Figma', 'Adobe Suite', 'Branding', '+5'].map((skill, i) => (
-                            <span 
-                              key={i} 
-                              className="px-3 py-1 rounded-full text-xs"
-                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {['Design', 'Branding', 'UI/UX', 'Figma'].map((skill, i) => (
+                            <div 
+                              key={i}
+                              className="px-3 py-1 rounded-lg border"
+                              style={{ 
+                                backgroundColor: 'var(--bg-elevated)', 
+                                borderColor: 'var(--border-subtle)',
+                                color: '#CBD5E1'
+                              }}
                             >
-                              {skill}
-                            </span>
+                              <span className="text-xs font-medium">{skill}</span>
+                            </div>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
-                          Creative designer passionate about building memorable <strong style={{ color: 'var(--text-primary)' }}>brand identities</strong>. From logos to full design systems, I bring your vision to life...
+                        <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
+                          Creative designer passionate about building memorable brand identities and digital experiences.
                         </p>
                       </div>
-                      <button className="flex-shrink-0 w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
-                        <svg className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
+                      <div className="flex gap-2">
+                        <button className="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
+                          <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                          See Profile
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -3600,63 +4300,51 @@ export function CreatorDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Alex T.</h4>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ backgroundColor: '#10b981', color: '#fff' }}>Boosted</span>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Music Producer | Audio Engineer | Sound Design</p>
-                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Berlin, Germany</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Music Producer</p>
+                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
+                          <a 
+                            href="https://youtube.com/c/example" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="hover:opacity-80 transition-opacity"
+                            style={{ color: '#F8FAFC' }}
+                          >
+                            youtube.com/c/example
+                          </a>
+                        </p>
+                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 Berlin, Germany</p>
                         
-                        <div className="flex items-center gap-4 mb-3 flex-wrap">
-                          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>$60/hr</span>
-                          <div className="flex items-center gap-1">
-                            <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: '#10b981' }}>
-                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-                              </svg>
-                            </div>
-                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>100% Job Success</span>
-                          </div>
-                          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>$120K+ earned</span>
-                          <span className="px-2 py-0.5 rounded text-xs font-medium border" style={{ borderColor: '#10b981', color: '#10b981' }}>Available now</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {['Music Production', 'Mixing', 'Mastering', 'Logic Pro', 'Ableton', '+8'].map((skill, i) => (
-                            <span 
-                              key={i} 
-                              className="px-3 py-1 rounded-full text-xs"
-                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {['Music', 'Audio', 'Production', 'Mixing'].map((skill, i) => (
+                            <div 
+                              key={i}
+                              className="px-3 py-1 rounded-lg border"
+                              style={{ 
+                                backgroundColor: 'var(--bg-elevated)', 
+                                borderColor: 'var(--border-subtle)',
+                                color: '#CBD5E1'
+                              }}
                             >
-                              {skill}
-                            </span>
+                              <span className="text-xs font-medium">{skill}</span>
+                            </div>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
-                          Award-winning <strong style={{ color: 'var(--text-primary)' }}>music producer</strong> with 10+ years in the industry. I create <strong style={{ color: 'var(--text-primary)' }}>professional-grade audio</strong> for artists, brands, and content creators...
+                        <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
+                          Award-winning music producer creating professional-grade audio for artists and brands.
                         </p>
-
-                        {/* Associated Company */}
-                        <div className="mt-4 p-3 rounded-lg border flex items-center justify-between" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">ST</span>
-                            </div>
-                            <div>
-                              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Associated with</p>
-                              <p className="text-sm font-medium" style={{ color: '#10b981' }}>SoundTech Studios</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>$300K+</p>
-                            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>earned</p>
-                          </div>
-                        </div>
                       </div>
-                      <button className="flex-shrink-0 w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
-                        <svg className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
+                      <div className="flex gap-2">
+                        <button className="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
+                          <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                          See Profile
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -3746,7 +4434,7 @@ export function CreatorDashboard() {
                   alt="ELEVATE" 
                   className="h-32 mx-auto cursor-pointer hover:opacity-80 transition-opacity" 
                 />
-                <p className="text-sm font-semibold -mt-6" style={{ color: 'var(--text-secondary)', lineHeight: '1' }}>
+                <p className="text-sm font-semibold -mt-6" style={{ color: '#CBD5E1', lineHeight: '1' }}>
                   Discover services to grow your brand
                 </p>
               </section>
@@ -3757,7 +4445,7 @@ export function CreatorDashboard() {
                   <div className="relative">
                     <svg 
                       className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4" 
-                      style={{ color: 'var(--text-secondary)' }} 
+                      style={{ color: '#F8FAFC' }} 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -3816,8 +4504,7 @@ export function CreatorDashboard() {
             </div>
           </div>
         )}
-
-              </main>
+      </main>
 
       {/* Campaign Detail Modal */}
       <CampaignDetailModal 

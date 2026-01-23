@@ -92,12 +92,33 @@ const BrandIcon = () => (
   </div>
 );
 
+const FreelancerIcon = () => (
+  <div className="creators-icon group w-5 h-5 flex-shrink-0 -mt-0.5">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <g className="origin-center transition-transform duration-500 group-hover:rotate-[360deg]">
+        {/* Hammer head */}
+        <rect x="12" y="10" width="24" height="10" rx="1" fill="none" stroke="white" strokeWidth="2" />
+        {/* Handle */}
+        <rect x="21" y="20" width="6" height="24" rx="1" fill="none" stroke="white" strokeWidth="2" />
+        {/* Handle grip */}
+        <line x1="22" y1="32" x2="26" y2="32" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <line x1="22" y1="37" x2="26" y2="37" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    </svg>
+  </div>
+);
+
 const getAccountTypeIcon = (userType?: 'artist' | 'creator' | 'business') => {
   switch (userType) {
     case 'artist':
       return <ArtistIcon />;
     case 'creator':
-      return <CreatorIcon />;
+      return (
+        <>
+          <CreatorIcon />
+          <FreelancerIcon />
+        </>
+      );
     case 'business':
       return <BrandIcon />;
     default:
@@ -117,7 +138,7 @@ export function ProfileView({
 }: ProfileViewProps) {
   const [bannerHovered, setBannerHovered] = useState(false);
   const [avatarHovered, setAvatarHovered] = useState(false);
-  const [activeTab, setActiveTab] = useState<'posts' | 'replies' | 'highlights' | 'articles' | 'media' | 'likes'>('posts');
+  const [activeTab, setActiveTab] = useState<'overview' | 'reviews'>('overview');
   const [bio, setBio] = useState(userProfile?.bio || '');
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -189,12 +210,8 @@ export function ProfileView({
   };
 
   const tabs = [
-    { id: 'posts', label: 'Posts' },
-    { id: 'replies', label: 'Replies' },
-    { id: 'highlights', label: 'Highlights' },
-    { id: 'articles', label: 'Articles' },
-    { id: 'media', label: 'Media' },
-    { id: 'likes', label: 'Likes' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'reviews', label: 'Reviews' },
   ];
 
   return (
@@ -216,7 +233,7 @@ export function ProfileView({
                 ? `${userProfile.first_name} ${userProfile.last_name}`
                 : 'Your Profile'}
             </h1>
-            <p className="text-sm" style={{ color: '#94A3B8' }}>0 posts</p>
+            <p className="text-sm" style={{ color: '#CBD5E1' }}>0 posts</p>
           </div>
         </div>
       </div>
@@ -322,7 +339,7 @@ export function ProfileView({
         <p className="mt-3" style={{ color: '#F8FAFC' }}>{userProfile?.bio || 'No bio yet.'}</p>
 
         {/* Location & Join Date */}
-        <div className="flex items-center gap-4 mt-3" style={{ color: '#94A3B8' }}>
+        <div className="flex items-center gap-4 mt-3" style={{ color: '#CBD5E1' }}>
           {userProfile?.location && (
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
@@ -346,11 +363,11 @@ export function ProfileView({
               onClick={() => setActiveTab(tab.id as any)}
               className="flex-1 py-4 text-center hover:bg-white/5 transition-colors relative"
             >
-              <span style={{ color: activeTab === tab.id ? '#F8FAFC' : '#94A3B8', fontWeight: activeTab === tab.id ? 600 : 400 }}>
+              <span style={{ color: activeTab === tab.id ? '#F8FAFC' : '#CBD5E1', fontWeight: activeTab === tab.id ? 600 : 400 }}>
                 {tab.label}
               </span>
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 rounded-full" style={{ backgroundColor: '#3B82F6' }} />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 rounded-full" style={{ backgroundColor: '#FFFFFF' }} />
               )}
             </button>
           ))}
@@ -358,8 +375,99 @@ export function ProfileView({
       </div>
 
       {/* Content Area */}
-      <div className="p-8 text-center" style={{ color: '#94A3B8' }}>
-        <p>Interactions coming soon</p>
+      <div className="p-8">
+        {activeTab === 'overview' ? (
+          <div style={{ color: '#F8FAFC' }}>
+            {/* Channel Links Section */}
+            <div className="mb-8">
+              <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>Channels & Accounts</h3>
+              <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                <p className="text-center py-8" style={{ color: '#CBD5E1' }}>
+                  Any channel or account links added will show up here along with the channel description if specified.
+                </p>
+              </div>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* Subscriptions Card */}
+              <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Subscribers</h4>
+                </div>
+                <p className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>1.2M</p>
+                <p className="text-sm" style={{ color: '#10b981' }}>+180.1% <span style={{ color: '#CBD5E1' }}>from last month</span></p>
+                
+                {/* Bar Chart */}
+                <div className="flex items-end gap-2 mt-6 h-24">
+                  {[240, 300, 200, 278, 189, 239, 278, 189].map((value, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{value}</span>
+                      <div 
+                        className="w-full rounded-t-md" 
+                        style={{ 
+                          backgroundColor: '#F8FAFC', 
+                          height: `${(value / 300) * 60}px`,
+                          minHeight: '20px'
+                        }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* Month Indicators */}
+                <div className="flex gap-2 mt-2">
+                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'].map((month, i) => (
+                    <div key={i} className="flex-1 text-center">
+                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{month}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Users Card */}
+              <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Total Views</h4>
+                </div>
+                <p className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>1B</p>
+                <p className="text-sm" style={{ color: '#10b981' }}>+19.2% <span style={{ color: '#CBD5E1' }}>from last month</span></p>
+                
+                {/* Bar Chart */}
+                <div className="flex items-end gap-2 mt-6 h-24">
+                  {[240, 300, 200, 278, 189, 239, 278, 189].map((value, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{value}</span>
+                      <div 
+                        className="w-full rounded-t-md" 
+                        style={{ 
+                          backgroundColor: '#F8FAFC', 
+                          height: `${(value / 300) * 60}px`,
+                          minHeight: '20px'
+                        }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* Month Indicators */}
+                <div className="flex gap-2 mt-2">
+                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'].map((month, i) => (
+                    <div key={i} className="flex-1 text-center">
+                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{month}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        ) : (
+          <div style={{ color: '#F8FAFC' }}>
+            <h3 className="font-semibold text-lg mb-4">Reviews</h3>
+            <div className="text-center py-8" style={{ color: '#CBD5E1' }}>
+              <p>No reviews yet.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

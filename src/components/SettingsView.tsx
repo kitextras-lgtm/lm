@@ -13,6 +13,7 @@ import { LogOutIcon } from './LogOutIcon';
 interface SettingsViewProps {
   renderPersonalInfo: () => React.ReactNode;
   renderConnectedAccounts: () => React.ReactNode;
+  renderAccountType: () => React.ReactNode;
   renderPayoutMethods: () => React.ReactNode;
   renderDisplay: () => React.ReactNode;
   renderLanguages: () => React.ReactNode;
@@ -26,6 +27,24 @@ interface SettingsViewProps {
   appliedTheme?: 'light' | 'grey' | 'dark';
 }
 
+// Account Type Icon Component
+const AccountTypeIcon = () => (
+  <div className="group">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5">
+      {/* Card A */}
+      <g className="transition-all duration-300 group-hover:rotate-[-5deg] group-hover:-translate-x-0.5 origin-center">
+        <rect x="5" y="3" width="9" height="13" rx="1" fill="none" stroke="currentColor" strokeWidth="1.5" transform="rotate(-10 9.5 9.5)" />
+        <text x="8.5" y="11" fill="currentColor" fontSize="6" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fontFamily="system-ui, sans-serif" transform="rotate(-10 8.5 11)">A</text>
+      </g>
+      {/* Card B */}
+      <g className="transition-all duration-300 group-hover:rotate-[5deg] group-hover:translate-x-0.5 origin-center">
+        <rect x="10" y="5" width="9" height="13" rx="1" fill="rgba(0,0,0,0.6)" stroke="currentColor" strokeWidth="1.5" transform="rotate(10 14.5 11.5)" />
+        <text x="15.5" y="13" fill="currentColor" fontSize="6" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fontFamily="system-ui, sans-serif" transform="rotate(10 15.5 13)">B</text>
+      </g>
+    </svg>
+  </div>
+);
+
 // Settings menu items with descriptions and animated icons
 const settingsMenuItems = [
   {
@@ -37,6 +56,11 @@ const settingsMenuItems = [
     id: 'accounts',
     label: 'Connected accounts',
     IconComponent: PuzzlePiecesIcon,
+  },
+  {
+    id: 'accountType',
+    label: 'Account type',
+    IconComponent: AccountTypeIcon,
   },
   {
     id: 'payout',
@@ -119,7 +143,7 @@ function SettingsMenuItem({
       <div className="flex-1 min-w-0">
         <div className="text-[15px]" style={{ color: '#F8FAFC' }}>{label}</div>
       </div>
-      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: '#CBD5E1' }} />
     </div>
   );
 }
@@ -127,6 +151,7 @@ function SettingsMenuItem({
 export function SettingsView({ 
   renderPersonalInfo, 
   renderConnectedAccounts, 
+  renderAccountType,
   renderPayoutMethods,
   renderDisplay,
   renderLanguages,
@@ -149,6 +174,8 @@ export function SettingsView({
         return 'Personal info';
       case 'accounts':
         return 'Connected accounts';
+      case 'accountType':
+        return 'Account type';
       case 'payout':
         return 'Payment method';
       case 'display':
@@ -275,6 +302,8 @@ export function SettingsView({
         return 'See information about your account, download an archive of your data, or learn about your account deactivation options.';
       case 'accounts':
         return 'Manage your connected social media accounts and third-party integrations.';
+      case 'accountType':
+        return 'View and manage your account type. Contact support if you need to change your account type.';
       case 'payout':
         return 'Manage your payment methods and payout settings.';
       case 'display':
@@ -300,6 +329,8 @@ export function SettingsView({
         return renderPersonalInfo();
       case 'accounts':
         return renderConnectedAccounts();
+      case 'accountType':
+        return renderAccountType();
       case 'payout':
         return renderPayoutMethods();
       case 'display':
@@ -314,7 +345,7 @@ export function SettingsView({
         return renderGuides ? renderGuides() : (
           <div className="px-4 py-8">
             <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>Guides</h3>
-            <p className="text-sm" style={{ color: '#94A3B8' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
+            <p className="text-sm" style={{ color: '#CBD5E1' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
           </div>
         );
       case 'logout':
@@ -358,7 +389,7 @@ export function SettingsView({
               onClick={onBack}
               className="p-2 rounded-full hover:bg-white/10 transition-colors"
             >
-              <svg className="w-6 h-6" style={{ color: '#94A3B8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" style={{ color: '#CBD5E1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -367,7 +398,7 @@ export function SettingsView({
 
         {/* Search Bar */}
         <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#94A3B8' }} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#CBD5E1' }} />
           <input
             type="text"
             placeholder="Search Settings"
@@ -410,7 +441,7 @@ export function SettingsView({
           
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#94A3B8' }} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#CBD5E1' }} />
             <input
               type="text"
               placeholder="Search Settings"
@@ -449,7 +480,7 @@ export function SettingsView({
                 <h2 className="text-xl font-bold" style={{ color: '#F8FAFC' }}>{getSectionTitle()}</h2>
                 <AccountTypeIndicator />
               </div>
-              <p className="text-[15px] leading-relaxed" style={{ color: '#94A3B8' }}>{getSectionDescription()}</p>
+              <p className="text-[15px] leading-relaxed" style={{ color: '#CBD5E1' }}>{getSectionDescription()}</p>
             </div>
 
             {/* Original Content */}

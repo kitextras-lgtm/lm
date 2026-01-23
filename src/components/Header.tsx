@@ -16,7 +16,7 @@ export function Header() {
       <div className="h-16 md:h-20 px-6 md:px-8 flex items-center justify-between relative max-w-[1600px] mx-auto">
         <div className="flex items-center flex-shrink-0 z-10">
           <img
-            src="/elevate text logo v2.png"
+            src="/elevate_transparent_white_.png"
             alt="Elevate Logo"
             className="h-20 md:h-24 w-auto"
           />

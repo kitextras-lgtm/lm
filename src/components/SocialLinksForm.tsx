@@ -81,7 +81,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
         </div>
         <ChevronDown 
           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isOpen ? 'rotate-180' : ''}`} 
-          style={{ color: '#94A3B8' }} 
+          style={{ color: '#CBD5E1' }} 
         />
       </button>
 
@@ -131,7 +131,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
                   )}
                   <span className="transition-all duration-200">{option}</span>
                   {isSelected && (
-                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
+                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#CBD5E1' }}>✓</span>
                   )}
                 </button>
               );
@@ -274,7 +274,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
   if (loading) {
     return (
       <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="text-center" style={{ color: '#94A3B8' }}>Loading...</div>
+        <div className="text-center" style={{ color: '#CBD5E1' }}>Loading...</div>
       </div>
     );
   }
@@ -299,7 +299,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
         <div className="mb-5 p-4 sm:p-5 rounded-xl" style={{ backgroundColor: 'transparent' }}>
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
+              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
                 Platform
               </label>
               <CustomDropdown
@@ -311,7 +311,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
+              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
                 URL
               </label>
               <input
@@ -326,7 +326,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#94A3B8' }}>
+              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
                 Display Name (optional)
               </label>
               <input
@@ -357,7 +357,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
 
                 <div>
                   <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
-                    Channel Description (optional)
+                    Channel Description
                   </label>
                   <textarea
                     value={newLink.channel_description}

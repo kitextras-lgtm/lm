@@ -299,12 +299,12 @@ export function UserTypeSelectionPage() {
             <button
               key={type.id}
               onClick={() => handleSelect(type.id)}
-              className="relative w-full p-5 rounded-lg transition-all duration-300 flex items-center gap-4 hover:scale-[1.01]"
+              className={`relative w-full p-5 rounded-lg transition-all duration-300 flex items-center gap-4 hover:scale-[1.01] ${type.id}-button`}
               style={selectedType === type.id ? {
                 background: 'rgba(10, 10, 15, 0.65)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 1)',
                 boxShadow: '0 24px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03)'
               } : {
                 background: 'rgba(10, 10, 15, 0.4)',
