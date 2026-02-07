@@ -1,8 +1,14 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isArtistPage, setIsArtistPage] = useState(false);
+
+  useEffect(() => {
+    setIsArtistPage(location.pathname === '/learn/artist');
+  }, [location.pathname]);
 
   return (
     <header
@@ -63,7 +69,7 @@ export function Header() {
             Log In
           </button>
           <button
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate(isArtistPage ? '/signup?source=artist' : '/signup')}
             className="px-5 py-2 text-[13px] font-semibold text-black cursor-pointer transition-all duration-200 rounded-lg"
             style={{
               background: '#E8E8E8'

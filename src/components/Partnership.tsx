@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { Network } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface ServiceCard {
@@ -7,8 +8,8 @@ interface ServiceCard {
   visual?: string;
 }
 
-export function Partnership() {
-  const [activeTab, setActiveTab] = useState('artists');
+export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
+  const [activeTab, setActiveTab] = useState(showArtists ? 'artists' : 'creators');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.1);
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation(0.1);
@@ -16,15 +17,13 @@ export function Partnership() {
   const handleTabChange = (tabId: string) => {
     if (tabId !== activeTab) {
       setIsTransitioning(true);
-      setTimeout(() => {
-        setActiveTab(tabId);
-        setTimeout(() => setIsTransitioning(false), 50);
-      }, 200);
+      setActiveTab(tabId);
+      setTimeout(() => setIsTransitioning(false), 100);
     }
   };
 
   const tabs = [
-    { id: 'artists', label: 'Artists' },
+    ...(showArtists ? [{ id: 'artists', label: 'Artists' }] : []),
     { id: 'creators', label: 'Creators' },
     { id: 'brands', label: 'Brands' }
   ];
@@ -98,7 +97,7 @@ export function Partnership() {
     }
   ];
 
-  const services = activeTab === 'artists' ? artistServices : activeTab === 'creators' ? creatorServices : brandServices;
+  const services = activeTab === 'artists' && showArtists ? artistServices : activeTab === 'creators' ? creatorServices : activeTab === 'brands' ? brandServices : creatorServices;
 
   return (
     <section
@@ -129,7 +128,8 @@ export function Partnership() {
               </h2>
 
               <div className="space-y-4 mb-10 flex flex-col items-center">
-                <div className="flex items-center gap-3">
+                {showArtists && (
+                  <div className="artist-button flex items-center gap-3">
                   <div className="music-icon group w-10 h-10 flex-shrink-0">
                     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                       <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
@@ -168,7 +168,8 @@ export function Partnership() {
                     <span style={{ fontWeight: 600 }}>Artists</span> saw a <span style={{ fontWeight: 300 }}>95% increase in revenue and reach</span>
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
+                )}
+                <div className="creator-button flex items-center gap-3">
                   <div className="creators-icon group w-10 h-10 flex-shrink-0">
                     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                       <rect x="14" y="6" width="20" height="36" rx="3" stroke="white" strokeWidth="2" fill="none"/>
@@ -208,6 +209,35 @@ export function Partnership() {
                     <span style={{ fontWeight: 600 }}>Creators</span> saw <span style={{ fontWeight: 300 }}>2x more revenue and 3x faster growth</span>
                   </p>
                 </div>
+
+                <div className="business-button flex items-center gap-3">
+                  <div className="businesses-icon group w-10 h-10 flex-shrink-0">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                      <rect x="6" y="18" width="36" height="22" rx="3" stroke="white" strokeWidth="2" fill="none"/>
+                      <path d="M18 18V14C18 12.8954 18.8954 12 20 12H28C29.1046 12 30 12.8954 30 14V18" stroke="white" strokeWidth="2" fill="none"/>
+                      <rect className="lid" x="6" y="18" width="36" height="8" rx="3" stroke="white" strokeWidth="2" fill="black"/>
+                      <rect className="clasp" x="21" y="24" width="6" height="4" rx="1" fill="white"/>
+                      <g className="documents">
+                        <rect x="12" y="22" width="10" height="14" rx="1" fill="white" opacity="0.2"/>
+                        <line x1="14" y1="25" x2="20" y2="25" stroke="white" strokeWidth="1" opacity="0.6"/>
+                        <line x1="14" y1="28" x2="18" y2="28" stroke="white" strokeWidth="1" opacity="0.6"/>
+                        <line x1="14" y1="31" x2="20" y2="31" stroke="white" strokeWidth="1" opacity="0.6"/>
+                        <rect x="26" y="22" width="10" height="14" rx="1" fill="white" opacity="0.2"/>
+                        <path d="M28 33L31 28L33 30L36 25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
+                      </g>
+                    </svg>
+                  </div>
+                  <p
+                    className="text-xl md:text-2xl"
+                    style={{
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      color: '#ffffff',
+                      lineHeight: '1.4'
+                    }}
+                  >
+                    <span style={{ fontWeight: 600 }}>Brands</span> saw <span style={{ fontWeight: 300 }}>a 50% increase in growth</span>
+                  </p>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-3 justify-center">
@@ -215,7 +245,7 @@ export function Partnership() {
                   <button
                     key={tab.id}
                     onClick={() => handleTabChange(tab.id)}
-                    className="px-6 py-3 rounded-full text-sm transition-all duration-300 hover:scale-105"
+                    className="px-6 py-3 rounded-full text-sm transition-all duration-200 hover:scale-105"
                     style={{
                       fontFamily: 'system-ui, -apple-system, sans-serif',
                       background: activeTab === tab.id ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
@@ -235,9 +265,12 @@ export function Partnership() {
 
         <div
           ref={gridRef}
-          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-1000 ease-out ${
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${
             isTransitioning ? 'opacity-0' : gridVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
+          style={{
+            transition: isTransitioning ? 'opacity 150ms ease-in-out' : 'opacity 600ms ease-out, transform 600ms ease-out'
+          }}
         >
           {services.map((service, index) => (
             <ServiceCard
@@ -258,11 +291,11 @@ function ServiceCard({ service, isVisible: parentVisible }: { service: ServiceCa
       className="group relative overflow-hidden"
       style={{
         borderRadius: '16px',
-        background: 'rgba(255, 255, 255, 0.02)',
+        backgroundColor: 'rgba(255, 255, 255, 0.02)',
         border: '1px solid rgba(255, 255, 255, 0.06)',
         padding: '24px',
         opacity: parentVisible ? 1 : 0,
-        transition: parentVisible ? 'opacity 300ms ease-out' : 'none'
+        transition: parentVisible ? 'opacity 200ms ease-out' : 'none'
       }}
     >
       <div className="mb-auto">

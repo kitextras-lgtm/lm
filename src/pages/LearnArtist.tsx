@@ -1,0 +1,236 @@
+import { Header } from '../components/Header';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Plus, Minus } from 'lucide-react';
+
+const artistServices = [
+  {
+    title: 'Global Distribution',
+    description: 'We provide global distribution to all major platforms including Spotify, Apple Music, TikTok, and more if needed. Our team handles the technical aspects while you focus on creating music, ensuring your releases reach audiences worldwide.'
+  },
+  {
+    title: 'Superior Growth',
+    description: 'Marketing comes naturally at Elevate. We don\'t just support you. We invest in you.'
+  },
+  {
+    title: 'Royalty Protection',
+    description: 'There\'s more to your royalties than what traditional distributors collect. Elevate uncovers, manages, and safeguards your publishing income, making sure no label or third party profits from your work without you.'
+  },
+  {
+    title: 'Sync Placement',
+    description: 'Strategic music placement across film, TV, gaming, and advertising, designed to generate both exposure and revenue.'
+  },
+  {
+    title: 'Career Strategy',
+    description: 'Personalized, long term planning for releases, branding, and positioning, built around where you should be, not just your next drop.'
+  },
+  {
+    title: 'Creative Support',
+    description: 'From production to promotion, we provide the resources and expertise you need to create your best work and reach your audience.'
+  }
+];
+
+const artistFAQ = [
+  {
+    question: "What kind of artists does Elevate work with?",
+    answer: "Elevate's vetting process is very strict, and it is strictly invite only as of now. We work with any genre."
+  },
+  {
+    question: "How does Elevate help with music distribution?",
+    answer: "We provide global distribution to all major platforms including Spotify, Apple Music, TikTok, and more. Our team handles the technical aspects while you focus on creating music, ensuring your releases reach audiences worldwide."
+  },
+  {
+    question: "Do I retain ownership of my music?",
+    answer: "Yes, you maintain 100% ownership of your music and masters. We're here to support your career, not take control of your creative work. Our agreements are designed to be artist-friendly."
+  },
+  {
+    question: "What makes Elevate different from other distributors?",
+    answer: "Unlike traditional distributors, we invest in your growth with marketing support, career strategy, and sync opportunities. We're partners in your success, not just a distribution service."
+  },
+  {
+    question: "How do I get paid for my music?",
+    answer: "We handle payments through our trusted partner, Tipalti. You'll receive detailed monthly statements and can choose your preferred payment method - PayPal, wire transfer, or direct bank deposit."
+  },
+  {
+    question: "Can I still work with other labels or distributors?",
+    answer: "Yes, we believe in flexibility. You can work with other partners while collaborating with Elevate. We're here to add value to your career, not restrict your opportunities."
+  }
+];
+
+export default function LearnArtist() {
+  const navigate = useNavigate();
+  const [openItems, setOpenItems] = useState<number[]>([]);
+
+  const handleArtistSignup = () => {
+    // Navigate to signup with a query parameter to indicate artist flow
+    navigate('/signup?source=artist');
+  };
+
+  const toggleItem = (index: number) => {
+    setOpenItems(prev =>
+      prev.includes(index)
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  return (
+    <div className="bg-black min-h-screen">
+      <Header />
+      
+      <section className="relative pt-2 md:pt-8 pb-20 px-4 md:px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h1 
+              className="text-3xl md:text-4xl lg:text-5xl font-normal leading-snug"
+              style={{
+                fontFamily: 'Fraunces, serif',
+                color: '#ffffff',
+                letterSpacing: '-0.02em'
+              }}
+            >
+              <span style={{ fontWeight: 600 }}>Artist</span> Services
+            </h1>
+            <p 
+              className="text-lg mt-4"
+              style={{
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                color: 'rgb(153, 153, 153)'
+              }}
+            >
+              We upgrade your experience from your current distributor.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {artistServices.map((service, index) => (
+              <div
+                key={index}
+                className="group relative overflow-hidden"
+                style={{
+                  borderRadius: '16px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  padding: '24px',
+                  opacity: 1,
+                  transition: 'opacity 200ms ease-out'
+                }}
+              >
+                <div className="mb-auto">
+                  <h3
+                    className="text-xl font-normal mb-4"
+                    style={{
+                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                      color: '#ffffff',
+                      fontWeight: 500
+                    }}
+                  >
+                    {service.title}
+                  </h3>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{
+                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                      color: 'rgb(153, 153, 153)',
+                      fontWeight: 400
+                    }}
+                  >
+                    {service.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="bg-black py-12 md:py-20 px-4 md:px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 
+              className="text-3xl md:text-4xl font-normal mb-4"
+              style={{
+                fontFamily: 'Fraunces, serif',
+                color: '#ffffff',
+                letterSpacing: '-0.02em'
+              }}
+            >
+              Frequently Asked <span style={{ fontWeight: 600 }}>Questions</span>
+            </h2>
+            <p 
+              className="text-lg"
+              style={{
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                color: 'rgb(153, 153, 153)'
+              }}
+            >
+              Everything you need to know about joining Elevate as an artist
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {artistFAQ.map((item, index) => (
+              <div
+                key={index}
+                className="border-b border-gray-800 pb-4"
+                style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
+              >
+                <button
+                  onClick={() => toggleItem(index)}
+                  className="w-full flex items-center justify-between text-left py-4 focus:outline-none"
+                >
+                  <h3 
+                    className="text-lg font-medium pr-4"
+                    style={{
+                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                      color: '#ffffff'
+                    }}
+                  >
+                    {item.question}
+                  </h3>
+                  <div className="flex-shrink-0">
+                    {openItems.includes(index) ? (
+                      <Minus className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <Plus className="w-5 h-5 text-gray-400" />
+                    )}
+                  </div>
+                </button>
+                
+                {openItems.includes(index) && (
+                  <div className="mt-2 pb-4">
+                    <p 
+                      className="text-base leading-relaxed"
+                      style={{
+                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                        color: 'rgb(153, 153, 153)'
+                      }}
+                    >
+                      {item.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pb-20">
+        <div className="text-center">
+          <button
+            onClick={handleArtistSignup}
+            className="w-full sm:w-auto px-10 md:px-14 py-3.5 md:py-4 rounded-lg text-base md:text-lg font-semibold transition-all duration-200"
+            style={{
+              background: 'rgb(216, 216, 216)',
+              color: 'rgb(0, 0, 0)'
+            }}
+          >
+            Sign up as an Artist
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 declare global {
@@ -96,6 +96,7 @@ const LANGUAGES = [
 
 export function TellUsAboutYourselfPage() {
   const navigate = useNavigate();
+  const routerLocation = useLocation();
   const [location, setLocation] = useState('');
   const [primaryLanguage, setPrimaryLanguage] = useState('');
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
@@ -306,7 +307,8 @@ export function TellUsAboutYourselfPage() {
         localStorage.setItem('tempProfile', JSON.stringify({
           ...profileData,
           location,
-          primaryLanguage
+          primaryLanguage,
+          userType: profileData.userType || routerLocation.state?.userType || 'creator'
         }));
       } else {
         // No user ID - save to localStorage only
@@ -316,11 +318,23 @@ export function TellUsAboutYourselfPage() {
         localStorage.setItem('tempProfile', JSON.stringify({
           ...profileData,
           location,
-          primaryLanguage
+          primaryLanguage,
+          userType: profileData.userType || routerLocation.state?.userType || 'creator'
         }));
       }
 
-      navigate('/user-type-selection');
+      // Check if this is an artist flow
+      const tempProfile = localStorage.getItem('tempProfile');
+      const profileData = tempProfile ? JSON.parse(tempProfile) : {};
+      
+      if (profileData.userType === 'artist' || routerLocation.state?.userType === 'artist') {
+        // For artists, navigate directly to dashboard
+        navigate('/dashboard/artist', { state: { fromOnboarding: true } });
+        // Clear tempProfile since onboarding is complete
+        localStorage.removeItem('tempProfile');
+      } else {
+        navigate('/user-type-selection');
+      }
     } catch (err: any) {
       console.error('Error saving profile:', err);
       setError(err.message || 'Failed to save profile');

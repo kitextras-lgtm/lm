@@ -32,7 +32,7 @@ export function HomePage() {
     >
       <Header />
       <Hero />
-      <Partnership />
+      <Partnership showArtists={false} />
       <FAQ />
       <CallToAction />
     </div>

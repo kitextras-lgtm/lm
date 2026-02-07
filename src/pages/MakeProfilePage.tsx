@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 declare global {
@@ -18,6 +18,7 @@ const MAX_USERNAME_LENGTH = 20;
 
 export function MakeProfilePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -43,6 +44,12 @@ export function MakeProfilePage() {
   }, []);
 
   useEffect(() => {
+    // Check if artist type was passed from navigation state
+    if (location.state?.userType === 'artist') {
+      setUserType('artist');
+      return;
+    }
+
     const fetchUserType = async () => {
       // First check localStorage for verifiedUserId (in case user just completed OTP)
       const verifiedUserId = localStorage.getItem('verifiedUserId');
@@ -65,7 +72,7 @@ export function MakeProfilePage() {
     };
 
     fetchUserType();
-  }, []);
+  }, [location.state]);
 
   // Load saved data from localStorage when coming back from next page
   useEffect(() => {
@@ -196,10 +203,18 @@ export function MakeProfilePage() {
         firstName,
         lastName,
         username,
-        profilePicture: previewUrl // Use preview URL for localStorage (blob URL)
+        profilePicture: previewUrl, // Use preview URL for localStorage (blob URL)
+        userType: userType || 'creator' // Include userType for artist flow
       }));
 
-      navigate('/tell-us-about-yourself');
+      // Check if this is an artist flow
+      if (userType === 'artist' || location.state?.userType === 'artist') {
+        // For artists, save the profile directly and navigate to tell-us-about-yourself
+        // The tell-us-about-yourself page will handle the final save and dashboard navigation
+        navigate('/tell-us-about-yourself', { state: { userType: 'artist' } });
+      } else {
+        navigate('/tell-us-about-yourself');
+      }
     } catch (err: any) {
       console.error('Error saving profile:', err);
       setError(err.message || 'Failed to save profile');

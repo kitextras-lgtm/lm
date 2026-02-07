@@ -34,12 +34,17 @@ export function UserTypeSelectionPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Check if this is an artist signup flow and skip directly to make-profile
+  useEffect(() => {
+    const signupSource = localStorage.getItem('signupSource');
+    if (signupSource === 'artist') {
+      // Clear the flag and navigate directly to make-profile with artist type
+      localStorage.removeItem('signupSource');
+      navigate('/make-profile', { state: { userType: 'artist' } });
+    }
+  }, [navigate]);
+
   const userTypes = [
-    {
-      id: 'artist',
-      title: 'Artist',
-      description: 'Musicians and Artists.'
-    },
     {
       id: 'creator',
       title: 'Creator',

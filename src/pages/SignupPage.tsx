@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 
 declare global {
@@ -24,7 +24,9 @@ export function SignupPage() {
   const [devCode, setDevCode] = useState<string | null>(null);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [fromArtistPage, setFromArtistPage] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -39,6 +41,26 @@ export function SignupPage() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Check if user came from artist page
+  useEffect(() => {
+    // Check URL parameter first
+    const source = searchParams.get('source');
+    
+    if (source === 'artist') {
+      setFromArtistPage(true);
+      // Store in localStorage for other parts of the flow
+      localStorage.setItem('signupSource', 'artist');
+    } else {
+      // Also check localStorage as fallback
+      const signupSource = localStorage.getItem('signupSource');
+      const sessionSource = sessionStorage.getItem('signupSource');
+      
+      if (signupSource === 'artist' || sessionSource === 'artist') {
+        setFromArtistPage(true);
+      }
+    }
+  }, [searchParams]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -257,13 +279,13 @@ export function SignupPage() {
         }}
       >
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(fromArtistPage ? '/learn/artist' : '/')}
           className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
         >
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="text-xs font-medium">Home</span>
+          <span className="text-xs font-medium">{fromArtistPage ? 'Back' : 'Home'}</span>
         </button>
 
         {!isMobile && (
@@ -389,13 +411,13 @@ export function SignupPage() {
       }}
     >
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate(fromArtistPage ? '/learn/artist' : '/')}
         className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
       >
         <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="text-xs font-medium">Home</span>
+        <span className="text-xs font-medium">{fromArtistPage ? 'Back' : 'Home'}</span>
       </button>
       {!isMobile && (
         <div
@@ -414,6 +436,13 @@ export function SignupPage() {
       )}
 
       <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
+        <div className="w-full flex justify-center mb-6">
+          <img 
+            src="/elevate solid white logo ver.jpeg" 
+            alt="Elevate Logo"
+            className="h-16 w-auto"
+          />
+        </div>
         <h1 className="text-2xl font-semibold text-white mb-1">Sign up for Elevate</h1>
         <p className="text-neutral-400 text-sm mb-6">
           {"Already have an account? "}

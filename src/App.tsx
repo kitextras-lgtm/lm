@@ -22,6 +22,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage').then(module => ({
 const VerifySetupPage = lazy(() => import('./pages/VerifySetupPage').then(module => ({ default: module.VerifySetupPage })));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage').then(module => ({ default: module.AdminLoginPage })));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
+const LearnArtist = lazy(() => import('./pages/LearnArtist'));
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
             } 
           />
           <Route path="/verify-setup" element={<VerifySetupPage />} />
+          <Route path="/learn/artist" element={<LearnArtist />} />
           
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
