@@ -143,9 +143,8 @@ export const Hero = memo(() => {
             </span>
           </h1>
 
-          <p className="text-base md:text-xl lg:text-2xl text-gray-400 leading-relaxed max-w-sm sm:max-w-md md:max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '3rem', lineHeight: '1.8' }}>
-            Elevate is a curated 360° multimedia network and agency built<br />
-            to drive growth for talents and brands.
+          <p className="text-base md:text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-sm sm:max-w-md md:max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '3rem', lineHeight: '1.8' }}>
+            Access exclusive opportunities and a curated ecosystem built to scale.
           </p>
 
           <div className="flex justify-center md:justify-start">

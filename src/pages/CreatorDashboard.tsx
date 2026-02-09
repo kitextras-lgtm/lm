@@ -1,17 +1,11 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare, Power, Briefcase, User, Network } from 'lucide-react';
+import { Send, AlertTriangle, Users, User, X, Search, Palette, Music, AlertCircle, Bell, ChevronRight, ChevronDown, Video, Network, MapPin, Globe, Plus, Info } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
-import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
 import { DoorTransition } from '../components/DoorTransition';
 import { MessagesPage } from './MessagesPage';
-import { EditIcon } from '../components/EditIcon';
-import { UserSilhouetteIcon } from '../components/UserSilhouetteIcon';
-import { PuzzlePiecesIcon } from '../components/PuzzlePiecesIcon';
-import { CreditCardIcon } from '../components/CreditCardIcon';
-import { BellIcon } from '../components/BellIcon';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 import { useCustomerConversations } from '../hooks/useChat';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
@@ -20,17 +14,12 @@ import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
-import { TalentIcon } from '../components/TalentIcon';
-import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
-import { MoreIcon } from '../components/MoreIcon';
-import { ExploreIcon } from '../components/ExploreIcon';
-import { SettingsIcon } from '../components/SettingsIcon';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
 import { AccountTypeSection } from '../components/AccountTypeSection';
-import MoreView from '../components/MoreView';
+import { ToggleSwitch } from '../components/ToggleSwitch';
 
 function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
   return (
@@ -493,7 +482,10 @@ function ActiveCollaborationsCard({ setActiveSection }: { setActiveSection: (sec
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
     >
       <div className="mb-6 sm:mb-8">
-        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Active Collaborations</h3>
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>
+          <span className="sm:hidden">Active Collaborations and Deals</span>
+          <span className="hidden sm:inline">Active Collaborations</span>
+        </h3>
       </div>
 
       <div className="space-y-4 sm:space-y-5 flex-grow">
@@ -1166,6 +1158,7 @@ export function CreatorDashboard() {
   const [homeSubPage, setHomeSubPage] = useState<'main' | 'opportunities' | 'analytics'>('main');
   const [analyticsView, setAnalyticsView] = useState<'weekly' | 'monthly' | 'lifetime'>('weekly');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('personal');
@@ -1187,6 +1180,10 @@ export function CreatorDashboard() {
   const [categoryFilterOpen, setCategoryFilterOpen] = useState(false);
   const [successRateFilterOpen, setSuccessRateFilterOpen] = useState(false);
   const [socialMediaFilterOpen, setSocialMediaFilterOpen] = useState(false);
+  const [skillsFilterOpen, setSkillsFilterOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   
   // Selected filters state
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
@@ -1194,6 +1191,7 @@ export function CreatorDashboard() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSuccessRate, setSelectedSuccessRate] = useState<string>('');
   const [selectedSocialMedia, setSelectedSocialMedia] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   
   const [paymentFormData, setPaymentFormData] = useState({
     paymentType: 'card' as 'card' | 'paypal' | 'apple',
@@ -2020,51 +2018,169 @@ export function CreatorDashboard() {
 
         <div>
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Location</label>
-          <div className="flex items-center gap-1 lg:gap-2">
-            <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
-              <select
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && isEditing && !isSaving) {
-                    handleSaveChanges();
-                  }
-                }}
-                disabled={!isEditing}
-                className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
-                style={{ color: '#F8FAFC' }}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => isEditing && setLocationDropdownOpen(!locationDropdownOpen)}
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+              style={{ 
+                backgroundColor: locationDropdownOpen ? 'var(--bg-elevated)' : 'transparent', 
+                borderColor: locationDropdownOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                color: 'var(--text-primary)',
+                opacity: isEditing ? 1 : 0.5,
+                cursor: isEditing ? 'pointer' : 'not-allowed',
+                transform: locationDropdownOpen ? 'translateY(-1px)' : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (isEditing) {
+                  e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isEditing && !locationDropdownOpen) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 transition-all duration-200 group-hover:scale-110" style={{ color: '#F8FAFC' }} />
+                <span className="transition-all duration-200">{formData.location || 'Select location'}</span>
+              </div>
+              <svg 
+                className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${locationDropdownOpen ? 'rotate-180' : ''}`} 
+                style={{ color: '#CBD5E1' }} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
               >
-                {COUNTRIES.map(country => (
-                  <option key={country} value={country} style={{ background: 'var(--bg-card)' }}>{country}</option>
-                ))}
-              </select>
-            </div>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            {locationDropdownOpen && (
+              <div
+                className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden"
+                style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+              >
+                <div className="max-h-60 overflow-y-auto">
+                  {COUNTRIES.map((country) => (
+                    <button
+                      key={country}
+                      type="button"
+                      onClick={() => {
+                        setFormData({ ...formData, location: country });
+                        setLocationDropdownOpen(false);
+                      }}
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
+                      style={{
+                        backgroundColor: country === formData.location ? 'var(--bg-elevated)' : 'transparent',
+                        color: 'var(--text-primary)',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (country !== formData.location) {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
+                        }
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (country !== formData.location) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}
+                    >
+                      {country === formData.location && <span className="text-white">✓</span>}
+                      <span>{country}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <div>
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>Languages you post in</label>
-          <div className="flex items-center gap-1 lg:gap-2">
-            <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
-              <select
-                value={formData.language}
-                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && isEditing && !isSaving) {
-                    handleSaveChanges();
-                  }
-                }}
-                disabled={!isEditing}
-                className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
-                style={{ color: '#F8FAFC' }}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => isEditing && setLanguageDropdownOpen(!languageDropdownOpen)}
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+              style={{ 
+                backgroundColor: languageDropdownOpen ? 'var(--bg-elevated)' : 'transparent', 
+                borderColor: languageDropdownOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                color: 'var(--text-primary)',
+                opacity: isEditing ? 1 : 0.5,
+                cursor: isEditing ? 'pointer' : 'not-allowed',
+                transform: languageDropdownOpen ? 'translateY(-1px)' : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (isEditing) {
+                  e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (isEditing && !languageDropdownOpen) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 transition-all duration-200 group-hover:scale-110" style={{ color: '#F8FAFC' }} />
+                <span className="transition-all duration-200">{formData.language || 'Select language'}</span>
+              </div>
+              <svg 
+                className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${languageDropdownOpen ? 'rotate-180' : ''}`} 
+                style={{ color: '#CBD5E1' }} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
               >
-                {LANGUAGES.map(language => (
-                  <option key={language} value={language} style={{ background: 'var(--bg-card)' }}>{language}</option>
-                ))}
-              </select>
-            </div>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            {languageDropdownOpen && (
+              <div
+                className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden"
+                style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+              >
+                <div className="max-h-60 overflow-y-auto">
+                  {LANGUAGES.map((language) => (
+                    <button
+                      key={language}
+                      type="button"
+                      onClick={() => {
+                        setFormData({ ...formData, language: language });
+                        setLanguageDropdownOpen(false);
+                      }}
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
+                      style={{
+                        backgroundColor: language === formData.language ? 'var(--bg-elevated)' : 'transparent',
+                        color: 'var(--text-primary)',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (language !== formData.language) {
+                          e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
+                        }
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (language !== formData.language) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}
+                    >
+                      {language === formData.language && <span className="text-white">✓</span>}
+                      <span>{language}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -2504,20 +2620,12 @@ export function CreatorDashboard() {
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>Notify me about new platform features and updates</p>
               </div>
-              <button
-                onClick={handleToggleNewFeatures}
+              <ToggleSwitch
+                isActive={emailNewFeatures}
+                onToggle={handleToggleNewFeatures}
+                backgroundTheme={backgroundTheme}
                 disabled={isSavingNotifications}
-                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: emailNewFeatures ? 'white' : '#64748B' }}
-              >
-                <div
-                  className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
-                  style={{ 
-                    backgroundColor: emailNewFeatures ? 'var(--bg-card)' : 'white',
-                    transform: emailNewFeatures ? 'translateX(20px)' : 'translateX(0px)'
-                  }}
-                ></div>
-              </button>
+              />
             </div>
 
             <div className="flex items-center justify-between">
@@ -2525,20 +2633,12 @@ export function CreatorDashboard() {
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Platform Updates</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>Send me updates about platform improvements</p>
               </div>
-              <button
-                onClick={handleTogglePlatformUpdates}
+              <ToggleSwitch
+                isActive={emailPlatformUpdates}
+                onToggle={handleTogglePlatformUpdates}
+                backgroundTheme={backgroundTheme}
                 disabled={isSavingNotifications}
-                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: emailPlatformUpdates ? 'white' : '#64748B' }}
-              >
-                <div
-                  className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
-                  style={{ 
-                    backgroundColor: emailPlatformUpdates ? 'var(--bg-card)' : 'white',
-                    transform: emailPlatformUpdates ? 'translateX(20px)' : 'translateX(0px)'
-                  }}
-                ></div>
-              </button>
+              />
             </div>
           </div>
         </div>
@@ -2862,6 +2962,29 @@ export function CreatorDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Sidebar Settings */}
+          <div>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Sidebar</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-xl border transition-all duration-200" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>Keep sidebar collapsed</p>
+                    <p className="text-xs" style={{ color: '#9CA3AF' }}>Sidebar will always stay collapsed</p>
+                  </div>
+                </div>
+                <ToggleSwitch
+                  isActive={sidebarPermanentlyCollapsed}
+                  onToggle={() => setSidebarPermanentlyCollapsed(!sidebarPermanentlyCollapsed)}
+                  backgroundTheme={backgroundTheme}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -2987,15 +3110,11 @@ export function CreatorDashboard() {
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Auto-translate content</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>Automatically translate posts to your language</p>
               </div>
-              <button
-                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
-                style={{ backgroundColor: '#64748B' }}
-              >
-                <div 
-                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
-                  style={{ transform: 'translateX(0px)' }}
-                ></div>
-              </button>
+              <ToggleSwitch
+                isActive={false}
+                onToggle={() => {}}
+                backgroundTheme={backgroundTheme}
+              />
             </div>
           </div>
         </div>
@@ -3020,8 +3139,9 @@ export function CreatorDashboard() {
           userProfile={userProfile || cachedProfile}
           unreadCount={unreadCount}
           cachedProfilePic={cachedProfilePic}
-          isCollapsed={sidebarCollapsed}
+          isCollapsed={sidebarPermanentlyCollapsed ? true : sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
+          permanentlyCollapsed={sidebarPermanentlyCollapsed}
           userType="creator"
         />
 
@@ -3036,7 +3156,7 @@ export function CreatorDashboard() {
 
         {/* Main Content Area - margin adjusts based on sidebar state */}
         <main 
-          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
+          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarPermanentlyCollapsed || sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
           style={{ 
             backgroundColor: 'var(--bg-primary)',
             color: 'var(--text-primary)'
@@ -3303,9 +3423,47 @@ export function CreatorDashboard() {
 
         
         {activeSection === 'home' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-0 lg:pt-8">
             {homeSubPage === 'main' ? (
               <>
+                {/* Mobile Logo - Only show on small screens */}
+                <div className="lg:hidden flex items-center justify-between mb-0 -mt-4 -mb-2">
+                  {/* Notifications Icon - Left */}
+                  <button
+                    onClick={() => setActiveSection('notifications')}
+                    className="p-2 rounded-lg transition-all duration-200 hover:bg-white/10"
+                    style={{ color: '#F8FAFC' }}
+                  >
+                    <Bell className="w-6 h-6" />
+                  </button>
+                  
+                  {/* Logo - Center */}
+                  <img 
+                    src="/elevate_transparent_white_.png" 
+                    alt="Elevate" 
+                    className="h-24 w-auto"
+                  />
+                  
+                  {/* Settings Icon - Right */}
+                  <button
+                    onClick={() => setActiveSection('settings')}
+                    className="p-2 rounded-lg transition-all duration-200 hover:bg-white/10"
+                    style={{ color: '#F8FAFC' }}
+                  >
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 overflow-visible">
+                      <g style={{ transform: "rotate(0deg)", transformOrigin: "24px 24px", transition: "transform 0.5s ease-in-out" }}>
+                        <path
+                          d="M21 4H27V10L30 11.5L35 6L42 13L37 18L38.5 21H44V27H38.5L37 30L42 35L35 42L30 37L27 38.5V44H21V38.5L18 37L13 42L6 35L11 30L9.5 27H4V21H9.5L11 18L6 13L13 6L18 11L21 10V4Z"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinejoin="round"
+                          fill="none"
+                        />
+                      </g>
+                      <circle cx="24" cy="24" r="7" stroke="currentColor" strokeWidth="3" fill="none" />
+                    </svg>
+                  </button>
+                </div>
                 <AnnouncementBanner userId={currentUserId} userType="creator" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
@@ -3363,6 +3521,105 @@ export function CreatorDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                     <FighterMusicCardActive onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
                     <FighterMusicCard onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
+                  </div>
+                </section>
+
+                <section className="mb-10 sm:mb-20">
+                  <div className="mb-5 sm:mb-7">
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Offers</h2>
+                    <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>Special offers and exclusive deals for creators</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                    {/* Offer Card 1 */}
+                    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:brightness-105 cursor-pointer border relative overflow-hidden group" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                      <div className="relative">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-4">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">Limited</span>
+                              <span className="text-xs text-gray-400">Ends in 3d</span>
+                            </div>
+                            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Creator Boost Bundle</h3>
+                          </div>
+                        </div>
+                        <p className="text-sm leading-relaxed mb-4" style={{ color: '#CBD5E1' }}>
+                          Get 50% off on premium analytics tools and priority campaign access for 3 months.
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$49<span className="text-sm font-normal text-gray-400 line-through ml-2">$99</span></span>
+                          <button className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-90" style={{ backgroundColor: '#F8FAFC', color: '#000000' }}>
+                            Claim Offer
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Offer Card 2 */}
+                    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:brightness-105 cursor-pointer border relative overflow-hidden group" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                      <div className="relative">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-4">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">New</span>
+                              <span className="text-xs text-gray-400">First 100</span>
+                            </div>
+                            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fast Track Approval</h3>
+                          </div>
+                        </div>
+                        <p className="text-sm leading-relaxed mb-4" style={{ color: '#CBD5E1' }}>
+                          Skip the queue and get instant approval for your next 5 campaigns. Perfect for growing creators.
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$29<span className="text-sm font-normal text-gray-400 line-through ml-2">$59</span></span>
+                          <button className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-90" style={{ backgroundColor: '#F8FAFC', color: '#000000' }}>
+                            Get Access
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Offer Card 3 */}
+                    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:brightness-105 cursor-pointer border relative overflow-hidden group" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-500"></div>
+                      <div className="relative">
+                        <div className="flex items-start gap-3 sm:gap-4 mb-4">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">Popular</span>
+                              <span className="text-xs text-gray-400">24h left</span>
+                            </div>
+                            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Creator Network Pro</h3>
+                          </div>
+                        </div>
+                        <p className="text-sm leading-relaxed mb-4" style={{ color: '#CBD5E1' }}>
+                          Join exclusive creator community with networking events, collaboration opportunities, and brand partnerships.
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$79<span className="text-sm font-normal text-gray-400 line-through ml-2">$149</span></span>
+                          <button className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-90" style={{ backgroundColor: '#F8FAFC', color: '#000000' }}>
+                            Join Now
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </section>
 
@@ -3757,9 +4014,9 @@ export function CreatorDashboard() {
                           </div>
                         </div>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Client Retention</h4>
-                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>18.5 mo</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+2.3 months YoY</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>Affiliate Revenue</h4>
+                          <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$18.5k</p>
+                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+2.3% YoY</p>
                         </div>
                       </>
                     )}
@@ -3796,9 +4053,11 @@ export function CreatorDashboard() {
                     className="w-full pl-12 pr-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                     style={{ 
                       backgroundColor: 'var(--bg-card)', 
-                      borderColor: 'var(--border-subtle)', 
+                      borderColor: searchFocused ? '#FFFFFF' : 'var(--border-subtle)', 
                       color: 'var(--text-primary)' 
                     }}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
                   />
                 </div>
               </div>
@@ -3807,7 +4066,7 @@ export function CreatorDashboard() {
                 {/* Left Sidebar Filters */}
                 <div className="hidden lg:block w-56 flex-shrink-0">
                   {/* Active Filters */}
-                  {(selectedLocations.length > 0 || selectedTalentTypes.length > 0 || selectedCategories.length > 0 || selectedSuccessRate) && (
+                  {(selectedLocations.length > 0 || selectedTalentTypes.length > 0 || selectedCategories.length > 0 || selectedSuccessRate || selectedSkills.length > 0) && (
                     <div className="mb-4">
                       <div className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Active Filters</div>
                       <div className="flex flex-wrap gap-2">
@@ -3871,6 +4130,26 @@ export function CreatorDashboard() {
                             </button>
                           </div>
                         ))}
+                        {selectedSkills.map((skill) => (
+                          <div
+                            key={`skill-${skill}`}
+                            className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border"
+                            style={{ 
+                              backgroundColor: 'var(--bg-elevated)', 
+                              borderColor: 'var(--border-subtle)', 
+                              color: 'var(--text-primary)' 
+                            }}
+                          >
+                            <span>{skill}</span>
+                            <button
+                              onClick={() => setSelectedSkills(selectedSkills.filter(s => s !== skill))}
+                              className="ml-1 text-xs hover:opacity-70"
+                              style={{ color: '#F8FAFC' }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
                         {selectedSuccessRate && (
                           <div
                             className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border"
@@ -3902,7 +4181,7 @@ export function CreatorDashboard() {
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: 'var(--border-subtle)', 
+                          borderColor: locationFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: locationFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -3956,7 +4235,7 @@ export function CreatorDashboard() {
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: 'var(--border-subtle)', 
+                          borderColor: talentTypeFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: talentTypeFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4010,7 +4289,7 @@ export function CreatorDashboard() {
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: 'var(--border-subtle)', 
+                          borderColor: categoryFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: categoryFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4064,7 +4343,7 @@ export function CreatorDashboard() {
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: 'var(--border-subtle)', 
+                          borderColor: successRateFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: successRateFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4113,7 +4392,7 @@ export function CreatorDashboard() {
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: 'var(--border-subtle)', 
+                          borderColor: socialMediaFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: socialMediaFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4159,6 +4438,60 @@ export function CreatorDashboard() {
                         </div>
                       )}
                     </div>
+
+                    {/* Skills Filter */}
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ 
+                          backgroundColor: 'var(--bg-elevated)', 
+                          borderColor: skillsFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          color: 'var(--text-primary)',
+                          transform: skillsFilterOpen ? 'translateY(-1px)' : 'none'
+                        }}
+                        onClick={() => setSkillsFilterOpen(!skillsFilterOpen)}
+                      >
+                        <span className="font-medium transition-all duration-200">Skills</span>
+                        <svg 
+                          className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${skillsFilterOpen ? 'rotate-180' : ''}`} 
+                          style={{ color: '#F8FAFC' }} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" />
+                        </svg>
+                      </button>
+                      {skillsFilterOpen && (
+                        <div 
+                          className="mt-2 rounded-lg border p-2"
+                          style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
+                        >
+                          {['Video Editing', 'Photography', 'Content Writing', 'Graphic Design', 'Animation', 'Voice Over', 'Music Production', 'Dance', 'Acting', 'Comedy', 'Public Speaking', 'Modeling', 'Cooking', 'Fitness Training', 'Makeup Artistry'].map((skill) => (
+                            <label 
+                              key={skill} 
+                              className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
+                              style={{ color: 'white' }}
+                            >
+                              <input 
+                                type="checkbox" 
+                                className="rounded border-gray-600 bg-transparent"
+                                checked={selectedSkills.includes(skill)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedSkills([...selectedSkills, skill]);
+                                  } else {
+                                    setSelectedSkills(selectedSkills.filter(s => s !== skill));
+                                  }
+                                }}
+                              />
+                              <span>{skill}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -4177,7 +4510,7 @@ export function CreatorDashboard() {
                   {/* Talent Card 1 */}
                   <div 
                     className="rounded-xl p-5 border transition-all duration-200 hover:brightness-105 cursor-pointer"
-                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+                    style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.05)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.1)', borderColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.2)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
@@ -4235,7 +4568,7 @@ export function CreatorDashboard() {
                   {/* Talent Card 2 */}
                   <div 
                     className="rounded-xl p-5 border transition-all duration-200 hover:brightness-105 cursor-pointer"
-                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+                    style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.05)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.1)', borderColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.2)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0" />
@@ -4293,7 +4626,7 @@ export function CreatorDashboard() {
                   {/* Talent Card 3 */}
                   <div 
                     className="rounded-xl p-5 border transition-all duration-200 hover:brightness-105 cursor-pointer"
-                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+                    style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.05)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.1)', borderColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.2)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 flex-shrink-0" />
@@ -4347,7 +4680,6 @@ export function CreatorDashboard() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </section>

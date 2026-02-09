@@ -112,17 +112,45 @@ Deno.serve(async (req: Request) => {
           console.log('⚠️ send-otp: User exists but is soft-deleted, allowing signup');
           existingAuthUser = null; // Allow signup to proceed
         } else {
-          console.log('❌ send-otp: Signup blocked - User already exists in auth.users:', existingAuthUser.id);
-          return new Response(
-            JSON.stringify({ success: false, message: 'This email is already registered. Please log in instead.' }),
-            {
-              status: 400,
-              headers: {
-                ...corsHeaders,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
+          // Check if user has completed onboarding by checking if they have a user_type
+          const { data: userData } = await supabaseClient
+            .from('users')
+            .select('user_type')
+            .eq('id', existingAuthUser.id)
+            .maybeSingle();
+          
+          if (!userData?.user_type) {
+            // User exists but hasn't completed onboarding - allow them to continue
+            console.log('⚠️ send-otp: User exists but incomplete onboarding - allowing continuation');
+            existingAuthUser = null; // Allow signup to proceed
+            // Add flag to indicate this is a continuation
+            return new Response(
+              JSON.stringify({ 
+                success: true, 
+                isContinuation: true,
+                message: 'Continue your signup process' 
+              }),
+              {
+                status: 200,
+                headers: {
+                  ...corsHeaders,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          } else {
+            console.log('❌ send-otp: Signup blocked - User already exists and completed onboarding:', existingAuthUser.id);
+            return new Response(
+              JSON.stringify({ success: false, message: 'This email is already registered. Please log in instead.' }),
+              {
+                status: 400,
+                headers: {
+                  ...corsHeaders,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          }
         }
       } else {
         console.log('✅ send-otp: No existing user found - allowing signup to proceed');

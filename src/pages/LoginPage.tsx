@@ -181,29 +181,35 @@ export function LoginPage() {
       }
 
       if (data.hasProfile && data.userType) {
-        // User has completed onboarding - go to their dashboard
-        switch (data.userType) {
-          case 'artist':
-            navigate('/dashboard/artist');
-            break;
-          case 'creator':
-            navigate('/dashboard/creator');
-            break;
-          case 'business':
-            navigate('/dashboard/business');
-            break;
-          default:
-            navigate('/dashboard/artist');
+          // User has completed onboarding - go to their dashboard
+          switch (data.userType) {
+            case 'artist':
+              navigate('/dashboard/artist');
+              break;
+            case 'creator':
+              navigate('/dashboard/creator');
+              break;
+            case 'freelancer':
+              navigate('/dashboard/freelancer');
+              break;
+            case 'business':
+              navigate('/dashboard/business');
+              break;
+            default:
+              navigate('/dashboard/artist');
+          }
+        } else {
+          // User hasn't completed onboarding - send to profile creation
+          console.log('User has no profile, redirecting to make-profile page');
+          navigate('/make-profile');
         }
-      } else {
-        // User hasn't completed onboarding - send to profile creation
-        console.log('User has no profile, redirecting to make-profile page');
-        navigate('/make-profile');
-      }
     } catch (err: any) {
       setError(err.message || 'Invalid verification code');
       setCode(['', '', '', '', '', '']);
-      inputRefs.current[0]?.focus();
+      // Focus first input after a small delay to ensure state is updated
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 50);
     } finally {
       setLoading(false);
     }
@@ -297,6 +303,13 @@ export function LoginPage() {
       <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
         {step === 'email' ? (
           <>
+            <div className="w-full flex justify-center mb-6">
+              <img 
+                src="/elevate solid white logo ver.jpeg" 
+                alt="Elevate Logo"
+                className="h-16 w-auto"
+              />
+            </div>
             <h1 className="text-2xl font-semibold text-white mb-1">Log in to Elevate</h1>
             <p className="text-neutral-400 text-sm mb-6">
               {"Don't have an account? "}

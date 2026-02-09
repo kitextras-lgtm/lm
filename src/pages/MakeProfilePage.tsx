@@ -186,8 +186,8 @@ export function MakeProfilePage() {
           firstName,
           lastName,
           username,
-          userType: userType || 'creator', // Default to 'creator' if not set
-          profilePictureBase64, // Send base64 instead of URL
+          ...(userType && { userType }), // Only include userType if it's set
+          profilePictureBase64,
           profilePictureFileName: profilePicture?.name || null,
         }),
       });
@@ -204,7 +204,7 @@ export function MakeProfilePage() {
         lastName,
         username,
         profilePicture: previewUrl, // Use preview URL for localStorage (blob URL)
-        userType: userType || 'creator' // Include userType for artist flow
+        userType // Include userType for artist flow
       }));
 
       // Check if this is an artist flow
@@ -233,13 +233,20 @@ export function MakeProfilePage() {
       }}
     >
       <button
-        onClick={() => navigate('/')}
+        onClick={() => {
+          // Check if we came from artist page via URL parameter
+          const urlParams = new URLSearchParams(window.location.search);
+          const fromArtist = urlParams.get('source') === 'artist';
+          
+          // For artists, go back to artist page; for regular users, go back to signup
+          navigate(fromArtist ? '/learn/artist' : '/signup');
+        }}
         className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
       >
         <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="text-xs font-medium">Home</span>
+        <span className="text-xs font-medium">Back</span>
       </button>
 
       {!isMobile && (

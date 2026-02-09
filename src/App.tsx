@@ -16,6 +16,7 @@ const TellUsAboutYourselfPage = lazy(() => import('./pages/TellUsAboutYourselfPa
 const ContactForm = lazy(() => import('./components/ContactForm').then(module => ({ default: module.ContactForm })));
 const ArtistDashboard = lazy(() => import('./pages/ArtistDashboard').then(module => ({ default: module.ArtistDashboard })));
 const CreatorDashboard = lazy(() => import('./pages/CreatorDashboard').then(module => ({ default: module.CreatorDashboard })));
+const FreelancerDashboard = lazy(() => import('./pages/FreelancerDashboard').then(module => ({ default: module.FreelancerDashboard })));
 const BusinessDashboard = lazy(() => import('./pages/BusinessDashboard').then(module => ({ default: module.BusinessDashboard })));
 const MobileMenuPage = lazy(() => import('./pages/MobileMenuPage').then(module => ({ default: module.MobileMenuPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(module => ({ default: module.SettingsPage })));
@@ -53,6 +54,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreatorDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/freelancer" 
+            element={
+              <ProtectedRoute>
+                <FreelancerDashboard />
               </ProtectedRoute>
             } 
           />

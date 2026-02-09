@@ -308,7 +308,7 @@ export function TellUsAboutYourselfPage() {
           ...profileData,
           location,
           primaryLanguage,
-          userType: profileData.userType || routerLocation.state?.userType || 'creator'
+          userType: profileData.userType || routerLocation.state?.userType
         }));
       } else {
         // No user ID - save to localStorage only
@@ -319,7 +319,7 @@ export function TellUsAboutYourselfPage() {
           ...profileData,
           location,
           primaryLanguage,
-          userType: profileData.userType || routerLocation.state?.userType || 'creator'
+          userType: profileData.userType || routerLocation.state?.userType
         }));
       }
 

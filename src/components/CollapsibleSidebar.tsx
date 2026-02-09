@@ -50,7 +50,8 @@ interface CollapsibleSidebarProps {
   cachedProfilePic?: string | null;
   isCollapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
-  userType?: 'artist' | 'creator' | 'business' | 'admin';
+  permanentlyCollapsed?: boolean;
+  userType?: 'artist' | 'creator' | 'freelancer' | 'business' | 'admin';
 }
 
 // Consistent icon size for all icons - 28px
@@ -583,7 +584,7 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
 
 
 // Get nav items based on user type
-const getNavItems = (userType?: 'artist' | 'creator' | 'business' | 'admin') => {
+const getNavItems = (userType?: 'artist' | 'creator' | 'freelancer' | 'business' | 'admin') => {
   if (userType === 'admin') {
     // Admin-specific labels and icons - using same Home/Settings icons as creator
     return [
@@ -642,14 +643,19 @@ export function CollapsibleSidebar({
   cachedProfilePic,
   isCollapsed: externalCollapsed,
   onCollapsedChange,
+  permanentlyCollapsed,
   userType
 }: CollapsibleSidebarProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   
   // Use external state if provided, otherwise use internal state
-  const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
+  // If permanentlyCollapsed is true, always keep sidebar collapsed
+  const isCollapsed = permanentlyCollapsed ? true : (externalCollapsed !== undefined ? externalCollapsed : internalCollapsed);
   const setIsCollapsed = (collapsed: boolean) => {
+    // Don't allow expansion if permanently collapsed
+    if (permanentlyCollapsed && !collapsed) return;
+    
     if (onCollapsedChange) {
       onCollapsedChange(collapsed);
     } else {
@@ -679,6 +685,9 @@ export function CollapsibleSidebar({
 
   const handleNavClick = (itemId: string) => {
     setActiveSection(itemId);
+    // If permanently collapsed, don't change state
+    if (permanentlyCollapsed) return;
+    
     // Collapse when Messages is clicked, expand for everything else
     if (itemId === 'messages') {
       setIsCollapsed(true);
@@ -800,7 +809,9 @@ export function CollapsibleSidebar({
           }`}
           onClick={() => {
             setActiveSection('profile');
-            setIsCollapsed(false);
+            if (!permanentlyCollapsed) {
+              setIsCollapsed(false);
+            }
           }}
         >
           <div className="flex items-center gap-3">

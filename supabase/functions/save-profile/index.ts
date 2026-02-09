@@ -18,6 +18,8 @@ Deno.serve(async (req: Request) => {
   try {
     const { userId, firstName, lastName, username, profilePictureUrl, profilePictureBase64, profilePictureFileName, bannerUrl, bannerBase64, bannerFileName, location, primaryLanguage, userType } = await req.json();
 
+    console.log('📥 save-profile received:', { userId, userType, firstName, lastName, username });
+
     if (!userId) {
       return new Response(
         JSON.stringify({ success: false, message: 'User ID required' }),
@@ -307,6 +309,7 @@ Deno.serve(async (req: Request) => {
     if (userType !== undefined) {
       usersUpdateData.user_type = userType;
       usersUpdateData.profile_completed = true;
+      console.log('🏷️ Setting user_type in usersUpdateData:', userType);
     }
     
     // Email is REQUIRED - if we don't have it, skip users table update
@@ -391,6 +394,7 @@ Deno.serve(async (req: Request) => {
     if (userType !== undefined) {
       profileData.user_type = userType;
       profileData.profile_completed = true;
+      console.log('🏷️ Setting user_type in profileData:', userType);
     } else {
       // If no userType provided, try to get from existing user or default to 'creator'
       const { data: existingUser } = await supabaseClient
@@ -402,9 +406,9 @@ Deno.serve(async (req: Request) => {
       if (existingUser?.user_type) {
         profileData.user_type = existingUser.user_type;
       } else {
-        // Default to 'creator' if no userType is found
-        console.log('No userType provided and no existing user found. Defaulting to "creator"');
-        profileData.user_type = 'creator';
+        // Don't set a default userType - let user choose later
+        console.log('No userType provided and no existing user found. Not setting user_type.');
+        delete profileData.user_type;
       }
     }
 
@@ -459,10 +463,13 @@ Deno.serve(async (req: Request) => {
         }
       }
 
+    console.log('✅ save-profile completed successfully with userType:', userType);
+    
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Profile saved successfully'
+        message: 'Profile saved successfully',
+        savedUserType: userType || null
       }),
       {
         headers: {

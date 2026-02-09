@@ -13,7 +13,7 @@ type FilterType = 'all' | 'unread' | 'pinned';
 interface MessagesPageProps {
   currentUserId: string;
   backgroundTheme?: 'light' | 'grey' | 'dark';
-  userType?: 'artist' | 'creator' | 'business';
+  userType?: 'artist' | 'creator' | 'freelancer' | 'business';
 }
 
 export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType }: MessagesPageProps) {
@@ -188,6 +188,11 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
     return filtered;
   }, [conversations, selectedConversation, debouncedSearchQuery, filter]);
 
+  // Calculate pinned conversations count for badge
+  const pinnedCount = useMemo(() => {
+    return conversations.filter(conv => conv.is_pinned === true).length;
+  }, [conversations]);
+
   const getSenderName = useCallback(
     (senderId: string) => {
       if (senderId === currentUserId) {
@@ -297,6 +302,19 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
       {isMobile && (
         <div className="lg:hidden flex flex-col flex-1 min-h-0 overflow-hidden" style={{ overflow: 'hidden' }}>
           <div className="p-3 pb-3" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
+            {/* Header with username and new message button */}
+            <div className="flex items-center justify-center relative mb-3">
+              <span className="text-lg font-semibold" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>
+                {displayUsername}
+              </span>
+              {userType !== 'artist' && (
+                <EditIcon
+                  onClick={handleNewMessageClick}
+                  className="absolute right-0 p-2 rounded-lg transition-colors"
+                />
+              )}
+            </div>
+            
             <div className="relative mb-3 lg:mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 lg:w-4 lg:h-4" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }} />
               <input
@@ -336,12 +354,25 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 </button>
                 <button
                   onClick={() => setFilter('pinned')}
-                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
+                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 relative ${
                     filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                   }`}
                   style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
                 >
                   Requests
+                  {pinnedCount > 0 && (
+                    <span 
+                      className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center text-xs font-bold rounded-full"
+                      style={{ 
+                        backgroundColor: backgroundTheme === 'light' ? '#3B82F6' : backgroundTheme === 'grey' ? '#2563EB' : '#60A5FA',
+                        color: '#FFFFFF',
+                        fontSize: '10px',
+                        padding: '0 4px'
+                      }}
+                    >
+                      {pinnedCount}
+                    </span>
+                  )}
                 </button>
               </div>
             )}
@@ -440,12 +471,25 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
               </button>
               <button
                 onClick={() => setFilter('pinned')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative ${
                   filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                 }`}
                 style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
               >
                 Requests
+                {pinnedCount > 0 && (
+                  <span 
+                    className="absolute -top-1 -right-1 min-w-[20px] h-[20px] flex items-center justify-center text-xs font-bold rounded-full"
+                    style={{ 
+                      backgroundColor: backgroundTheme === 'light' ? '#3B82F6' : backgroundTheme === 'grey' ? '#2563EB' : '#60A5FA',
+                      color: '#FFFFFF',
+                      fontSize: '11px',
+                      padding: '0 5px'
+                    }}
+                  >
+                    {pinnedCount}
+                  </span>
+                )}
               </button>
             </div>
           )}

@@ -11,6 +11,7 @@ import { ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { SettingsView } from '../components/SettingsView';
+import { ToggleSwitch } from '../components/ToggleSwitch';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeTokens } from '../lib/themeTokens';
 
@@ -443,6 +444,7 @@ export function AdminDashboard() {
                   <SettingsView
                     renderPersonalInfo={() => <div></div>}
                     renderConnectedAccounts={() => <div></div>}
+                    renderAccountType={() => <div></div>}
                     renderPayoutMethods={() => <div></div>}
                     renderDisplay={() => (
                       <div className="space-y-6 lg:space-y-8">
@@ -639,6 +641,7 @@ export function AdminDashboard() {
                   <SettingsView
                     renderPersonalInfo={() => <div></div>}
                     renderConnectedAccounts={() => <div></div>}
+                    renderAccountType={() => <div></div>}
                     renderPayoutMethods={() => <div></div>}
                     renderDisplay={() => (
                       <div className="space-y-6 lg:space-y-8">

@@ -30,6 +30,7 @@ import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
 import { AccountTypeSection } from '../components/AccountTypeSection';
+import { ToggleSwitch } from '../components/ToggleSwitch';
 import MoreView from '../components/MoreView';
 
 function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
@@ -2118,20 +2119,12 @@ export function BusinessDashboard() {
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Notify me about new platform features and updates</p>
               </div>
-              <button
-                onClick={handleToggleNewFeatures}
+              <ToggleSwitch
+                isActive={emailNewFeatures}
+                onToggle={handleToggleNewFeatures}
+                backgroundTheme={backgroundTheme}
                 disabled={isSavingNotifications}
-                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: emailNewFeatures ? 'white' : '#64748B' }}
-              >
-                <div
-                  className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
-                  style={{ 
-                    backgroundColor: emailNewFeatures ? 'var(--bg-card)' : 'white',
-                    transform: emailNewFeatures ? 'translateX(20px)' : 'translateX(0px)'
-                  }}
-                ></div>
-              </button>
+              />
             </div>
 
             <div className="flex items-center justify-between">
@@ -2139,20 +2132,12 @@ export function BusinessDashboard() {
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Platform Updates</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Send me updates about platform improvements</p>
               </div>
-              <button
-                onClick={handleTogglePlatformUpdates}
+              <ToggleSwitch
+                isActive={emailPlatformUpdates}
+                onToggle={handleTogglePlatformUpdates}
+                backgroundTheme={backgroundTheme}
                 disabled={isSavingNotifications}
-                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: emailPlatformUpdates ? 'white' : '#64748B' }}
-              >
-                <div
-                  className="w-6 h-6 rounded-full shadow-sm transition-transform duration-200"
-                  style={{ 
-                    backgroundColor: emailPlatformUpdates ? 'var(--bg-card)' : 'white',
-                    transform: emailPlatformUpdates ? 'translateX(20px)' : 'translateX(0px)'
-                  }}
-                ></div>
-              </button>
+              />
             </div>
           </div>
         </div>
@@ -2601,15 +2586,11 @@ export function BusinessDashboard() {
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Auto-translate content</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Automatically translate posts to your language</p>
               </div>
-              <button
-                className="w-12 h-7 rounded-full transition-colors duration-200 flex items-center px-0.5"
-                style={{ backgroundColor: '#64748B' }}
-              >
-                <div 
-                  className="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
-                  style={{ transform: 'translateX(0px)' }}
-                ></div>
-              </button>
+              <ToggleSwitch
+                isActive={false}
+                onToggle={() => {}}
+                backgroundTheme={backgroundTheme}
+              />
             </div>
           </div>
         </div>

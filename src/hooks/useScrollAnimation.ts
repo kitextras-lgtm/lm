@@ -30,7 +30,8 @@ export const useScrollAnimation = (threshold = 0.1) => {
           requestAnimationFrame(() => {
             setIsVisible(true);
             hasAnimated.current = true;
-            observer.disconnect();
+            // Add a small delay before disconnecting to ensure smooth animation
+            setTimeout(() => observer.disconnect(), 1100);
           });
         }
       },

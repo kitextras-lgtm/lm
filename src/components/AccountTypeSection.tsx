@@ -60,6 +60,17 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
     </svg>
   );
 
+  const FreelancerIcon = () => (
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+      <g className="origin-center">
+        <rect x="12" y="10" width="24" height="10" rx="1" fill="none" stroke="currentColor" strokeWidth="2"/>
+        <rect x="21" y="20" width="6" height="24" rx="1" fill="none" stroke="currentColor" strokeWidth="2"/>
+        <line x1="22" y1="32" x2="26" y2="32" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <line x1="22" y1="37" x2="26" y2="37" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </g>
+    </svg>
+  );
+
   return (
     <div className="space-y-6">
       {/* Current Account Type */}
@@ -69,15 +80,17 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
           <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
             {normalizedUserType === 'artist' && <ArtistIcon />}
             {normalizedUserType === 'creator' && <CreatorIcon />}
+            {normalizedUserType === 'freelancer' && <FreelancerIcon />}
             {(normalizedUserType === 'brand' || normalizedUserType === 'business') && <BrandIcon />}
           </div>
           <div>
             <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
-              {normalizedUserType === 'artist' ? 'Artist' : normalizedUserType === 'creator' ? 'Creator' : normalizedUserType === 'brand' || normalizedUserType === 'business' ? 'Brand' : 'Unknown'}
+              {normalizedUserType === 'artist' ? 'Artist' : normalizedUserType === 'creator' ? 'Creator' : normalizedUserType === 'freelancer' ? 'Freelancer' : normalizedUserType === 'brand' || normalizedUserType === 'business' ? 'Brand' : 'Unknown'}
             </p>
             <p className="text-sm" style={{ color: '#CBD5E1' }}>
               {normalizedUserType === 'artist' && 'Musicians and Artists'}
               {normalizedUserType === 'creator' && 'Content Creators, YouTubers, Influencers'}
+              {normalizedUserType === 'freelancer' && 'Offer your set of skills/work as a service'}
               {(normalizedUserType === 'brand' || normalizedUserType === 'business') && 'Companies and Businesses'}
             </p>
           </div>
@@ -97,15 +110,17 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
         <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
           {normalizedUserType === 'artist' && <ArtistIcon />}
           {normalizedUserType === 'creator' && <CraftsmanshipIcon />}
+          {normalizedUserType === 'freelancer' && <FreelancerIcon />}
           {(normalizedUserType === 'brand' || normalizedUserType === 'business') && <BrandIcon />}
         </div>
         <div>
           <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
-            {normalizedUserType === 'artist' ? 'Artist' : normalizedUserType === 'creator' ? 'Freelancer' : normalizedUserType === 'brand' || normalizedUserType === 'business' ? 'Brand' : 'Unknown'}
+            {normalizedUserType === 'artist' ? 'Artist' : normalizedUserType === 'creator' ? 'Creator' : normalizedUserType === 'freelancer' ? 'Freelancer' : normalizedUserType === 'brand' || normalizedUserType === 'business' ? 'Brand' : 'Unknown'}
           </p>
           <p className="text-sm" style={{ color: '#CBD5E1' }}>
             {normalizedUserType === 'artist' && 'Musicians and Artists'}
-            {normalizedUserType === 'creator' && 'For those who specialize in providing services'}
+            {normalizedUserType === 'creator' && 'Content Creators, YouTubers, Influencers'}
+            {normalizedUserType === 'freelancer' && 'Offer your set of skills/work as a service'}
             {(normalizedUserType === 'brand' || normalizedUserType === 'business') && 'Companies and Businesses'}
           </p>
         </div>

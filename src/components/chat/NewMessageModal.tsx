@@ -25,7 +25,7 @@ interface NewMessageModalProps {
   onClose: () => void;
   onSelectUser: (user: StartConversationUser) => void;
   currentUserId: string;
-  userType?: 'artist' | 'creator' | 'business';
+  userType?: 'artist' | 'creator' | 'freelancer' | 'business';
 }
 
 export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, userType }: NewMessageModalProps) {

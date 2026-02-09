@@ -25,6 +25,7 @@ export function SignupPage() {
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [fromArtistPage, setFromArtistPage] = useState(false);
+  const [isContinuation, setIsContinuation] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -62,6 +63,16 @@ export function SignupPage() {
     }
   }, [searchParams]);
 
+  // Focus first input when code step is shown
+  useEffect(() => {
+    if (step === 'code') {
+      // Small delay to ensure the input is rendered
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 100);
+    }
+  }, [step]);
+
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -96,6 +107,11 @@ export function SignupPage() {
 
         const data = await res.json();
         if (!data.success) throw new Error(data.message);
+        
+        // Check if this is a continuation of an incomplete signup
+        if (data.isContinuation) {
+          setIsContinuation(true);
+        }
 
         // Check if email was actually sent
         if (!data.emailSent) {
@@ -220,7 +236,10 @@ export function SignupPage() {
       const errorMessage = err.message || err.toString() || 'Failed to verify OTP. Please try again.';
       setError(errorMessage);
       setCode(['', '', '', '', '', '']);
-      inputRefs.current[0]?.focus();
+      // Focus first input after a small delay to ensure state is updated
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 50);
     } finally {
       setLoading(false);
     }
@@ -352,11 +371,14 @@ export function SignupPage() {
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     className="w-11 h-11 text-center text-lg font-semibold focus:outline-none transition-all"
                     style={{
-                      color: '#F2F4F7',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: 'none',
+                      color: '#FFFFFF',
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
-                      boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'
+                      boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'textfield',
+                      appearance: 'none'
                     }}
                     disabled={loading}
                   />
@@ -443,16 +465,25 @@ export function SignupPage() {
             className="h-16 w-auto"
           />
         </div>
-        <h1 className="text-2xl font-semibold text-white mb-1">Sign up for Elevate</h1>
+        <h1 className="text-2xl font-semibold text-white mb-1">
+          {isContinuation ? 'Continue your signup' : 'Sign up for Elevate'}
+        </h1>
         <p className="text-neutral-400 text-sm mb-6">
-          {"Already have an account? "}
-          <button
-            onClick={() => navigate('/login')}
-            className="text-white font-medium hover:underline"
-          >
-            Log in
-          </button>
-          .
+          {isContinuation 
+            ? "Pick up where you left off. We've saved your progress."
+            : (
+              <>
+                {"Already have an account? "}
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-white font-medium hover:underline"
+                >
+                  Log in
+                </button>
+                .
+              </>
+            )
+          }
         </p>
 
         <button

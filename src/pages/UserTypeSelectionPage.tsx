@@ -51,6 +51,11 @@ export function UserTypeSelectionPage() {
       description: 'Content Creators, Youtubers, Influencers'
     },
     {
+      id: 'freelancer',
+      title: 'Freelancer',
+      description: 'Offer your set of skills/work as a service'
+    },
+    {
       id: 'business',
       title: 'Brand',
       description: 'Companies and Businesses'
@@ -120,6 +125,19 @@ export function UserTypeSelectionPage() {
             </svg>
           </div>
         );
+      case 'freelancer':
+        return (
+          <div className="freelancer-icon group w-16 h-16 flex-shrink-0">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+              <g className="origin-center transition-transform duration-500 group-hover:rotate-[360deg]">
+                <rect x="12" y="10" width="24" height="10" rx="1" stroke="white" strokeWidth="2" fill="none"/>
+                <rect x="21" y="20" width="6" height="24" rx="1" stroke="white" strokeWidth="2" fill="none"/>
+                <line x1="22" y1="32" x2="26" y2="32" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="22" y1="37" x2="26" y2="37" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </g>
+            </svg>
+          </div>
+        );
       case 'business':
         return (
           <div className="businesses-icon group w-16 h-16 flex-shrink-0">
@@ -151,6 +169,7 @@ export function UserTypeSelectionPage() {
   const handleContinue = async () => {
     if (!selectedType) return;
 
+    console.log('🏷️ UserTypeSelection: Selected type:', selectedType);
     setIsLoading(true);
     setError(null);
 
@@ -203,11 +222,11 @@ export function UserTypeSelectionPage() {
 
         const data = await response.json();
 
+        console.log('🏷️ UserTypeSelection: Save profile response:', data);
+        console.log('🏷️ UserTypeSelection: Saved userType from server:', data.savedUserType);
+
         if (!data.success) {
-          console.error('Error saving to database:', data.message);
-          setError(data.message || 'Failed to save profile');
-          setIsLoading(false);
-          return;
+          throw new Error(data.message || 'Failed to save profile');
         } else {
           // Keep verifiedUserId - needed for dashboard access
           // Only remove tempProfile data
@@ -221,12 +240,20 @@ export function UserTypeSelectionPage() {
         return;
       }
 
+      // Set currentDashboard before navigation to ensure correct redirect
+      const dashboardPath = `/dashboard/${selectedType}`;
+      localStorage.setItem('currentDashboard', dashboardPath);
+      console.log('🏷️ UserTypeSelection: Set currentDashboard to:', dashboardPath);
+
       switch (selectedType) {
         case 'artist':
           navigate('/dashboard/artist', { state: { fromOnboarding: true } });
           break;
         case 'creator':
           navigate('/dashboard/creator', { state: { fromOnboarding: true } });
+          break;
+        case 'freelancer':
+          navigate('/dashboard/freelancer', { state: { fromOnboarding: true } });
           break;
         case 'business':
           navigate('/dashboard/business', { state: { fromOnboarding: true } });
@@ -238,12 +265,20 @@ export function UserTypeSelectionPage() {
       console.error('Error in user type selection:', err);
       localStorage.setItem('selectedUserType', selectedType);
 
+      // Set currentDashboard even on error to ensure correct redirect
+      const dashboardPath = `/dashboard/${selectedType}`;
+      localStorage.setItem('currentDashboard', dashboardPath);
+      console.log('🏷️ UserTypeSelection (catch): Set currentDashboard to:', dashboardPath);
+
       switch (selectedType) {
         case 'artist':
           navigate('/dashboard/artist', { state: { fromOnboarding: true } });
           break;
         case 'creator':
           navigate('/dashboard/creator', { state: { fromOnboarding: true } });
+          break;
+        case 'freelancer':
+          navigate('/dashboard/freelancer', { state: { fromOnboarding: true } });
           break;
         case 'business':
           navigate('/dashboard/business', { state: { fromOnboarding: true } });

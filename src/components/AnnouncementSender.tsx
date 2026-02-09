@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, AlertTriangle, Users, User, Loader2, X, Search, Palette, Music, AlertCircle, Bell } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { debounce } from '../utils/debounce';
@@ -17,7 +17,7 @@ interface UserSuggestion {
 }
 
 type AnnouncementType = 'normal' | 'serious';
-type TargetAudience = 'all' | 'creators' | 'artists';
+type TargetAudience = 'all' | 'creators' | 'artists' | 'businesses';
 
 export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps) {
   const { tokens } = useTheme();
@@ -144,22 +144,93 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
       setIsLookingUp(false);
 
       const announcementData = {
-        admin_id: adminId,
-        user_id: sendToAll ? null : profileId,
+        created_by: adminId,
         title: title.trim(),
-        content: content.trim(),
+        message: content.trim(),
         announcement_type: announcementType,
         target_audience: sendToAll ? targetAudience : 'all', // Only apply audience filter for broadcast
+        status: 'sent',
+        sent_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase
-        .from('announcements')
-        .insert(announcementData)
-        .select();
+      // First, insert into admin_announcements for tracking
+      const { error: adminError } = await supabase
+        .from('admin_announcements')
+        .insert(announcementData);
 
-      if (error) throw error;
+      if (adminError) throw adminError;
 
-      const audienceLabel = targetAudience === 'all' ? 'all users' : targetAudience;
+      // If sending to all users with a target audience, also create individual announcements
+      if (sendToAll && targetAudience !== 'all') {
+        // Get users of the target type
+        const { data: targetUsers, error: usersError } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('user_type', targetAudience === 'businesses' ? 'business' : targetAudience.slice(0, -1));
+
+        if (usersError) throw usersError;
+
+        // Create announcement records for each target user
+        const announcementsToInsert = (targetUsers || []).map(user => ({
+          admin_id: adminId,
+          user_id: user.id,
+          title: title.trim(),
+          content: content.trim(),
+          announcement_type: announcementType,
+          target_audience: targetAudience,
+          is_read: false,
+        }));
+
+        if (announcementsToInsert.length > 0) {
+          const { error: insertError } = await supabase
+            .from('announcements')
+            .insert(announcementsToInsert);
+
+          if (insertError) throw insertError;
+        }
+      } else if (sendToAll && targetAudience === 'all') {
+        // Send to all users
+        const { data: allUsers, error: allUsersError } = await supabase
+          .from('user_profiles')
+          .select('id');
+
+        if (allUsersError) throw allUsersError;
+
+        const announcementsToInsert = (allUsers || []).map(user => ({
+          admin_id: adminId,
+          user_id: user.id,
+          title: title.trim(),
+          content: content.trim(),
+          announcement_type: announcementType,
+          target_audience: 'all',
+          is_read: false,
+        }));
+
+        if (announcementsToInsert.length > 0) {
+          const { error: insertError } = await supabase
+            .from('announcements')
+            .insert(announcementsToInsert);
+
+          if (insertError) throw insertError;
+        }
+      } else if (!sendToAll && profileId) {
+        // Send to specific user
+        const { error: insertError } = await supabase
+          .from('announcements')
+          .insert({
+            admin_id: adminId,
+            user_id: profileId,
+            title: title.trim(),
+            content: content.trim(),
+            announcement_type: announcementType,
+            target_audience: 'all',
+            is_read: false,
+          });
+
+        if (insertError) throw insertError;
+      }
+
+      const audienceLabel = targetAudience === 'all' ? 'all users' : targetAudience === 'businesses' ? 'business users' : `${targetAudience}s`;
       setSendResult({
         success: true,
         message: sendToAll 
@@ -293,10 +364,10 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
               Target Audience
             </label>
-            <div className="flex gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button
                 onClick={() => setTargetAudience('all')}
-                className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                   targetAudience === 'all' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
@@ -335,6 +406,20 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               >
                 <Music className="w-4 h-4" />
                 Artists
+              </button>
+              <button
+                onClick={() => setTargetAudience('businesses')}
+                className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                  targetAudience === 'businesses' ? '' : 'hover:brightness-110'
+                }`}
+                style={{
+                  backgroundColor: targetAudience === 'businesses' ? tokens.bg.active : 'transparent',
+                  color: '#F8FAFC',
+                  border: targetAudience === 'businesses' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                }}
+              >
+                <User className="w-4 h-4" />
+                Business
               </button>
             </div>
           </div>

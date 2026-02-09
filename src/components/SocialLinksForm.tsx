@@ -145,7 +145,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
 
 interface SocialLinksFormProps {
   appliedTheme?: string;
-  userType?: 'artist' | 'creator' | 'business';
+  userType?: 'artist' | 'creator' | 'freelancer' | 'business';
 }
 
 export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps) {

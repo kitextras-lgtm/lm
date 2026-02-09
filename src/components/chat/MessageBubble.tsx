@@ -90,7 +90,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
   if (message.deleted_at) {
     return (
       <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} px-2 lg:px-4 py-0.5`}>
-        <div className="px-3 py-2 rounded-lg bg-gray-800/50 text-gray-500 italic text-sm">
+        <div className="px-3 py-2 rounded-lg italic text-sm" style={{ backgroundColor: theme.messageBubbleOther + '50', color: theme.textMuted }}>
           This message was deleted
         </div>
       </div>
@@ -117,15 +117,15 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                   isOwn ? 'ml-auto' : 'mr-auto'
                 }`}
                 style={{ 
-                  backgroundColor: '#1a1a1e', 
-                  borderColor: '#64748B',
-                  color: '#F8FAFC'
+                  backgroundColor: theme.messageBubbleOther, 
+                  borderColor: theme.border,
+                  color: theme.messageBubbleOtherText
                 }}
               >
-                <p className="text-[10px] font-medium" style={{ color: '#64748B' }}>
+                <p className="text-[10px] font-medium" style={{ color: theme.textSecondary }}>
                   {message.reply_to_sender_name}
                 </p>
-                <p className="text-[10px] line-clamp-1" style={{ color: '#94A3B8' }}>
+                <p className="text-[10px] line-clamp-1" style={{ color: theme.textMuted }}>
                   {message.reply_to_content || 'Image'}
                 </p>
               </button>
@@ -135,15 +135,15 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
               className={`relative rounded-2xl overflow-hidden transition-all duration-200 min-w-0 ${
                 message.type === 'image' && !message.content ? 'p-0' : ''
               }`}
-              style={isOwn ? { backgroundColor: theme.messageBubbleOwn, color: theme.messageBubbleOwnText } : { backgroundColor: theme.backgroundSecondary, color: theme.messageBubbleOtherText }}
+              style={isOwn ? { backgroundColor: theme.messageBubbleOwn, color: theme.messageBubbleOwnText } : { backgroundColor: theme.messageBubbleOther, color: theme.messageBubbleOtherText }}
             >
               {message.type === 'image' && message.image_url && (
                 <div className={`relative ${message.content ? 'px-4 pt-3' : 'p-0'}`}>
                   {imageError ? (
                     <div className={`rounded-lg flex items-center justify-center ${
                       message.content ? 'mb-2' : ''
-                    }`} style={{ width: '100%', maxWidth: '280px', height: '200px', backgroundColor: '#0f0f13' }}>
-                      <p className="text-xs" style={{ color: '#64748B' }}>Failed to load image</p>
+                    }`} style={{ width: '100%', maxWidth: '280px', height: '200px', backgroundColor: theme.backgroundSecondary }}>
+                      <p className="text-xs" style={{ color: theme.textSecondary }}>Failed to load image</p>
                     </div>
                   ) : (
                     <>
@@ -196,7 +196,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                 </div>
               )}
             </div>
-            <span className={`text-[10px] px-1 ${isOwn ? 'text-right' : 'text-left'}`} style={{ color: '#94A3B8' }}>
+            <span className={`text-[10px] px-1 ${isOwn ? 'text-right' : 'text-left'}`} style={{ color: theme.textMuted }}>
               {formatTime(message.created_at)}
             </span>
           </div>
@@ -210,7 +210,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
               <button
                 onClick={handleCopy}
                 className="p-1.5 rounded-full hover:brightness-110 transition-colors"
-                style={{ color: '#64748B' }}
+                style={{ color: theme.textSecondary }}
               >
                 <Copy className="w-3.5 h-3.5" />
               </button>
@@ -218,7 +218,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
             <button
               onClick={handleReply}
               className="p-1.5 rounded-full hover:brightness-110 transition-colors"
-              style={{ color: '#64748B' }}
+              style={{ color: theme.textSecondary }}
             >
               <Reply className="w-3.5 h-3.5" />
             </button>
@@ -229,7 +229,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                 <button
                   onClick={() => setShowDeleteMenu(!showDeleteMenu)}
                   className="p-1.5 rounded-full hover:brightness-110 transition-colors"
-                  style={{ color: '#64748B' }}
+                  style={{ color: theme.textSecondary }}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
