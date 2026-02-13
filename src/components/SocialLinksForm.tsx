@@ -22,12 +22,15 @@ const platformIcons: { [key: string]: any } = {
   Other: Link2,
 };
 
-const platformOptions = ['YouTube', 'Instagram', 'TikTok', 'Twitter', 'Twitch', 'Other'];
-const channelTypeOptions = ['Music', 'Gaming', 'Lifestyle', 'Education', 'Comedy', 'Sports', 'Technology', 'Art & Design', 'Fashion', 'Food & Cooking', 'Travel', 'Fitness', 'Business', 'Entertainment', 'Other'];
+
+interface DropdownOption {
+  key: string;
+  label: string;
+}
 
 interface CustomDropdownProps {
   value: string;
-  options: string[];
+  options: DropdownOption[];
   onChange: (value: string) => void;
   platformIcons: { [key: string]: any };
 }
@@ -54,6 +57,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
 
   const selectedIcon = platformIcons[value] || null;
   const SelectedIcon = selectedIcon;
+  const selectedOption = options.find(o => o.key === value);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -78,7 +82,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
               style={{ color: '#F8FAFC' }} 
             />
           )}
-          <span className="transition-all duration-200">{value}</span>
+          <span className="transition-all duration-200">{selectedOption?.label || value}</span>
         </div>
         <ChevronDown 
           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isOpen ? 'rotate-180' : ''}`} 
@@ -93,14 +97,14 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
         >
           <div className="max-h-60 overflow-y-auto">
             {options.map((option) => {
-              const Icon = platformIcons[option] || null;
-              const isSelected = option === value;
+              const Icon = platformIcons[option.key] || null;
+              const isSelected = option.key === value;
               return (
                 <button
-                  key={option}
+                  key={option.key}
                   type="button"
                   onClick={() => {
-                    onChange(option);
+                    onChange(option.key);
                     setIsOpen(false);
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
@@ -130,7 +134,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
                       <div className="absolute inset-0 w-4 h-4 rounded-full opacity-0 group-hover/icon:opacity-20 group-hover/icon:scale-150 transition-all duration-300" style={{ backgroundColor: '#F8FAFC' }}></div>
                     </div>
                   )}
-                  <span className="transition-all duration-200">{option}</span>
+                  <span className="transition-all duration-200">{option.label}</span>
                   {isSelected && (
                     <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#CBD5E1' }}>✓</span>
                   )}
@@ -306,7 +310,14 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
               </label>
               <CustomDropdown
                 value={newLink.platform}
-                options={platformOptions}
+                options={[
+                  {key: 'YouTube', label: t('platforms.youtube')},
+                  {key: 'Instagram', label: t('platforms.instagram')},
+                  {key: 'TikTok', label: t('platforms.tiktok')},
+                  {key: 'Twitter', label: t('platforms.twitter')},
+                  {key: 'Twitch', label: t('platforms.twitch')},
+                  {key: 'Other', label: t('platforms.other')}
+                ]}
                 onChange={(value) => setNewLink({ ...newLink, platform: value })}
                 platformIcons={platformIcons}
               />
@@ -350,9 +361,26 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                     {t('socialLinks.channelType')}
                   </label>
                   <CustomDropdown
-                    value={newLink.channel_type || t('socialLinks.selectChannelType')}
-                    options={[t('socialLinks.selectChannelType'), ...channelTypeOptions]}
-                    onChange={(value) => setNewLink({ ...newLink, channel_type: value === t('socialLinks.selectChannelType') ? '' : value })}
+                    value={newLink.channel_type || '__select__'}
+                    options={[
+                      {key: '__select__', label: t('socialLinks.selectChannelType')},
+                      {key: 'Music', label: t('channelTypes.music')},
+                      {key: 'Gaming', label: t('channelTypes.gaming')},
+                      {key: 'Lifestyle', label: t('channelTypes.lifestyle')},
+                      {key: 'Education', label: t('channelTypes.education')},
+                      {key: 'Comedy', label: t('channelTypes.comedy')},
+                      {key: 'Sports', label: t('channelTypes.sports')},
+                      {key: 'Technology', label: t('channelTypes.technology')},
+                      {key: 'Art & Design', label: t('channelTypes.artDesign')},
+                      {key: 'Fashion', label: t('channelTypes.fashion')},
+                      {key: 'Food & Cooking', label: t('channelTypes.foodCooking')},
+                      {key: 'Travel', label: t('channelTypes.travel')},
+                      {key: 'Fitness', label: t('channelTypes.fitness')},
+                      {key: 'Business', label: t('channelTypes.business')},
+                      {key: 'Entertainment', label: t('channelTypes.entertainment')},
+                      {key: 'Other', label: t('channelTypes.other')}
+                    ]}
+                    onChange={(value) => setNewLink({ ...newLink, channel_type: value === '__select__' ? '' : value })}
                     platformIcons={{}}
                   />
                 </div>

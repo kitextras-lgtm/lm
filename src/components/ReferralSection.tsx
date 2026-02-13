@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Copy, Check, Gift } from 'lucide-react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 
@@ -9,6 +10,7 @@ interface ReferralData {
 }
 
 export function ReferralSection() {
+  const { t } = useTranslation();
   const [referralData, setReferralData] = useState<ReferralData | null>(null);
   const [inputCode, setInputCode] = useState('');
   const [copied, setCopied] = useState(false);
@@ -149,7 +151,7 @@ export function ReferralSection() {
         setMessage({ type: 'error', text: data.error });
       }
     } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Failed to apply code' });
+      setMessage({ type: 'error', text: error.message || t('referral.failedToApply') });
     } finally {
       setApplying(false);
     }
@@ -168,13 +170,13 @@ export function ReferralSection() {
       <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
         <div className="flex items-center gap-2 mb-5">
           <Gift className="w-5 h-5" style={{ color: '#64748B' }} />
-          <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>Your Code</h3>
+          <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('referral.yourCode')}</h3>
         </div>
 
         <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: 'transparent' }}>
           <div className="text-center">
             <div className="text-xs font-medium mb-2" style={{ color: '#64748B' }}>
-              YOUR REFERRAL CODE
+              {t('referral.yourReferralCode')}
             </div>
             <div className="h-[60px] flex items-center justify-center mb-3">
               <div className="text-2xl sm:text-3xl font-bold tracking-wider" style={{ color: '#F8FAFC' }}>
@@ -190,12 +192,12 @@ export function ReferralSection() {
               {copied ? (
                 <>
                   <Check className="w-4 h-4" />
-                  <span>Copied!</span>
+                  <span>{t('referral.copied')}</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" />
-                  <span>Copy Code</span>
+                  <span>{t('referral.copyCode')}</span>
                 </>
               )}
             </button>
@@ -204,17 +206,17 @@ export function ReferralSection() {
 
         <div>
           <div className="text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
-            Your Stats
+            {t('referral.yourStats')}
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-              <span className="text-sm" style={{ color: '#CBD5E1' }}>Total uses</span>
+              <span className="text-sm" style={{ color: '#CBD5E1' }}>{t('referral.totalUses')}</span>
               <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
                 {referralData?.total_uses || 0}
               </span>
             </div>
             <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-              <span className="text-sm" style={{ color: '#CBD5E1' }}>Total earned</span>
+              <span className="text-sm" style={{ color: '#CBD5E1' }}>{t('referral.totalEarned')}</span>
               <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
                 ${referralData?.total_earnings?.toFixed(2) || '0.00'}
               </span>
@@ -226,17 +228,17 @@ export function ReferralSection() {
       <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
         <div className="flex items-center gap-2 mb-5">
           <Gift className="w-5 h-5" style={{ color: '#64748B' }} />
-          <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>Enter a Code</h3>
+          <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('referral.enterACode')}</h3>
         </div>
 
         {hasAppliedCode ? (
           <div className="rounded-lg p-6 text-center" style={{ backgroundColor: 'transparent' }}>
             <Check className="w-12 h-12 mx-auto mb-3" style={{ color: '#10B981' }} />
             <p className="text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
-              Code Applied!
+              {t('referral.codeApplied')}
             </p>
             <p className="text-sm" style={{ color: '#64748B' }}>
-              You've already applied a referral code
+              {t('referral.alreadyApplied')}
             </p>
           </div>
         ) : (
@@ -244,14 +246,14 @@ export function ReferralSection() {
             <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: 'transparent' }}>
               <div className="text-center">
                 <label className="block text-xs font-medium mb-2" style={{ color: '#64748B' }}>
-                  REFERRAL CODE
+                  {t('referral.referralCode')}
                 </label>
                 <div className="h-[60px] flex items-center justify-center mb-3">
                   <input
                     type="text"
                     value={inputCode}
                     onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-                    placeholder="Enter code..."
+                    placeholder={t('referral.enterCode')}
                     maxLength={8}
                     className="w-full px-4 py-2.5 rounded-lg text-2xl sm:text-3xl font-bold tracking-wider text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
                     style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
@@ -263,7 +265,7 @@ export function ReferralSection() {
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                 >
-                  {applying ? 'Applying...' : 'Apply Code'}
+                  {applying ? t('referral.applying') : t('referral.applyCode')}
                 </button>
               </div>
             </div>
@@ -282,15 +284,15 @@ export function ReferralSection() {
 
             <div>
               <div className="text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
-                Benefits
+                {t('referral.benefits')}
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-                  <span className="text-sm" style={{ color: '#CBD5E1' }}>10% first campaign bonus</span>
+                  <span className="text-sm" style={{ color: '#CBD5E1' }}>{t('referral.firstCampaignBonus')}</span>
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
                 </div>
                 <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
-                  <span className="text-sm" style={{ color: '#CBD5E1' }}>Support the community</span>
+                  <span className="text-sm" style={{ color: '#CBD5E1' }}>{t('referral.supportCommunity')}</span>
                   <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#10B981' }} />
                 </div>
               </div>

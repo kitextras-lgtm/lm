@@ -4212,25 +4212,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="mt-2 max-h-48 overflow-y-auto rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Sweden', 'Japan', 'South Korea', 'China', 'India', 'Brazil', 'Mexico', 'Argentina', 'Chile', 'South Africa', 'Egypt', 'Nigeria', 'Kenya', 'Morocco', 'Russia', 'Poland', 'Ukraine', 'Turkey', 'Saudi Arabia', 'UAE', 'Israel', 'Thailand', 'Vietnam', 'Philippines', 'Singapore', 'Malaysia', 'Indonesia', 'New Zealand'].map((country) => (
+                          {[{key: 'unitedStates', label: t('countries.unitedStates')}, {key: 'unitedKingdom', label: t('countries.unitedKingdom')}, {key: 'canada', label: t('countries.canada')}, {key: 'australia', label: t('countries.australia')}, {key: 'germany', label: t('countries.germany')}, {key: 'france', label: t('countries.france')}, {key: 'spain', label: t('countries.spain')}, {key: 'italy', label: t('countries.italy')}, {key: 'netherlands', label: t('countries.netherlands')}, {key: 'sweden', label: t('countries.sweden')}, {key: 'japan', label: t('countries.japan')}, {key: 'southKorea', label: t('countries.southKorea')}, {key: 'china', label: t('countries.china')}, {key: 'india', label: t('countries.india')}, {key: 'brazil', label: t('countries.brazil')}, {key: 'mexico', label: t('countries.mexico')}, {key: 'argentina', label: t('countries.argentina')}, {key: 'chile', label: t('countries.chile')}, {key: 'southAfrica', label: t('countries.southAfrica')}, {key: 'egypt', label: t('countries.egypt')}, {key: 'nigeria', label: t('countries.nigeria')}, {key: 'kenya', label: t('countries.kenya')}, {key: 'morocco', label: t('countries.morocco')}, {key: 'russia', label: t('countries.russia')}, {key: 'poland', label: t('countries.poland')}, {key: 'ukraine', label: t('countries.ukraine')}, {key: 'turkey', label: t('countries.turkey')}, {key: 'saudiArabia', label: t('countries.saudiArabia')}, {key: 'uae', label: t('countries.uae')}, {key: 'israel', label: t('countries.israel')}, {key: 'thailand', label: t('countries.thailand')}, {key: 'vietnam', label: t('countries.vietnam')}, {key: 'philippines', label: t('countries.philippines')}, {key: 'singapore', label: t('countries.singapore')}, {key: 'malaysia', label: t('countries.malaysia')}, {key: 'indonesia', label: t('countries.indonesia')}, {key: 'newZealand', label: t('countries.newZealand')}].map(({key, label}) => (
                             <label 
-                              key={country} 
+                              key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-600 bg-transparent" 
-                                checked={selectedLocations.includes(country)}
+                                checked={selectedLocations.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setSelectedLocations([...selectedLocations, country]);
+                                    setSelectedLocations([...selectedLocations, key]);
                                   } else {
-                                    setSelectedLocations(selectedLocations.filter(l => l !== country));
+                                    setSelectedLocations(selectedLocations.filter(l => l !== key));
                                   }
                                 }}
                               />
-                              <span>{country}</span>
+                              <span>{label}</span>
                             </label>
                           ))}
                         </div>
@@ -4423,25 +4423,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="mt-2 rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['YouTube', 'Instagram', 'TikTok', 'Twitter', 'LinkedIn', 'Twitch'].map((platform) => (
+                          {[{key: 'youtube', label: t('platforms.youtube')}, {key: 'instagram', label: t('platforms.instagram')}, {key: 'tiktok', label: t('platforms.tiktok')}, {key: 'twitter', label: t('platforms.twitter')}, {key: 'linkedin', label: t('platforms.linkedin')}, {key: 'twitch', label: t('platforms.twitch')}].map(({key, label}) => (
                             <label 
-                              key={platform} 
+                              key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-600 bg-transparent"
-                                checked={selectedSocialMedia.includes(platform)}
+                                checked={selectedSocialMedia.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setSelectedSocialMedia([...selectedSocialMedia, platform]);
+                                    setSelectedSocialMedia([...selectedSocialMedia, key]);
                                   } else {
-                                    setSelectedSocialMedia(selectedSocialMedia.filter(s => s !== platform));
+                                    setSelectedSocialMedia(selectedSocialMedia.filter(s => s !== key));
                                   }
                                 }}
                               />
-                              <span>{platform}</span>
+                              <span>{label}</span>
                             </label>
                           ))}
                         </div>
