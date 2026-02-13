@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChatHeader } from './ChatHeader';
 import { ChatInput } from './ChatInput';
 import { MessageBubble } from './MessageBubble';
@@ -51,6 +52,7 @@ export const ChatWindow = memo(function ChatWindow({
   onCancelPending,
 }: ChatWindowProps) {
   // Instagram/X pattern: Handle pending conversation state (no DB conversation yet)
+  const { t } = useTranslation();
   if (isPending && pendingRecipient) {
     return (
       <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -103,7 +105,7 @@ export const ChatWindow = memo(function ChatWindow({
               @{pendingRecipient.username}
             </p>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Send a message to start the conversation
+              {t('messages.sendMessageToStart')}
             </p>
           </div>
         </div>

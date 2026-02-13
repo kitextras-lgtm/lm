@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface AnimatedIconProps {
   className?: string;
 }
@@ -21,6 +23,7 @@ interface AccountTypeSectionProps {
 }
 
 export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
+  const { t } = useTranslation();
   // Normalize userType to lowercase for consistent comparison
   const normalizedUserType = userType?.toLowerCase();
   // Account type icons
@@ -75,7 +78,7 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
     <div className="space-y-6">
       {/* Current Account Type */}
       <div>
-        <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>Current Account Type</h3>
+        <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>{t('accountType.currentAccountType')}</h3>
         <div className="flex items-center gap-3 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
             {normalizedUserType === 'artist' && <ArtistIcon />}
@@ -85,13 +88,13 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
           </div>
           <div>
             <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
-              {normalizedUserType === 'artist' ? 'Artist' : normalizedUserType === 'creator' ? 'Creator' : normalizedUserType === 'freelancer' ? 'Freelancer' : normalizedUserType === 'brand' || normalizedUserType === 'business' ? 'Brand' : 'Unknown'}
+              {normalizedUserType === 'artist' ? t('accountTypes.artist') : normalizedUserType === 'creator' ? t('accountTypes.creator') : normalizedUserType === 'freelancer' ? t('accountTypes.freelancer') : normalizedUserType === 'brand' || normalizedUserType === 'business' ? t('accountTypes.brand') : t('accountType.unknown')}
             </p>
             <p className="text-sm" style={{ color: '#CBD5E1' }}>
-              {normalizedUserType === 'artist' && 'Musicians and Artists'}
-              {normalizedUserType === 'creator' && 'Content Creators, YouTubers, Influencers'}
-              {normalizedUserType === 'freelancer' && 'Offer your set of skills/work as a service'}
-              {(normalizedUserType === 'brand' || normalizedUserType === 'business') && 'Companies and Businesses'}
+              {normalizedUserType === 'artist' && t('accountType.artistDesc')}
+              {normalizedUserType === 'creator' && t('accountType.creatorDesc')}
+              {normalizedUserType === 'freelancer' && t('accountType.freelancerDesc')}
+              {(normalizedUserType === 'brand' || normalizedUserType === 'business') && t('accountType.brandDesc')}
             </p>
           </div>
         </div>
@@ -99,9 +102,9 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
 
       {/* Need to Change Account Type */}
       <div>
-        <h3 className="text-lg font-semibold mb-2" style={{ color: '#F8FAFC' }}>Are you a freelancer?</h3>
+        <h3 className="text-lg font-semibold mb-2" style={{ color: '#F8FAFC' }}>{t('accountType.areYouFreelancer')}</h3>
         <p className="text-sm mb-4" style={{ color: '#CBD5E1' }}>
-          To gain a freelancer role, please apply below.
+          {t('accountType.freelancerApply')}
         </p>
         </div>
 
@@ -115,13 +118,13 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
         </div>
         <div>
           <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
-            {normalizedUserType === 'artist' ? 'Artist' : normalizedUserType === 'creator' ? 'Creator' : normalizedUserType === 'freelancer' ? 'Freelancer' : normalizedUserType === 'brand' || normalizedUserType === 'business' ? 'Brand' : 'Unknown'}
+            {normalizedUserType === 'artist' ? t('accountTypes.artist') : normalizedUserType === 'creator' ? t('accountTypes.creator') : normalizedUserType === 'freelancer' ? t('accountTypes.freelancer') : normalizedUserType === 'brand' || normalizedUserType === 'business' ? t('accountTypes.brand') : t('accountType.unknown')}
           </p>
           <p className="text-sm" style={{ color: '#CBD5E1' }}>
-            {normalizedUserType === 'artist' && 'Musicians and Artists'}
-            {normalizedUserType === 'creator' && 'Content Creators, YouTubers, Influencers'}
-            {normalizedUserType === 'freelancer' && 'Offer your set of skills/work as a service'}
-            {(normalizedUserType === 'brand' || normalizedUserType === 'business') && 'Companies and Businesses'}
+            {normalizedUserType === 'artist' && t('accountType.artistDesc')}
+            {normalizedUserType === 'creator' && t('accountType.creatorDesc')}
+            {normalizedUserType === 'freelancer' && t('accountType.freelancerDesc')}
+            {(normalizedUserType === 'brand' || normalizedUserType === 'business') && t('accountType.brandDesc')}
           </p>
         </div>
       </div>

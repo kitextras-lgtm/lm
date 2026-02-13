@@ -1,6 +1,7 @@
 // Fix 5: NewMessageModal - Instagram/X pattern
 import { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { DEFAULT_AVATAR_DATA_URI } from '../DefaultAvatar';
 
@@ -29,6 +30,7 @@ interface NewMessageModalProps {
 }
 
 export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, userType }: NewMessageModalProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -166,7 +168,7 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4" style={{ borderBottom: '1px solid var(--border-default)' }}>
           <div className="w-8" />
-          <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>New message</h2>
+          <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('messages.newMessage')}</h2>
           <button 
             onClick={() => {
               onClose();
@@ -181,7 +183,7 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
 
         {/* Search Input */}
         <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid var(--border-default)' }}>
-          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>To:</span>
+          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.to')}</span>
           <div className="flex-1 relative">
             <input
               ref={inputRef}
@@ -192,7 +194,7 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
                 // Clear selection when typing
                 setSelectedUsers([]);
               }}
-              placeholder="Search..."
+              placeholder={t('messages.searchPlaceholder')}
               className="w-full bg-transparent text-sm focus:outline-none"
               style={{ color: 'var(--text-primary)' }}
             />
@@ -203,20 +205,20 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
         <div className="flex-1 overflow-y-auto" style={{ maxHeight: '400px' }}>
           {loading ? (
             <div className="p-4 text-center">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Searching...</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('messages.searching')}</p>
             </div>
           ) : !searchQuery.trim() ? (
             <div className="p-8 text-center">
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Enter a username to start a conversation</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('messages.enterUsername')}</p>
             </div>
           ) : (
             <>
               <p className="px-4 py-2 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
-                Results
+                {t('messages.results')}
               </p>
               {users.length === 0 ? (
                 <div className="p-4 text-center">
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>No users found</p>
+                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('messages.noUsersFound')}</p>
                 </div>
               ) : (
                 users.map(user => {
@@ -273,7 +275,7 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
               color: selectedUsers.length > 0 ? 'var(--bg-primary)' : 'var(--text-primary)'
             }}
           >
-            Chat
+            {t('messages.chat')}
           </button>
         </div>
       </div>

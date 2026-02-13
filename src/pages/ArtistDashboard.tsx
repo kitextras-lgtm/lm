@@ -32,6 +32,8 @@ import { SettingsView } from '../components/SettingsView';
 import { AccountTypeSection } from '../components/AccountTypeSection';
 import { ToggleSwitch } from '../components/ToggleSwitch';
 import MoreView from '../components/MoreView';
+import { useTranslation } from 'react-i18next';
+import { LANGUAGE_MAP, LOCALE_TO_NAME } from '../i18n';
 
 function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
   return (
@@ -465,23 +467,24 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
 }
 
 function RevenueAnalyticsCard() {
+  const { t } = useTranslation();
   return (
     <div 
       className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
     >
       <div className="mb-6 sm:mb-8">
-        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Monthly Recurring Revenue</h3>
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.monthlyRecurringRevenue')}</h3>
       </div>
 
       <div className="space-y-6 sm:space-y-8">
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Revenue</span>
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('home.totalRevenue')}</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$2,847.50</span>
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Change</span>
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('home.change')}</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+6.1%</span>
         </div>
       </div>
@@ -1028,7 +1031,8 @@ export function ArtistDashboard() {
   const appliedTheme = backgroundTheme;
   
   const [feedbackCategory, setFeedbackCategory] = useState<'suggestion' | 'bug-report' | 'feature-request' | 'other' | null>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
+  const { t, i18n } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(() => LOCALE_TO_NAME[i18n.language] || 'English');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [cachedProfilePic, setCachedProfilePic] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -1749,7 +1753,7 @@ export function ArtistDashboard() {
                 {formData.firstName} {formData.lastName}
               </h3>
               <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
-                {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : 'No username'}
+                {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : t('personalInfo.noUsername')}
               </p>
             </div>
           </div>
@@ -1764,7 +1768,7 @@ export function ArtistDashboard() {
 
         <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>First name</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.firstName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1789,7 +1793,7 @@ export function ArtistDashboard() {
           </div>
 
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Last name</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.lastName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1810,7 +1814,7 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Username</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.username')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
               <span className="text-xs lg:text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>@</span>
@@ -1826,13 +1830,13 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Bio</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.bio')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <textarea
               value={formData.bio || ''}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               disabled={!isEditing}
-              placeholder="Tell us about yourself..."
+              placeholder={t('personalInfo.bioPlaceholder')}
               className="flex-1 min-w-0 h-20 lg:h-24 px-2 lg:px-3 py-2 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
               style={{
                 color: '#F8FAFC',
@@ -1846,7 +1850,7 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Location</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.location')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
               <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
@@ -1871,7 +1875,7 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.languagesPostIn')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
               <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
@@ -1896,7 +1900,7 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>Email</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.email')}</label>
           <input
             type="email"
             value={formData.email}
@@ -1936,7 +1940,7 @@ export function ArtistDashboard() {
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
               style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', color: backgroundTheme === 'light' ? '#000000' : 'var(--text-primary)' }}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               onClick={handleSaveChanges}
@@ -1944,7 +1948,7 @@ export function ArtistDashboard() {
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
             >
-              {isSaving ? 'Saving...' : 'Save changes'}
+              {isSaving ? t('common.saving') : t('personalInfo.saveChanges')}
             </button>
           </div>
         )}
@@ -1969,7 +1973,7 @@ export function ArtistDashboard() {
       <div className="flex items-center gap-2 mb-6">
         <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
         <span className="text-sm" style={{ color: '#94A3B8' }}>
-          Tipalti: {isTipaltiConnected ? 'Connected' : 'Not connected'}
+          Tipalti: {isTipaltiConnected ? t('payment.tipaltiConnected') : t('payment.tipaltiNotConnected')}
         </span>
       </div>
       
@@ -1984,7 +1988,7 @@ export function ArtistDashboard() {
             color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' 
           }}>
           <Plus className="w-5 h-5" />
-          Connect your payment method
+          {t('payment.connectPayment')}
         </button>
       </div>
 
@@ -1995,8 +1999,8 @@ export function ArtistDashboard() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>Payment Method</h3>
-                <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>Add a new payment method to your account.</p>
+                <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>{t('payment.paymentMethod')}</h3>
+                <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>{t('payment.addPaymentDesc')}</p>
               </div>
               <button 
                 onClick={() => setShowPaymentForm(false)}
@@ -2029,7 +2033,7 @@ export function ArtistDashboard() {
                     <rect x="2" y="5" width="20" height="14" rx="2" strokeWidth="2"/>
                     <path d="M2 10h20" strokeWidth="2"/>
                   </svg>
-                  <span className="text-sm" style={{ color: '#F8FAFC' }}>Card</span>
+                  <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('payment.card')}</span>
                 </label>
 
                 <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'paypal' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'paypal' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
@@ -2044,7 +2048,7 @@ export function ArtistDashboard() {
                   <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
                   </svg>
-                  <span className="text-sm" style={{ color: '#F8FAFC' }}>Paypal</span>
+                  <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('payment.paypal')}</span>
                 </label>
 
                 <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'apple' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'apple' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
@@ -2059,7 +2063,7 @@ export function ArtistDashboard() {
                   <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
                   </svg>
-                  <span className="text-sm" style={{ color: '#F8FAFC' }}>Apple</span>
+                  <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('payment.apple')}</span>
                 </label>
               </div>
 
@@ -2068,7 +2072,7 @@ export function ArtistDashboard() {
                 <>
                   {/* Name on Card */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Name on the card</label>
+                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.nameOnCard')}</label>
                     <input
                       type="text"
                       value={paymentFormData.nameOnCard}
@@ -2087,7 +2091,7 @@ export function ArtistDashboard() {
 
                   {/* City */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>City</label>
+                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.city')}</label>
                     <input
                       type="text"
                       value={paymentFormData.city}
@@ -2106,7 +2110,7 @@ export function ArtistDashboard() {
 
                   {/* Card Number */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Card number</label>
+                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.cardNumber')}</label>
                     <input
                       type="text"
                       value={paymentFormData.cardNumber}
@@ -2127,7 +2131,7 @@ export function ArtistDashboard() {
                   <div className="grid grid-cols-3 gap-4">
                     {/* Expiry Month */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Expires</label>
+                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.expires')}</label>
                       <select
                         value={paymentFormData.expiryMonth}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
@@ -2140,25 +2144,25 @@ export function ArtistDashboard() {
                         onFocus={(e) => e.target.style.borderColor = '#ffffff'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
-                        <option value="" style={{ background: 'var(--bg-card)' }}>Month</option>
-                        <option value="1" style={{ background: 'var(--bg-card)' }}>January</option>
-                        <option value="2" style={{ background: 'var(--bg-card)' }}>February</option>
-                        <option value="3" style={{ background: 'var(--bg-card)' }}>March</option>
-                        <option value="4" style={{ background: 'var(--bg-card)' }}>April</option>
-                        <option value="5" style={{ background: 'var(--bg-card)' }}>May</option>
-                        <option value="6" style={{ background: 'var(--bg-card)' }}>June</option>
-                        <option value="7" style={{ background: 'var(--bg-card)' }}>July</option>
-                        <option value="8" style={{ background: 'var(--bg-card)' }}>August</option>
-                        <option value="9" style={{ background: 'var(--bg-card)' }}>September</option>
-                        <option value="10" style={{ background: 'var(--bg-card)' }}>October</option>
-                        <option value="11" style={{ background: 'var(--bg-card)' }}>November</option>
-                        <option value="12" style={{ background: 'var(--bg-card)' }}>December</option>
+                        <option value="" style={{ background: 'var(--bg-card)' }}>{t('payment.month')}</option>
+                        <option value="1" style={{ background: 'var(--bg-card)' }}>{t('payment.january')}</option>
+                        <option value="2" style={{ background: 'var(--bg-card)' }}>{t('payment.february')}</option>
+                        <option value="3" style={{ background: 'var(--bg-card)' }}>{t('payment.march')}</option>
+                        <option value="4" style={{ background: 'var(--bg-card)' }}>{t('payment.april')}</option>
+                        <option value="5" style={{ background: 'var(--bg-card)' }}>{t('payment.may')}</option>
+                        <option value="6" style={{ background: 'var(--bg-card)' }}>{t('payment.june')}</option>
+                        <option value="7" style={{ background: 'var(--bg-card)' }}>{t('payment.july')}</option>
+                        <option value="8" style={{ background: 'var(--bg-card)' }}>{t('payment.august')}</option>
+                        <option value="9" style={{ background: 'var(--bg-card)' }}>{t('payment.september')}</option>
+                        <option value="10" style={{ background: 'var(--bg-card)' }}>{t('payment.october')}</option>
+                        <option value="11" style={{ background: 'var(--bg-card)' }}>{t('payment.november')}</option>
+                        <option value="12" style={{ background: 'var(--bg-card)' }}>{t('payment.december')}</option>
                       </select>
                     </div>
 
                     {/* Expiry Year */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>Year</label>
+                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.year')}</label>
                       <select
                         value={paymentFormData.expiryYear}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
@@ -2171,7 +2175,7 @@ export function ArtistDashboard() {
                         onFocus={(e) => e.target.style.borderColor = '#ffffff'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
-                        <option value="" style={{ background: 'var(--bg-card)' }}>Year</option>
+                        <option value="" style={{ background: 'var(--bg-card)' }}>{t('payment.year')}</option>
                         {Array.from({ length: 10 }, (_, i) => (
                           <option key={i} value={`${new Date().getFullYear() + i}`} style={{ background: 'var(--bg-card)' }}>
                             {new Date().getFullYear() + i}
@@ -2182,7 +2186,7 @@ export function ArtistDashboard() {
 
                     {/* CVC */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>CVC</label>
+                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.cvc')}</label>
                       <input
                         type="text"
                         value={paymentFormData.cvc}
@@ -2205,7 +2209,7 @@ export function ArtistDashboard() {
               {/* PayPal/Apple Pay placeholder */}
               {(paymentFormData.paymentType === 'paypal' || paymentFormData.paymentType === 'apple') && (
                 <div className="text-center py-8" style={{ color: '#94A3B8' }}>
-                  <p className="text-sm">You will be redirected to {paymentFormData.paymentType === 'paypal' ? 'PayPal' : 'Apple Pay'} to complete the payment setup.</p>
+                  <p className="text-sm">{paymentFormData.paymentType === 'paypal' ? t('payment.redirectPaypal') : t('payment.redirectApple')}</p>
                 </div>
               )}
 
@@ -2216,7 +2220,7 @@ export function ArtistDashboard() {
                 className="w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
               >
-                {isSaving ? 'Processing...' : 'Add Payment Method'}
+                {isSaving ? t('payment.processing') : t('payment.addPaymentMethod')}
               </button>
             </div>
           </div>
@@ -2247,7 +2251,7 @@ export function ArtistDashboard() {
       // Validate required fields
       if (paymentFormData.paymentType === 'card') {
         if (!paymentFormData.nameOnCard || !paymentFormData.cardNumber || !paymentFormData.expiryMonth || !paymentFormData.expiryYear || !paymentFormData.cvc) {
-          setSaveError('Please fill in all card details');
+          setSaveError(t('payment.fillAllFields'));
           return;
         }
       }
@@ -2260,7 +2264,7 @@ export function ArtistDashboard() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Show success message
-      alert('Payment method added successfully!');
+      alert(t('payment.paymentSuccess'));
       
       // Reset form and close
       setPaymentFormData({
@@ -2323,13 +2327,13 @@ export function ArtistDashboard() {
 
       <div className="space-y-3 lg:space-y-8">
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Email</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('notifications.email')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>New Features</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Notify me about new platform features and updates</p>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.newFeatures')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.newFeaturesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailNewFeatures}
@@ -2341,8 +2345,8 @@ export function ArtistDashboard() {
 
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Platform Updates</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Send me updates about platform improvements</p>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.platformUpdates')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.platformUpdatesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailPlatformUpdates}
@@ -2363,7 +2367,7 @@ export function ArtistDashboard() {
         {/* Category Selection */}
         <div>
           <label className="block text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
-            Category
+            {t('feedback.category')}
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -2376,7 +2380,7 @@ export function ArtistDashboard() {
               }}
             >
               <SuggestionIcon isHovered={feedbackCategory === 'suggestion'} />
-              <span>Suggestion</span>
+              <span>{t('feedback.suggestion')}</span>
             </button>
             
             <button
@@ -2389,7 +2393,7 @@ export function ArtistDashboard() {
               }}
             >
               <BugReportIcon isHovered={feedbackCategory === 'bug-report'} />
-              <span>Bug Report</span>
+              <span>{t('feedback.bugReport')}</span>
             </button>
             
             <button
@@ -2402,7 +2406,7 @@ export function ArtistDashboard() {
               }}
             >
               <FeatureRequestIcon isHovered={feedbackCategory === 'feature-request'} />
-              <span>Feature Request</span>
+              <span>{t('feedback.featureRequest')}</span>
             </button>
             
             <button
@@ -2415,7 +2419,7 @@ export function ArtistDashboard() {
               }}
             >
               <OtherIcon isHovered={feedbackCategory === 'other'} />
-              <span>Other</span>
+              <span>{t('feedback.other')}</span>
             </button>
           </div>
         </div>
@@ -2423,10 +2427,10 @@ export function ArtistDashboard() {
         {/* Feedback Textarea */}
         <div>
           <label className="block text-sm font-semibold mb-2" style={{ color: '#F8FAFC' }}>
-            Your Feedback
+            {t('feedback.yourFeedback')}
           </label>
           <textarea
-            placeholder="Share your thoughts, suggestions, or report any issues..."
+            placeholder={t('feedback.feedbackPlaceholder')}
             rows={5}
             className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
             style={{
@@ -2450,7 +2454,7 @@ export function ArtistDashboard() {
               color: backgroundTheme === 'light' ? '#FFFFFF' : '#94A3B8',
             }}
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
@@ -2461,7 +2465,7 @@ export function ArtistDashboard() {
             }}
             disabled={!feedbackCategory}
           >
-            Submit Feedback
+            {t('feedback.submitFeedback')}
           </button>
         </div>
       </div>
@@ -2506,14 +2510,14 @@ export function ArtistDashboard() {
           window.location.href = '/login';
         }}
       >
-        Log Out
+        {t('common.logOut')}
       </button>
       <button 
         className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200" 
         style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}
         onClick={() => setActiveSection('home')}
       >
-        Cancel
+        {t('common.cancel')}
       </button>
     </div>
   );
@@ -2558,7 +2562,7 @@ export function ArtistDashboard() {
         <div className="space-y-6 lg:space-y-8">
           {/* Preview Section */}
           <div>
-            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Preview</h3>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.preview')}</h3>
             <div 
               className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
               style={{ 
@@ -2586,7 +2590,7 @@ export function ArtistDashboard() {
               
               <div className="mb-4">
                 <p className="mb-3" style={{ color: getPreviewTextColor() }}>
-                  Explore opportunities to earn, invest, and connect with top talent. Elevate brings everything you need to scale and succeed into one unified ecosystem.
+                  {t('display.previewText')}
                 </p>
               </div>
             </div>
@@ -2594,7 +2598,7 @@ export function ArtistDashboard() {
 
           {/* Background Selector */}
           <div>
-            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Background Theme</h3>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.backgroundTheme')}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Light Option */}
               <div 
@@ -2624,8 +2628,8 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
                 
-                <h4 className="font-semibold text-white mb-1">Navy</h4>
-                <p className="text-sm text-gray-300">Navy blue background</p>
+                <h4 className="font-semibold text-white mb-1">{t('display.navy')}</h4>
+                <p className="text-sm text-gray-300">{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
@@ -2656,8 +2660,8 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
                 
-                <h4 className="font-semibold text-white mb-1">Grey</h4>
-                <p className="text-sm text-gray-400">Dim background</p>
+                <h4 className="font-semibold text-white mb-1">{t('display.grey')}</h4>
+                <p className="text-sm text-gray-400">{t('display.greyDesc')}</p>
               </div>
 
               {/* Dark Option */}
@@ -2688,8 +2692,8 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
                 
-                <h4 className="font-semibold text-white mb-1">Dark</h4>
-                <p className="text-sm text-gray-400">Pure black background (default)</p>
+                <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
+                <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
               </div>
             </div>
           </div>
@@ -2726,13 +2730,13 @@ export function ArtistDashboard() {
 
       <div className="space-y-3 lg:space-y-8">
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface Language</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('language.interfaceLanguage')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
               <div className="min-w-0 flex-1">
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Display language</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Choose your preferred interface language</p>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('language.displayLanguage')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.chooseLanguage')}</p>
               </div>
               <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
                 <button
@@ -2773,6 +2777,9 @@ export function ArtistDashboard() {
                             type="button"
                             onClick={() => {
                               setSelectedLanguage(option.name);
+                              const localeCode = LANGUAGE_MAP[option.name] || 'en';
+                              i18n.changeLanguage(localeCode);
+                              localStorage.setItem('displayLanguage', localeCode);
                               setIsLanguageDropdownOpen(false);
                             }}
                             className="w-full px-3 lg:px-4 py-2 lg:py-2.5 text-left text-sm lg:text-base transition-all duration-200 flex items-center gap-2 group/option relative"
@@ -2810,13 +2817,13 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Content Preferences</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('language.contentPreferences')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Auto-translate content</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Automatically translate posts to your language</p>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('language.autoTranslate')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.autoTranslateDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={false}
@@ -2909,7 +2916,7 @@ export function ArtistDashboard() {
               {/* Available Balance Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Available balance</h3>
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.availableBalance')}</h3>
                   <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
                 </div>
                 <div className="mt-auto">
@@ -2938,7 +2945,7 @@ export function ArtistDashboard() {
               {/* Affiliate Earnings Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Affiliate earnings</h3>
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.affiliateEarnings')}</h3>
                   <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
@@ -3042,7 +3049,7 @@ export function ArtistDashboard() {
             <AnnouncementBanner userId={currentUserId} userType="artist" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Overview</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.overview')}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
@@ -3056,8 +3063,8 @@ export function ArtistDashboard() {
 
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>My Accounts</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Add your social media channels and profiles</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.myAccounts')}</h2>
+            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.myAccountsDesc')}</p>
           </div>
 
           <SocialLinksForm appliedTheme={appliedTheme} userType="artist" />
@@ -3065,8 +3072,8 @@ export function ArtistDashboard() {
 
         <section className="mb-8">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Referral Section</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Support creators by using their code. Share yours to earn together.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.referralSection')}</h2>
+            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
           <ReferralSection />
