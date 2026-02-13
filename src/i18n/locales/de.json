@@ -222,7 +222,22 @@
   },
   "explore": {
     "comingSoon": "Demnächst!",
-    "comingSoonDesc": "Wir arbeiten an etwas Großartigem"
+    "comingSoonDesc": "Wir arbeiten an etwas Großartigem",
+    "discoverServices": "Entdecken Sie Dienste, um Ihre Marke zu stärken",
+    "searchServices": "Dienste suchen...",
+    "andMore": "und mehr",
+    "contentCreationTips": "Tipps zur Inhaltserstellung",
+    "videoEditingTools": "Videobearbeitungstools",
+    "musicProductionBasics": "Grundlagen der Musikproduktion",
+    "socialMediaGrowth": "Social-Media-Wachstum",
+    "brandCollaboration": "Markenkooperation",
+    "monetizationStrategies": "Monetarisierungsstrategien",
+    "videoEditing": "Videobearbeitung",
+    "music": "Musik",
+    "socialMedia": "Social Media",
+    "contentCreation": "Inhaltserstellung",
+    "marketing": "Marketing",
+    "design": "Design"
   },
   "opportunities": {
     "back": "Zurück",

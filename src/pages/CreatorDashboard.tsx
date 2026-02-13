@@ -4512,7 +4512,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                       className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:brightness-110"
                       style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
                     >
-                      Suggested
+                      {t('talent.suggested')}
                     </button>
                   </div>
 
@@ -4568,7 +4568,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </svg>
                         </button>
                         <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
-                          See Profile
+                          {t('talent.seeProfile')}
                         </button>
                       </div>
                     </div>
@@ -4626,7 +4626,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </svg>
                         </button>
                         <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
-                          See Profile
+                          {t('talent.seeProfile')}
                         </button>
                       </div>
                     </div>
@@ -4684,7 +4684,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </svg>
                         </button>
                         <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
-                          See Profile
+                          {t('talent.seeProfile')}
                         </button>
                       </div>
                     </div>
@@ -4743,12 +4743,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <section className="mb-8 -mx-4 px-4 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center justify-center gap-3 min-w-max pb-2">
                   {[
-                    'Content creation tips',
-                    'Video editing tools',
-                    'Music production basics',
-                    'Social media growth',
-                    'Brand collaboration',
-                    'Monetization strategies',
+                    t('explore.contentCreationTips'),
+                    t('explore.videoEditingTools'),
+                    t('explore.musicProductionBasics'),
+                    t('explore.socialMediaGrowth'),
+                    t('explore.brandCollaboration'),
+                    t('explore.monetizationStrategies'),
                   ].map((tag, index) => (
                     <button 
                       key={index}
@@ -4776,7 +4776,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   className="h-32 mx-auto cursor-pointer hover:opacity-80 transition-opacity" 
                 />
                 <p className="text-sm font-semibold -mt-6" style={{ color: '#CBD5E1', lineHeight: '1' }}>
-                  Discover services to grow your brand
+                  {t('explore.discoverServices')}
                 </p>
               </section>
 
@@ -4795,7 +4795,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     </svg>
                     <input
                       type="text"
-                      placeholder="Search services..."
+                      placeholder={t('explore.searchServices')}
                       className="w-full pl-10 pr-4 py-3 rounded-full text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                       style={{ 
                         backgroundColor: 'var(--bg-card)', 
@@ -4811,12 +4811,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <section className="mb-8">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-3xl mx-auto">
                   {[
-                    { name: 'Video Editing', image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop' },
-                    { name: 'Music', image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=300&fit=crop' },
-                    { name: 'Social Media', image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop' },
-                    { name: 'Content Creation', image: 'https://images.unsplash.com/photo-1526498460520-4c246339dccb?w=400&h=300&fit=crop' },
-                    { name: 'Marketing', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop' },
-                    { name: 'Design', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop' },
+                    { name: t('explore.videoEditing'), image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop' },
+                    { name: t('explore.music'), image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=300&fit=crop' },
+                    { name: t('explore.socialMedia'), image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop' },
+                    { name: t('explore.contentCreation'), image: 'https://images.unsplash.com/photo-1526498460520-4c246339dccb?w=400&h=300&fit=crop' },
+                    { name: t('explore.marketing'), image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop' },
+                    { name: t('explore.design'), image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop' },
                   ].map((category, index) => (
                     <div 
                       key={index} 
@@ -4839,7 +4839,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               {/* Stats Section */}
               <section className="text-center">
                 <p className="text-xl sm:text-2xl font-bold" style={{ color: '#F8FAFC' }}>
-                  and more
+                  {t('explore.andMore')}
                 </p>
               </section>
             </div>

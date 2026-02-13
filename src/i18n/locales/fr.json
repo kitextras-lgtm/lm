@@ -221,8 +221,23 @@
     "enabled": "Activé"
   },
   "explore": {
-    "comingSoon": "Bientôt disponible !",
-    "comingSoonDesc": "Nous travaillons sur quelque chose d'incroyable"
+    "comingSoon": "Bientôt !",
+    "comingSoonDesc": "Nous préparons quelque chose d'incroyable",
+    "discoverServices": "Découvrez des services pour développer votre marque",
+    "searchServices": "Rechercher des services...",
+    "andMore": "et plus",
+    "contentCreationTips": "Conseils de création de contenu",
+    "videoEditingTools": "Outils de montage vidéo",
+    "musicProductionBasics": "Bases de la production musicale",
+    "socialMediaGrowth": "Croissance sur les réseaux sociaux",
+    "brandCollaboration": "Collaboration de marque",
+    "monetizationStrategies": "Stratégies de monétisation",
+    "videoEditing": "Montage Vidéo",
+    "music": "Musique",
+    "socialMedia": "Réseaux Sociaux",
+    "contentCreation": "Création de Contenu",
+    "marketing": "Marketing",
+    "design": "Design"
   },
   "opportunities": {
     "back": "Retour",

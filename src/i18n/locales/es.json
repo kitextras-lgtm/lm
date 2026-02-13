@@ -222,7 +222,22 @@
   },
   "explore": {
     "comingSoon": "¡Próximamente!",
-    "comingSoonDesc": "Estamos trabajando en algo increíble"
+    "comingSoonDesc": "Estamos trabajando en algo increíble",
+    "discoverServices": "Descubre servicios para hacer crecer tu marca",
+    "searchServices": "Buscar servicios...",
+    "andMore": "y más",
+    "contentCreationTips": "Consejos de creación de contenido",
+    "videoEditingTools": "Herramientas de edición de video",
+    "musicProductionBasics": "Fundamentos de producción musical",
+    "socialMediaGrowth": "Crecimiento en redes sociales",
+    "brandCollaboration": "Colaboración de marca",
+    "monetizationStrategies": "Estrategias de monetización",
+    "videoEditing": "Edición de Video",
+    "music": "Música",
+    "socialMedia": "Redes Sociales",
+    "contentCreation": "Creación de Contenido",
+    "marketing": "Marketing",
+    "design": "Diseño"
   },
   "opportunities": {
     "back": "Volver",
