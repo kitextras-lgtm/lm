@@ -156,6 +156,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   onBack,
   showBackButton = false,
 }: {
+  // useTranslation hook added below
   conversation: Conversation;
   otherUser: Profile;
   currentUserId: string;
@@ -165,6 +166,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   onBack?: () => void;
   showBackButton?: boolean;
 }) {
+  const { t } = useTranslation();
   const theme = getTheme(backgroundTheme);
   const { messages, loading, otherUserTyping, sendMessage, setTyping, markMessagesAsSeen } = useChat({
     conversationId: conversation.id,
@@ -547,7 +549,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
                 {/* Joined Date */}
                 {otherUser.created_at && (
                   <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-                    Joined {new Date(otherUser.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    {t('messages.joined')} {new Date(otherUser.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                   </p>
                 )}
                 
@@ -560,7 +562,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
                     color: 'var(--bg-primary)'
                   }}
                 >
-                  View Profile
+                  {t('messages.viewProfile')}
                 </button>
               </div>
             </div>

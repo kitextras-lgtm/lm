@@ -6,7 +6,7 @@ import { Plus, Minus } from 'lucide-react';
 const artistServices = [
   {
     title: 'Global Distribution',
-    description: 'We provide global distribution to all major platforms including Spotify, Apple Music, TikTok, and more if needed. Our team handles the technical aspects while you focus on creating music, ensuring your releases reach audiences worldwide.'
+    description: 'Distribution is just the starting point. We provide flexibility along with strategic guidance and industry-leading revenue splits.'
   },
   {
     title: 'Superior Growth',
@@ -48,8 +48,8 @@ const artistFAQ = [
     answer: "Unlike traditional distributors, we invest in your growth with marketing support, career strategy, and sync opportunities. We're partners in your success, not just a distribution service."
   },
   {
-    question: "How do I get paid for my music?",
-    answer: "We handle payments through our trusted partner, Tipalti. You'll receive detailed monthly statements and can choose your preferred payment method - PayPal, wire transfer, or direct bank deposit."
+    question: "Do I have to pay for the services?",
+    answer: "No, you do not need to pay a single dollar to access our services, as our distribution is strictly invite only and hand picked."
   },
   {
     question: "Can I still work with other labels or distributors?",
@@ -98,7 +98,9 @@ export default function LearnArtist() {
                 color: 'rgb(153, 153, 153)'
               }}
             >
-              We upgrade your experience from your current distributor.
+              We offer unique benefits found nowhere else regarding to distribution platforms. 
+<br />
+You are not required to leave your current distributor to utilize our services.
             </p>
           </div>
 

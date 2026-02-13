@@ -4266,25 +4266,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="mt-2 rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['Creator', 'Brand', 'Freelancer'].map((type) => (
+                          {[{key: 'creator', label: t('talentFilters.creator')}, {key: 'brand', label: t('talentFilters.brand')}, {key: 'freelancer', label: t('talentFilters.freelancer')}].map(({key, label}) => (
                             <label 
-                              key={type} 
+                              key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-600 bg-transparent" 
-                                checked={selectedTalentTypes.includes(type)}
+                                checked={selectedTalentTypes.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setSelectedTalentTypes([...selectedTalentTypes, type]);
+                                    setSelectedTalentTypes([...selectedTalentTypes, key]);
                                   } else {
-                                    setSelectedTalentTypes(selectedTalentTypes.filter(t => t !== type));
+                                    setSelectedTalentTypes(selectedTalentTypes.filter(t => t !== key));
                                   }
                                 }}
                               />
-                              <span>{type}</span>
+                              <span>{label}</span>
                             </label>
                           ))}
                         </div>
@@ -4320,25 +4320,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="mt-2 rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['Gaming', 'Music', 'Vlogs', 'Education', 'Comedy', 'Sports', 'Travel', 'Food', 'Fashion', 'Beauty', 'Technology', 'Art', 'Dance', 'Fitness', 'Lifestyle'].map((category) => (
+                          {[{key: 'gaming', label: t('talentFilters.gaming')}, {key: 'music', label: t('talentFilters.music')}, {key: 'vlogs', label: t('talentFilters.vlogs')}, {key: 'education', label: t('talentFilters.education')}, {key: 'comedy', label: t('talentFilters.comedy')}, {key: 'sports', label: t('talentFilters.sports')}, {key: 'travel', label: t('talentFilters.travel')}, {key: 'food', label: t('talentFilters.food')}, {key: 'fashion', label: t('talentFilters.fashion')}, {key: 'beauty', label: t('talentFilters.beauty')}, {key: 'technology', label: t('talentFilters.technology')}, {key: 'art', label: t('talentFilters.art')}, {key: 'dance', label: t('talentFilters.dance')}, {key: 'fitness', label: t('talentFilters.fitness')}, {key: 'lifestyle', label: t('talentFilters.lifestyle')}].map(({key, label}) => (
                             <label 
-                              key={category} 
+                              key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-600 bg-transparent" 
-                                checked={selectedCategories.includes(category)}
+                                checked={selectedCategories.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setSelectedCategories([...selectedCategories, category]);
+                                    setSelectedCategories([...selectedCategories, key]);
                                   } else {
-                                    setSelectedCategories(selectedCategories.filter(c => c !== category));
+                                    setSelectedCategories(selectedCategories.filter(c => c !== key));
                                   }
                                 }}
                               />
-                              <span>{category}</span>
+                              <span>{label}</span>
                             </label>
                           ))}
                         </div>
@@ -4374,9 +4374,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="mt-2 rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['Any %', '80% & up', '90% & up'].map((rate) => (
+                          {[{key: 'any', label: t('talentFilters.anyPercent')}, {key: '80up', label: t('talentFilters.eightyUp')}, {key: '90up', label: t('talentFilters.ninetyUp')}].map(({key, label}) => (
                             <label 
-                              key={rate} 
+                              key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
@@ -4384,10 +4384,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                 type="radio" 
                                 name="successRate" 
                                 className="rounded border-gray-600 bg-transparent" 
-                                checked={selectedSuccessRate === rate}
-                                onChange={() => setSelectedSuccessRate(rate)}
+                                checked={selectedSuccessRate === key}
+                                onChange={() => setSelectedSuccessRate(key)}
                               />
-                              <span>{rate}</span>
+                              <span>{label}</span>
                             </label>
                           ))}
                         </div>
@@ -4477,25 +4477,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="mt-2 rounded-lg border p-2"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}
                         >
-                          {['Video Editing', 'Photography', 'Content Writing', 'Graphic Design', 'Animation', 'Voice Over', 'Music Production', 'Dance', 'Acting', 'Comedy', 'Public Speaking', 'Modeling', 'Cooking', 'Fitness Training', 'Makeup Artistry'].map((skill) => (
+                          {[{key: 'videoEditing', label: t('talentFilters.videoEditing')}, {key: 'photography', label: t('talentFilters.photography')}, {key: 'contentWriting', label: t('talentFilters.contentWriting')}, {key: 'graphicDesign', label: t('talentFilters.graphicDesign')}, {key: 'animation', label: t('talentFilters.animation')}, {key: 'voiceOver', label: t('talentFilters.voiceOver')}, {key: 'musicProduction', label: t('talentFilters.musicProduction')}, {key: 'dance', label: t('talentFilters.danceSkill')}, {key: 'acting', label: t('talentFilters.acting')}, {key: 'comedy', label: t('talentFilters.comedySkill')}, {key: 'publicSpeaking', label: t('talentFilters.publicSpeaking')}, {key: 'modeling', label: t('talentFilters.modeling')}, {key: 'cooking', label: t('talentFilters.cooking')}, {key: 'fitnessTraining', label: t('talentFilters.fitnessTraining')}, {key: 'makeupArtistry', label: t('talentFilters.makeupArtistry')}].map(({key, label}) => (
                             <label 
-                              key={skill} 
+                              key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
                               style={{ color: 'white' }}
                             >
                               <input 
                                 type="checkbox" 
                                 className="rounded border-gray-600 bg-transparent"
-                                checked={selectedSkills.includes(skill)}
+                                checked={selectedSkills.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
-                                    setSelectedSkills([...selectedSkills, skill]);
+                                    setSelectedSkills([...selectedSkills, key]);
                                   } else {
-                                    setSelectedSkills(selectedSkills.filter(s => s !== skill));
+                                    setSelectedSkills(selectedSkills.filter(s => s !== key));
                                   }
                                 }}
                               />
-                              <span>{skill}</span>
+                              <span>{label}</span>
                             </label>
                           ))}
                         </div>

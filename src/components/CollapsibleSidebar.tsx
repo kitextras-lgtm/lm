@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   AdminApplicationsIconSVG, 
   AdminAlertsIconSVG, 
@@ -583,50 +584,47 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
 }
 
 
-// Get nav items based on user type
-const getNavItems = (userType?: 'artist' | 'creator' | 'freelancer' | 'business' | 'admin') => {
+// Get nav items based on user type - uses translation keys for labels
+const getNavItems = (userType?: 'artist' | 'creator' | 'freelancer' | 'business' | 'admin', t?: (key: string) => string) => {
+  const tr = (key: string, fallback: string) => t ? t(key) : fallback;
   if (userType === 'admin') {
-    // Admin-specific labels and icons - using same Home/Settings icons as creator
     return [
-      { id: 'home', label: 'Home', Icon: HomeIconSVG },
+      { id: 'home', label: tr('nav.home', 'Home'), Icon: HomeIconSVG },
       { id: 'applications', label: 'Applications', Icon: AdminApplicationsIconSVG },
       { id: 'alerts', label: 'Alerts', Icon: AdminAlertsIconSVG },
-      { id: 'messages', label: 'Messages', Icon: AdminMessagesIconSVG },
+      { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: AdminMessagesIconSVG },
       { id: 'users', label: 'Users', Icon: AdminUsersIconSVG },
       { id: 'data', label: 'Data', Icon: AdminDataIconSVG },
-      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+      { id: 'settings', label: tr('nav.settings', 'Settings'), Icon: SettingsIconSVG },
     ];
   }
   if (userType === 'artist') {
-    // Artist-specific labels and icons
     return [
-      { id: 'home', label: 'Home', Icon: HomeIconSVG },
-      { id: 'explore', label: 'Distribution', Icon: ArtistDistributionIconSVG },
-      { id: 'talent', label: 'Publishing', Icon: ArtistPublishingIconSVG },
-      { id: 'deals', label: 'Sync', Icon: ArtistSyncIconSVG },
-      { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
-      { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
-      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+      { id: 'home', label: tr('nav.home', 'Home'), Icon: HomeIconSVG },
+      { id: 'explore', label: tr('nav.distribution', 'Distribution'), Icon: ArtistDistributionIconSVG },
+      { id: 'talent', label: tr('nav.publishing', 'Publishing'), Icon: ArtistPublishingIconSVG },
+      { id: 'deals', label: tr('nav.sync', 'Sync'), Icon: ArtistSyncIconSVG },
+      { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: MessagesIconSVG },
+      { id: 'earnings', label: tr('nav.earnings', 'Earnings'), Icon: EarningsIconSVG },
+      { id: 'settings', label: tr('nav.settings', 'Settings'), Icon: SettingsIconSVG },
     ];
   } else if (userType === 'business') {
-    // Business-specific labels - remove explore and earnings
     return [
-      { id: 'home', label: 'Home', Icon: HomeIconSVG },
-      { id: 'talent', label: 'Talent', Icon: TalentIconSVG },
-      { id: 'deals', label: 'Deals', Icon: DealsIconSVG },
-      { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
-      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+      { id: 'home', label: tr('nav.home', 'Home'), Icon: HomeIconSVG },
+      { id: 'talent', label: tr('nav.talent', 'Talent'), Icon: TalentIconSVG },
+      { id: 'deals', label: tr('nav.deals', 'Deals'), Icon: DealsIconSVG },
+      { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: MessagesIconSVG },
+      { id: 'settings', label: tr('nav.settings', 'Settings'), Icon: SettingsIconSVG },
     ];
   } else {
-    // Creator labels (default) - use original icons
     return [
-      { id: 'home', label: 'Home', Icon: HomeIconSVG },
-      { id: 'explore', label: 'Explore', Icon: ExploreIconSVG },
-      { id: 'talent', label: 'Talent', Icon: TalentIconSVG },
-      { id: 'deals', label: 'Deals', Icon: DealsIconSVG },
-      { id: 'messages', label: 'Messages', Icon: MessagesIconSVG },
-      { id: 'earnings', label: 'Earnings', Icon: EarningsIconSVG },
-      { id: 'settings', label: 'Settings', Icon: SettingsIconSVG },
+      { id: 'home', label: tr('nav.home', 'Home'), Icon: HomeIconSVG },
+      { id: 'explore', label: tr('nav.explore', 'Explore'), Icon: ExploreIconSVG },
+      { id: 'talent', label: tr('nav.talent', 'Talent'), Icon: TalentIconSVG },
+      { id: 'deals', label: tr('nav.deals', 'Deals'), Icon: DealsIconSVG },
+      { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: MessagesIconSVG },
+      { id: 'earnings', label: tr('nav.earnings', 'Earnings'), Icon: EarningsIconSVG },
+      { id: 'settings', label: tr('nav.settings', 'Settings'), Icon: SettingsIconSVG },
     ];
   }
 };
@@ -648,6 +646,7 @@ export function CollapsibleSidebar({
 }: CollapsibleSidebarProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const { t } = useTranslation();
   
   // Use external state if provided, otherwise use internal state
   // If permanentlyCollapsed is true, always keep sidebar collapsed
@@ -756,7 +755,7 @@ export function CollapsibleSidebar({
 
       {/* Navigation */}
       <nav className="flex-1 px-3">
-        {getNavItems(userType).map((item: any) => {
+        {getNavItems(userType, t).map((item: any) => {
           const isHovered = hoveredItem === item.id;
           const isActive = activeSection === item.id;
           const IconComponent = item.Icon;

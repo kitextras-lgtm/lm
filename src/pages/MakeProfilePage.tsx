@@ -111,7 +111,7 @@ export function MakeProfilePage() {
 
     try {
       // Get user ID from auth or localStorage
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       const verifiedUserId = localStorage.getItem('verifiedUserId');
       const verifiedEmail = localStorage.getItem('verifiedEmail');
       
@@ -237,6 +237,11 @@ export function MakeProfilePage() {
           // Check if we came from artist page via URL parameter
           const urlParams = new URLSearchParams(window.location.search);
           const fromArtist = urlParams.get('source') === 'artist';
+          
+          // Clear stored credentials to prevent cross-account contamination
+          localStorage.removeItem('verifiedUserId');
+          localStorage.removeItem('verifiedEmail');
+          localStorage.removeItem('tempProfile');
           
           // For artists, go back to artist page; for regular users, go back to signup
           navigate(fromArtist ? '/learn/artist' : '/signup');

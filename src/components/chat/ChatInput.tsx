@@ -1,5 +1,6 @@
 // Fix 22 & 23: Input State Preservation (Drafts) and Typing Indicators
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Send, ImagePlus, AlertCircle } from 'lucide-react';
 import { ImageUploadPreview } from './ImageUploadPreview';
 import { ReplyPreview } from './ReplyPreview';
@@ -32,6 +33,7 @@ export function ChatInput({
   onDraftChange,
   onDraftClear,
 }: ChatInputProps) {
+  const { t } = useTranslation();
   // Fix 22: Initialize with draft if provided
   const [message, setMessage] = useState(initialDraft);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -206,7 +208,7 @@ export function ChatInput({
             handleDraftSave(e.target.value);
           }}
           onKeyDown={handleKeyDown}
-          placeholder={otherUserName ? `Message @${otherUserName}` : 'Send a message...'}
+          placeholder={otherUserName ? t('messages.messageAt', { username: otherUserName }) : t('messages.sendAMessage')}
           disabled={disabled}
           rows={1}
           maxLength={5000}

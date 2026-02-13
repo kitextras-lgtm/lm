@@ -224,7 +224,13 @@ export function SignupPage() {
       // Navigate to profile page - userId is in localStorage
       // No need to call signInWithOtp - user is already created by verify-otp Edge Function
       console.log('✅ Navigating to /make-profile');
-      navigate('/make-profile');
+      if (fromArtistPage) {
+        // Clear the flag so UserTypeSelectionPage doesn't redirect back to make-profile
+        localStorage.removeItem('signupSource');
+        navigate('/make-profile', { state: { userType: 'artist' } });
+      } else {
+        navigate('/make-profile');
+      }
     } catch (err: any) {
       console.error('[ERROR] OTP verification error:', err);
       console.error('[ERROR] Error details:', {

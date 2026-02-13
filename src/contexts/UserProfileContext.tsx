@@ -8,6 +8,7 @@ import {
   CachedUserProfile 
 } from '../utils/profileCache';
 import { preloadAndCacheImage } from '../utils/imageCache';
+import { setDefaultLanguageFromLocation } from '../i18n';
 
 interface UserProfileContextType {
   profile: CachedUserProfile | null;
@@ -170,6 +171,9 @@ export function UserProfileProvider({ children }: UserProfileProviderProps) {
         if (fresh) {
           setProfile(fresh);
           cacheProfile(uid, fresh);
+          
+          // Set default language based on user's location (only on first load, no saved preference)
+          setDefaultLanguageFromLocation(fresh.location);
           
           // Preload profile picture
           if (fresh.profile_picture_url) {

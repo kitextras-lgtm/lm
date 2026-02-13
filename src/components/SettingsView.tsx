@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { UserSilhouetteIcon } from './UserSilhouetteIcon';
 import { PuzzlePiecesIcon } from './PuzzlePiecesIcon';
 import { CreditCardIcon } from './CreditCardIcon';
@@ -45,88 +46,44 @@ const AccountTypeIcon = () => (
   </div>
 );
 
-// Settings menu items with descriptions and animated icons
+// Settings menu items with translation keys and animated icons
 const settingsMenuItems = [
-  {
-    id: 'personal',
-    label: 'Personal info',
-    IconComponent: UserSilhouetteIcon,
-  },
-  {
-    id: 'accounts',
-    label: 'Connected accounts',
-    IconComponent: PuzzlePiecesIcon,
-  },
-  {
-    id: 'accountType',
-    label: 'Account type',
-    IconComponent: AccountTypeIcon,
-  },
-  {
-    id: 'payout',
-    label: 'Payment method',
-    IconComponent: CreditCardIcon,
-  },
-  {
-    id: 'display',
-    label: 'Display',
-    IconComponent: DisplayIcon,
-  },
-  {
-    id: 'languages',
-    label: 'Languages',
-    IconComponent: LanguageIcon,
-  },
-  {
-    id: 'notifications',
-    label: 'Notifications',
-    IconComponent: BellIcon,
-  },
-  {
-    id: 'feedback',
-    label: 'Send feedback',
-    IconComponent: SendFeedbackIcon,
-  },
-  {
-    id: 'guides',
-    label: 'Guides',
-    IconComponent: GuidebookIcon,
-  },
-  {
-    id: 'logout',
-    label: 'Log out',
-    IconComponent: LogOutIcon,
-  },
+  { id: 'personal', labelKey: 'settings.personalInfo', IconComponent: UserSilhouetteIcon },
+  { id: 'accounts', labelKey: 'settings.connectedAccounts', IconComponent: PuzzlePiecesIcon },
+  { id: 'accountType', labelKey: 'settings.accountType', IconComponent: AccountTypeIcon },
+  { id: 'payout', labelKey: 'settings.paymentMethod', IconComponent: CreditCardIcon },
+  { id: 'display', labelKey: 'settings.display', IconComponent: DisplayIcon },
+  { id: 'languages', labelKey: 'settings.languages', IconComponent: LanguageIcon },
+  { id: 'notifications', labelKey: 'settings.notifications', IconComponent: BellIcon },
+  { id: 'feedback', labelKey: 'settings.sendFeedback', IconComponent: SendFeedbackIcon },
+  { id: 'guides', labelKey: 'settings.guides', IconComponent: GuidebookIcon },
+  { id: 'logout', labelKey: 'settings.logOut', IconComponent: LogOutIcon },
 ];
 
 // Admin settings menu items (only Display and Log out)
 const adminSettingsMenuItems = [
-  {
-    id: 'display',
-    label: 'Display',
-    IconComponent: DisplayIcon,
-  },
-  {
-    id: 'logout',
-    label: 'Log out',
-    IconComponent: LogOutIcon,
-  },
+  { id: 'display', labelKey: 'settings.display', IconComponent: DisplayIcon },
+  { id: 'logout', labelKey: 'settings.logOut', IconComponent: LogOutIcon },
 ];
 
 function SettingsMenuItem({ 
   label, 
+  labelKey,
   IconComponent, 
   onClick, 
   isActive,
   showBorder = true 
 }: { 
-  label: string; 
+  label?: string;
+  labelKey?: string; 
   IconComponent: React.ComponentType<{ isHovered?: boolean }>;
   onClick?: () => void;
   isActive?: boolean;
   showBorder?: boolean;
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslation();
+  const displayLabel = labelKey ? t(labelKey) : label || '';
 
   return (
     <div
@@ -141,7 +98,7 @@ function SettingsMenuItem({
         <IconComponent isHovered={isHovered} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[15px]" style={{ color: '#F8FAFC' }}>{label}</div>
+        <div className="text-[15px]" style={{ color: '#F8FAFC' }}>{displayLabel}</div>
       </div>
       <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: '#CBD5E1' }} />
     </div>
@@ -167,31 +124,21 @@ export function SettingsView({
   const [activeSection, setActiveSection] = useState<string | null>(userType === 'admin' ? 'display' : 'personal');
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileDetailView, setMobileDetailView] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const getSectionTitle = () => {
     switch (activeSection) {
-      case 'personal':
-        return 'Personal info';
-      case 'accounts':
-        return 'Connected accounts';
-      case 'accountType':
-        return 'Account type';
-      case 'payout':
-        return 'Payment method';
-      case 'display':
-        return 'Display';
-      case 'languages':
-        return 'Languages';
-      case 'notifications':
-        return 'Notifications';
-      case 'feedback':
-        return 'Send feedback';
-      case 'guides':
-        return 'Guides';
-      case 'logout':
-        return 'Log out';
-      default:
-        return '';
+      case 'personal': return t('settings.personalInfo');
+      case 'accounts': return t('settings.connectedAccounts');
+      case 'accountType': return t('settings.accountType');
+      case 'payout': return t('settings.paymentMethod');
+      case 'display': return t('settings.display');
+      case 'languages': return t('settings.languages');
+      case 'notifications': return t('settings.notifications');
+      case 'feedback': return t('settings.sendFeedback');
+      case 'guides': return t('settings.guides');
+      case 'logout': return t('settings.logOut');
+      default: return '';
     }
   };
 
@@ -248,7 +195,7 @@ export function SettingsView({
       switch (type?.toLowerCase()) {
         case 'artist':
           return {
-            label: 'Artist',
+            label: t('accountTypes.artist'),
             icon: ArtistIcon,
             color: 'var(--text-primary)',
             bgColor: 'var(--bg-elevated)',
@@ -256,7 +203,7 @@ export function SettingsView({
           };
         case 'creator':
           return {
-            label: 'Creator',
+            label: t('accountTypes.creator'),
             icon: CreatorIcon,
             color: 'var(--text-primary)',
             bgColor: 'var(--bg-elevated)',
@@ -265,7 +212,7 @@ export function SettingsView({
         case 'brand':
         case 'business':
           return {
-            label: 'Brand',
+            label: t('accountTypes.brand'),
             icon: BrandIcon,
             color: 'var(--text-primary)',
             bgColor: 'var(--bg-elevated)',
@@ -298,28 +245,17 @@ export function SettingsView({
 
   const getSectionDescription = () => {
     switch (activeSection) {
-      case 'personal':
-        return 'See information about your account, download an archive of your data, or learn about your account deactivation options.';
-      case 'accounts':
-        return 'Manage your connected social media accounts and third-party integrations.';
-      case 'accountType':
-        return 'View and manage your account type. Contact support if you need to change your account type.';
-      case 'payout':
-        return 'Manage your payment methods and payout settings.';
-      case 'display':
-        return 'Customize your display preferences and appearance settings.';
-      case 'languages':
-        return 'Set your language preferences and regional settings.';
-      case 'notifications':
-        return 'Select the kinds of notifications you get about your activities and recommendations.';
-      case 'feedback':
-        return 'Help us improve the platform by sharing your feedback and suggestions.';
-      case 'guides':
-        return 'Access helpful guides and tutorials to get the most out of Elevate.';
-      case 'logout':
-        return 'Sign out of your account and return to the login page.';
-      default:
-        return '';
+      case 'personal': return t('settings.personalInfoDesc');
+      case 'accounts': return t('settings.connectedAccountsDesc');
+      case 'accountType': return t('settings.accountTypeDesc');
+      case 'payout': return t('settings.paymentMethodDesc');
+      case 'display': return t('settings.displayDesc');
+      case 'languages': return t('settings.languagesDesc');
+      case 'notifications': return t('settings.notificationsDesc');
+      case 'feedback': return t('settings.sendFeedbackDesc');
+      case 'guides': return t('settings.guidesDesc');
+      case 'logout': return t('settings.logOutDesc');
+      default: return '';
     }
   };
 
@@ -344,8 +280,8 @@ export function SettingsView({
       case 'guides':
         return renderGuides ? renderGuides() : (
           <div className="px-4 py-8">
-            <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>Guides</h3>
-            <p className="text-sm" style={{ color: '#CBD5E1' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>{t('guides.title')}</h3>
+            <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('guides.comingSoon')}</p>
           </div>
         );
       case 'logout':
@@ -383,7 +319,7 @@ export function SettingsView({
       <div className="animate-fade-in pb-20">
         {/* Mobile Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>Settings</h1>
+          <h1 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{t('settings.title')}</h1>
           {onBack && (
             <button 
               onClick={onBack}
@@ -401,7 +337,7 @@ export function SettingsView({
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#CBD5E1' }} />
           <input
             type="text"
-            placeholder="Search Settings"
+            placeholder={t('settings.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full border rounded-full py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#3B82F6]"
@@ -416,7 +352,7 @@ export function SettingsView({
           {(userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).map((item, index) => (
             <SettingsMenuItem
               key={item.id}
-              label={item.label}
+              labelKey={item.labelKey}
               IconComponent={item.IconComponent}
               onClick={() => {
                 setActiveSection(item.id);
@@ -437,14 +373,14 @@ export function SettingsView({
       <div className="w-[380px] flex-shrink-0 border-r flex flex-col" style={{ borderColor: '#2f2f2f' }}>
         {/* Header */}
         <div className="p-4">
-          <h1 className="text-xl font-bold mb-4" style={{ color: '#F8FAFC' }}>Settings</h1>
+          <h1 className="text-xl font-bold mb-4" style={{ color: '#F8FAFC' }}>{t('settings.title')}</h1>
           
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#CBD5E1' }} />
             <input
               type="text"
-              placeholder="Search Settings"
+              placeholder={t('settings.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent border rounded-full py-2.5 pl-10 pr-4 text-[15px] focus:outline-none focus:border-[#3B82F6]"
@@ -460,7 +396,7 @@ export function SettingsView({
           {(userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).map((item, index) => (
             <SettingsMenuItem
               key={item.id}
-              label={item.label}
+              labelKey={item.labelKey}
               IconComponent={item.IconComponent}
               onClick={() => setActiveSection(item.id)}
               isActive={activeSection === item.id}

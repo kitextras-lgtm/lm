@@ -127,9 +127,9 @@ export function UserTypeSelectionPage() {
         );
       case 'freelancer':
         return (
-          <div className="freelancer-icon group w-16 h-16 flex-shrink-0">
+          <div className="freelancer-icon w-16 h-16 flex-shrink-0">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <g className="origin-center transition-transform duration-500 group-hover:rotate-[360deg]">
+              <g className={`origin-center transition-all duration-500 ${selectedType === 'freelancer' ? 'rotate-[360deg] scale-110' : ''}`}>
                 <rect x="12" y="10" width="24" height="10" rx="1" stroke="white" strokeWidth="2" fill="none"/>
                 <rect x="21" y="20" width="6" height="24" rx="1" stroke="white" strokeWidth="2" fill="none"/>
                 <line x1="22" y1="32" x2="26" y2="32" stroke="white" strokeWidth="2" strokeLinecap="round"/>

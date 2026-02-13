@@ -326,6 +326,22 @@
     "results": "Ergebnisse",
     "noUsersFound": "Keine Benutzer gefunden",
     "chat": "Chat",
-    "sendMessageToStart": "Senden Sie eine Nachricht, um die Unterhaltung zu starten"
-  }
+    "sendMessageToStart": "Senden Sie eine Nachricht, um die Unterhaltung zu starten",
+    "searchConversations": "Unterhaltungen suchen...",
+    "primary": "Primär",
+    "general": "Allgemein",
+    "requests": "Anfragen",
+    "noMessagesYet": "Noch keine Nachrichten",
+    "supportTeamReachOut": "Unser Support-Team wird Sie hier kontaktieren, wenn nötig.",
+    "noConversationsFound": "Keine Unterhaltungen gefunden",
+    "selectConversation": "Unterhaltung auswählen",
+    "chooseFromList": "Wählen Sie einen Support-Agenten aus der Liste, um zu chatten",
+    "sendAMessage": "Nachricht senden...",
+    "messageAt": "Nachricht an @{{username}}",
+    "joined": "Beigetreten",
+    "viewProfile": "Profil ansehen"
+  },
+  "socialLinks": { "title": "Meine Social Links", "addLink": "Link hinzufügen", "noLinksYet": "Noch keine Links hinzugefügt", "accountsFromDistribution": "Konten aus der Distribution erscheinen hier", "distributeToStart": "Verteilen, um zu beginnen", "platform": "Plattform", "url": "URL", "displayName": "Anzeigename (optional)", "displayNamePlaceholder": "Mein Kanal", "channelType": "Kanaltyp", "selectChannelType": "Kanaltyp auswählen", "channelDescription": "Kanalbeschreibung", "channelDescPlaceholder": "Beschreiben Sie Ihren Kanalinhalt, Stil oder was ihn einzigartig macht...", "save": "Speichern", "cancel": "Abbrechen", "linkAlreadyRegistered": "Dieser Link wurde bereits von einem anderen Benutzer registriert. Bitte verwenden Sie einen anderen Link.", "errorAddingLink": "Fehler beim Hinzufügen des Links. Bitte versuchen Sie es erneut." },
+  "talentFilters": { "creator": "Creator", "brand": "Marke", "freelancer": "Freelancer", "gaming": "Gaming", "music": "Musik", "vlogs": "Vlogs", "education": "Bildung", "comedy": "Comedy", "sports": "Sport", "travel": "Reisen", "food": "Essen", "fashion": "Mode", "beauty": "Beauty", "technology": "Technologie", "art": "Kunst", "dance": "Tanz", "fitness": "Fitness", "lifestyle": "Lifestyle", "anyPercent": "Beliebig %", "eightyUp": "80% und mehr", "ninetyUp": "90% und mehr", "videoEditing": "Videoschnitt", "photography": "Fotografie", "contentWriting": "Content-Erstellung", "graphicDesign": "Grafikdesign", "animation": "Animation", "voiceOver": "Synchronisation", "musicProduction": "Musikproduktion", "danceSkill": "Tanz", "acting": "Schauspiel", "comedySkill": "Comedy", "publicSpeaking": "Öffentliches Sprechen", "modeling": "Modeln", "cooking": "Kochen", "fitnessTraining": "Fitness-Training", "makeupArtistry": "Make-up-Kunst" },
+  "channelTypes": { "music": "Musik", "gaming": "Gaming", "lifestyle": "Lifestyle", "education": "Bildung", "comedy": "Comedy", "sports": "Sport", "technology": "Technologie", "artDesign": "Kunst & Design", "fashion": "Mode", "foodCooking": "Essen & Kochen", "travel": "Reisen", "fitness": "Fitness", "business": "Business", "entertainment": "Unterhaltung", "other": "Sonstiges" }
 }

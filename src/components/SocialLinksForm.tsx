@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { AnimatedLinkIcon } from './AnimatedLinkIcon';
 
@@ -149,6 +150,7 @@ interface SocialLinksFormProps {
 }
 
 export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps) {
+  const { t } = useTranslation();
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newLink, setNewLink] = useState({
@@ -214,7 +216,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
         .limit(1);
 
       if (existingLinks && existingLinks.length > 0) {
-        alert('This link has already been registered by another user. Please use a different link.');
+        alert(t('socialLinks.linkAlreadyRegistered'));
         return;
       }
 
@@ -238,7 +240,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
       if (error) {
         // Check if it's a unique constraint violation
         if (error.code === '23505') {
-          alert('This link has already been registered by another user. Please use a different link.');
+          alert(t('socialLinks.linkAlreadyRegistered'));
         } else {
           throw error;
         }
@@ -252,7 +254,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
       console.error('Error adding link:', error);
       // Error already handled above if it's a duplicate
       if (error && typeof error === 'object' && 'code' in error && error.code !== '23505') {
-        alert('Error adding link. Please try again.');
+        alert(t('socialLinks.errorAddingLink'));
       }
     }
   };
@@ -274,7 +276,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
   if (loading) {
     return (
       <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="text-center" style={{ color: '#CBD5E1' }}>Loading...</div>
+        <div className="text-center" style={{ color: '#CBD5E1' }}>{t('common.loading')}</div>
       </div>
     );
   }
@@ -282,7 +284,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
   return (
     <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
       <div className="flex items-center justify-between mb-5 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>My Social Links</h3>
+        <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('socialLinks.title')}</h3>
         {!isAdding && userType !== 'artist' && (
           <button
             onClick={() => setIsAdding(true)}
@@ -290,7 +292,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
             style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Link</span>
+            <span className="hidden sm:inline">{t('socialLinks.addLink')}</span>
           </button>
         )}
       </div>
@@ -300,7 +302,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
           <div className="space-y-3 sm:space-y-4">
             <div>
               <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
-                Platform
+                {t('socialLinks.platform')}
               </label>
               <CustomDropdown
                 value={newLink.platform}
@@ -312,7 +314,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
 
             <div>
               <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
-                URL
+                {t('socialLinks.url')}
               </label>
               <input
                 type="text"
@@ -327,13 +329,13 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
 
             <div>
               <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
-                Display Name (optional)
+                {t('socialLinks.displayName')}
               </label>
               <input
                 type="text"
                 value={newLink.display_name}
                 onChange={(e) => setNewLink({ ...newLink, display_name: e.target.value })}
-                placeholder="My Channel"
+                placeholder={t('socialLinks.displayNamePlaceholder')}
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
                 onFocus={(e) => e.target.style.borderColor = '#ffffff'}
@@ -345,24 +347,24 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
               <>
                 <div>
                   <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
-                    Channel Type
+                    {t('socialLinks.channelType')}
                   </label>
                   <CustomDropdown
-                    value={newLink.channel_type || 'Select channel type'}
-                    options={['Select channel type', ...channelTypeOptions]}
-                    onChange={(value) => setNewLink({ ...newLink, channel_type: value === 'Select channel type' ? '' : value })}
+                    value={newLink.channel_type || t('socialLinks.selectChannelType')}
+                    options={[t('socialLinks.selectChannelType'), ...channelTypeOptions]}
+                    onChange={(value) => setNewLink({ ...newLink, channel_type: value === t('socialLinks.selectChannelType') ? '' : value })}
                     platformIcons={{}}
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
-                    Channel Description
+                    {t('socialLinks.channelDescription')}
                   </label>
                   <textarea
                     value={newLink.channel_description}
                     onChange={(e) => setNewLink({ ...newLink, channel_description: e.target.value })}
-                    placeholder="Describe your channel content, style, or what makes it unique..."
+                    placeholder={t('socialLinks.channelDescPlaceholder')}
                     rows={3}
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border resize-none"
                     style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
@@ -379,7 +381,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                 className="flex-1 px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
                 style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
               >
-                Save
+                {t('socialLinks.save')}
               </button>
               <button
                 onClick={() => {
@@ -389,7 +391,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                 className="px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-90 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
               >
-                Cancel
+                {t('socialLinks.cancel')}
               </button>
             </div>
           </div>
@@ -401,16 +403,16 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
           <div className="text-center py-8 sm:py-12">
             <AnimatedLinkIcon />
             <p className="text-sm sm:text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
-              No links added yet
+              {t('socialLinks.noLinksYet')}
             </p>
             {userType === 'artist' ? (
               <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
-                Accounts from distribution will up here
+                {t('socialLinks.accountsFromDistribution')}
               </p>
             ) : (
               userType === 'creator' || userType === 'business' ? null : (
                 <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
-                  Distribute to get started
+                  {t('socialLinks.distributeToStart')}
                 </p>
               )
             )}

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Camera, MapPin, Calendar, ArrowLeft } from 'lucide-react';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileViewProps {
   userProfile: {
@@ -12,7 +13,7 @@ interface ProfileViewProps {
     created_at?: string;
     bio?: string;
     banner_url?: string;
-    user_type?: 'artist' | 'creator' | 'business';
+    user_type?: 'artist' | 'creator' | 'freelancer' | 'business';
   } | null;
   cachedProfilePic?: string | null;
   onBack?: () => void;
@@ -108,17 +109,14 @@ const FreelancerIcon = () => (
   </div>
 );
 
-const getAccountTypeIcon = (userType?: 'artist' | 'creator' | 'business') => {
+const getAccountTypeIcon = (userType?: 'artist' | 'creator' | 'freelancer' | 'business') => {
   switch (userType) {
     case 'artist':
       return <ArtistIcon />;
     case 'creator':
-      return (
-        <>
-          <CreatorIcon />
-          <FreelancerIcon />
-        </>
-      );
+      return <CreatorIcon />;
+    case 'freelancer':
+      return <FreelancerIcon />;
     case 'business':
       return <BrandIcon />;
     default:
@@ -144,6 +142,7 @@ export function ProfileView({
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isBannerUploading, setIsBannerUploading] = useState(false);
   const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+  const { t } = useTranslation();
   
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -152,9 +151,9 @@ export function ProfileView({
   const displayPic = cachedProfilePic || (profilePicUrl && !profilePicUrl.startsWith('blob:') ? profilePicUrl : null);
   
   const formatJoinDate = (dateString?: string) => {
-    if (!dateString) return 'Joined recently';
+    if (!dateString) return t('profile.joinedRecently');
     const date = new Date(dateString);
-    return `Joined ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+    return `${t('profile.joined')} ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
   };
 
   const handleBannerClick = () => {
@@ -210,8 +209,8 @@ export function ProfileView({
   };
 
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'reviews', label: 'Reviews' },
+    { id: 'overview', label: t('profile.overview') },
+    { id: 'reviews', label: t('profile.reviews') },
   ];
 
   return (
@@ -231,9 +230,9 @@ export function ProfileView({
             <h1 className="font-bold text-xl" style={{ color: '#F8FAFC' }}>
               {userProfile?.first_name && userProfile?.last_name 
                 ? `${userProfile.first_name} ${userProfile.last_name}`
-                : 'Your Profile'}
+                : t('profile.yourProfile')}
             </h1>
-            <p className="text-sm" style={{ color: '#CBD5E1' }}>0 posts</p>
+            <p className="text-sm" style={{ color: '#CBD5E1' }}>0 {t('profile.posts')}</p>
           </div>
         </div>
       </div>
@@ -260,7 +259,7 @@ export function ProfileView({
           {isBannerUploading ? (
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm" style={{ color: '#F8FAFC' }}>Uploading...</span>
+              <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('common.uploading')}</span>
             </div>
           ) : (
             <Camera className="w-8 h-8" style={{ color: '#F8FAFC' }} />
@@ -296,7 +295,7 @@ export function ProfileView({
             {isAvatarUploading ? (
               <div className="flex flex-col items-center gap-1">
                 <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs" style={{ color: '#F8FAFC' }}>Uploading...</span>
+                <span className="text-xs" style={{ color: '#F8FAFC' }}>{t('common.uploading')}</span>
               </div>
             ) : (
               <Camera className="w-6 h-6" style={{ color: '#F8FAFC' }} />
@@ -318,7 +317,7 @@ export function ProfileView({
             className="px-5 py-2 rounded-xl font-semibold text-sm hover:brightness-110 transition-all border"
             style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
           >
-            Edit profile
+            {t('profile.editProfile')}
           </button>
         </div>
 
@@ -328,7 +327,7 @@ export function ProfileView({
             <h2 className="font-bold text-xl" style={{ color: '#F8FAFC' }}>
               {userProfile?.first_name && userProfile?.last_name 
                 ? `${userProfile.first_name} ${userProfile.last_name}`
-                : 'Your Name'}
+                : t('profile.yourName')}
             </h2>
             {getAccountTypeIcon(userProfile?.user_type)}
           </div>
@@ -336,7 +335,7 @@ export function ProfileView({
         </div>
 
         {/* Bio */}
-        <p className="mt-3" style={{ color: '#F8FAFC' }}>{userProfile?.bio || 'No bio yet.'}</p>
+        <p className="mt-3" style={{ color: '#F8FAFC' }}>{userProfile?.bio || t('profile.noBio')}</p>
 
         {/* Location & Join Date */}
         <div className="flex items-center gap-4 mt-3" style={{ color: '#CBD5E1' }}>
@@ -380,10 +379,10 @@ export function ProfileView({
           <div style={{ color: '#F8FAFC' }}>
             {/* Channel Links Section */}
             <div className="mb-8">
-              <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>Channels & Accounts</h3>
+              <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>{t('profile.channelsAccounts')}</h3>
               <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <p className="text-center py-8" style={{ color: '#CBD5E1' }}>
-                  Any channel or account links added will show up here along with the channel description if specified.
+                  {t('profile.channelsPlaceholder')}
                 </p>
               </div>
             </div>
@@ -393,10 +392,10 @@ export function ProfileView({
               {/* Subscriptions Card */}
               <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Subscribers</h4>
+                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('profile.subscribers')}</h4>
                 </div>
                 <p className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>1.2M</p>
-                <p className="text-sm" style={{ color: '#10b981' }}>+180.1% <span style={{ color: '#CBD5E1' }}>from last month</span></p>
+                <p className="text-sm" style={{ color: '#10b981' }}>+180.1% <span style={{ color: '#CBD5E1' }}>{t('profile.fromLastMonth')}</span></p>
                 
                 {/* Bar Chart */}
                 <div className="flex items-end gap-2 mt-6 h-24">
@@ -427,10 +426,10 @@ export function ProfileView({
               {/* Users Card */}
               <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>Total Views</h4>
+                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('profile.totalViews')}</h4>
                 </div>
                 <p className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>1B</p>
-                <p className="text-sm" style={{ color: '#10b981' }}>+19.2% <span style={{ color: '#CBD5E1' }}>from last month</span></p>
+                <p className="text-sm" style={{ color: '#10b981' }}>+19.2% <span style={{ color: '#CBD5E1' }}>{t('profile.fromLastMonth')}</span></p>
                 
                 {/* Bar Chart */}
                 <div className="flex items-end gap-2 mt-6 h-24">
@@ -462,9 +461,9 @@ export function ProfileView({
           </div>
         ) : (
           <div style={{ color: '#F8FAFC' }}>
-            <h3 className="font-semibold text-lg mb-4">Reviews</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('profile.reviews')}</h3>
             <div className="text-center py-8" style={{ color: '#CBD5E1' }}>
-              <p>No reviews yet.</p>
+              <p>{t('profile.noReviews')}</p>
             </div>
           </div>
         )}

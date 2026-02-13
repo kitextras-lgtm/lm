@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, MessageSquare } from 'lucide-react';
 import { EditIcon } from '../components/EditIcon';
 import { useUserProfile } from '../contexts/UserProfileContext';
@@ -17,6 +18,7 @@ interface MessagesPageProps {
 }
 
 export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType }: MessagesPageProps) {
+  const { t } = useTranslation();
   // Get cached user profile for username display
   const { profile: cachedProfile, isLoading: profileLoading } = useUserProfile();
 
@@ -321,8 +323,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search conversations..."
-                aria-label="Search conversations"
+                placeholder={t('messages.searchConversations')}
+                aria-label={t('messages.searchConversations')}
                 className="w-full pl-9 lg:pl-10 pr-3 lg:pr-4 py-2 lg:py-3 rounded-lg lg:rounded-xl text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
                 style={{
                   backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
@@ -341,7 +343,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   }`}
                   style={filter === 'all' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
                 >
-                  Primary
+                  {t('messages.primary')}
                 </button>
                 <button
                   onClick={() => setFilter('unread')}
@@ -350,7 +352,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   }`}
                   style={filter === 'unread' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
                 >
-                  General
+                  {t('messages.general')}
                 </button>
                 <button
                   onClick={() => setFilter('pinned')}
@@ -359,7 +361,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   }`}
                   style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
                 >
-                  Requests
+                  {t('messages.requests')}
                   {pinnedCount > 0 && (
                     <span 
                       className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center text-xs font-bold rounded-full"
@@ -388,12 +390,12 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 </div>
                 {userType === 'artist' ? (
                   <>
-                    <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No messages yet</p>
-                    <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Our support team will reach out to you here when needed.</p>
+                    <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('messages.noMessagesYet')}</p>
+                    <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>{t('messages.supportTeamReachOut')}</p>
                   </>
                 ) : (
                   <>
-                    <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>No conversations found</p>
+                    <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('messages.noConversationsFound')}</p>
                   </>
                 )}
               </div>
@@ -438,8 +440,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search conversations..."
-              aria-label="Search conversations"
+              placeholder={t('messages.searchConversations')}
+              aria-label={t('messages.searchConversations')}
               className="w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
               style={{
                 backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
@@ -458,7 +460,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 }`}
                 style={filter === 'all' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
               >
-                Primary
+                {t('messages.primary')}
               </button>
               <button
                 onClick={() => setFilter('unread')}
@@ -467,7 +469,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 }`}
                 style={filter === 'unread' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
               >
-                General
+                {t('messages.general')}
               </button>
               <button
                 onClick={() => setFilter('pinned')}
@@ -476,7 +478,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 }`}
                 style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
               >
-                Requests
+                {t('messages.requests')}
                 {pinnedCount > 0 && (
                   <span 
                     className="absolute -top-1 -right-1 min-w-[20px] h-[20px] flex items-center justify-center text-xs font-bold rounded-full"
@@ -505,12 +507,12 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
               </div>
               {userType === 'artist' ? (
                 <>
-                  <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No messages yet</p>
-                  <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>Our support team will reach out to you here when needed.</p>
+                  <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('messages.noMessagesYet')}</p>
+                  <p className="text-xs mt-1" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>{t('messages.supportTeamReachOut')}</p>
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>No conversations found</p>
+                  <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('messages.noConversationsFound')}</p>
                 </>
               )}
             </div>
@@ -572,8 +574,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
               <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#2A2A2E' : '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
                 <MessageSquare className="w-10 h-10" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }} />
               </div>
-              <h2 className="text-xl font-semibold mb-2" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>Select a conversation</h2>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>Choose a support agent from the list to start chatting</p>
+              <h2 className="text-xl font-semibold mb-2" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>{t('messages.selectConversation')}</h2>
+              <p className="text-sm" style={{ color: '#94A3B8' }}>{t('messages.chooseFromList')}</p>
             </div>
           </div>
         )}
