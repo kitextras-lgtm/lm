@@ -2814,16 +2814,177 @@ export function FreelancerDashboard() {
             <AnnouncementBanner userId={currentUserId} userType="freelancer" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.overview')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Overview</h2>
+            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>View proposal history, earnings, profile analytics, and your Job Success Score.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+            {/* Earnings Card */}
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+              <div className="mb-4">
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Earnings</p>
+                <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>12 months</p>
+              </div>
+              <div className="mb-4">
+                <h3 className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>$67,809</h3>
+                <p className="text-sm mt-1" style={{ color: '#EF4444' }}>↓ -1% in previous year</p>
+              </div>
+              <button className="text-sm font-medium transition-opacity hover:opacity-80" style={{ color: '#22c55e' }}>
+                Transaction history
+              </button>
+            </div>
 
-            <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+            {/* Job Success Score Card */}
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+              <div className="mb-4">
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Job Success Score</p>
+              </div>
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative w-32 h-32">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="rgba(148, 163, 184, 0.2)"
+                      strokeWidth="12"
+                      fill="none"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="#DC2626"
+                      strokeWidth="12"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 56}`}
+                      strokeDashoffset="0"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>100<span className="text-lg">%</span></span>
+                  </div>
+                </div>
+              </div>
+              <button className="text-sm font-medium transition-opacity hover:opacity-80" style={{ color: '#22c55e' }}>
+                Learn more
+              </button>
+            </div>
 
-            <NovaBeatsCard onClick={() => setSelectedCampaign(CAMPAIGNS[2])} backgroundTheme={backgroundTheme} />
+            {/* Proposals Card */}
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm" style={{ color: '#94A3B8' }}>Proposals</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>2 hrs ago</p>
+                </div>
+                <select className="text-xs px-2 py-1 rounded border" style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: '#94A3B8' }}>
+                  <option>Last 30 days</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <h3 className="text-3xl sm:text-4xl font-bold mb-1" style={{ color: '#F8FAFC' }}>25% hire</h3>
+                <p className="text-xs" style={{ color: '#64748B' }}>20 proposals sent</p>
+                <p className="text-xs" style={{ color: '#64748B' }}>16 organic | 5 boosted</p>
+              </div>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
+                    <div className="h-full flex">
+                      <div className="h-full" style={{ width: '60%', backgroundColor: '#67E8F9' }}></div>
+                      <div className="h-full" style={{ width: '40%', backgroundColor: '#1E40AF' }}></div>
+                    </div>
+                  </div>
+                  <span className="text-xs" style={{ color: '#94A3B8' }}>20</span>
+                  <span className="text-xs" style={{ color: '#64748B' }}>proposals sent</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
+                    <div className="h-full flex">
+                      <div className="h-full" style={{ width: '50%', backgroundColor: '#67E8F9' }}></div>
+                      <div className="h-full" style={{ width: '50%', backgroundColor: '#1E40AF' }}></div>
+                    </div>
+                  </div>
+                  <span className="text-xs" style={{ color: '#94A3B8' }}>10</span>
+                  <span className="text-xs" style={{ color: '#64748B' }}>were viewed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
+                    <div className="h-full" style={{ width: '40%', backgroundColor: '#1E40AF' }}></div>
+                  </div>
+                  <span className="text-xs" style={{ color: '#94A3B8' }}>8</span>
+                  <span className="text-xs" style={{ color: '#64748B' }}>interviews</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
+                    <div className="h-full" style={{ width: '25%', backgroundColor: '#1E40AF' }}></div>
+                  </div>
+                  <span className="text-xs" style={{ color: '#94A3B8' }}>5</span>
+                  <span className="text-xs" style={{ color: '#64748B' }}>hires</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#67E8F9' }}></div>
+                  <span style={{ color: '#94A3B8' }}>Organic</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#1E40AF' }}></div>
+                  <span style={{ color: '#94A3B8' }}>Boost</span>
+                </div>
+              </div>
+              <button className="text-sm font-medium mt-4 transition-opacity hover:opacity-80" style={{ color: '#22c55e' }}>
+                My proposals
+              </button>
+            </div>
+
+            {/* Client Relationships Card */}
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+              <div className="mb-4">
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Client relationships</p>
+              </div>
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative w-32 h-32">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="rgba(148, 163, 184, 0.2)"
+                      strokeWidth="12"
+                      fill="none"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="#DC2626"
+                      strokeWidth="12"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 56 * 0.05} ${2 * Math.PI * 56 * 0.95}`}
+                      strokeDashoffset="0"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>5<span className="text-lg">%</span></span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#DC2626' }}></div>
+                  <span style={{ color: '#94A3B8' }}>More than 3 months</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'rgba(148, 163, 184, 0.3)' }}></div>
+                  <span style={{ color: '#94A3B8' }}>Less than 3 months</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import { UserProfileProvider } from './contexts/UserProfileContext';
+import { ProfileCreationProvider } from './contexts/ProfileCreationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AdminProtectedRoute } from './components/AdminProtectedRoute';
 import { PremiumLoader } from './components/PremiumLoader';
@@ -17,6 +18,16 @@ const ContactForm = lazy(() => import('./components/ContactForm').then(module =>
 const ArtistDashboard = lazy(() => import('./pages/ArtistDashboard').then(module => ({ default: module.ArtistDashboard })));
 const CreatorDashboard = lazy(() => import('./pages/CreatorDashboard').then(module => ({ default: module.CreatorDashboard })));
 const FreelancerDashboard = lazy(() => import('./pages/FreelancerDashboard').then(module => ({ default: module.FreelancerDashboard })));
+const FreelancerOnboarding = lazy(() => import('./pages/FreelancerOnboarding').then(module => ({ default: module.FreelancerOnboarding })));
+const FreelancerProfileCreation = lazy(() => import('./pages/FreelancerProfileCreation').then(module => ({ default: module.FreelancerProfileCreation })));
+const FreelancerCategorySelection = lazy(() => import('./pages/FreelancerCategorySelection'));
+const FreelancerSkillsSelection = lazy(() => import('./pages/FreelancerSkillsSelection'));
+const FreelancerProfileTitle = lazy(() => import('./pages/FreelancerProfileTitle'));
+const FreelancerExperience = lazy(() => import('./pages/FreelancerExperience'));
+const FreelancerEducation = lazy(() => import('./pages/FreelancerEducation'));
+const FreelancerLanguages = lazy(() => import('./pages/FreelancerLanguages'));
+const FreelancerPortfolio = lazy(() => import('./pages/FreelancerPortfolio'));
+const FreelancerBio = lazy(() => import('./pages/FreelancerBio'));
 const BusinessDashboard = lazy(() => import('./pages/BusinessDashboard').then(module => ({ default: module.BusinessDashboard })));
 const MobileMenuPage = lazy(() => import('./pages/MobileMenuPage').then(module => ({ default: module.MobileMenuPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(module => ({ default: module.SettingsPage })));
@@ -29,10 +40,11 @@ function App() {
   return (
     <ThemeProvider>
       <UserProfileProvider>
-        <AdminAuthProvider>
-          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <Suspense fallback={<PremiumLoader />}>
-              <Routes>
+        <ProfileCreationProvider>
+          <AdminAuthProvider>
+            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <Suspense fallback={<PremiumLoader />}>
+                <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MobileMenuPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -54,6 +66,86 @@ function App() {
             element={
               <ProtectedRoute>
                 <CreatorDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-onboarding" 
+            element={
+              <ProtectedRoute>
+                <FreelancerOnboarding />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-profile-creation" 
+            element={
+              <ProtectedRoute>
+                <FreelancerProfileCreation />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-category-selection" 
+            element={
+              <ProtectedRoute>
+                <FreelancerCategorySelection />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-skills-selection" 
+            element={
+              <ProtectedRoute>
+                <FreelancerSkillsSelection />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-profile-title" 
+            element={
+              <ProtectedRoute>
+                <FreelancerProfileTitle />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-experience" 
+            element={
+              <ProtectedRoute>
+                <FreelancerExperience />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-education" 
+            element={
+              <ProtectedRoute>
+                <FreelancerEducation />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-languages" 
+            element={
+              <ProtectedRoute>
+                <FreelancerLanguages />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-portfolio" 
+            element={
+              <ProtectedRoute>
+                <FreelancerPortfolio />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-bio" 
+            element={
+              <ProtectedRoute>
+                <FreelancerBio />
               </ProtectedRoute>
             } 
           />
@@ -94,10 +186,11 @@ function App() {
               </AdminProtectedRoute>
             } 
           />
-          </Routes>
-            </Suspense>
-          </Router>
-        </AdminAuthProvider>
+                </Routes>
+              </Suspense>
+            </Router>
+          </AdminAuthProvider>
+        </ProfileCreationProvider>
       </UserProfileProvider>
     </ThemeProvider>
   );

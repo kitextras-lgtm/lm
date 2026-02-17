@@ -53,24 +53,28 @@ ALTER TABLE referral_codes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE referral_applications ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for referral_codes
+DROP POLICY IF EXISTS "Users can view their own referral code" ON referral_codes;
 CREATE POLICY "Users can view their own referral code"
   ON referral_codes
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view referral codes by code" ON referral_codes;
 CREATE POLICY "Users can view referral codes by code"
   ON referral_codes
   FOR SELECT
   TO authenticated
   USING (true);
 
+DROP POLICY IF EXISTS "Users can insert their own referral code" ON referral_codes;
 CREATE POLICY "Users can insert their own referral code"
   ON referral_codes
   FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own referral code stats" ON referral_codes;
 CREATE POLICY "Users can update their own referral code stats"
   ON referral_codes
   FOR UPDATE
@@ -79,12 +83,14 @@ CREATE POLICY "Users can update their own referral code stats"
   WITH CHECK (auth.uid() = user_id);
 
 -- RLS Policies for referral_applications
+DROP POLICY IF EXISTS "Users can view their own referral application" ON referral_applications;
 CREATE POLICY "Users can view their own referral application"
   ON referral_applications
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own referral application" ON referral_applications;
 CREATE POLICY "Users can insert their own referral application"
   ON referral_applications
   FOR INSERT

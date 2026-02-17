@@ -29,18 +29,21 @@ ALTER TABLE conversation_mutes ENABLE ROW LEVEL SECURITY;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_mutes' AND policyname = 'Users can view own mutes') THEN
+    DROP POLICY IF EXISTS "Users can view own mutes" ON conversation_mutes;
     CREATE POLICY "Users can view own mutes" ON conversation_mutes
       FOR SELECT TO authenticated
       USING (user_id = auth.uid());
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_mutes' AND policyname = 'Users can insert own mutes') THEN
+    DROP POLICY IF EXISTS "Users can insert own mutes" ON conversation_mutes;
     CREATE POLICY "Users can insert own mutes" ON conversation_mutes
       FOR INSERT TO authenticated
       WITH CHECK (user_id = auth.uid());
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_mutes' AND policyname = 'Users can delete own mutes') THEN
+    DROP POLICY IF EXISTS "Users can delete own mutes" ON conversation_mutes;
     CREATE POLICY "Users can delete own mutes" ON conversation_mutes
       FOR DELETE TO authenticated
       USING (user_id = auth.uid());
@@ -68,18 +71,21 @@ ALTER TABLE conversation_user_state ENABLE ROW LEVEL SECURITY;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_user_state' AND policyname = 'Users can view own state') THEN
+    DROP POLICY IF EXISTS "Users can view own state" ON conversation_user_state;
     CREATE POLICY "Users can view own state" ON conversation_user_state
       FOR SELECT TO authenticated
       USING (user_id = auth.uid());
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_user_state' AND policyname = 'Users can insert own state') THEN
+    DROP POLICY IF EXISTS "Users can insert own state" ON conversation_user_state;
     CREATE POLICY "Users can insert own state" ON conversation_user_state
       FOR INSERT TO authenticated
       WITH CHECK (user_id = auth.uid());
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_user_state' AND policyname = 'Users can update own state') THEN
+    DROP POLICY IF EXISTS "Users can update own state" ON conversation_user_state;
     CREATE POLICY "Users can update own state" ON conversation_user_state
       FOR UPDATE TO authenticated
       USING (user_id = auth.uid())
@@ -87,6 +93,7 @@ BEGIN
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'conversation_user_state' AND policyname = 'Users can delete own state') THEN
+    DROP POLICY IF EXISTS "Users can delete own state" ON conversation_user_state;
     CREATE POLICY "Users can delete own state" ON conversation_user_state
       FOR DELETE TO authenticated
       USING (user_id = auth.uid());
@@ -111,18 +118,21 @@ ALTER TABLE user_blocks ENABLE ROW LEVEL SECURITY;
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_blocks' AND policyname = 'Users can view own blocks') THEN
+    DROP POLICY IF EXISTS "Users can view own blocks" ON user_blocks;
     CREATE POLICY "Users can view own blocks" ON user_blocks
       FOR SELECT TO authenticated
       USING (blocker_id = auth.uid());
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_blocks' AND policyname = 'Users can insert own blocks') THEN
+    DROP POLICY IF EXISTS "Users can insert own blocks" ON user_blocks;
     CREATE POLICY "Users can insert own blocks" ON user_blocks
       FOR INSERT TO authenticated
       WITH CHECK (blocker_id = auth.uid());
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_blocks' AND policyname = 'Users can delete own blocks') THEN
+    DROP POLICY IF EXISTS "Users can delete own blocks" ON user_blocks;
     CREATE POLICY "Users can delete own blocks" ON user_blocks
       FOR DELETE TO authenticated
       USING (blocker_id = auth.uid());
@@ -317,6 +327,7 @@ COMMENT ON TABLE user_profiles IS 'DEPRECATED - legacy table, use users table in
 /*
 -- Fix conversations RLS - users should only see their own conversations
 DROP POLICY IF EXISTS "Participants can view their conversations" ON conversations;
+DROP POLICY IF EXISTS "Users can view own conversations" ON conversations;
 CREATE POLICY "Users can view own conversations" ON conversations
   FOR SELECT TO authenticated
   USING (
@@ -327,6 +338,7 @@ CREATE POLICY "Users can view own conversations" ON conversations
 
 -- Fix messages RLS - users should only see messages in their conversations
 DROP POLICY IF EXISTS "Participants can view conversation messages" ON messages;
+DROP POLICY IF EXISTS "Users can view own messages" ON messages;
 CREATE POLICY "Users can view own messages" ON messages
   FOR SELECT TO authenticated
   USING (

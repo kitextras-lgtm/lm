@@ -16,7 +16,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { userId, firstName, lastName, username, profilePictureUrl, profilePictureBase64, profilePictureFileName, bannerUrl, bannerBase64, bannerFileName, location, primaryLanguage, userType } = await req.json();
+    const { userId, firstName, lastName, username, profilePictureUrl, profilePictureBase64, profilePictureFileName, bannerUrl, bannerBase64, bannerFileName, location, primaryLanguage, userType, email: clientEmail } = await req.json();
 
     console.log('📥 save-profile received:', { userId, userType, firstName, lastName, username });
 
@@ -55,16 +55,9 @@ Deno.serve(async (req: Request) => {
     );
 
     if (!getUserResponse.ok) {
-      return new Response(
-        JSON.stringify({ success: false, message: 'User not found' }),
-        {
-          status: 404,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      console.warn('User not found in auth.users (may be using custom verification flow):', getUserResponse.status);
+      // Don't return 404 - user may exist via custom verification flow (verifiedUserId in localStorage)
+      // Continue and try to use client-provided email instead
     }
 
     // Get user email from auth.users - REQUIRED for users table
@@ -97,6 +90,10 @@ Deno.serve(async (req: Request) => {
       if (existingUser?.email) {
         userEmail = existingUser.email;
         console.log('Retrieved email from existing users record:', userEmail);
+      } else if (clientEmail) {
+        // Use email provided by the client as last resort
+        userEmail = clientEmail;
+        console.log('Using email provided by client:', userEmail);
       }
     }
 

@@ -19,6 +19,7 @@ INSERT INTO profiles (
   true,
   true,
   now(),
+  now(),
   now()
 ) ON CONFLICT (id) DO UPDATE SET
   is_admin = true,

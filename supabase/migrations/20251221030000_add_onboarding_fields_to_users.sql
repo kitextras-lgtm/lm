@@ -29,8 +29,16 @@ ALTER TABLE users
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
 -- Add constraint to ensure username is lowercase and alphanumeric
-ALTER TABLE users 
-  ADD CONSTRAINT users_username_format 
-  CHECK (username ~ '^[a-z0-9_]+$');
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'users_username_format' AND table_name = 'users'
+  ) THEN
+    ALTER TABLE users
+      ADD CONSTRAINT users_username_format
+      CHECK (username ~ '^[a-z0-9_]+$');
+  END IF;
+END $$;
 
 

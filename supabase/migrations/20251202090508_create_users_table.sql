@@ -40,18 +40,21 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Allow anyone to create users (for signup flow)
+DROP POLICY IF EXISTS "Anyone can create users" ON users;
 CREATE POLICY "Anyone can create users"
   ON users
   FOR INSERT
   WITH CHECK (true);
 
 -- Policy: Allow users to read their own data
+DROP POLICY IF EXISTS "Users can read own data" ON users;
 CREATE POLICY "Users can read own data"
   ON users
   FOR SELECT
   USING (true);
 
 -- Policy: Allow users to update their own data
+DROP POLICY IF EXISTS "Users can update own data" ON users;
 CREATE POLICY "Users can update own data"
   ON users
   FOR UPDATE

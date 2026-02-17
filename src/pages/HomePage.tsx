@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { Hero } from '../components/Hero';
 import { Partnership } from '../components/Partnership';
+import { FivePillars } from '../components/FivePillars';
 import { FAQ } from '../components/FAQ';
 import { CallToAction } from '../components/CallToAction';
 
@@ -33,6 +34,7 @@ export function HomePage() {
       <Header />
       <Hero />
       <Partnership showArtists={false} />
+      <FivePillars />
       <FAQ />
       <CallToAction />
     </div>

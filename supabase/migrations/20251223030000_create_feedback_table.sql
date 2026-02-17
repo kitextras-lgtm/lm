@@ -55,6 +55,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_feedback_updated_at ON feedback;
 CREATE TRIGGER update_feedback_updated_at
   BEFORE UPDATE ON feedback
   FOR EACH ROW

@@ -377,87 +377,9 @@ export function ProfileView({
       <div className="p-8">
         {activeTab === 'overview' ? (
           <div style={{ color: '#F8FAFC' }}>
-            {/* Channel Links Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>{t('profile.channelsAccounts')}</h3>
-              <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                <p className="text-center py-8" style={{ color: '#CBD5E1' }}>
-                  {t('profile.channelsPlaceholder')}
-                </p>
-              </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {/* Subscriptions Card */}
-              <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('profile.subscribers')}</h4>
-                </div>
-                <p className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>1.2M</p>
-                <p className="text-sm" style={{ color: '#10b981' }}>+180.1% <span style={{ color: '#CBD5E1' }}>{t('profile.fromLastMonth')}</span></p>
-                
-                {/* Bar Chart */}
-                <div className="flex items-end gap-2 mt-6 h-24">
-                  {[240, 300, 200, 278, 189, 239, 278, 189].map((value, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{value}</span>
-                      <div 
-                        className="w-full rounded-t-md" 
-                        style={{ 
-                          backgroundColor: '#F8FAFC', 
-                          height: `${(value / 300) * 60}px`,
-                          minHeight: '20px'
-                        }} 
-                      />
-                    </div>
-                  ))}
-                </div>
-                {/* Month Indicators */}
-                <div className="flex gap-2 mt-2">
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'].map((month, i) => (
-                    <div key={i} className="flex-1 text-center">
-                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{month}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Users Card */}
-              <div className="rounded-xl p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('profile.totalViews')}</h4>
-                </div>
-                <p className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>1B</p>
-                <p className="text-sm" style={{ color: '#10b981' }}>+19.2% <span style={{ color: '#CBD5E1' }}>{t('profile.fromLastMonth')}</span></p>
-                
-                {/* Bar Chart */}
-                <div className="flex items-end gap-2 mt-6 h-24">
-                  {[240, 300, 200, 278, 189, 239, 278, 189].map((value, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{value}</span>
-                      <div 
-                        className="w-full rounded-t-md" 
-                        style={{ 
-                          backgroundColor: '#F8FAFC', 
-                          height: `${(value / 300) * 60}px`,
-                          minHeight: '20px'
-                        }} 
-                      />
-                    </div>
-                  ))}
-                </div>
-                {/* Month Indicators */}
-                <div className="flex gap-2 mt-2">
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'].map((month, i) => (
-                    <div key={i} className="flex-1 text-center">
-                      <span className="text-xs" style={{ color: '#CBD5E1' }}>{month}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
+            <p className="text-center py-8" style={{ color: '#CBD5E1' }}>
+              {t('profile.noContent')}
+            </p>
           </div>
         ) : (
           <div style={{ color: '#F8FAFC' }}>

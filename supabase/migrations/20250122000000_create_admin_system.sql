@@ -76,10 +76,10 @@ CREATE TABLE IF NOT EXISTS admins (
 );
 
 -- Indexes for performance
-CREATE INDEX idx_admins_email ON admins(email);
-CREATE INDEX idx_admins_role_id ON admins(role_id);
-CREATE INDEX idx_admins_is_active ON admins(is_active);
-CREATE INDEX idx_admins_account_locked ON admins(account_locked_until) WHERE account_locked_until IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email);
+CREATE INDEX IF NOT EXISTS idx_admins_role_id ON admins(role_id);
+CREATE INDEX IF NOT EXISTS idx_admins_is_active ON admins(is_active);
+CREATE INDEX IF NOT EXISTS idx_admins_account_locked ON admins(account_locked_until) WHERE account_locked_until IS NOT NULL;
 
 -- ============================================================================
 -- 3. ADMIN SESSIONS TABLE
@@ -97,10 +97,10 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
 );
 
 -- Indexes for session lookups
-CREATE INDEX idx_admin_sessions_admin_id ON admin_sessions(admin_id);
-CREATE INDEX idx_admin_sessions_token_hash ON admin_sessions(session_token_hash);
-CREATE INDEX idx_admin_sessions_expires_at ON admin_sessions(expires_at);
-CREATE INDEX idx_admin_sessions_last_activity ON admin_sessions(last_activity_at);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_admin_id ON admin_sessions(admin_id);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_token_hash ON admin_sessions(session_token_hash);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires_at ON admin_sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_admin_sessions_last_activity ON admin_sessions(last_activity_at);
 
 -- ============================================================================
 -- 4. ADMIN AUDIT LOGS TABLE
@@ -132,12 +132,12 @@ CREATE TABLE IF NOT EXISTS admin_audit_logs (
 );
 
 -- Indexes for audit log queries
-CREATE INDEX idx_admin_audit_logs_admin_id ON admin_audit_logs(admin_id);
-CREATE INDEX idx_admin_audit_logs_action_type ON admin_audit_logs(action_type);
-CREATE INDEX idx_admin_audit_logs_resource_type ON admin_audit_logs(resource_type);
-CREATE INDEX idx_admin_audit_logs_resource_id ON admin_audit_logs(resource_id);
-CREATE INDEX idx_admin_audit_logs_created_at ON admin_audit_logs(created_at DESC);
-CREATE INDEX idx_admin_audit_logs_resource_composite ON admin_audit_logs(resource_type, resource_id);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_admin_id ON admin_audit_logs(admin_id);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_action_type ON admin_audit_logs(action_type);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_resource_type ON admin_audit_logs(resource_type);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_resource_id ON admin_audit_logs(resource_id);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_created_at ON admin_audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_logs_resource_composite ON admin_audit_logs(resource_type, resource_id);
 
 -- ============================================================================
 -- 5. ADMIN SUPPORT CHATS TABLE
@@ -174,11 +174,11 @@ CREATE TABLE IF NOT EXISTS admin_support_messages (
 );
 
 -- Indexes for support chats
-CREATE INDEX idx_admin_support_chats_user_id ON admin_support_chats(user_id);
-CREATE INDEX idx_admin_support_chats_assigned_admin ON admin_support_chats(assigned_admin_id);
-CREATE INDEX idx_admin_support_chats_status ON admin_support_chats(status);
-CREATE INDEX idx_admin_support_messages_chat_id ON admin_support_messages(chat_id);
-CREATE INDEX idx_admin_support_messages_created_at ON admin_support_messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_support_chats_user_id ON admin_support_chats(user_id);
+CREATE INDEX IF NOT EXISTS idx_admin_support_chats_assigned_admin ON admin_support_chats(assigned_admin_id);
+CREATE INDEX IF NOT EXISTS idx_admin_support_chats_status ON admin_support_chats(status);
+CREATE INDEX IF NOT EXISTS idx_admin_support_messages_chat_id ON admin_support_messages(chat_id);
+CREATE INDEX IF NOT EXISTS idx_admin_support_messages_created_at ON admin_support_messages(created_at DESC);
 
 -- ============================================================================
 -- 6. ADMIN ANNOUNCEMENTS TABLE
@@ -219,11 +219,11 @@ CREATE TABLE IF NOT EXISTS admin_announcement_reads (
 );
 
 -- Indexes for announcements
-CREATE INDEX idx_admin_announcements_created_by ON admin_announcements(created_by);
-CREATE INDEX idx_admin_announcements_status ON admin_announcements(status);
-CREATE INDEX idx_admin_announcements_scheduled_for ON admin_announcements(scheduled_for);
-CREATE INDEX idx_admin_announcement_reads_announcement ON admin_announcement_reads(announcement_id);
-CREATE INDEX idx_admin_announcement_reads_user ON admin_announcement_reads(user_id);
+CREATE INDEX IF NOT EXISTS idx_admin_announcements_created_by ON admin_announcements(created_by);
+CREATE INDEX IF NOT EXISTS idx_admin_announcements_status ON admin_announcements(status);
+CREATE INDEX IF NOT EXISTS idx_admin_announcements_scheduled_for ON admin_announcements(scheduled_for);
+CREATE INDEX IF NOT EXISTS idx_admin_announcement_reads_announcement ON admin_announcement_reads(announcement_id);
+CREATE INDEX IF NOT EXISTS idx_admin_announcement_reads_user ON admin_announcement_reads(user_id);
 
 -- ============================================================================
 -- 7. ADMIN REVENUE ACCESS LOGS TABLE
@@ -252,9 +252,9 @@ CREATE TABLE IF NOT EXISTS admin_revenue_access_logs (
 );
 
 -- Indexes for revenue access logs
-CREATE INDEX idx_admin_revenue_access_logs_admin_id ON admin_revenue_access_logs(admin_id);
-CREATE INDEX idx_admin_revenue_access_logs_created_at ON admin_revenue_access_logs(created_at DESC);
-CREATE INDEX idx_admin_revenue_access_logs_access_type ON admin_revenue_access_logs(access_type);
+CREATE INDEX IF NOT EXISTS idx_admin_revenue_access_logs_admin_id ON admin_revenue_access_logs(admin_id);
+CREATE INDEX IF NOT EXISTS idx_admin_revenue_access_logs_created_at ON admin_revenue_access_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_revenue_access_logs_access_type ON admin_revenue_access_logs(access_type);
 
 -- ============================================================================
 -- 8. HELPER FUNCTIONS
@@ -441,14 +441,32 @@ ALTER TABLE admin_announcement_reads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_revenue_access_logs ENABLE ROW LEVEL SECURITY;
 
 -- Deny all access by default (only service role can access)
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_roles;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admins;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_sessions;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_audit_logs;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_support_chats;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_support_messages;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_announcements;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_announcement_reads;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_revenue_access_logs;
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_roles;
 CREATE POLICY "Admin tables are server-side only" ON admin_roles FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admins;
 CREATE POLICY "Admin tables are server-side only" ON admins FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_sessions;
 CREATE POLICY "Admin tables are server-side only" ON admin_sessions FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_audit_logs;
 CREATE POLICY "Admin tables are server-side only" ON admin_audit_logs FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_support_chats;
 CREATE POLICY "Admin tables are server-side only" ON admin_support_chats FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_support_messages;
 CREATE POLICY "Admin tables are server-side only" ON admin_support_messages FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_announcements;
 CREATE POLICY "Admin tables are server-side only" ON admin_announcements FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_announcement_reads;
 CREATE POLICY "Admin tables are server-side only" ON admin_announcement_reads FOR ALL USING (false);
+DROP POLICY IF EXISTS "Admin tables are server-side only" ON admin_revenue_access_logs;
 CREATE POLICY "Admin tables are server-side only" ON admin_revenue_access_logs FOR ALL USING (false);
 
 -- ============================================================================
@@ -464,21 +482,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_admin_roles_updated_at ON admin_roles;
 CREATE TRIGGER update_admin_roles_updated_at
     BEFORE UPDATE ON admin_roles
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_admins_updated_at ON admins;
 CREATE TRIGGER update_admins_updated_at
     BEFORE UPDATE ON admins
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_admin_support_chats_updated_at ON admin_support_chats;
 CREATE TRIGGER update_admin_support_chats_updated_at
     BEFORE UPDATE ON admin_support_chats
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_admin_announcements_updated_at ON admin_announcements;
 CREATE TRIGGER update_admin_announcements_updated_at
     BEFORE UPDATE ON admin_announcements
     FOR EACH ROW

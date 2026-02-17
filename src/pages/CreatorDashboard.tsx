@@ -1073,85 +1073,19 @@ const MobileSettingsMenuItem = ({
   );
 };
 
-const COUNTRIES = [
-  'United States of America',
-  'United Kingdom',
-  'Canada',
-  'Australia',
-  'Germany',
-  'France',
-  'Spain',
-  'Italy',
-  'Japan',
-  'South Korea',
-  'Brazil',
-  'Mexico',
-  'India',
-  'China',
-  'Netherlands',
-  'Sweden',
-  'Norway',
-  'Denmark',
-  'Finland',
-  'Switzerland',
-  'Austria',
-  'Belgium',
-  'Portugal',
-  'Poland',
-  'Greece',
-  'Ireland',
-  'New Zealand',
-  'Singapore',
-  'South Africa',
-  'Argentina',
-  'Chile',
-  'Colombia',
-  'Peru',
-  'Thailand',
-  'Vietnam',
-  'Malaysia',
-  'Indonesia',
-  'Philippines',
-  'Turkey',
-  'United Arab Emirates',
-  'Saudi Arabia',
-  'Israel',
-  'Egypt',
-  'Nigeria',
-  'Kenya',
-  'Other'
+const COUNTRY_KEYS = [
+  'unitedStatesOfAmerica', 'unitedKingdom', 'canada', 'australia', 'germany', 'france', 'spain', 'italy',
+  'japan', 'southKorea', 'brazil', 'mexico', 'india', 'china', 'netherlands', 'sweden', 'norway', 'denmark',
+  'finland', 'switzerland', 'austria', 'belgium', 'portugal', 'poland', 'greece', 'ireland', 'newZealand',
+  'singapore', 'southAfrica', 'argentina', 'chile', 'colombia', 'peru', 'thailand', 'vietnam', 'malaysia',
+  'indonesia', 'philippines', 'turkey', 'uae', 'saudiArabia', 'israel', 'egypt', 'nigeria', 'kenya', 'other'
 ];
 
-const LANGUAGES = [
-  'English',
-  'Spanish',
-  'French',
-  'German',
-  'Italian',
-  'Portuguese',
-  'Dutch',
-  'Russian',
-  'Chinese (Mandarin)',
-  'Japanese',
-  'Korean',
-  'Arabic',
-  'Hindi',
-  'Bengali',
-  'Turkish',
-  'Vietnamese',
-  'Thai',
-  'Indonesian',
-  'Malay',
-  'Tagalog',
-  'Swedish',
-  'Norwegian',
-  'Danish',
-  'Finnish',
-  'Polish',
-  'Greek',
-  'Hebrew',
-  'Swahili',
-  'Other'
+const LANGUAGE_KEYS = [
+  'english', 'spanish', 'french', 'german', 'italian', 'portuguese', 'dutch', 'russian',
+  'chineseM', 'japanese', 'korean', 'arabic', 'hindi', 'bengali', 'turkish', 'vietnamese',
+  'thai', 'indonesian', 'malay', 'tagalog', 'swedish', 'norwegian', 'danish', 'finnish',
+  'polish', 'greek', 'hebrew', 'swahili', 'other'
 ];
 
 export function CreatorDashboard() {
@@ -2070,36 +2004,39 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
               >
                 <div className="max-h-60 overflow-y-auto">
-                  {COUNTRIES.map((country) => (
+                  {COUNTRY_KEYS.map((countryKey) => {
+                    const label = t(`countries.${countryKey}`);
+                    return (
                     <button
-                      key={country}
+                      key={countryKey}
                       type="button"
                       onClick={() => {
-                        setFormData({ ...formData, location: country });
+                        setFormData({ ...formData, location: label });
                         setLocationDropdownOpen(false);
                       }}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
                       style={{
-                        backgroundColor: country === formData.location ? 'var(--bg-elevated)' : 'transparent',
+                        backgroundColor: label === formData.location ? 'var(--bg-elevated)' : 'transparent',
                         color: 'var(--text-primary)',
                       }}
                       onMouseEnter={(e) => {
-                        if (country !== formData.location) {
+                        if (label !== formData.location) {
                           e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                         }
                         e.currentTarget.style.transform = 'translateX(4px)';
                       }}
                       onMouseLeave={(e) => {
-                        if (country !== formData.location) {
+                        if (label !== formData.location) {
                           e.currentTarget.style.backgroundColor = 'transparent';
                         }
                         e.currentTarget.style.transform = 'translateX(0)';
                       }}
                     >
-                      {country === formData.location && <span className="text-white">✓</span>}
-                      <span>{country}</span>
+                      {label === formData.location && <span className="text-white">✓</span>}
+                      <span>{label}</span>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -2154,36 +2091,39 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
               >
                 <div className="max-h-60 overflow-y-auto">
-                  {LANGUAGES.map((language) => (
+                  {LANGUAGE_KEYS.map((langKey) => {
+                    const label = t(`languages.${langKey}`);
+                    return (
                     <button
-                      key={language}
+                      key={langKey}
                       type="button"
                       onClick={() => {
-                        setFormData({ ...formData, language: language });
+                        setFormData({ ...formData, language: label });
                         setLanguageDropdownOpen(false);
                       }}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
                       style={{
-                        backgroundColor: language === formData.language ? 'var(--bg-elevated)' : 'transparent',
+                        backgroundColor: label === formData.language ? 'var(--bg-elevated)' : 'transparent',
                         color: 'var(--text-primary)',
                       }}
                       onMouseEnter={(e) => {
-                        if (language !== formData.language) {
+                        if (label !== formData.language) {
                           e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                         }
                         e.currentTarget.style.transform = 'translateX(4px)';
                       }}
                       onMouseLeave={(e) => {
-                        if (language !== formData.language) {
+                        if (label !== formData.language) {
                           e.currentTarget.style.backgroundColor = 'transparent';
                         }
                         e.currentTarget.style.transform = 'translateX(0)';
                       }}
                     >
-                      {language === formData.language && <span className="text-white">✓</span>}
-                      <span>{language}</span>
+                      {label === formData.language && <span className="text-white">✓</span>}
+                      <span>{label}</span>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -4527,7 +4467,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Shawn Grows</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Nature Blogger</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{t('talentCards.natureBlogger')}</p>
                         <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
                           <a 
                             href="https://youtube.com/c/example" 
@@ -4542,7 +4482,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 California, USA</p>
                         
                         <div className="flex flex-wrap items-center gap-2 mb-3">
-                          {['Nature', 'YouTube', 'TikTok', 'Instagram'].map((skill, i) => (
+                          {[t('talentCards.nature'), 'YouTube', 'TikTok', 'Instagram'].map((skill, i) => (
                             <div 
                               key={i}
                               className="px-3 py-1 rounded-lg border"
@@ -4558,7 +4498,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         </div>
 
                         <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
-                          I'm Shawn, a nature content creator who makes highly engaging videos about fruits.
+                          {t('talentCards.natureBloggerDesc')}
                         </p>
                       </div>
                       <div className="flex gap-2">
@@ -4585,7 +4525,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Sarah K.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Creative Designer</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{t('talentCards.creativeDesigner')}</p>
                         <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
                           <a 
                             href="https://youtube.com/c/example" 
@@ -4600,7 +4540,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 London, UK</p>
                         
                         <div className="flex flex-wrap items-center gap-2 mb-3">
-                          {['Design', 'Branding', 'UI/UX', 'Figma'].map((skill, i) => (
+                          {[t('talentCards.design'), t('talentCards.branding'), t('talentCards.uiux'), t('talentCards.figma')].map((skill, i) => (
                             <div 
                               key={i}
                               className="px-3 py-1 rounded-lg border"
@@ -4616,7 +4556,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         </div>
 
                         <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
-                          Creative designer passionate about building memorable brand identities and digital experiences.
+                          {t('talentCards.creativeDesignerDesc')}
                         </p>
                       </div>
                       <div className="flex gap-2">
@@ -4643,7 +4583,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Alex T.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Music Producer</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{t('talentCards.musicProducer')}</p>
                         <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
                           <a 
                             href="https://youtube.com/c/example" 
@@ -4658,7 +4598,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 Berlin, Germany</p>
                         
                         <div className="flex flex-wrap items-center gap-2 mb-3">
-                          {['Music', 'Audio', 'Production', 'Mixing'].map((skill, i) => (
+                          {[t('explore.music'), t('talentCards.audio'), t('talentCards.production'), t('talentCards.mixing')].map((skill, i) => (
                             <div 
                               key={i}
                               className="px-3 py-1 rounded-lg border"
@@ -4674,7 +4614,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         </div>
 
                         <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
-                          Award-winning music producer creating professional-grade audio for artists and brands.
+                          {t('talentCards.musicProducerDesc')}
                         </p>
                       </div>
                       <div className="flex gap-2">

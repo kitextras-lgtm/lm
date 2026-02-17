@@ -40,18 +40,21 @@ CREATE INDEX IF NOT EXISTS idx_otp_codes_email_expires ON otp_codes(email, expir
 ALTER TABLE otp_codes ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Allow anyone to insert OTP codes (for sending OTPs during signup)
+DROP POLICY IF EXISTS "Anyone can create OTP codes" ON otp_codes;
 CREATE POLICY "Anyone can create OTP codes"
   ON otp_codes
   FOR INSERT
   WITH CHECK (true);
 
 -- Policy: Allow anyone to read their own OTP codes (for verification)
+DROP POLICY IF EXISTS "Anyone can read OTP codes for verification" ON otp_codes;
 CREATE POLICY "Anyone can read OTP codes for verification"
   ON otp_codes
   FOR SELECT
   USING (true);
 
 -- Policy: Allow anyone to update OTP codes (for marking as verified and incrementing attempts)
+DROP POLICY IF EXISTS "Anyone can update OTP codes for verification" ON otp_codes;
 CREATE POLICY "Anyone can update OTP codes for verification"
   ON otp_codes
   FOR UPDATE

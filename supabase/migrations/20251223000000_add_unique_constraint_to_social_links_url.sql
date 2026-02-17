@@ -6,7 +6,14 @@
 */
 
 -- Add unique constraint to url column
-ALTER TABLE social_links 
-ADD CONSTRAINT social_links_url_unique UNIQUE (url);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'social_links_url_unique' AND table_name = 'social_links'
+  ) THEN
+    ALTER TABLE social_links ADD CONSTRAINT social_links_url_unique UNIQUE (url);
+  END IF;
+END $$;
 
 

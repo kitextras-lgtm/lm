@@ -34,12 +34,14 @@ GRANT EXECUTE ON FUNCTION is_admin() TO authenticated;
 DROP POLICY IF EXISTS "Users can read own data" ON users;
 
 -- Create new policy: Users can read their own data
+DROP POLICY IF EXISTS "Users can read own data" ON users;
 CREATE POLICY "Users can read own data"
   ON users
   FOR SELECT
   USING (auth.uid() = id);
 
 -- Create new policy: Admins can view all users
+DROP POLICY IF EXISTS "Admins can view all users" ON users;
 CREATE POLICY "Admins can view all users"
   ON users
   FOR SELECT

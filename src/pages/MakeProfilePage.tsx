@@ -166,6 +166,7 @@ export function MakeProfilePage() {
       // Save profile using Edge Function (bypasses RLS)
       // Edge Function will handle profile picture upload using service role
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/save-profile`;
+      console.log('🔑 MakeProfile - Using userId:', userId);
       console.log('Saving profile with data:', {
         userId,
         firstName,
@@ -186,26 +187,35 @@ export function MakeProfilePage() {
           firstName,
           lastName,
           username,
+          email: localStorage.getItem('verifiedEmail'),
           ...(userType && { userType }), // Only include userType if it's set
           profilePictureBase64,
           profilePictureFileName: profilePicture?.name || null,
         }),
       });
 
+      console.log('📤 save-profile response status:', response.status);
       const data = await response.json();
+      console.log('📤 save-profile response data:', data);
 
       if (!data.success) {
+        console.error('❌ save-profile failed:', data.message);
         throw new Error(data.message || 'Failed to save profile');
       }
+      
+      console.log('✅ Profile saved successfully to database');
 
       // Also save to localStorage as backup
-      localStorage.setItem('tempProfile', JSON.stringify({
+      const tempProfileData = {
         firstName,
         lastName,
         username,
         profilePicture: previewUrl, // Use preview URL for localStorage (blob URL)
         userType // Include userType for artist flow
-      }));
+      };
+      console.log('💾 Saving to localStorage:', tempProfileData);
+      localStorage.setItem('tempProfile', JSON.stringify(tempProfileData));
+      console.log('💾 Saved to localStorage. Verifying:', localStorage.getItem('tempProfile'));
 
       // Check if this is an artist flow
       if (userType === 'artist' || location.state?.userType === 'artist') {

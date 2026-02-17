@@ -29,6 +29,7 @@ WITH CHECK (
 );
 
 -- Policy: Allow authenticated users to upload their own banners (backup)
+DROP POLICY IF EXISTS "Users can upload their own banners" ON storage;
 CREATE POLICY "Users can upload their own banners"
 ON storage.objects
 FOR INSERT
@@ -40,6 +41,7 @@ WITH CHECK (
 );
 
 -- Policy: Allow authenticated users to update their own banners
+DROP POLICY IF EXISTS "Users can update their own banners" ON storage;
 CREATE POLICY "Users can update their own banners"
 ON storage.objects
 FOR UPDATE
@@ -51,6 +53,7 @@ USING (
 );
 
 -- Policy: Allow authenticated users to delete their own banners
+DROP POLICY IF EXISTS "Users can delete their own banners" ON storage;
 CREATE POLICY "Users can delete their own banners"
 ON storage.objects
 FOR DELETE

@@ -31,22 +31,26 @@ CREATE TABLE IF NOT EXISTS social_links (
 
 ALTER TABLE social_links ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read own social links" ON social_links;
 CREATE POLICY "Users can read own social links"
   ON social_links FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own social links" ON social_links;
 CREATE POLICY "Users can insert own social links"
   ON social_links FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own social links" ON social_links;
 CREATE POLICY "Users can update own social links"
   ON social_links FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own social links" ON social_links;
 CREATE POLICY "Users can delete own social links"
   ON social_links FOR DELETE
   TO authenticated

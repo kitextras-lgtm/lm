@@ -253,7 +253,7 @@ export function UserTypeSelectionPage() {
           navigate('/dashboard/creator', { state: { fromOnboarding: true } });
           break;
         case 'freelancer':
-          navigate('/dashboard/freelancer', { state: { fromOnboarding: true } });
+          navigate('/freelancer-onboarding');
           break;
         case 'business':
           navigate('/dashboard/business', { state: { fromOnboarding: true } });
@@ -278,7 +278,7 @@ export function UserTypeSelectionPage() {
           navigate('/dashboard/creator', { state: { fromOnboarding: true } });
           break;
         case 'freelancer':
-          navigate('/dashboard/freelancer', { state: { fromOnboarding: true } });
+          navigate('/freelancer-onboarding');
           break;
         case 'business':
           navigate('/dashboard/business', { state: { fromOnboarding: true } });

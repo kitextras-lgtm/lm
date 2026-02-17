@@ -64,6 +64,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_announcements_updated_at ON announcements;
 CREATE TRIGGER update_announcements_updated_at
   BEFORE UPDATE ON announcements
   FOR EACH ROW

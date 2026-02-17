@@ -1,23 +1,5 @@
 import { useTranslation } from 'react-i18next';
 
-interface AnimatedIconProps {
-  className?: string;
-}
-
-const CraftsmanshipIcon = ({ className }: AnimatedIconProps) => (
-  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={`w-6 h-6 ${className || ''}`}>
-    <g className="origin-center">
-      {/* Hammer head */}
-      <rect x="12" y="10" width="24" height="10" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
-      {/* Handle */}
-      <rect x="21" y="20" width="6" height="24" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
-      {/* Handle grip */}
-      <line x1="22" y1="32" x2="26" y2="32" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="22" y1="37" x2="26" y2="37" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </g>
-  </svg>
-);
-
 interface AccountTypeSectionProps {
   userType?: string;
 }
@@ -97,35 +79,6 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
               {(normalizedUserType === 'brand' || normalizedUserType === 'business') && t('accountType.brandDesc')}
             </p>
           </div>
-        </div>
-      </div>
-
-      {/* Need to Change Account Type */}
-      <div>
-        <h3 className="text-lg font-semibold mb-2" style={{ color: '#F8FAFC' }}>{t('accountType.areYouFreelancer')}</h3>
-        <p className="text-sm mb-4" style={{ color: '#CBD5E1' }}>
-          {t('accountType.freelancerApply')}
-        </p>
-        </div>
-
-      {/* Duplicate Account Type Section */}
-      <div className="flex items-center gap-3 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-          {normalizedUserType === 'artist' && <ArtistIcon />}
-          {normalizedUserType === 'creator' && <CraftsmanshipIcon />}
-          {normalizedUserType === 'freelancer' && <FreelancerIcon />}
-          {(normalizedUserType === 'brand' || normalizedUserType === 'business') && <BrandIcon />}
-        </div>
-        <div>
-          <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
-            {normalizedUserType === 'artist' ? t('accountTypes.artist') : normalizedUserType === 'creator' ? t('accountTypes.creator') : normalizedUserType === 'freelancer' ? t('accountTypes.freelancer') : normalizedUserType === 'brand' || normalizedUserType === 'business' ? t('accountTypes.brand') : t('accountType.unknown')}
-          </p>
-          <p className="text-sm" style={{ color: '#CBD5E1' }}>
-            {normalizedUserType === 'artist' && t('accountType.artistDesc')}
-            {normalizedUserType === 'creator' && t('accountType.creatorDesc')}
-            {normalizedUserType === 'freelancer' && t('accountType.freelancerDesc')}
-            {(normalizedUserType === 'brand' || normalizedUserType === 'business') && t('accountType.brandDesc')}
-          </p>
         </div>
       </div>
     </div>

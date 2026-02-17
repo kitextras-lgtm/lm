@@ -30,6 +30,17 @@ CREATE TABLE IF NOT EXISTS signup_tracking (
   created_at timestamptz DEFAULT now()
 );
 
+-- Ensure user_id column exists (may be missing if table was created earlier)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'signup_tracking' AND column_name = 'user_id'
+  ) THEN
+    ALTER TABLE signup_tracking ADD COLUMN user_id uuid REFERENCES users(id) ON DELETE CASCADE;
+  END IF;
+END $$;
+
 -- Add indexes for efficient lookups
 CREATE INDEX IF NOT EXISTS idx_signup_tracking_ip ON signup_tracking(ip_address);
 CREATE INDEX IF NOT EXISTS idx_signup_tracking_user_id ON signup_tracking(user_id);
@@ -42,6 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_signup_tracking_ip_created ON signup_tracking(ip_
 ALTER TABLE signup_tracking ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Deny all public access (only service role can access)
+DROP POLICY IF EXISTS "Deny all public access" ON signup_tracking;
 CREATE POLICY "Deny all public access"
   ON signup_tracking
   FOR ALL
