@@ -64,7 +64,10 @@ function ElevateIcon({ className = "w-7 h-7" }: { className?: string }) {
     <img
       src="/elevate l0.png"
       alt="Elevate"
-      className={`${className} rounded-lg object-contain default-avatar-shake`}
+      style={{
+        maxWidth: 'unset'
+      }}
+      className={`${className} rounded-lg default-avatar-shake`}
     />
   );
 }
@@ -727,7 +730,7 @@ export function CollapsibleSidebar({
               setActiveSection('home');
             }}
           >
-            <ElevateIcon className="w-9 h-9" />
+            <ElevateIcon className="w-12 h-12" />
           </div>
         </div>
 
