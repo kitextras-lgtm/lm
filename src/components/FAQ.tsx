@@ -110,10 +110,10 @@ export function FAQ() {
                 <div className="px-5 md:px-6 pb-5 md:pb-6">
                   <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '20px' }}>
                     <p 
-                      className="text-sm md:text-sm leading-relaxed"
+                      className="text-base leading-relaxed"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#999999',
+                        color: 'rgb(204, 204, 204)',
                         fontWeight: 400
                       }}
                     >

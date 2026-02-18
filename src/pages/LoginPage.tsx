@@ -311,7 +311,14 @@ export function LoginPage() {
               />
             </div>
             <h1 className="text-2xl font-semibold text-white mb-1">Log in to Elevate</h1>
-            <p className="text-neutral-400 text-sm mb-6">
+            <p 
+              className="text-base mb-6"
+              style={{
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                color: 'rgb(204, 204, 204)',
+                fontWeight: 400
+              }}
+            >
               {"Don't have an account? "}
               <button
                 onClick={() => navigate('/signup')}

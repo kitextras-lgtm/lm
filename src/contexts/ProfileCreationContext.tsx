@@ -62,6 +62,15 @@ interface ProfileCreationData {
   languages?: Language[];
   portfolioItems?: PortfolioItem[];
   bio?: string;
+  hourlyRate?: number;
+  dateOfBirth?: string;
+  country?: string;
+  streetAddress?: string;
+  aptSuite?: string;
+  city?: string;
+  stateProvince?: string;
+  zipPostalCode?: string;
+  phone?: string;
   primaryLanguage?: string;
   location?: string;
   firstName?: string;

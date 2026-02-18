@@ -310,10 +310,10 @@ function ServiceCard({ service, isVisible: parentVisible }: { service: ServiceCa
           {service.title}
         </h3>
         <p
-          className="text-sm leading-relaxed mb-6"
+          className="text-base leading-relaxed mb-6"
           style={{
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            color: '#999999',
+            color: 'rgb(204, 204, 204)',
             fontWeight: 400
           }}
         >

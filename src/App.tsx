@@ -28,6 +28,8 @@ const FreelancerEducation = lazy(() => import('./pages/FreelancerEducation'));
 const FreelancerLanguages = lazy(() => import('./pages/FreelancerLanguages'));
 const FreelancerPortfolio = lazy(() => import('./pages/FreelancerPortfolio'));
 const FreelancerBio = lazy(() => import('./pages/FreelancerBio'));
+const FreelancerSetRate = lazy(() => import('./pages/FreelancerSetRate'));
+const FreelancerPhotoLocation = lazy(() => import('./pages/FreelancerPhotoLocation'));
 const BusinessDashboard = lazy(() => import('./pages/BusinessDashboard').then(module => ({ default: module.BusinessDashboard })));
 const MobileMenuPage = lazy(() => import('./pages/MobileMenuPage').then(module => ({ default: module.MobileMenuPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(module => ({ default: module.SettingsPage })));
@@ -146,6 +148,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <FreelancerBio />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-set-rate" 
+            element={
+              <ProtectedRoute>
+                <FreelancerSetRate />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/freelancer-photo-location" 
+            element={
+              <ProtectedRoute>
+                <FreelancerPhotoLocation />
               </ProtectedRoute>
             } 
           />
