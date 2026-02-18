@@ -474,7 +474,14 @@ export function SignupPage() {
         <h1 className="text-2xl font-semibold text-white mb-1">
           {isContinuation ? 'Continue your signup' : 'Sign up for Elevate'}
         </h1>
-        <p className="text-neutral-400 text-sm mb-6">
+        <p 
+          className="text-base mb-6"
+          style={{
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+            color: 'rgb(204, 204, 204)',
+            fontWeight: 400
+          }}
+        >
           {isContinuation 
             ? "Pick up where you left off. We've saved your progress."
             : (
