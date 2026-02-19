@@ -440,7 +440,7 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
     { tag: 'Monetization', title: 'Exclusive\ncampaigns', description: 'Get access to exclusive campaigns and opportunities. Earning extra income has never been easier.', visual: 'monetization' },
     { tag: 'Licensing', title: 'Your content\npays you', description: 'When your content reaches viral pages or television, it should pay you. We handle licensing, negotiations, and compliance.', visual: 'licensing' },
     { tag: 'Partnerships', title: 'Brands that\nfit you', description: 'Find sponsorships that align perfectly with your goals and boost your chances of landing high quality, relevant partnerships.', visual: 'brand-partnerships' },
-    { tag: 'Strategy', title: 'Scale with\nexperts', description: 'Our team of experts with decades of experience with virality and scaling will be able to assist your growth.', visual: 'content-strategy' },
+    { tag: 'Strategy', title: 'Scale with\nexperts', description: 'Find and match up with experienced experts to assist you with your growth.', visual: 'content-strategy' },
     { tag: 'Support', title: 'Real Support,\nReal People', description: 'Priority, human first support built specifically for creators. Fast responses, real solutions.', visual: 'creator-support' },
   ];
 
@@ -470,18 +470,7 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
         >
           <div className="flex flex-col items-center mb-8 md:mb-16">
             <div className="max-w-3xl text-center">
-              <h2
-                className="text-3xl md:text-4xl lg:text-5xl font-normal mb-10 leading-snug"
-                style={{
-                  fontFamily: 'Fraunces, serif',
-                  color: '#ffffff',
-                  letterSpacing: '-0.02em'
-                }}
-              >
-                <span style={{ fontWeight: 600 }}>Elevate's</span> users on average saw an increase of <span style={{ fontWeight: 300 }}>2x to 5x</span> their current revenue.
-              </h2>
-
-              <div className="space-y-4 mb-10 flex flex-col items-center">
+              <div className="space-y-4 mb-1 flex flex-col items-center">
                 {showArtists && (
                   <div className="artist-button flex items-center gap-3">
                   <div className="music-icon group w-10 h-10 flex-shrink-0">
@@ -529,6 +518,16 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
           </div>
         </div>
 
+        {/* Feature Section Header */}
+        <div className="text-center mb-16 md:mb-20">
+          <h2 
+            className="text-3xl md:text-4xl lg:text-5xl font-normal leading-snug"
+            style={{ fontFamily: 'Fraunces, serif', color: '#ffffff', letterSpacing: '-0.02em' }}
+          >
+            One Platform. <span style={{ fontWeight: 600 }}>Everything You Need.</span>
+          </h2>
+        </div>
+
         {/* Feature Sections - Alternating Split Layout */}
         <div
           className={`space-y-24 md:space-y-32 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
@@ -537,6 +536,20 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
           {features.map((feature, index) => (
             <FeatureSection key={`${activeTab}-${index}`} feature={feature} index={index} />
           ))}
+        </div>
+
+        {/* Revenue Statistics - Moved Below Features */}
+        <div className="text-center mt-24 md:mt-32">
+          <h2
+            className="text-3xl md:text-4xl lg:text-5xl font-normal leading-snug"
+            style={{
+              fontFamily: 'Fraunces, serif',
+              color: '#ffffff',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            <span style={{ fontWeight: 600 }}>Elevate's</span> users on average saw an increase of <span style={{ fontWeight: 300 }}>2x to 5x</span> their current revenue.
+          </h2>
         </div>
       </div>
     </section>

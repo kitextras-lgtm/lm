@@ -14,19 +14,19 @@ interface ArtistFeature {
 const artistFeatures: ArtistFeature[] = [
   {
     tag: 'Distribution',
-    title: 'Go global with\none click',
+    title: 'Strategic\nDistribution',
     description: 'Distribution is just the starting point. We provide flexibility along with strategic guidance and industry-leading revenue splits.',
     visual: 'distribution'
   },
   {
     tag: 'Marketing',
-    title: 'Growth that\ncompounds',
+    title: 'Superior\nGrowth',
     description: "Marketing comes naturally at Elevate. We don't just support you. We invest in you.",
     visual: 'growth'
   },
   {
     tag: 'Royalties',
-    title: 'Every dollar\naccounted for',
+    title: 'Hidden\nGems',
     description: "There's more to your royalties than what traditional distributors collect. Elevate uncovers, manages, and safeguards your publishing income, making sure no label or third party profits from your work without you.",
     visual: 'royalty'
   },
@@ -44,8 +44,8 @@ const artistFeatures: ArtistFeature[] = [
   },
   {
     tag: 'Support',
-    title: 'Real people,\nreal fast',
-    description: 'From production to promotion, we provide the resources and expertise you need to create your best work and reach your audience.',
+    title: 'Real human,\nreal support',
+    description: 'Get access to real human support at all times.',
     visual: 'support'
   }
 ];

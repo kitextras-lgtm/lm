@@ -14,8 +14,8 @@ interface BrandFeature {
 const brandFeatures: BrandFeature[] = [
   {
     tag: 'Sponsorships',
-    title: 'Authentic\nConnections',
-    description: 'Connect with creators who genuinely align with your brand values and target audience.',
+    title: 'Superior\nSelection',
+    description: 'Looking for the right creator to sponsor? We connect brands with carefully vetted talent, matched by audience, values, and performance, ensuring every partnership delivers real impact.',
     visual: 'sponsorships'
   },
   {
@@ -25,15 +25,15 @@ const brandFeatures: BrandFeature[] = [
     visual: 'content-strategy'
   },
   {
-    tag: 'Creative',
-    title: 'Creative\nFreedom',
-    description: 'Collaborate with creators while maintaining your brand voice and message.',
+    tag: 'Operations',
+    title: 'Advanced\nEcosystem',
+    description: 'Never jump between tools again. Manage clients, workflows, and payments from a single streamlined dashboard built for speed, clarity, and scale.',
     visual: 'content-strategy'
   },
   {
     tag: 'Scale',
     title: 'Scale\nEfficiently',
-    description: 'Reach millions through our network of vetted creators across all platforms.',
+    description: 'Get access to our network of vetted creators across every major platform to strengthen your systems and accelerate growth.',
     visual: 'viral'
   },
   {
@@ -45,14 +45,14 @@ const brandFeatures: BrandFeature[] = [
   {
     tag: 'Quality',
     title: 'Quality\nAssurance',
-    description: 'All creators are vetted for engagement, authenticity, and brand safety.',
+    description: 'All creators and freelancers are vetted for quality, authenticity, and safety.',
     visual: 'brand-partnerships'
   }
 ];
 
 const brandFAQ = [
   {
-    question: "What types of brands does Elevate work with?",
+    question: "What types of brands do Elevate accept?",
     answer: "We work with brands of all sizes across various industries - from emerging startups to established enterprises. Our focus is on brands that value authentic creator partnerships and meaningful audience engagement."
   },
   {
@@ -62,10 +62,6 @@ const brandFAQ = [
   {
     question: "What kind of ROI can we expect?",
     answer: "ROI varies by campaign type and goals, but our clients typically see 3-5x return on investment through increased brand awareness, engagement, and conversions. We provide detailed analytics to track every metric."
-  },
-  {
-    question: "How does pricing work?",
-    answer: "We offer flexible pricing models including campaign-based fees, monthly retainers, and performance-based pricing. Contact our team for a customized quote based on your specific needs and goals."
   },
   {
     question: "What platforms do you support?",
@@ -345,6 +341,11 @@ export function LearnBrands() {
   const navigate = useNavigate();
   const { ref: heroRef, isVisible: heroVisible } = useScrollAnimation(0.1);
   const { ref: faqRef, isVisible: faqVisible } = useScrollAnimation(0.1);
+  const { ref: ctaRef, isVisible: ctaVisible } = useScrollAnimation(0.1);
+
+  const handleBrandSignup = () => {
+    navigate('/signup?source=brand');
+  };
 
   return (
     <div
@@ -359,42 +360,24 @@ export function LearnBrands() {
         {/* Hero Section */}
         <div
           ref={heroRef}
-          className={`text-center mb-20 md:mb-32 transition-all duration-1000 ease-out ${
+          className={`text-center mb-20 md:mb-28 transition-all duration-1000 ease-out ${
             heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
-            style={{
-              fontFamily: 'Fraunces, serif',
-              color: '#ffffff',
-              letterSpacing: '-0.02em'
-            }}
+          <h1 
+            className="text-4xl md:text-5xl lg:text-6xl font-normal leading-snug"
+            style={{ fontFamily: 'Fraunces, serif', color: '#ffffff', letterSpacing: '-0.02em' }}
           >
-            Partner with Creators
+            <span style={{ fontWeight: 600 }}>Partner with Creators</span>
             <br />
             That Move Culture
           </h1>
-          <p
-            className="text-lg md:text-xl max-w-2xl mx-auto mb-10"
-            style={{
-              color: '#cccccc',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
-            }}
+          <p 
+            className="text-base md:text-lg mt-6 max-w-2xl mx-auto"
+            style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', lineHeight: '1.7', fontWeight: 400 }}
           >
-            Connect with authentic voices that resonate with your audience.
-            Drive real results through strategic creator partnerships.
+            Connect with authentic voices that resonate with your audience. Drive real results through strategic creator partnerships.
           </p>
-          <button
-            onClick={() => navigate('/signup?source=brand')}
-            className="px-8 py-4 rounded-full font-medium text-base transition-all duration-200 hover:scale-105"
-            style={{
-              background: '#ffffff',
-              color: '#000000'
-            }}
-          >
-            Get Started
-          </button>
         </div>
 
         {/* Features */}
@@ -407,24 +390,49 @@ export function LearnBrands() {
         {/* FAQ Section */}
         <div
           ref={faqRef}
-          className={`max-w-3xl mx-auto transition-all duration-1000 ease-out ${
+          className={`max-w-3xl mx-auto text-center transition-all duration-1000 ease-out ${
             faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <h2
-            className="text-3xl md:text-4xl font-bold mb-12 text-center"
-            style={{
-              fontFamily: 'Fraunces, serif',
-              color: '#ffffff'
-            }}
-          >
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-6">
+          <h2 
+              className="text-3xl md:text-4xl lg:text-5xl font-normal mb-4"
+              style={{ fontFamily: 'Fraunces, serif', color: '#ffffff', letterSpacing: '-0.02em' }}
+            >
+              Frequently Asked <span style={{ fontWeight: 600 }}>Questions</span>
+            </h2>
+            <p 
+              className="text-base md:text-lg mx-auto"
+              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+            >
+              Everything you need to know about partnering with brands on Elevate
+            </p>
+          <div className="space-y-6 mt-12">
             {brandFAQ.map((faq, index) => (
               <FAQItem key={index} question={faq.question} answer={faq.answer} />
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div
+        ref={ctaRef}
+        className={`max-w-7xl mx-auto px-4 md:px-6 pb-24 transition-all duration-1000 ease-out ${
+          ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}
+      >
+        <div className="text-center">
+          <button
+            onClick={handleBrandSignup}
+            className="group relative w-full sm:w-auto px-12 md:px-16 py-4 md:py-5 rounded-xl text-base md:text-lg font-semibold transition-all duration-300 hover:scale-[1.02]"
+            style={{
+              background: 'linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%)',
+              color: '#000000',
+              boxShadow: '0 4px 24px rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            Sign up as a Brand
+          </button>
         </div>
       </div>
 
