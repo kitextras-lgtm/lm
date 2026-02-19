@@ -81,6 +81,40 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
           </div>
         </div>
       </div>
+
+      {/* Two Column Layout for Account Status and Policy Warnings */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Account Status */}
+        <div className="p-6 rounded-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="flex items-start justify-between mb-6">
+            <h3 className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Account Status</h3>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" style={{ color: '#64748B' }}>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <p className="text-5xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Healthy</p>
+            <p className="text-sm" style={{ color: '#94A3B8' }}>No policy violations</p>
+          </div>
+        </div>
+
+        {/* Policy Warnings */}
+        <div className="p-6 rounded-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="flex items-start justify-between mb-6">
+            <h3 className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Policy Warnings</h3>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" style={{ color: '#64748B' }}>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M12 9V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <p className="text-5xl font-bold mb-2" style={{ color: '#F8FAFC' }}>0</p>
+            <p className="text-sm" style={{ color: '#94A3B8' }}>Compliant with Terms of Service</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

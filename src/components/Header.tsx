@@ -5,9 +5,11 @@ export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isArtistPage, setIsArtistPage] = useState(false);
+  const [isFreelancerPage, setIsFreelancerPage] = useState(false);
 
   useEffect(() => {
     setIsArtistPage(location.pathname === '/learn/artist');
+    setIsFreelancerPage(location.pathname === '/learn/freelancer');
   }, [location.pathname]);
 
   return (
@@ -69,7 +71,7 @@ export function Header() {
             Log In
           </button>
           <button
-            onClick={() => navigate(isArtistPage ? '/signup?source=artist' : '/signup')}
+            onClick={() => navigate(isArtistPage ? '/signup?source=artist' : isFreelancerPage ? '/signup?source=freelancer' : '/signup')}
             className="px-5 py-2 text-[13px] font-semibold text-black cursor-pointer transition-all duration-200 rounded-lg"
             style={{
               background: '#E8E8E8'

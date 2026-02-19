@@ -44,9 +44,13 @@ export function MakeProfilePage() {
   }, []);
 
   useEffect(() => {
-    // Check if artist type was passed from navigation state
+    // Check if artist or freelancer type was passed from navigation state
     if (location.state?.userType === 'artist') {
       setUserType('artist');
+      return;
+    }
+    if (location.state?.userType === 'freelancer') {
+      setUserType('freelancer');
       return;
     }
 
@@ -217,11 +221,11 @@ export function MakeProfilePage() {
       localStorage.setItem('tempProfile', JSON.stringify(tempProfileData));
       console.log('💾 Saved to localStorage. Verifying:', localStorage.getItem('tempProfile'));
 
-      // Check if this is an artist flow
+      // Check if this is an artist or freelancer flow
       if (userType === 'artist' || location.state?.userType === 'artist') {
-        // For artists, save the profile directly and navigate to tell-us-about-yourself
-        // The tell-us-about-yourself page will handle the final save and dashboard navigation
         navigate('/tell-us-about-yourself', { state: { userType: 'artist' } });
+      } else if (userType === 'freelancer' || location.state?.userType === 'freelancer') {
+        navigate('/tell-us-about-yourself', { state: { userType: 'freelancer' } });
       } else {
         navigate('/tell-us-about-yourself');
       }

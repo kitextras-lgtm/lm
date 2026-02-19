@@ -10,7 +10,7 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     question: "Is there any cost to start?",
-    answer: "There's no cost to get started. We fully cover all expenses related to promotion, and Elevate provides exclusive opportunities at no cost of the clients."
+    answer: "No, one of the best parts of our platform is that there's absolutely no upfront cost to get started."
   },
   {
     question: "How exactly do payments work?",
@@ -18,11 +18,7 @@ const faqData: FAQItem[] = [
   },
   {
     question: "How can I join Elevate?",
-    answer: "Elevate is strictly invite only to assure quality control and to focus on each client's individual situation. With future installments, this will change."
-  },
-  {
-    question: "Can I work with other distributors or agencies while with Elevate?",
-    answer: "Yes, you can work with other distributors or agencies while partnered with Elevate. We believe in providing flexibility to our clients and do not impose exclusive restrictions that limit your opportunities for growth and collaboration."
+    answer: "At the moment, Elevate is strictly invite only to maintain quality control and ensure we can focus on each client's individual situation. This will change in future releases."
   }
 ];
 

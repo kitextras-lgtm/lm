@@ -3966,6 +3966,18 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.affiliateRevenue')}</h4>
                           <p className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>$18.5k</p>
                           <p className="text-sm mt-2" style={{ color: '#10b981' }}>+2.3% {t('analytics.yoy')}</p>
+                          <div className="mt-6 pt-4 border-t flex items-center justify-start" style={{ borderColor: 'var(--border-subtle)' }}>
+                            <button 
+                              className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+                              style={{ color: '#F8FAFC' }}
+                              onClick={() => setHomeSubPage('analytics')}
+                            >
+                              <span>{t('home.viewMore')}</span>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </>
                     )}

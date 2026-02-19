@@ -25,6 +25,7 @@ export function SignupPage() {
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [fromArtistPage, setFromArtistPage] = useState(false);
+  const [fromFreelancerPage, setFromFreelancerPage] = useState(false);
   const [isContinuation, setIsContinuation] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -43,7 +44,7 @@ export function SignupPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Check if user came from artist page
+  // Check if user came from artist or freelancer page
   useEffect(() => {
     // Check URL parameter first
     const source = searchParams.get('source');
@@ -52,6 +53,9 @@ export function SignupPage() {
       setFromArtistPage(true);
       // Store in localStorage for other parts of the flow
       localStorage.setItem('signupSource', 'artist');
+    } else if (source === 'freelancer') {
+      setFromFreelancerPage(true);
+      localStorage.setItem('signupSource', 'freelancer');
     } else {
       // Also check localStorage as fallback
       const signupSource = localStorage.getItem('signupSource');
@@ -59,6 +63,8 @@ export function SignupPage() {
       
       if (signupSource === 'artist' || sessionSource === 'artist') {
         setFromArtistPage(true);
+      } else if (signupSource === 'freelancer' || sessionSource === 'freelancer') {
+        setFromFreelancerPage(true);
       }
     }
   }, [searchParams]);
@@ -228,6 +234,9 @@ export function SignupPage() {
         // Clear the flag so UserTypeSelectionPage doesn't redirect back to make-profile
         localStorage.removeItem('signupSource');
         navigate('/make-profile', { state: { userType: 'artist' } });
+      } else if (fromFreelancerPage) {
+        localStorage.removeItem('signupSource');
+        navigate('/make-profile', { state: { userType: 'freelancer' } });
       } else {
         navigate('/make-profile');
       }
@@ -304,13 +313,13 @@ export function SignupPage() {
         }}
       >
         <button
-          onClick={() => navigate(fromArtistPage ? '/learn/artist' : '/')}
+          onClick={() => navigate(fromArtistPage ? '/learn/artist' : fromFreelancerPage ? '/learn/freelancer' : '/')}
           className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
         >
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="text-xs font-medium">{fromArtistPage ? 'Back' : 'Home'}</span>
+          <span className="text-xs font-medium">{(fromArtistPage || fromFreelancerPage) ? 'Back' : 'Home'}</span>
         </button>
 
         {!isMobile && (
@@ -439,13 +448,13 @@ export function SignupPage() {
       }}
     >
       <button
-        onClick={() => navigate(fromArtistPage ? '/learn/artist' : '/')}
+        onClick={() => navigate(fromArtistPage ? '/learn/artist' : fromFreelancerPage ? '/learn/freelancer' : '/')}
         className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
       >
         <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="text-xs font-medium">{fromArtistPage ? 'Back' : 'Home'}</span>
+        <span className="text-xs font-medium">{(fromArtistPage || fromFreelancerPage) ? 'Back' : 'Home'}</span>
       </button>
       {!isMobile && (
         <div

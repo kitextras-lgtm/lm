@@ -323,7 +323,7 @@ export function TellUsAboutYourselfPage() {
         }));
       }
 
-      // Check if this is an artist flow
+      // Check if this is an artist or freelancer flow
       const tempProfile = localStorage.getItem('tempProfile');
       const profileData = tempProfile ? JSON.parse(tempProfile) : {};
       
@@ -332,6 +332,9 @@ export function TellUsAboutYourselfPage() {
         navigate('/dashboard/artist', { state: { fromOnboarding: true } });
         // Clear tempProfile since onboarding is complete
         localStorage.removeItem('tempProfile');
+      } else if (profileData.userType === 'freelancer' || routerLocation.state?.userType === 'freelancer') {
+        // For freelancers, navigate to freelancer onboarding flow
+        navigate('/freelancer-onboarding');
       } else {
         navigate('/user-type-selection');
       }
