@@ -1,17 +1,18 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, User, Link2, CreditCard, Bell } from 'lucide-react';
+import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { useAdmin } from '../hooks/useAdmin';
 import { AnimatedBarsLoader } from '../components/AnimatedBarsLoader';
 import { AdminMessagesPage } from './AdminMessagesPage';
 import { getAdminId } from '../hooks/useChat';
 import { AnnouncementSender } from '../components/AnnouncementSender';
+import { MessageToast } from '../components/MessageToast';
 import { ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { SettingsView } from '../components/SettingsView';
-import { ToggleSwitch } from '../components/ToggleSwitch';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeTokens } from '../lib/themeTokens';
 
@@ -27,6 +28,29 @@ interface User {
   updated_at: string;
 }
 
+interface Application {
+  id: string;
+  user_id: string;
+  application_type: 'freelancer_onboarding' | 'creator_verification';
+  status: 'pending' | 'approved' | 'denied';
+  full_name: string | null;
+  email: string | null;
+  username: string | null;
+  professional_title: string | null;
+  category: string | null;
+  skills: string[] | null;
+  hourly_rate: number | null;
+  bio: string | null;
+  country: string | null;
+  city: string | null;
+  platform: string | null;
+  social_url: string | null;
+  channel_type: string | null;
+  channel_description: string | null;
+  admin_note: string | null;
+  created_at: string;
+}
+
 export function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -37,11 +61,27 @@ export function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userDetailSection, setUserDetailSection] = useState<'personal' | 'connected' | 'payment' | 'notifications'>('personal');
   const [adminProfileId, setAdminProfileId] = useState<string | null>(null);
+  const [userSearch, setUserSearch] = useState('');
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
+  const [appStatusFilter, setAppStatusFilter] = useState<'pending' | 'approved' | 'denied'>('pending');
+  const [actioningId, setActioningId] = useState<string | null>(null);
   const navigate = useNavigate();
   const fetchingUsersRef = useRef(false);
   const lastFetchedSectionRef = useRef<string | null>(null);
   const { admin, sessionToken, verifySession, isAuthenticated, isLoading } = useAdminAuth();
   const { adminFetch } = useAdmin();
+
+  const filteredUsers = useMemo(() => {
+    if (!userSearch.trim()) return users;
+    const q = userSearch.toLowerCase();
+    return users.filter(u =>
+      (u.email?.toLowerCase().includes(q)) ||
+      (u.full_name?.toLowerCase().includes(q)) ||
+      (u.username?.toLowerCase().includes(q)) ||
+      (u.user_type?.toLowerCase().includes(q))
+    );
+  }, [users, userSearch]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,8 +101,46 @@ export function AdminDashboard() {
     fetchAdminProfileId();
   }, [admin, activeSection]);
 
+  const fetchApplications = useCallback(async () => {
+    setApplicationsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error) setApplications(data || []);
+    } catch (e) {
+      console.error('Error fetching applications:', e);
+    } finally {
+      setApplicationsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    if (activeSection !== 'users') {
+    if (activeSection === 'applications') {
+      fetchApplications();
+    }
+  }, [activeSection, fetchApplications]);
+
+  const handleApplicationAction = async (id: string, action: 'approved' | 'denied') => {
+    setActioningId(id);
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: action, reviewed_at: new Date().toISOString() })
+        .eq('id', id);
+      if (!error) {
+        setApplications(prev => prev.map(a => a.id === id ? { ...a, status: action } : a));
+      }
+    } catch (e) {
+      console.error('Error updating application:', e);
+    } finally {
+      setActioningId(null);
+    }
+  };
+
+  useEffect(() => {
+    if (activeSection !== 'users' && activeSection !== 'applications') {
       fetchingUsersRef.current = false;
       lastFetchedSectionRef.current = null;
       return;
@@ -198,6 +276,13 @@ export function AdminDashboard() {
   }
 
   return (
+    <>
+    <MessageToast
+      userId={adminProfileId}
+      activeSection={activeSection}
+      onNavigateToMessages={() => setActiveSection('messages')}
+      theme={theme}
+    />
     <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: tokens.bg.primary }}>
       {/* Left Sidebar - Desktop Only */}
       <CollapsibleSidebar
@@ -270,16 +355,162 @@ export function AdminDashboard() {
             )}
 
             {activeSection === 'applications' && (
-              <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
-                <div className="text-center px-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                    <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.muted }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+              <div className="animate-fade-in">
+                <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>Applications</h2>
+                    <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>Freelancer onboarding and creator social verification requests</p>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No applications yet</h3>
-                  <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>Pending applications will appear here</p>
+                  <div className="flex gap-2">
+                    {(['pending', 'approved', 'denied'] as const).map(s => (
+                      <button
+                        key={s}
+                        onClick={() => setAppStatusFilter(s)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
+                        style={{
+                          backgroundColor: appStatusFilter === s ? tokens.bg.active : 'transparent',
+                          color: appStatusFilter === s ? tokens.text.primary : tokens.text.muted,
+                          border: `1px solid ${appStatusFilter === s ? tokens.border.default : tokens.border.subtle}`,
+                        }}
+                      >
+                        {s}
+                        <span className="ml-1.5 opacity-60">
+                          {applications.filter(a => a.status === s).length}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {applicationsLoading ? (
+                  <div className="flex items-center justify-center min-h-[400px]">
+                    <AnimatedBarsLoader text="Loading..." />
+                  </div>
+                ) : (() => {
+                  const sections = [
+                    { type: 'freelancer_onboarding' as const, label: 'Freelancer Onboarding', color: '#60a5fa' },
+                    { type: 'creator_verification' as const, label: 'Creator Verification', color: '#a78bfa' },
+                  ];
+                  const filtered = applications.filter(a => a.status === appStatusFilter);
+                  if (filtered.length === 0) {
+                    return (
+                      <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="text-center px-4">
+                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
+                            <CheckCircle className="w-8 h-8" style={{ color: tokens.text.muted }} />
+                          </div>
+                          <h3 className="text-xl font-bold mb-2" style={{ color: tokens.text.primary }}>No {appStatusFilter} applications</h3>
+                          <p className="text-sm" style={{ color: tokens.text.secondary }}>Applications will appear here once submitted</p>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="space-y-8">
+                      {sections.map(({ type, label, color }) => {
+                        const group = filtered.filter(a => a.application_type === type);
+                        if (group.length === 0) return null;
+                        return (
+                          <div key={type}>
+                            <div className="flex items-center gap-3 mb-3">
+                              <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>{label}</h3>
+                              <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: tokens.bg.active, color }}>
+                                {group.length}
+                              </span>
+                            </div>
+                            <div className="h-px mb-4" style={{ backgroundColor: tokens.border.subtle }} />
+                            <div className="space-y-3">
+                              {group.map(app => (
+                                <div
+                                  key={app.id}
+                                  className="rounded-xl p-5 border"
+                                  style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.default }}
+                                >
+                                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                        <span className="text-sm font-semibold" style={{ color: tokens.text.primary }}>
+                                          {app.full_name || app.username || 'Unknown'}
+                                        </span>
+                                        {app.username && (
+                                          <span className="text-xs" style={{ color: tokens.text.muted }}>@{app.username}</span>
+                                        )}
+                                        <span
+                                          className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                          style={{
+                                            backgroundColor: app.status === 'pending' ? 'rgba(251,191,36,0.1)' : app.status === 'approved' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                                            color: app.status === 'pending' ? '#fbbf24' : app.status === 'approved' ? '#10b981' : '#ef4444',
+                                          }}
+                                        >
+                                          {app.status}
+                                        </span>
+                                      </div>
+                                      {app.email && <p className="text-xs mb-2" style={{ color: tokens.text.muted }}>{app.email}</p>}
+
+                                      {app.application_type === 'freelancer_onboarding' && (
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1 mt-2">
+                                          {app.professional_title && <div><span className="text-xs" style={{ color: tokens.text.muted }}>Title: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{app.professional_title}</span></div>}
+                                          {app.category && <div><span className="text-xs" style={{ color: tokens.text.muted }}>Category: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{app.category}</span></div>}
+                                          {app.hourly_rate != null && <div><span className="text-xs" style={{ color: tokens.text.muted }}>Rate: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>${app.hourly_rate}/hr</span></div>}
+                                          {(app.city || app.country) && <div><span className="text-xs" style={{ color: tokens.text.muted }}>Location: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{[app.city, app.country].filter(Boolean).join(', ')}</span></div>}
+                                          {app.skills && app.skills.length > 0 && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.muted }}>Skills: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{app.skills.slice(0, 5).join(', ')}{app.skills.length > 5 ? ` +${app.skills.length - 5}` : ''}</span></div>}
+                                        </div>
+                                      )}
+
+                                      {app.application_type === 'creator_verification' && (
+                                        <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2">
+                                          {app.platform && <div><span className="text-xs" style={{ color: tokens.text.muted }}>Platform: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{app.platform}</span></div>}
+                                          {app.channel_type && <div><span className="text-xs" style={{ color: tokens.text.muted }}>Type: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{app.channel_type}</span></div>}
+                                          {app.social_url && (
+                                            <div className="col-span-2">
+                                              <span className="text-xs" style={{ color: tokens.text.muted }}>URL: </span>
+                                              <a href={app.social_url} target="_blank" rel="noopener noreferrer" className="text-xs inline-flex items-center gap-1 hover:underline" style={{ color: '#60a5fa' }}>
+                                                {app.social_url.replace(/^https?:\/\//i, '').slice(0, 50)}
+                                                <ExternalLink className="w-3 h-3" />
+                                              </a>
+                                            </div>
+                                          )}
+                                          {app.channel_description && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.muted }}>Description: </span><span className="text-xs" style={{ color: tokens.text.secondary }}>{app.channel_description}</span></div>}
+                                        </div>
+                                      )}
+
+                                      <p className="text-xs mt-2" style={{ color: tokens.text.muted }}>
+                                        Submitted {formatDate(app.created_at)}
+                                      </p>
+                                    </div>
+
+                                    {app.status === 'pending' && (
+                                      <div className="flex gap-2 flex-shrink-0">
+                                        <button
+                                          onClick={() => handleApplicationAction(app.id, 'approved')}
+                                          disabled={actioningId === app.id}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                                          style={{ backgroundColor: 'rgba(16,185,129,0.15)', color: '#10b981', border: '1px solid rgba(16,185,129,0.3)' }}
+                                        >
+                                          {actioningId === app.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                                          Approve
+                                        </button>
+                                        <button
+                                          onClick={() => handleApplicationAction(app.id, 'denied')}
+                                          disabled={actioningId === app.id}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                                          style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.25)' }}
+                                        >
+                                          {actioningId === app.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+                                          Deny
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -302,11 +533,32 @@ export function AdminDashboard() {
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: tokens.text.primary }}>All Users</h2>
                     {users.length > 0 && (
                       <span className="text-sm font-medium px-3 py-1 rounded-lg" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>
-                        {users.length} {users.length === 1 ? 'user' : 'users'}
+                        {filteredUsers.length}{filteredUsers.length !== users.length ? ` / ${users.length}` : ''} {users.length === 1 ? 'user' : 'users'}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>View and manage all registered users (Creators, Artists, Business)</p>
+                  <p className="text-sm sm:text-base mb-4" style={{ color: tokens.text.secondary }}>View and manage all registered users (Creators, Artists, Business)</p>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <Search className="w-4 h-4" style={{ color: tokens.text.muted }} />
+                    </div>
+                    <input
+                      type="text"
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      placeholder="Search by name, email, username, or type..."
+                      className="w-full h-10 pl-9 pr-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                      style={{ color: tokens.text.primary, background: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}
+                    />
+                    {userSearch && (
+                      <button
+                        onClick={() => setUserSearch('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity"
+                      >
+                        <X className="w-4 h-4" style={{ color: tokens.text.muted }} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {usersLoading ? (
@@ -350,6 +602,16 @@ export function AdminDashboard() {
                       <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>User data will appear here</p>
                     </div>
                   </div>
+                ) : filteredUsers.length === 0 ? (
+                  <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-center px-4">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
+                        <Search className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.muted }} />
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No results for "{userSearch}"</h3>
+                      <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>Try searching by name, email, username, or account type</p>
+                    </div>
+                  </div>
                 ) : (
                   <div className="rounded-xl sm:rounded-2xl overflow-hidden" style={{ backgroundColor: tokens.bg.elevated }}>
                     <div className="overflow-x-auto">
@@ -365,7 +627,7 @@ export function AdminDashboard() {
                           </tr>
                         </thead>
                         <tbody>
-                          {users.map((user, index) => (
+                          {filteredUsers.map((user, index) => (
                             <tr 
                               key={user.id} 
                               onClick={() => {
@@ -373,7 +635,7 @@ export function AdminDashboard() {
                                 setUserDetailSection('personal');
                               }}
                               className="border-b transition-colors hover:brightness-105 cursor-pointer" 
-                              style={{ borderColor: index === users.length - 1 ? 'transparent' : tokens.border.default }}
+                              style={{ borderColor: index === filteredUsers.length - 1 ? 'transparent' : tokens.border.default }}
                             >
                               <td className="py-4 px-4 sm:px-6">
                                 <div className="text-sm font-medium" style={{ color: tokens.text.primary }}>{user.email}</div>
@@ -1074,5 +1336,6 @@ export function AdminDashboard() {
         </>
       )}
     </div>
+    </>
   );
 }

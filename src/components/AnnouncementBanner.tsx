@@ -9,12 +9,12 @@ interface Announcement {
   created_at: string;
   is_read?: boolean;
   announcement_type?: 'normal' | 'serious';
-  target_audience?: 'all' | 'creators' | 'artists';
+  target_audience?: 'all' | 'creators' | 'artists' | 'businesses' | 'freelancers';
 }
 
 interface AnnouncementBannerProps {
   userId: string | null;
-  userType?: 'creator' | 'artist' | 'business'; // Which dashboard is showing this
+  userType?: 'creator' | 'artist' | 'business' | 'freelancer'; // Which dashboard is showing this
 }
 
 // Type assertion for fetchpriority (it's valid HTML but TypeScript doesn't recognize it yet)
@@ -79,10 +79,12 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
           if (dismissedIds.has(announcement.id)) return false;
           
           const audience = announcement.target_audience || 'all';
-          // Show if: targeting all, OR targeting this user type (creators/artists/businesses)
+          // Show if: targeting all, OR targeting this user type
           if (audience === 'all') return true;
-          if (audience === 'creators' && (userType === 'creator' || userType === 'business')) return true;
+          if (audience === 'creators' && userType === 'creator') return true;
           if (audience === 'artists' && userType === 'artist') return true;
+          if (audience === 'businesses' && userType === 'business') return true;
+          if (audience === 'freelancers' && userType === 'freelancer') return true;
           return false;
         }).slice(0, 5); // Limit to 5 after filtering
         
@@ -113,9 +115,11 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
           // Only refetch if this announcement is for this user or for all users
           // AND if it's targeting this user type
           const audience = newAnnouncement.target_audience || 'all';
-          const isForThisAudience = audience === 'all' || 
-            (audience === 'creators' && (userType === 'creator' || userType === 'business')) ||
-            (audience === 'artists' && userType === 'artist');
+          const isForThisAudience = audience === 'all' ||
+            (audience === 'creators' && userType === 'creator') ||
+            (audience === 'artists' && userType === 'artist') ||
+            (audience === 'businesses' && userType === 'business') ||
+            (audience === 'freelancers' && userType === 'freelancer');
           
           if ((newAnnouncement.user_id === null || newAnnouncement.user_id === userId) && isForThisAudience) {
             console.log('📢 New announcement received in real-time:', payload);

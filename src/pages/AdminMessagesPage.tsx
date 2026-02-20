@@ -8,6 +8,58 @@ import { debounce } from '../utils/debounce';
 import { useTheme } from '../contexts/ThemeContext';
 
 
+type UserType = 'artist' | 'creator' | 'freelancer' | 'business';
+
+function AccountTypeIcon({ userType, size = 14 }: { userType: UserType; size?: number }) {
+  const s = size;
+  if (userType === 'artist') {
+    return (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: s, height: s, flexShrink: 0 }}>
+        <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+        <rect x="8" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="32" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="10" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+        <rect x="34" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+      </svg>
+    );
+  }
+  if (userType === 'creator') {
+    return (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: s, height: s, flexShrink: 0 }}>
+        <rect x="14" y="6" width="20" height="36" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="20" y="9" width="8" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+        <rect x="21" y="38" width="6" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+        <rect x="16" y="14" width="10" height="8" rx="2" fill="currentColor" opacity="0.2"/>
+        <path d="M20 16L23 18L20 20V16Z" fill="currentColor" opacity="0.8"/>
+        <rect x="26" y="14" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.8"/>
+        <circle cx="30" cy="18" r="2" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
+        <circle cx="32.5" cy="15.5" r="0.8" fill="currentColor" opacity="0.6"/>
+      </svg>
+    );
+  }
+  if (userType === 'freelancer') {
+    return (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: s, height: s, flexShrink: 0 }}>
+        <rect x="12" y="10" width="24" height="10" rx="1" fill="none" stroke="currentColor" strokeWidth="2"/>
+        <rect x="21" y="20" width="6" height="24" rx="1" fill="none" stroke="currentColor" strokeWidth="2"/>
+        <line x1="22" y1="32" x2="26" y2="32" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <line x1="22" y1="37" x2="26" y2="37" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    );
+  }
+  if (userType === 'business') {
+    return (
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: s, height: s, flexShrink: 0 }}>
+        <rect x="6" y="18" width="36" height="22" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <path d="M18 18V14C18 12.8954 18.8954 12 20 12H28C29.1046 12 30 12.8954 30 14V18" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <rect x="6" y="18" width="36" height="8" rx="3" stroke="currentColor" strokeWidth="2" fill="black"/>
+        <rect x="21" y="24" width="6" height="4" rx="1" fill="currentColor"/>
+      </svg>
+    );
+  }
+  return null;
+}
+
 interface AdminMessagesPageProps {
   currentAdminId: string;
 }
@@ -21,6 +73,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
   const [showSidebar, setShowSidebar] = useState(true);
   const [initializing, setInitializing] = useState(true);
   const [activeTab, setActiveTab] = useState<'primary' | 'general' | 'requests'>('primary');
+  const [activeTypeFilter, setActiveTypeFilter] = useState<'all' | 'artist' | 'creator' | 'freelancer' | 'business'>('all');
   const { profile: adminProfile } = useProfile(currentAdminId);
 
   usePresence(currentAdminId);
@@ -85,9 +138,10 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
       conversations.filter((conv) => {
         if (!conv.customer) return false;
         const matchesSearch = conv.customer.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
-        return matchesSearch;
+        const matchesType = activeTypeFilter === 'all' || conv.customer.user_type === activeTypeFilter;
+        return matchesSearch && matchesType;
       }),
-    [conversations, debouncedSearchQuery]
+    [conversations, debouncedSearchQuery, activeTypeFilter]
   );
 
   const getSenderName = useCallback(
@@ -145,7 +199,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
               key={selectedConversation.id}
               conversation={selectedConversation}
               otherUser={selectedConversation.customer}
-              currentUserId={currentAdminId}
+              currentUserId={selectedConversation.admin_id || currentAdminId}
               getSenderName={getSenderName}
               backgroundTheme={theme}
               onBack={() => setShowSidebar(true)}
@@ -172,7 +226,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
           </div>
           
           {/* Tabs */}
-          <div className="flex gap-1 mb-4 p-1 rounded-lg" style={{ backgroundColor: tokens.bg.input }}>
+          <div className="flex gap-1 mb-3 p-1 rounded-lg" style={{ backgroundColor: tokens.bg.input }}>
             <button
               onClick={() => setActiveTab('primary')}
               className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${
@@ -214,6 +268,29 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
             </button>
           </div>
           
+          {/* Account Type Filter Bubbles */}
+          <div className="flex gap-1.5 flex-wrap mb-3">
+            {(['all', 'artist', 'creator', 'freelancer', 'business'] as const).map((type) => {
+              const labels: Record<string, string> = { all: 'All', artist: 'Artists', creator: 'Creators', freelancer: 'Freelancers', business: 'Brands' };
+              const isActive = activeTypeFilter === type;
+              return (
+                <button
+                  key={type}
+                  onClick={() => setActiveTypeFilter(type)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: isActive ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
+                    border: isActive ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                    color: isActive ? '#ffffff' : 'rgba(255,255,255,0.45)',
+                  }}
+                >
+                  {type !== 'all' && <AccountTypeIcon userType={type} size={10} />}
+                  {labels[type]}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: tokens.text.muted }} />
             <input
@@ -270,7 +347,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
             key={selectedConversation.id}
             conversation={selectedConversation}
             otherUser={selectedConversation.customer}
-            currentUserId={currentAdminId}
+            currentUserId={selectedConversation.admin_id || currentAdminId}
             getSenderName={getSenderName}
             backgroundTheme={theme}
           />

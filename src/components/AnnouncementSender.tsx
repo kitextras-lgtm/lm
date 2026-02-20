@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, AlertTriangle, Users, User, Loader2, X, Search, Palette, Music, AlertCircle, Bell } from 'lucide-react';
+import { Send, AlertTriangle, Users, User, Loader2, X, Search, Palette, Music, AlertCircle, Bell, Trash2, Briefcase } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { debounce } from '../utils/debounce';
 import { useTheme } from '../contexts/ThemeContext';
@@ -17,7 +17,18 @@ interface UserSuggestion {
 }
 
 type AnnouncementType = 'normal' | 'serious';
-type TargetAudience = 'all' | 'creators' | 'artists' | 'businesses';
+type TargetAudience = 'all' | 'creators' | 'artists' | 'businesses' | 'freelancers';
+
+interface SentAnnouncement {
+  id: string;
+  title: string;
+  message: string;
+  announcement_type: string;
+  target_audience: string;
+  status: string;
+  sent_at: string;
+  created_at: string;
+}
 
 export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps) {
   const { tokens } = useTheme();
@@ -33,8 +44,43 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
   const [userSuggestions, setUserSuggestions] = useState<UserSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [sentAnnouncements, setSentAnnouncements] = useState<SentAnnouncement[]>([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  const fetchSentAnnouncements = useCallback(async () => {
+    setLoadingAnnouncements(true);
+    try {
+      const { data, error } = await supabase
+        .from('admin_announcements')
+        .select('id, title, message, announcement_type, target_audience, status, sent_at, created_at')
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (!error) setSentAnnouncements(data || []);
+    } catch (e) {
+      console.error('Error fetching announcements:', e);
+    } finally {
+      setLoadingAnnouncements(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSentAnnouncements();
+  }, [fetchSentAnnouncements]);
+
+  const handleDeleteAnnouncement = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await supabase.from('admin_announcements').delete().eq('id', id);
+      setSentAnnouncements(prev => prev.filter(a => a.id !== id));
+    } catch (e) {
+      console.error('Error deleting announcement:', e);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // Debounced search function
   const searchUsers = useCallback(
@@ -160,59 +206,22 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
       if (adminError) throw adminError;
 
-      // If sending to all users with a target audience, also create individual announcements
-      if (sendToAll && targetAudience !== 'all') {
-        // Get users of the target type
-        const { data: targetUsers, error: usersError } = await supabase
-          .from('user_profiles')
-          .select('id')
-          .eq('user_type', targetAudience === 'businesses' ? 'business' : targetAudience.slice(0, -1));
+      // For broadcast announcements (all or targeted audience), insert a single row with user_id=null.
+      // AnnouncementBanner already filters by target_audience client-side, so this is sufficient.
+      if (sendToAll) {
+        const { error: insertError } = await supabase
+          .from('announcements')
+          .insert({
+            admin_id: adminId,
+            user_id: null,
+            title: title.trim(),
+            content: content.trim(),
+            announcement_type: announcementType,
+            target_audience: targetAudience,
+            is_read: false,
+          });
 
-        if (usersError) throw usersError;
-
-        // Create announcement records for each target user
-        const announcementsToInsert = (targetUsers || []).map(user => ({
-          admin_id: adminId,
-          user_id: user.id,
-          title: title.trim(),
-          content: content.trim(),
-          announcement_type: announcementType,
-          target_audience: targetAudience,
-          is_read: false,
-        }));
-
-        if (announcementsToInsert.length > 0) {
-          const { error: insertError } = await supabase
-            .from('announcements')
-            .insert(announcementsToInsert);
-
-          if (insertError) throw insertError;
-        }
-      } else if (sendToAll && targetAudience === 'all') {
-        // Send to all users
-        const { data: allUsers, error: allUsersError } = await supabase
-          .from('user_profiles')
-          .select('id');
-
-        if (allUsersError) throw allUsersError;
-
-        const announcementsToInsert = (allUsers || []).map(user => ({
-          admin_id: adminId,
-          user_id: user.id,
-          title: title.trim(),
-          content: content.trim(),
-          announcement_type: announcementType,
-          target_audience: 'all',
-          is_read: false,
-        }));
-
-        if (announcementsToInsert.length > 0) {
-          const { error: insertError } = await supabase
-            .from('announcements')
-            .insert(announcementsToInsert);
-
-          if (insertError) throw insertError;
-        }
+        if (insertError) throw insertError;
       } else if (!sendToAll && profileId) {
         // Send to specific user
         const { error: insertError } = await supabase
@@ -421,6 +430,20 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 <User className="w-4 h-4" />
                 Business
               </button>
+              <button
+                onClick={() => setTargetAudience('freelancers')}
+                className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                  targetAudience === 'freelancers' ? '' : 'hover:brightness-110'
+                }`}
+                style={{
+                  backgroundColor: targetAudience === 'freelancers' ? tokens.bg.active : 'transparent',
+                  color: '#F8FAFC',
+                  border: targetAudience === 'freelancers' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                }}
+              >
+                <Briefcase className="w-4 h-4" />
+                Freelancers
+              </button>
             </div>
           </div>
         )}
@@ -596,7 +619,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             </button>
           )}
           <button
-            onClick={handleSend}
+            onClick={async () => { await handleSend(); fetchSentAnnouncements(); }}
             disabled={isSending || !title.trim() || !content.trim() || (!sendToAll && !username.trim())}
             className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
@@ -616,6 +639,73 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               </>
             )}
           </button>
+        </div>
+
+        {/* Sent Announcements List */}
+        <div className="mt-10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold" style={{ color: tokens.text.primary }}>Sent Announcements</h3>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>
+              {sentAnnouncements.length}
+            </span>
+          </div>
+          <div className="h-px mb-6" style={{ backgroundColor: tokens.border.subtle }} />
+          {loadingAnnouncements ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin" style={{ color: tokens.text.muted }} />
+            </div>
+          ) : sentAnnouncements.length === 0 ? (
+            <p className="text-sm text-center py-8" style={{ color: tokens.text.muted }}>No announcements sent yet</p>
+          ) : (
+            <div className="space-y-3">
+              {sentAnnouncements.map((ann) => {
+                const isSerious = ann.announcement_type === 'serious';
+                const audienceLabel: Record<string, string> = {
+                  all: 'All Users', creators: 'Creators', artists: 'Artists',
+                  businesses: 'Business', freelancers: 'Freelancers',
+                };
+                return (
+                  <div
+                    key={ann.id}
+                    className="rounded-xl p-4 border flex items-start gap-4"
+                    style={{
+                      backgroundColor: isSerious ? 'rgba(239,68,68,0.07)' : tokens.bg.elevated,
+                      borderColor: isSerious ? 'rgba(239,68,68,0.25)' : tokens.border.default,
+                    }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        {isSerious && <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#ef4444' }} />}
+                        <span className="text-sm font-semibold truncate" style={{ color: isSerious ? '#ef4444' : tokens.text.primary }}>
+                          {ann.title}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>
+                          {audienceLabel[ann.target_audience] || ann.target_audience}
+                        </span>
+                      </div>
+                      <p className="text-xs leading-relaxed line-clamp-2" style={{ color: tokens.text.secondary }}>
+                        {ann.message}
+                      </p>
+                      <p className="text-xs mt-1.5" style={{ color: tokens.text.muted }}>
+                        {new Date(ann.sent_at || ann.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteAnnouncement(ann.id)}
+                      disabled={deletingId === ann.id}
+                      className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-40"
+                      style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                      title="Delete announcement"
+                    >
+                      {deletingId === ann.id
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <Trash2 className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

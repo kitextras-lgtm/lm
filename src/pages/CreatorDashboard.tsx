@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Send, AlertTriangle, Users, User, X, Search, Palette, Music, AlertCircle, Bell, ChevronRight, ChevronDown, Video, Network, MapPin, Globe, Plus, Info } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
@@ -14,6 +14,7 @@ import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
+import { MessageToast } from '../components/MessageToast';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { ProfileView } from '../components/ProfileView';
@@ -1181,6 +1182,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   // Get unread message count for badge indicator
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
+  const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
   
   // Calculate unreadCount - check if user is customer_id or admin_id and use appropriate unread field
   const unreadCountsString = JSON.stringify(conversations.map(c => ({
@@ -1190,7 +1192,6 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const unreadCount = useMemo(() => {
     if (!currentUserId || conversations.length === 0) return 0;
     const total = conversations.reduce((sum, conv) => {
-      // Use the correct unread count based on which side of the conversation the user is on
       const unread = conv.customer_id === currentUserId
         ? (conv.unread_count_customer || 0)
         : (conv.unread_count_admin || 0);
@@ -1201,7 +1202,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
-  
+
   // Debug: Log badge state - this should update when conversations change
   useEffect(() => {
     console.log('🏷️ [CreatorDashboard] Badge Debug:', {
@@ -1833,7 +1834,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     <div ref={personalRef} className="scroll-mt-6 space-y-3 lg:space-y-4">
         <div className="mb-1 lg:mb-0">
           <div className="flex items-center gap-2 lg:gap-3">
-            <div
+            <div 
               onClick={handleProfilePictureClick}
               className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-md cursor-pointer hover:brightness-110 transition-all duration-200"
             >
@@ -3048,6 +3049,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
             </div>
           </div>
+
         </div>
 
         <div>
@@ -3077,6 +3079,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         isOpen={showFeedbackModal && !!currentUserId} 
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
+      />
+      <MessageToast
+        userId={currentUserId || null}
+        activeSection={activeSection}
+        onNavigateToMessages={handleNavigateToMessages}
+        theme={backgroundTheme}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />

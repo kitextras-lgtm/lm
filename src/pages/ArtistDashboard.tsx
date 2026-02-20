@@ -20,6 +20,7 @@ import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
+import { MessageToast } from '../components/MessageToast';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -1049,6 +1050,7 @@ export function ArtistDashboard() {
   // Get unread message count for badge indicator
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
+  const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
   
   // Calculate unreadCount - check if user is customer_id or admin_id and use appropriate unread field
   const unreadCountsString = JSON.stringify(conversations.map(c => ({
@@ -2843,6 +2845,12 @@ export function ArtistDashboard() {
         isOpen={showFeedbackModal && !!currentUserId} 
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
+      />
+      <MessageToast
+        userId={currentUserId || null}
+        activeSection={activeSection}
+        onNavigateToMessages={handleNavigateToMessages}
+        theme={backgroundTheme}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />

@@ -1333,10 +1333,19 @@ export function useAdminConversations(adminId: string) {
         setLoading(true);
       }
 
+      // Get all admin profile IDs so we fetch conversations regardless of which admin profile was used
+      const { data: adminProfiles } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('is_admin', true);
+
+      const adminIds = (adminProfiles || []).map(p => p.id);
+      if (adminIds.length === 0) adminIds.push(adminId);
+
       const { data: convData, error: convError } = await supabase
         .from('conversations')
         .select('*')
-        .eq('admin_id', adminId);
+        .in('admin_id', adminIds);
 
       if (convError) {
         console.error('Error fetching conversations:', convError);
@@ -1433,7 +1442,6 @@ export function useAdminConversations(adminId: string) {
           event: '*',
           schema: 'public',
           table: 'conversations',
-          filter: `admin_id=eq.${adminId}`,
         },
         () => {
           fetchConversations();

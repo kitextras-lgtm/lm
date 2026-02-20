@@ -2,7 +2,7 @@
 import type { Conversation, Profile } from '../types/chat';
 
 const CACHE_KEY = 'admin_conversations_cache';
-const CACHE_VERSION = '1';
+const CACHE_VERSION = '3';
 const MAX_CACHE_AGE = 10 * 60 * 1000; // 10 minutes
 
 type ConversationWithCustomer = Conversation & { customer: Profile };

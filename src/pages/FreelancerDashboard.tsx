@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Video, Instagram, Music2, ArrowUpRight, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
@@ -20,6 +20,7 @@ import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
+import { MessageToast } from '../components/MessageToast';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -850,6 +851,7 @@ export function FreelancerDashboard() {
   // Get unread message count for badge indicator
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
+  const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
   
   // Calculate unreadCount - check if user is customer_id or admin_id and use appropriate unread field
   const unreadCountsString = JSON.stringify(conversations.map(c => ({
@@ -2610,6 +2612,12 @@ export function FreelancerDashboard() {
         isOpen={showFeedbackModal && !!currentUserId} 
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
+      />
+      <MessageToast
+        userId={currentUserId || null}
+        activeSection={activeSection}
+        onNavigateToMessages={handleNavigateToMessages}
+        theme={backgroundTheme}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />

@@ -251,6 +251,32 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
         return;
       }
 
+      // For creator accounts, submit a verification application for each new social link
+      if (userType === 'creator') {
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('email, full_name, username')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          await supabase.from('applications').insert({
+            user_id: user.id,
+            application_type: 'creator_verification',
+            status: 'pending',
+            full_name: userData?.full_name || null,
+            email: userData?.email || null,
+            username: userData?.username || null,
+            platform: insertData.platform,
+            social_url: normalizedUrl,
+            channel_type: insertData.channel_type || null,
+            channel_description: insertData.channel_description || null,
+          });
+        } catch (appErr) {
+          console.error('Error submitting verification application:', appErr);
+        }
+      }
+
       await loadLinks();
       setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_type: '', channel_description: '' });
       setIsAdding(false);

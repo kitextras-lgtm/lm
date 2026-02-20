@@ -8,6 +8,7 @@ export interface Profile {
   last_seen?: string;
   created_at?: string;
   updated_at?: string;
+  user_type?: 'artist' | 'creator' | 'freelancer' | 'business' | null;
 }
 
 export interface Conversation {
