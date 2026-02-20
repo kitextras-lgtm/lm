@@ -223,12 +223,16 @@ export function AdminDashboard() {
     setUserSocialLinksLoading(true);
     setUserSocialLinks([]);
     try {
-      const { data, error } = await supabase
-        .from('social_links')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-      if (!error) setUserSocialLinks(data || []);
+      const { SUPABASE_URL, SUPABASE_ANON_KEY } = await import('../lib/config');
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/social-links?userId=${encodeURIComponent(userId)}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY,
+        },
+      });
+      const json = await res.json();
+      if (json.success) setUserSocialLinks(json.links || []);
     } catch (e) {
       console.error('Error fetching user social links:', e);
     } finally {
@@ -361,7 +365,7 @@ export function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (activeSection !== 'users' && activeSection !== 'applications') {
+    if (activeSection !== 'users' && activeSection !== 'applications' && activeSection !== 'home') {
       fetchingUsersRef.current = false;
       lastFetchedSectionRef.current = null;
       return;
@@ -575,7 +579,7 @@ export function AdminDashboard() {
                 {/* Channel Link Whitelist */}
                 <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                   <div className="flex items-center gap-3 mb-1">
-                    <ShieldCheck className="w-5 h-5" style={{ color: '#60a5fa' }} />
+                    <ShieldCheck className="w-5 h-5" style={{ color: tokens.text.secondary }} />
                     <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>Channel Link Whitelist</h2>
                   </div>
                   <p className="text-sm mb-6" style={{ color: tokens.text.secondary }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
@@ -590,7 +594,7 @@ export function AdminDashboard() {
                         onChange={e => { setWhitelistInput(e.target.value); setWhitelistError(null); }}
                         onKeyDown={e => e.key === 'Enter' && handleAddWhitelist()}
                         placeholder="e.g. youtube.com/c/ or @handle"
-                        className="flex-1 h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        className="flex-1 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                       />
                       <input
@@ -598,7 +602,7 @@ export function AdminDashboard() {
                         value={whitelistPlatform}
                         onChange={e => setWhitelistPlatform(e.target.value)}
                         placeholder="Platform (optional)"
-                        className="w-full sm:w-36 h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        className="w-full sm:w-36 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                       />
                       <input
@@ -606,20 +610,20 @@ export function AdminDashboard() {
                         value={whitelistNote}
                         onChange={e => setWhitelistNote(e.target.value)}
                         placeholder="Note (optional)"
-                        className="w-full sm:w-40 h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        className="w-full sm:w-40 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                       />
                       <button
                         onClick={handleAddWhitelist}
                         disabled={whitelistAdding || !whitelistInput.trim()}
                         className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex-shrink-0"
-                        style={{ backgroundColor: '#2563eb', color: '#fff' }}
+                        style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                       >
                         {whitelistAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                         Add
                       </button>
                     </div>
-                    {whitelistError && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{whitelistError}</p>}
+                    {whitelistError && <p className="text-xs mt-1" style={{ color: tokens.text.primary, opacity: 0.7 }}>{whitelistError}</p>}
                   </div>
 
                   {/* List */}
