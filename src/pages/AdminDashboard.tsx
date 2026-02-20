@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2, ShieldCheck, Plus, Trash2, Megaphone, Music, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2, ShieldCheck, Plus, Trash2, Megaphone, Music, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { useAdmin } from '../hooks/useAdmin';
@@ -16,6 +16,18 @@ import { MobileBottomNav } from '../components/MobileBottomNav';
 import { SettingsView } from '../components/SettingsView';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeTokens } from '../lib/themeTokens';
+
+interface SocialLink {
+  id: string;
+  user_id: string;
+  platform: string;
+  url: string;
+  display_name: string | null;
+  verified: boolean;
+  channel_type: string | null;
+  channel_description: string | null;
+  created_at: string;
+}
 
 interface User {
   id: string;
@@ -61,6 +73,8 @@ export function AdminDashboard() {
   const [usersError, setUsersError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userDetailSection, setUserDetailSection] = useState<'personal' | 'connected' | 'payment' | 'notifications'>('personal');
+  const [userSocialLinks, setUserSocialLinks] = useState<SocialLink[]>([]);
+  const [userSocialLinksLoading, setUserSocialLinksLoading] = useState(false);
   const [adminProfileId, setAdminProfileId] = useState<string | null>(null);
   const adminUnreadCount = useAdminUnreadCount();
   const [userSearch, setUserSearch] = useState('');
@@ -82,6 +96,8 @@ export function AdminDashboard() {
     pay_type: string;
     payout: string;
     ends_at: string;
+    assign_to: 'all' | 'specific';
+    assigned_user_ids: string[];
   }
   interface Campaign {
     id: string;
@@ -103,6 +119,7 @@ export function AdminDashboard() {
     name: '', description: '', rules: '', how_it_works: '',
     songs: [{ title: '', artist: '', url: '' }],
     language: 'English', platforms: [], pay_type: 'Per view', payout: '', ends_at: '',
+    assign_to: 'all', assigned_user_ids: [],
   };
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -201,6 +218,30 @@ export function AdminDashboard() {
       setCampaignsLoading(false);
     }
   }, []);
+
+  const fetchUserSocialLinks = useCallback(async (userId: string) => {
+    setUserSocialLinksLoading(true);
+    setUserSocialLinks([]);
+    try {
+      const { data, error } = await supabase
+        .from('social_links')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (!error) setUserSocialLinks(data || []);
+    } catch (e) {
+      console.error('Error fetching user social links:', e);
+    } finally {
+      setUserSocialLinksLoading(false);
+    }
+  }, []);
+
+  const handleSelectUser = useCallback((user: User) => {
+    setSelectedUser(user);
+    setUserDetailSection('personal');
+    setUserSocialLinks([]);
+    fetchUserSocialLinks(user.id);
+  }, [fetchUserSocialLinks]);
 
   const handleSaveCampaign = async () => {
     if (!campaignForm.name.trim()) { setCampaignError('Campaign name is required.'); return; }
@@ -627,13 +668,13 @@ export function AdminDashboard() {
                 <div className="rounded-xl p-6 mt-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-3">
-                      <Megaphone className="w-5 h-5" style={{ color: '#a78bfa' }} />
+                      <Megaphone className="w-5 h-5" style={{ color: tokens.text.secondary }} />
                       <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>Campaign Manager</h2>
                     </div>
                     <button
                       onClick={() => { setShowCampaignForm(v => !v); setCampaignError(null); }}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
-                      style={{ backgroundColor: showCampaignForm ? tokens.bg.active : '#7c3aed', color: '#fff' }}
+                      style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                     >
                       {showCampaignForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> New Campaign</>}
                     </button>
@@ -642,51 +683,54 @@ export function AdminDashboard() {
 
                   {/* Create form */}
                   {showCampaignForm && (
-                    <div className="rounded-lg p-5 mb-6 space-y-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.muted }}>New Campaign</p>
+                    <div className="rounded-xl mb-6 overflow-hidden" style={{ border: `1px solid ${tokens.border.default}` }}>
+                      <div className="px-5 py-3.5" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
+                        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: tokens.text.muted }}>New Campaign</p>
+                      </div>
+                      <div className="p-5 space-y-5" style={{ backgroundColor: tokens.bg.elevated }}>
 
                       {/* Name + Language row */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Campaign Name *</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Campaign Name <span style={{ color: tokens.text.primary }}>*</span></label>
                           <input
                             type="text"
                             value={campaignForm.name}
                             onChange={e => setCampaignForm(f => ({ ...f, name: e.target.value }))}
                             placeholder="e.g. Electronic Vibes"
-                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Language</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Language</label>
                           <input
                             type="text"
                             value={campaignForm.language}
                             onChange={e => setCampaignForm(f => ({ ...f, language: e.target.value }))}
                             placeholder="English"
-                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                           />
                         </div>
                       </div>
 
                       {/* Description */}
                       <div>
-                        <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Description</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Description</label>
                         <textarea
                           value={campaignForm.description}
                           onChange={e => setCampaignForm(f => ({ ...f, description: e.target.value }))}
                           placeholder="Describe the campaign..."
                           rows={3}
-                          className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
+                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                         />
                       </div>
 
                       {/* Platforms */}
                       <div>
-                        <label className="block text-xs font-medium mb-2" style={{ color: tokens.text.muted }}>Platforms</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.muted }}>Platforms</label>
                         <div className="flex flex-wrap gap-2">
                           {['Instagram', 'TikTok', 'YouTube', 'Twitter', 'Twitch'].map(p => (
                             <button
@@ -696,11 +740,11 @@ export function AdminDashboard() {
                                 ...f,
                                 platforms: f.platforms.includes(p) ? f.platforms.filter(x => x !== p) : [...f.platforms, p]
                               }))}
-                              className="px-3 py-1 rounded-full text-xs font-medium transition-all"
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                               style={{
-                                backgroundColor: campaignForm.platforms.includes(p) ? '#7c3aed' : tokens.bg.elevated,
-                                color: campaignForm.platforms.includes(p) ? '#fff' : tokens.text.secondary,
-                                border: `1px solid ${campaignForm.platforms.includes(p) ? '#7c3aed' : tokens.border.default}`,
+                                backgroundColor: campaignForm.platforms.includes(p) ? tokens.bg.active : tokens.bg.primary,
+                                color: campaignForm.platforms.includes(p) ? tokens.text.primary : tokens.text.muted,
+                                border: `1px solid ${campaignForm.platforms.includes(p) ? tokens.border.default : tokens.border.subtle}`,
                               }}
                             >
                               {p}
@@ -710,14 +754,14 @@ export function AdminDashboard() {
                       </div>
 
                       {/* Pay type + Payout + Ends at */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Pay Type</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Pay Type</label>
                           <select
                             value={campaignForm.pay_type}
                             onChange={e => setCampaignForm(f => ({ ...f, pay_type: e.target.value }))}
-                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                           >
                             <option>Per view</option>
                             <option>Flat fee</option>
@@ -725,69 +769,63 @@ export function AdminDashboard() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Payout (e.g. $1.50 cpm)</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Payout</label>
                           <input
                             type="text"
                             value={campaignForm.payout}
                             onChange={e => setCampaignForm(f => ({ ...f, payout: e.target.value }))}
-                            placeholder="$1.50 cpm"
-                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            placeholder="e.g. $1.50 cpm"
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Ends At</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Ends At</label>
                           <input
                             type="date"
                             value={campaignForm.ends_at}
                             onChange={e => setCampaignForm(f => ({ ...f, ends_at: e.target.value }))}
-                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                           />
                         </div>
                       </div>
 
                       {/* How it works */}
                       <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Info className="w-3.5 h-3.5" style={{ color: '#60a5fa' }} />
-                          <label className="text-xs font-medium" style={{ color: tokens.text.muted }}>How It Works (one step per line)</label>
-                        </div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>How It Works <span className="normal-case font-normal" style={{ color: tokens.text.muted }}>(one step per line)</span></label>
                         <textarea
                           value={campaignForm.how_it_works}
                           onChange={e => setCampaignForm(f => ({ ...f, how_it_works: e.target.value }))}
                           placeholder={"Join the campaign\nCreate a video using the provided track\nPost on your platforms\nEarn per view"}
                           rows={4}
-                          className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
+                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                         />
                       </div>
 
                       {/* Rules */}
                       <div>
-                        <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Rules (one rule per line)</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Rules <span className="normal-case font-normal" style={{ color: tokens.text.muted }}>(one rule per line)</span></label>
                         <textarea
                           value={campaignForm.rules}
                           onChange={e => setCampaignForm(f => ({ ...f, rules: e.target.value }))}
                           placeholder={"Minimum video length: 15 seconds\nMust include audio from the official track\nNo explicit content"}
                           rows={4}
-                          className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
+                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                         />
                       </div>
 
                       {/* Songs to use */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Music className="w-3.5 h-3.5" style={{ color: '#f472b6' }} />
-                            <label className="text-xs font-medium" style={{ color: tokens.text.muted }}>Songs to Use</label>
-                          </div>
+                          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.muted }}>Songs to Use</label>
                           <button
                             type="button"
                             onClick={() => setCampaignForm(f => ({ ...f, songs: [...f.songs, { title: '', artist: '', url: '' }] }))}
-                            className="text-xs flex items-center gap-1 hover:opacity-80 transition-opacity"
-                            style={{ color: '#a78bfa' }}
+                            className="text-xs flex items-center gap-1 hover:opacity-80 transition-opacity font-medium"
+                            style={{ color: tokens.text.secondary }}
                           >
                             <Plus className="w-3 h-3" /> Add song
                           </button>
@@ -800,31 +838,31 @@ export function AdminDashboard() {
                                 value={song.title}
                                 onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], title: e.target.value }; return { ...f, songs: s }; })}
                                 placeholder="Song title"
-                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
+                                style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                               />
                               <input
                                 type="text"
                                 value={song.artist}
                                 onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], artist: e.target.value }; return { ...f, songs: s }; })}
                                 placeholder="Artist"
-                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
+                                style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                               />
                               <input
                                 type="text"
                                 value={song.url}
                                 onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], url: e.target.value }; return { ...f, songs: s }; })}
                                 placeholder="Link (optional)"
-                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/30"
-                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
+                                style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                               />
                               {campaignForm.songs.length > 1 && (
                                 <button
                                   type="button"
                                   onClick={() => setCampaignForm(f => ({ ...f, songs: f.songs.filter((_, j) => j !== i) }))}
                                   className="w-7 h-7 flex items-center justify-center rounded-lg flex-shrink-0 hover:brightness-110"
-                                  style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                                  style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}
                                 >
                                   <X className="w-3 h-3" />
                                 </button>
@@ -834,25 +872,100 @@ export function AdminDashboard() {
                         </div>
                       </div>
 
-                      {campaignError && <p className="text-xs" style={{ color: '#ef4444' }}>{campaignError}</p>}
+                      {/* Assign To */}
+                      <div className="pt-1" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.muted }}>Assign To</label>
+                        <div className="flex gap-2 mb-3">
+                          <button
+                            type="button"
+                            onClick={() => setCampaignForm(f => ({ ...f, assign_to: 'all', assigned_user_ids: [] }))}
+                            className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+                            style={{
+                              backgroundColor: campaignForm.assign_to === 'all' ? tokens.bg.active : tokens.bg.primary,
+                              color: tokens.text.primary,
+                              border: `1px solid ${campaignForm.assign_to === 'all' ? tokens.border.default : tokens.border.subtle}`,
+                            }}
+                          >
+                            All Creators
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCampaignForm(f => ({ ...f, assign_to: 'specific' }))}
+                            className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+                            style={{
+                              backgroundColor: campaignForm.assign_to === 'specific' ? tokens.bg.active : tokens.bg.primary,
+                              color: tokens.text.primary,
+                              border: `1px solid ${campaignForm.assign_to === 'specific' ? tokens.border.default : tokens.border.subtle}`,
+                            }}
+                          >
+                            Specific Users
+                          </button>
+                        </div>
+                        {campaignForm.assign_to === 'specific' && (
+                          <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${tokens.border.subtle}` }}>
+                            <div className="px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
+                              <p className="text-xs" style={{ color: tokens.text.muted }}>Select users to assign this campaign to</p>
+                            </div>
+                            <div className="max-h-48 overflow-y-auto">
+                              {users.length === 0 ? (
+                                <div className="px-3 py-4 text-center">
+                                  <p className="text-xs" style={{ color: tokens.text.muted }}>No users available</p>
+                                </div>
+                              ) : (
+                                users.map(u => (
+                                  <label
+                                    key={u.id}
+                                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:brightness-105 transition-all"
+                                    style={{ backgroundColor: tokens.bg.elevated, borderBottom: `1px solid ${tokens.border.subtle}` }}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={campaignForm.assigned_user_ids.includes(u.id)}
+                                      onChange={e => setCampaignForm(f => ({
+                                        ...f,
+                                        assigned_user_ids: e.target.checked
+                                          ? [...f.assigned_user_ids, u.id]
+                                          : f.assigned_user_ids.filter(id => id !== u.id)
+                                      }))}
+                                      className="w-3.5 h-3.5 rounded flex-shrink-0"
+                                    />
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-medium truncate" style={{ color: tokens.text.primary }}>{u.full_name || u.username || u.email}</p>
+                                      <p className="text-xs truncate" style={{ color: tokens.text.muted }}>{u.email}</p>
+                                    </div>
+                                  </label>
+                                ))
+                              )}
+                            </div>
+                            {campaignForm.assigned_user_ids.length > 0 && (
+                              <div className="px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                                <p className="text-xs font-medium" style={{ color: tokens.text.secondary }}>{campaignForm.assigned_user_ids.length} user{campaignForm.assigned_user_ids.length !== 1 ? 's' : ''} selected</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
 
-                      <div className="flex justify-end gap-2 pt-1">
+                      {campaignError && <p className="text-xs pt-1" style={{ color: tokens.text.primary, opacity: 0.7 }}>{campaignError}</p>}
+
+                      <div className="flex justify-end gap-2 pt-2" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
                         <button
                           onClick={() => { setShowCampaignForm(false); setCampaignForm(emptyCampaignForm); setCampaignError(null); }}
                           className="px-4 h-9 rounded-lg text-sm font-medium transition-all hover:brightness-110"
-                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.secondary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.secondary, border: `1px solid ${tokens.border.default}` }}
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleSaveCampaign}
                           disabled={campaignSaving}
-                          className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                          style={{ backgroundColor: '#7c3aed', color: '#fff' }}
+                          className="flex items-center gap-1.5 px-5 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                          style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                         >
                           {campaignSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                           Save Campaign
                         </button>
+                      </div>
                       </div>
                     </div>
                   )}
@@ -877,11 +990,11 @@ export function AdminDashboard() {
                             onClick={() => setExpandedCampaignId(expandedCampaignId === c.id ? null : c.id)}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <Megaphone className="w-4 h-4 flex-shrink-0" style={{ color: '#a78bfa' }} />
+                              <Megaphone className="w-4 h-4 flex-shrink-0" style={{ color: tokens.text.muted }} />
                               <div className="min-w-0">
                                 <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{c.name}</p>
                                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                  <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: c.status === 'active' ? 'rgba(16,185,129,0.1)' : tokens.bg.active, color: c.status === 'active' ? '#10b981' : tokens.text.muted }}>{c.status}</span>
+                                  <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}>{c.status}</span>
                                   {c.payout && <span className="text-xs" style={{ color: tokens.text.muted }}>{c.payout}</span>}
                                   {c.platforms?.length > 0 && <span className="text-xs" style={{ color: tokens.text.muted }}>{c.platforms.join(', ')}</span>}
                                 </div>
@@ -892,7 +1005,7 @@ export function AdminDashboard() {
                                 onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}
                                 disabled={deletingCampaignId === c.id}
                                 className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
-                                style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}
                               >
                                 {deletingCampaignId === c.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                               </button>
@@ -908,7 +1021,7 @@ export function AdminDashboard() {
                                   <ol className="space-y-1">
                                     {c.how_it_works.map((step, i) => (
                                       <li key={i} className="text-xs flex gap-2" style={{ color: tokens.text.secondary }}>
-                                        <span className="font-semibold flex-shrink-0" style={{ color: '#a78bfa' }}>{i + 1}.</span>{step}
+                                        <span className="font-semibold flex-shrink-0" style={{ color: tokens.text.muted }}>{i + 1}.</span>{step}
                                       </li>
                                     ))}
                                   </ol>
@@ -930,10 +1043,10 @@ export function AdminDashboard() {
                                   <div className="space-y-1">
                                     {c.songs_to_use.map((s, i) => (
                                       <div key={i} className="flex items-center gap-2">
-                                        <Music className="w-3 h-3 flex-shrink-0" style={{ color: '#f472b6' }} />
+                                        <Music className="w-3 h-3 flex-shrink-0" style={{ color: tokens.text.muted }} />
                                         <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{s.title}</span>
                                         {s.artist && <span className="text-xs" style={{ color: tokens.text.muted }}>— {s.artist}</span>}
-                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: '#60a5fa' }}><ExternalLink className="w-3 h-3 inline" /></a>}
+                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.secondary }}><ExternalLink className="w-3 h-3 inline" /></a>}
                                       </div>
                                     ))}
                                   </div>
@@ -1225,10 +1338,7 @@ export function AdminDashboard() {
                           {filteredUsers.map((user, index) => (
                             <tr 
                               key={user.id} 
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setUserDetailSection('personal');
-                              }}
+                              onClick={() => handleSelectUser(user)}
                               className="border-b transition-colors hover:brightness-105 cursor-pointer" 
                               style={{ borderColor: index === filteredUsers.length - 1 ? 'transparent' : tokens.border.default }}
                             >
@@ -1824,17 +1934,17 @@ export function AdminDashboard() {
                           <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: tokens.text.muted }}>Account Status</label>
                           <div className="flex items-center gap-2 flex-wrap">
                             {selectedUser.verified && (
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: tokens.bg.active, color: '#10b981' }}>
-                                Verified
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}>
+                                <CheckCircle className="w-3 h-3" /> Verified
                               </span>
                             )}
                             {selectedUser.profile_completed && (
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: tokens.bg.active, color: '#3b82f6' }}>
-                                Profile Complete
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}>
+                                <CheckCircle className="w-3 h-3" /> Profile Complete
                               </span>
                             )}
                             {!selectedUser.verified && !selectedUser.profile_completed && (
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}>
                                 Pending
                               </span>
                             )}
@@ -1867,20 +1977,65 @@ export function AdminDashboard() {
                   <div className="space-y-6 animate-fade-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Connected Accounts</h3>
-                      <p className="text-sm" style={{ color: tokens.text.muted }}>View user's connected social media and third-party accounts</p>
+                      <p className="text-sm" style={{ color: tokens.text.muted }}>All social links and external accounts connected to this user's profile</p>
                     </div>
 
-                    <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
-                      <div className="flex items-center justify-center min-h-[300px]">
-                        <div className="text-center">
-                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.active }}>
-                            <Link2 className="w-8 h-8" style={{ color: tokens.text.muted }} />
+                    {userSocialLinksLoading ? (
+                      <div className="flex items-center justify-center py-16">
+                        <AnimatedBarsLoader text="Loading accounts..." />
+                      </div>
+                    ) : userSocialLinks.length === 0 ? (
+                      <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
+                        <div className="flex items-center justify-center min-h-[200px]">
+                          <div className="text-center">
+                            <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.active }}>
+                              <Link2 className="w-7 h-7" style={{ color: tokens.text.muted }} />
+                            </div>
+                            <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>No connected accounts</h4>
+                            <p className="text-sm" style={{ color: tokens.text.muted }}>This user hasn't connected any social accounts yet</p>
                           </div>
-                          <h4 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>No connected accounts</h4>
-                          <p className="text-sm" style={{ color: tokens.text.muted }}>This user hasn't connected any external accounts yet</p>
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {userSocialLinks.map(link => (
+                          <div key={link.id} className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex items-start gap-4 min-w-0">
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: tokens.bg.active }}>
+                                  <Link2 className="w-4 h-4" style={{ color: tokens.text.secondary }} />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                                    <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>{link.display_name || link.platform}</p>
+                                    <span className="text-xs px-2 py-0.5 rounded font-medium capitalize" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}>{link.platform}</span>
+                                    {link.verified ? (
+                                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}>
+                                        <CheckCircle className="w-3 h-3" /> Verified
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}>
+                                        <XCircle className="w-3 h-3" /> Unverified
+                                      </span>
+                                    )}
+                                  </div>
+                                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline flex items-center gap-1 truncate" style={{ color: tokens.text.muted }}>
+                                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                    <span className="truncate">{link.url}</span>
+                                  </a>
+                                  {link.channel_type && <p className="text-xs mt-1" style={{ color: tokens.text.muted }}>Type: {link.channel_type}</p>}
+                                  {link.channel_description && <p className="text-xs mt-1 line-clamp-2" style={{ color: tokens.text.muted }}>{link.channel_description}</p>}
+                                </div>
+                              </div>
+                              <div className="flex-shrink-0 text-right">
+                                <p className="text-xs" style={{ color: tokens.text.muted }}>Added</p>
+                                <p className="text-xs font-medium" style={{ color: tokens.text.secondary }}>{new Date(link.created_at).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
