@@ -1,8 +1,147 @@
-import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, X, ExternalLink, Youtube, Instagram, Music2, Twitter, Twitch, Link2, CheckCircle } from 'lucide-react';
 import type { Profile } from '../../types/chat';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../DefaultAvatar';
 import { useUserProfile } from '../../contexts/UserProfileContext';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../lib/supabase';
+
+const SOCIAL_LINKS_FN = `${SUPABASE_URL}/functions/v1/social-links`;
+const fnHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` };
+
+const platformIcons: { [key: string]: React.ElementType } = {
+  YouTube: Youtube,
+  Instagram: Instagram,
+  TikTok: Music2,
+  Twitter: Twitter,
+  Twitch: Twitch,
+  Other: Link2,
+};
+
+interface SocialLink {
+  id: string;
+  platform: string;
+  url: string;
+  display_name: string;
+  verified: boolean;
+}
+
+interface UserProfilePopupProps {
+  user: Profile;
+  onClose: () => void;
+  backgroundTheme?: 'light' | 'grey' | 'dark';
+}
+
+function UserProfilePopup({ user, onClose, backgroundTheme = 'dark' }: UserProfilePopupProps) {
+  const modalBg = backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#111117';
+  const borderColor = backgroundTheme === 'light' ? 'rgba(255,255,255,0.12)' : backgroundTheme === 'grey' ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.1)';
+  const dividerColor = backgroundTheme === 'light' ? 'rgba(255,255,255,0.1)' : backgroundTheme === 'grey' ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.08)';
+  const rowHover = backgroundTheme === 'light' ? 'hover:bg-white/10' : 'hover:bg-white/5';
+  const [links, setLinks] = useState<SocialLink[]>([]);
+  const [loadingLinks, setLoadingLinks] = useState(true);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (user.is_admin) {
+      setLoadingLinks(false);
+      return;
+    }
+    fetch(`${SOCIAL_LINKS_FN}?userId=${user.id}`, { headers: fnHeaders })
+      .then(r => r.json())
+      .then(json => { if (json.success) setLinks(json.links || []); })
+      .catch(() => {})
+      .finally(() => setLoadingLinks(false));
+  }, [user.id, user.is_admin]);
+
+  return (
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
+    >
+      <div
+        className="relative w-full max-w-sm rounded-2xl overflow-hidden"
+        style={{ backgroundColor: modalBg, border: `1px solid ${borderColor}` }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 p-1.5 rounded-full transition-colors hover:bg-white/10 z-10"
+          style={{ color: '#94A3B8' }}
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Avatar + name section */}
+        <div className="flex flex-col items-center pt-8 pb-5 px-6" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+          <img
+            src={user.is_admin ? ELEVATE_ADMIN_AVATAR_URL : (user.avatar_url || DEFAULT_AVATAR_DATA_URI)}
+            alt={user.name}
+            className="w-20 h-20 rounded-full object-cover mb-3"
+            style={{ border: '2px solid rgba(255,255,255,0.15)' }}
+          />
+          <h3 className="text-lg font-semibold text-center" style={{ color: '#F8FAFC' }}>{user.name}</h3>
+          {user.username && (
+            <p className="text-sm mt-0.5" style={{ color: '#94A3B8' }}>@{user.username}</p>
+          )}
+          {user.user_type && (
+            <span
+              className="mt-2 px-3 py-0.5 rounded-full text-xs font-medium capitalize"
+              style={{ backgroundColor: 'rgba(255,255,255,0.07)', color: '#94A3B8' }}
+            >
+              {user.user_type}
+            </span>
+          )}
+        </div>
+
+        {/* Social links section */}
+        {!user.is_admin && (
+          <div className="px-5 py-4">
+            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#64748B' }}>Social Links</p>
+            {loadingLinks ? (
+              <div className="flex justify-center py-4">
+                <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.7)' }} />
+              </div>
+            ) : links.length === 0 ? (
+              <p className="text-sm text-center py-3" style={{ color: '#64748B' }}>No social links added</p>
+            ) : (
+              <div className="space-y-1">
+                {links.map(link => {
+                  const Icon = platformIcons[link.platform] || Link2;
+                  return (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${rowHover}`}
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                        <Icon className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-medium truncate" style={{ color: '#E2E8F0' }}>
+                            {link.display_name || link.platform}
+                          </span>
+                          {link.verified && <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: '#22C55E' }} />}
+                        </div>
+                        <span className="text-xs truncate block" style={{ color: '#64748B' }}>
+                          {link.url.replace(/^https?:\/\//i, '')}
+                        </span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#64748B' }} />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface AnimatedIconProps {
   className?: string;
@@ -322,12 +461,13 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer, isDrawerOpen, backgroundTheme = 'dark' }: ChatHeaderProps) {
-  console.log('🎯 ChatHeader rendering with user:', user?.name, user);
   const { profile } = useUserProfile();
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
   // Only show icons if profile is loaded AND user is not an artist
   const shouldShowIcons = profile && profile.user_type !== 'artist';
 
   return (
+    <>
     <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
       <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
         {showBackButton && (
@@ -348,7 +488,12 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
           />
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}>{user.name}</h2>
+          <button
+            onClick={() => setShowProfilePopup(true)}
+            className="text-left hover:underline transition-all"
+          >
+            <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }} data-component-name="ChatHeader">{user.name}</h2>
+          </button>
           {isTyping && (
             <p className="text-[10px] lg:text-xs" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>typing...</p>
           )}
@@ -382,6 +527,10 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
         </div>
       )}
     </div>
+    {showProfilePopup && (
+      <UserProfilePopup user={user} onClose={() => setShowProfilePopup(false)} backgroundTheme={backgroundTheme} />
+    )}
+    </>
   );
 }
 
