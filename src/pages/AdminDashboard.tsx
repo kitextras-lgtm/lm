@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2, ShieldCheck, Plus, Trash2 } from 'lucide-react';
+import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2, ShieldCheck, Plus, Trash2, Megaphone, Music, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { useAdmin } from '../hooks/useAdmin';
@@ -68,6 +68,51 @@ export function AdminDashboard() {
   const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [appStatusFilter, setAppStatusFilter] = useState<'pending' | 'approved' | 'denied'>('pending');
   const [actioningId, setActioningId] = useState<string | null>(null);
+
+  // Campaign state
+  interface SongEntry { title: string; artist: string; url: string; }
+  interface CampaignForm {
+    name: string;
+    description: string;
+    rules: string;
+    how_it_works: string;
+    songs: SongEntry[];
+    language: string;
+    platforms: string[];
+    pay_type: string;
+    payout: string;
+    ends_at: string;
+  }
+  interface Campaign {
+    id: string;
+    name: string;
+    description: string | null;
+    rules: string[] | null;
+    how_it_works: string[] | null;
+    songs_to_use: SongEntry[] | null;
+    language: string;
+    platforms: string[];
+    pay_type: string;
+    payout: string;
+    ends_at: string | null;
+    status: string;
+    created_at: string;
+  }
+
+  const emptyCampaignForm: CampaignForm = {
+    name: '', description: '', rules: '', how_it_works: '',
+    songs: [{ title: '', artist: '', url: '' }],
+    language: 'English', platforms: [], pay_type: 'Per view', payout: '', ends_at: '',
+  };
+
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaignsLoading, setCampaignsLoading] = useState(false);
+  const [showCampaignForm, setShowCampaignForm] = useState(false);
+  const [campaignForm, setCampaignForm] = useState<CampaignForm>(emptyCampaignForm);
+  const [campaignSaving, setCampaignSaving] = useState(false);
+  const [campaignError, setCampaignError] = useState<string | null>(null);
+  const [deletingCampaignId, setDeletingCampaignId] = useState<string | null>(null);
+  const [expandedCampaignId, setExpandedCampaignId] = useState<string | null>(null);
 
   // Whitelist state
   interface WhitelistedChannel {
@@ -138,8 +183,68 @@ export function AdminDashboard() {
   useEffect(() => {
     if (activeSection === 'home') {
       fetchWhitelistedChannels();
+      fetchCampaigns();
     }
   }, [activeSection, fetchWhitelistedChannels]);
+
+  const fetchCampaigns = useCallback(async () => {
+    setCampaignsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error) setCampaigns(data || []);
+    } catch (e) {
+      console.error('Error fetching campaigns:', e);
+    } finally {
+      setCampaignsLoading(false);
+    }
+  }, []);
+
+  const handleSaveCampaign = async () => {
+    if (!campaignForm.name.trim()) { setCampaignError('Campaign name is required.'); return; }
+    setCampaignSaving(true);
+    setCampaignError(null);
+    try {
+      const rulesArr = campaignForm.rules.split('\n').map(r => r.trim()).filter(Boolean);
+      const howArr = campaignForm.how_it_works.split('\n').map(r => r.trim()).filter(Boolean);
+      const songsArr = campaignForm.songs.filter(s => s.title.trim() || s.artist.trim());
+      const payload = {
+        name: campaignForm.name.trim(),
+        description: campaignForm.description.trim() || null,
+        rules: rulesArr.length ? rulesArr : null,
+        how_it_works: howArr.length ? howArr : null,
+        songs_to_use: songsArr.length ? songsArr : null,
+        language: campaignForm.language,
+        platforms: campaignForm.platforms,
+        pay_type: campaignForm.pay_type,
+        payout: campaignForm.payout.trim(),
+        ends_at: campaignForm.ends_at ? new Date(campaignForm.ends_at).toISOString() : null,
+      };
+      const { data, error } = await supabase.from('campaigns').insert(payload).select().single();
+      if (error) throw error;
+      setCampaigns(prev => [data, ...prev]);
+      setCampaignForm(emptyCampaignForm);
+      setShowCampaignForm(false);
+    } catch (e: any) {
+      setCampaignError(e?.message || 'Failed to save campaign.');
+    } finally {
+      setCampaignSaving(false);
+    }
+  };
+
+  const handleDeleteCampaign = async (id: string) => {
+    setDeletingCampaignId(id);
+    try {
+      await supabase.from('campaigns').delete().eq('id', id);
+      setCampaigns(prev => prev.filter(c => c.id !== id));
+    } catch (e) {
+      console.error('Error deleting campaign:', e);
+    } finally {
+      setDeletingCampaignId(null);
+    }
+  };
 
   const handleAddWhitelist = async () => {
     const pattern = whitelistInput.trim();
@@ -512,6 +617,330 @@ export function AdminDashboard() {
                           >
                             {removingWhitelistId === ch.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                           </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Campaign Manager */}
+                <div className="rounded-xl p-6 mt-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-3">
+                      <Megaphone className="w-5 h-5" style={{ color: '#a78bfa' }} />
+                      <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>Campaign Manager</h2>
+                    </div>
+                    <button
+                      onClick={() => { setShowCampaignForm(v => !v); setCampaignError(null); }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
+                      style={{ backgroundColor: showCampaignForm ? tokens.bg.active : '#7c3aed', color: '#fff' }}
+                    >
+                      {showCampaignForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> New Campaign</>}
+                    </button>
+                  </div>
+                  <p className="text-sm mb-5" style={{ color: tokens.text.secondary }}>Create campaigns and assign them to users. Assigned campaigns appear in the user's dashboard.</p>
+
+                  {/* Create form */}
+                  {showCampaignForm && (
+                    <div className="rounded-lg p-5 mb-6 space-y-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                      <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.muted }}>New Campaign</p>
+
+                      {/* Name + Language row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Campaign Name *</label>
+                          <input
+                            type="text"
+                            value={campaignForm.name}
+                            onChange={e => setCampaignForm(f => ({ ...f, name: e.target.value }))}
+                            placeholder="e.g. Electronic Vibes"
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Language</label>
+                          <input
+                            type="text"
+                            value={campaignForm.language}
+                            onChange={e => setCampaignForm(f => ({ ...f, language: e.target.value }))}
+                            placeholder="English"
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Description</label>
+                        <textarea
+                          value={campaignForm.description}
+                          onChange={e => setCampaignForm(f => ({ ...f, description: e.target.value }))}
+                          placeholder="Describe the campaign..."
+                          rows={3}
+                          className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        />
+                      </div>
+
+                      {/* Platforms */}
+                      <div>
+                        <label className="block text-xs font-medium mb-2" style={{ color: tokens.text.muted }}>Platforms</label>
+                        <div className="flex flex-wrap gap-2">
+                          {['Instagram', 'TikTok', 'YouTube', 'Twitter', 'Twitch'].map(p => (
+                            <button
+                              key={p}
+                              type="button"
+                              onClick={() => setCampaignForm(f => ({
+                                ...f,
+                                platforms: f.platforms.includes(p) ? f.platforms.filter(x => x !== p) : [...f.platforms, p]
+                              }))}
+                              className="px-3 py-1 rounded-full text-xs font-medium transition-all"
+                              style={{
+                                backgroundColor: campaignForm.platforms.includes(p) ? '#7c3aed' : tokens.bg.elevated,
+                                color: campaignForm.platforms.includes(p) ? '#fff' : tokens.text.secondary,
+                                border: `1px solid ${campaignForm.platforms.includes(p) ? '#7c3aed' : tokens.border.default}`,
+                              }}
+                            >
+                              {p}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Pay type + Payout + Ends at */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Pay Type</label>
+                          <select
+                            value={campaignForm.pay_type}
+                            onChange={e => setCampaignForm(f => ({ ...f, pay_type: e.target.value }))}
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          >
+                            <option>Per view</option>
+                            <option>Flat fee</option>
+                            <option>Revenue share</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Payout (e.g. $1.50 cpm)</label>
+                          <input
+                            type="text"
+                            value={campaignForm.payout}
+                            onChange={e => setCampaignForm(f => ({ ...f, payout: e.target.value }))}
+                            placeholder="$1.50 cpm"
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Ends At</label>
+                          <input
+                            type="date"
+                            value={campaignForm.ends_at}
+                            onChange={e => setCampaignForm(f => ({ ...f, ends_at: e.target.value }))}
+                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* How it works */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Info className="w-3.5 h-3.5" style={{ color: '#60a5fa' }} />
+                          <label className="text-xs font-medium" style={{ color: tokens.text.muted }}>How It Works (one step per line)</label>
+                        </div>
+                        <textarea
+                          value={campaignForm.how_it_works}
+                          onChange={e => setCampaignForm(f => ({ ...f, how_it_works: e.target.value }))}
+                          placeholder={"Join the campaign\nCreate a video using the provided track\nPost on your platforms\nEarn per view"}
+                          rows={4}
+                          className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        />
+                      </div>
+
+                      {/* Rules */}
+                      <div>
+                        <label className="block text-xs font-medium mb-1" style={{ color: tokens.text.muted }}>Rules (one rule per line)</label>
+                        <textarea
+                          value={campaignForm.rules}
+                          onChange={e => setCampaignForm(f => ({ ...f, rules: e.target.value }))}
+                          placeholder={"Minimum video length: 15 seconds\nMust include audio from the official track\nNo explicit content"}
+                          rows={4}
+                          className="w-full px-3 py-2 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        />
+                      </div>
+
+                      {/* Songs to use */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Music className="w-3.5 h-3.5" style={{ color: '#f472b6' }} />
+                            <label className="text-xs font-medium" style={{ color: tokens.text.muted }}>Songs to Use</label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCampaignForm(f => ({ ...f, songs: [...f.songs, { title: '', artist: '', url: '' }] }))}
+                            className="text-xs flex items-center gap-1 hover:opacity-80 transition-opacity"
+                            style={{ color: '#a78bfa' }}
+                          >
+                            <Plus className="w-3 h-3" /> Add song
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          {campaignForm.songs.map((song, i) => (
+                            <div key={i} className="flex gap-2 items-center">
+                              <input
+                                type="text"
+                                value={song.title}
+                                onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], title: e.target.value }; return { ...f, songs: s }; })}
+                                placeholder="Song title"
+                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              />
+                              <input
+                                type="text"
+                                value={song.artist}
+                                onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], artist: e.target.value }; return { ...f, songs: s }; })}
+                                placeholder="Artist"
+                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              />
+                              <input
+                                type="text"
+                                value={song.url}
+                                onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], url: e.target.value }; return { ...f, songs: s }; })}
+                                placeholder="Link (optional)"
+                                className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              />
+                              {campaignForm.songs.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setCampaignForm(f => ({ ...f, songs: f.songs.filter((_, j) => j !== i) }))}
+                                  className="w-7 h-7 flex items-center justify-center rounded-lg flex-shrink-0 hover:brightness-110"
+                                  style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {campaignError && <p className="text-xs" style={{ color: '#ef4444' }}>{campaignError}</p>}
+
+                      <div className="flex justify-end gap-2 pt-1">
+                        <button
+                          onClick={() => { setShowCampaignForm(false); setCampaignForm(emptyCampaignForm); setCampaignError(null); }}
+                          className="px-4 h-9 rounded-lg text-sm font-medium transition-all hover:brightness-110"
+                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.secondary, border: `1px solid ${tokens.border.default}` }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSaveCampaign}
+                          disabled={campaignSaving}
+                          className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                          style={{ backgroundColor: '#7c3aed', color: '#fff' }}
+                        >
+                          {campaignSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                          Save Campaign
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Campaign list */}
+                  {campaignsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <AnimatedBarsLoader text="Loading..." />
+                    </div>
+                  ) : campaigns.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Megaphone className="w-10 h-10 mx-auto mb-3" style={{ color: tokens.text.muted }} />
+                      <p className="text-sm" style={{ color: tokens.text.muted }}>No campaigns yet. Create one above.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {campaigns.map(c => (
+                        <div key={c.id} className="rounded-lg overflow-hidden" style={{ border: `1px solid ${tokens.border.subtle}` }}>
+                          <div
+                            className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer hover:brightness-105 transition-all"
+                            style={{ backgroundColor: tokens.bg.primary }}
+                            onClick={() => setExpandedCampaignId(expandedCampaignId === c.id ? null : c.id)}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <Megaphone className="w-4 h-4 flex-shrink-0" style={{ color: '#a78bfa' }} />
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{c.name}</p>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                  <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: c.status === 'active' ? 'rgba(16,185,129,0.1)' : tokens.bg.active, color: c.status === 'active' ? '#10b981' : tokens.text.muted }}>{c.status}</span>
+                                  {c.payout && <span className="text-xs" style={{ color: tokens.text.muted }}>{c.payout}</span>}
+                                  {c.platforms?.length > 0 && <span className="text-xs" style={{ color: tokens.text.muted }}>{c.platforms.join(', ')}</span>}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}
+                                disabled={deletingCampaignId === c.id}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
+                                style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                              >
+                                {deletingCampaignId === c.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                              </button>
+                              {expandedCampaignId === c.id ? <ChevronUp className="w-4 h-4" style={{ color: tokens.text.muted }} /> : <ChevronDown className="w-4 h-4" style={{ color: tokens.text.muted }} />}
+                            </div>
+                          </div>
+                          {expandedCampaignId === c.id && (
+                            <div className="px-4 pb-4 pt-2 space-y-3" style={{ backgroundColor: tokens.bg.elevated }}>
+                              {c.description && <p className="text-sm" style={{ color: tokens.text.secondary }}>{c.description}</p>}
+                              {c.how_it_works && c.how_it_works.length > 0 && (
+                                <div>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>How It Works</p>
+                                  <ol className="space-y-1">
+                                    {c.how_it_works.map((step, i) => (
+                                      <li key={i} className="text-xs flex gap-2" style={{ color: tokens.text.secondary }}>
+                                        <span className="font-semibold flex-shrink-0" style={{ color: '#a78bfa' }}>{i + 1}.</span>{step}
+                                      </li>
+                                    ))}
+                                  </ol>
+                                </div>
+                              )}
+                              {c.rules && c.rules.length > 0 && (
+                                <div>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Rules</p>
+                                  <ul className="space-y-1">
+                                    {c.rules.map((rule, i) => (
+                                      <li key={i} className="text-xs" style={{ color: tokens.text.secondary }}>• {rule}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              {c.songs_to_use && c.songs_to_use.length > 0 && (
+                                <div>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Songs to Use</p>
+                                  <div className="space-y-1">
+                                    {c.songs_to_use.map((s, i) => (
+                                      <div key={i} className="flex items-center gap-2">
+                                        <Music className="w-3 h-3 flex-shrink-0" style={{ color: '#f472b6' }} />
+                                        <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{s.title}</span>
+                                        {s.artist && <span className="text-xs" style={{ color: tokens.text.muted }}>— {s.artist}</span>}
+                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: '#60a5fa' }}><ExternalLink className="w-3 h-3 inline" /></a>}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

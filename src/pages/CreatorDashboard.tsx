@@ -196,117 +196,6 @@ interface CampaignData {
   requiredHashtags?: string[];
 }
 
-const CAMPAIGNS: CampaignData[] = [
-  {
-    id: 'fighter-music',
-    name: 'Fighter Music',
-    timeAgo: '13d ago',
-    title: 'Turn Pain into Power',
-    description: 'Fighter Music is a passionate artist turning pain into power, and scars into sound. Create clips showcasing their music and earn your share of the budget!',
-    status: 'Active',
-    endsIn: '6d',
-    paidOutPercent: '87.37%',
-    language: 'English',
-    platforms: ['instagram', 'tiktok', 'youtube'],
-    payType: 'Per view',
-    payout: '$1.00 cpm',
-    rules: [
-      'Allowed Content: Use footage from provided music videos only. No unrelated footage or outside content.',
-      'Minimum video length: 15 seconds',
-      'Must include audio from the official track',
-      'No explicit or inappropriate content'
-    ],
-    requiredHashtags: ['#FighterMusic', '#ElevateMusic']
-  },
-  {
-    id: 'asta-violina',
-    name: 'Asta Violina',
-    timeAgo: '13d ago',
-    title: 'Classical Meets Modern',
-    description: 'Asta Violina brings classical violin to the modern age. Create engaging content featuring their unique sound and earn from every view!',
-    status: 'Active',
-    endsIn: '10d',
-    paidOutPercent: '45.20%',
-    language: 'English',
-    platforms: ['instagram', 'tiktok', 'youtube'],
-    payType: 'Per view',
-    payout: '$0.80 cpm',
-    rules: [
-      'Allowed Content: Use footage from provided music videos only.',
-      'Minimum video length: 10 seconds',
-      'Must include audio from the official track',
-      'Family-friendly content only'
-    ],
-    requiredHashtags: ['#AstaViolina', '#ClassicalVibes']
-  }
-];
-
-const OPPORTUNITIES: CampaignData[] = [
-  {
-    id: 'nova-beats',
-    name: 'Nova Beats',
-    timeAgo: '5d ago',
-    title: 'Future Sound',
-    description: 'Nova Beats is pushing the boundaries of electronic music. Create viral content with their tracks and earn from every view!',
-    status: 'Active',
-    endsIn: '14d',
-    paidOutPercent: '23.50%',
-    language: 'English',
-    platforms: ['instagram', 'tiktok', 'youtube'],
-    payType: 'Per view',
-    payout: '$1.20 cpm',
-    rules: [
-      'Allowed Content: Use footage from provided music videos only.',
-      'Minimum video length: 10 seconds',
-      'Must include audio from the official track',
-      'Creative transitions encouraged'
-    ],
-    requiredHashtags: ['#NovaBeats', '#FutureSound']
-  },
-  {
-    id: 'electronic-vibes',
-    name: 'Electronic Vibes',
-    timeAgo: '2d ago',
-    title: '',
-    description: 'Electronic Vibes creates immersive electronic experiences. Join their latest campaign and showcase your creativity with cutting-edge sound design!',
-    status: 'Active',
-    endsIn: '8d',
-    paidOutPercent: '15.30%',
-    language: 'English',
-    platforms: ['instagram', 'tiktok', 'youtube'],
-    payType: 'Per view',
-    payout: '$1.50 cpm',
-    rules: [
-      'Allowed Content: Electronic music videos and performances only.',
-      'Minimum video length: 20 seconds',
-      'Must include audio from the official track',
-      'Visual effects and transitions encouraged'
-    ],
-    requiredHashtags: ['#ElectronicVibes', '#DigitalDreams']
-  },
-  {
-    id: 'urban-beats',
-    name: 'Urban Beats',
-    timeAgo: '1d ago',
-    title: 'Street Culture',
-    description: 'Urban Beats brings authentic hip-hop and street culture to life. Create content that captures the essence of urban music and lifestyle!',
-    status: 'Active',
-    endsIn: '12d',
-    paidOutPercent: '8.75%',
-    language: 'English',
-    platforms: ['instagram', 'tiktok', 'youtube'],
-    payType: 'Per view',
-    payout: '$0.90 cpm',
-    rules: [
-      'Allowed Content: Hip-hop and urban music content only.',
-      'Minimum video length: 30 seconds',
-      'Must include audio from the official track',
-      'Street style and authenticity required'
-    ],
-    requiredHashtags: ['#UrbanBeats', '#StreetCulture']
-  }
-];
-
 function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
   const [showFullRules, setShowFullRules] = useState(false);
 
@@ -522,80 +411,6 @@ function ActiveCollaborationsCard({ setActiveSection }: { setActiveSection: (sec
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
-      </div>
-    </div>
-  );
-}
-
-function FighterMusicCardActive({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-  
-  return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border relative" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
-      onClick={onClick}
-    >
-      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
-          </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#F8FAFC' }}>13d ago </p>
-        </div>
-      </div>
-
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>
-        Fighter Music, A passionate artist turning pain into power, and scars into sound.
-      </p>
-
-      <div className="flex items-center">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-  
-  return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border relative" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
-      onClick={onClick}
-    >
-      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
-          </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#F8FAFC' }}>13d ago </p>
-        </div>
-      </div>
-
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
-
-      <div className="flex items-center">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-        </div>
       </div>
     </div>
   );
@@ -919,47 +734,6 @@ function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
-      </div>
-    </div>
-  );
-}
-
-function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-  
-  return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
-      onClick={onClick}
-    >
-      <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-            <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Asta Violina</h3>
-            <div className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-              <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-              </svg>
-            </div>
-          </div>
-          <p className="text-xs sm:text-sm" style={{ color: '#F8FAFC' }}>13d ago </p>
-        </div>
-      </div>
-
-      <p className="mb-4 sm:mb-5 font-medium text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Fighter Music, A passionate artist turning pain into power, and scars into sound.</p>
-
-      <div className="flex items-center">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <InstagramIconAnimated isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <TikTokIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-          <YouTubeIcon isHovered={isCardHovered} backgroundTheme={backgroundTheme} />
-        </div>
       </div>
     </div>
   );
@@ -3483,9 +3257,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('opportunities.campaignDesc')}</p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                    <FighterMusicCardActive onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
-                    <FighterMusicCard onClick={() => setSelectedCampaign(OPPORTUNITIES[1])} backgroundTheme={backgroundTheme} />
+                  <div className="flex flex-col items-center justify-center py-16 rounded-2xl" style={{ border: '1px dashed rgba(255,255,255,0.12)' }}>
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                      <svg className="w-7 h-7" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                      </svg>
+                    </div>
+                    <p className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>No campaigns available</p>
+                    <p className="text-sm text-center max-w-xs" style={{ color: '#64748B' }}>Campaigns will appear here once they've been assigned to your account.</p>
                   </div>
                 </section>
 
