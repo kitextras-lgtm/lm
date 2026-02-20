@@ -33,6 +33,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
     startConversationWith,
     sendMessageToConversation,
     clearPendingConversation,
+    acceptRequest,
+    denyRequest,
   } = useCustomerConversations(currentUserId);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -180,8 +182,14 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
         return conv.unread_count_customer > 0;
       }
 
+      // Requests tab: only show conversations where current user is the RECIPIENT and it's a request
       if (filter === 'pinned') {
-        return conv.is_pinned === true;
+        return conv.is_request === true && conv.admin_id === currentUserId;
+      }
+
+      // Primary tab: hide incoming requests (where current user is recipient) until accepted
+      if (conv.is_request === true && conv.admin_id === currentUserId) {
+        return false;
       }
 
       return true;
@@ -190,10 +198,10 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
     return filtered;
   }, [conversations, selectedConversation, debouncedSearchQuery, filter]);
 
-  // Calculate pinned conversations count for badge
-  const pinnedCount = useMemo(() => {
-    return conversations.filter(conv => conv.is_pinned === true).length;
-  }, [conversations]);
+  // Calculate request conversations count for badge — only incoming requests (recipient = current user)
+  const requestCount = useMemo(() => {
+    return conversations.filter(conv => conv.is_request === true && conv.admin_id === currentUserId).length;
+  }, [conversations, currentUserId]);
 
   const getSenderName = useCallback(
     (senderId: string) => {
@@ -361,20 +369,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   }`}
                   style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
                 >
-                  {t('messages.requests')}
-                  {pinnedCount > 0 && (
-                    <span 
-                      className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center text-xs font-bold rounded-full"
-                      style={{ 
-                        backgroundColor: backgroundTheme === 'light' ? '#3B82F6' : backgroundTheme === 'grey' ? '#2563EB' : '#60A5FA',
-                        color: '#FFFFFF',
-                        fontSize: '10px',
-                        padding: '0 4px'
-                      }}
-                    >
-                      {pinnedCount}
-                    </span>
-                  )}
+                  {requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests')}
                 </button>
               </div>
             )}
@@ -478,20 +473,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 }`}
                 style={filter === 'pinned' ? { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8', border: '1px solid transparent' }}
               >
-                {t('messages.requests')}
-                {pinnedCount > 0 && (
-                  <span 
-                    className="absolute -top-1 -right-1 min-w-[20px] h-[20px] flex items-center justify-center text-xs font-bold rounded-full"
-                    style={{ 
-                      backgroundColor: backgroundTheme === 'light' ? '#3B82F6' : backgroundTheme === 'grey' ? '#2563EB' : '#60A5FA',
-                      color: '#FFFFFF',
-                      fontSize: '11px',
-                      padding: '0 5px'
-                    }}
-                  >
-                    {pinnedCount}
-                  </span>
-                )}
+                {requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests')}
               </button>
             </div>
           )}
@@ -565,6 +547,16 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             getSenderName={getSenderName}
             onMarkAsRead={(convId) => updateConversationUnreadCount(convId, 0)}
             backgroundTheme={backgroundTheme}
+            isRequest={selectedConversation.is_request === true && selectedConversation.admin_id === currentUserId}
+            onAcceptRequest={async () => {
+              await acceptRequest(selectedConversation.id);
+              setSelectedConversation(prev => prev ? { ...prev, is_request: false } : prev);
+              setFilter('all');
+            }}
+            onDenyRequest={async () => {
+              await denyRequest(selectedConversation.id);
+              setSelectedConversation(null);
+            }}
           />
         ) : showChatSkeleton ? (
           <ChatWindowSkeleton backgroundTheme={backgroundTheme} />

@@ -34,6 +34,10 @@ interface ChatWindowProps {
   pendingRecipient?: PendingRecipient;
   onSendPendingMessage?: (content: string) => Promise<void>;
   onCancelPending?: () => void;
+  // DM request props
+  isRequest?: boolean;
+  onAcceptRequest?: () => Promise<void>;
+  onDenyRequest?: () => Promise<void>;
 }
 
 export const ChatWindow = memo(function ChatWindow({
@@ -48,6 +52,10 @@ export const ChatWindow = memo(function ChatWindow({
   // Instagram/X pattern
   isPending = false,
   pendingRecipient,
+  // DM request
+  isRequest = false,
+  onAcceptRequest,
+  onDenyRequest,
   onSendPendingMessage,
   onCancelPending,
 }: ChatWindowProps) {
@@ -142,6 +150,9 @@ export const ChatWindow = memo(function ChatWindow({
     backgroundTheme={backgroundTheme}
     onBack={onBack}
     showBackButton={showBackButton}
+    isRequest={isRequest}
+    onAcceptRequest={onAcceptRequest}
+    onDenyRequest={onDenyRequest}
   />;
 });
 
@@ -155,8 +166,10 @@ const ChatWindowContent = memo(function ChatWindowContent({
   backgroundTheme = 'dark',
   onBack,
   showBackButton = false,
+  isRequest = false,
+  onAcceptRequest,
+  onDenyRequest,
 }: {
-  // useTranslation hook added below
   conversation: Conversation;
   otherUser: Profile;
   currentUserId: string;
@@ -165,6 +178,9 @@ const ChatWindowContent = memo(function ChatWindowContent({
   backgroundTheme?: 'light' | 'grey' | 'dark';
   onBack?: () => void;
   showBackButton?: boolean;
+  isRequest?: boolean;
+  onAcceptRequest?: () => Promise<void>;
+  onDenyRequest?: () => Promise<void>;
 }) {
   const { t } = useTranslation();
   const theme = getTheme(backgroundTheme);
@@ -607,10 +623,42 @@ const ChatWindowContent = memo(function ChatWindowContent({
         </div>
       </div>
 
+      {isRequest && (
+        <div
+          className="flex items-center justify-between px-4 py-3 border-t"
+          style={{ borderColor: 'rgba(75,85,99,0.2)', backgroundColor: 'var(--bg-sidebar)' }}
+        >
+          <div className="flex-1 min-w-0 mr-4">
+            <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>
+              {otherUser?.name || 'Someone'} wants to message you
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
+              Accept to chat, or deny to delete this conversation.
+            </p>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <button
+              onClick={onDenyRequest}
+              className="px-4 py-1.5 rounded-full text-sm font-medium transition-all hover:opacity-80"
+              style={{ backgroundColor: 'rgba(239,68,68,0.12)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)' }}
+            >
+              Deny
+            </button>
+            <button
+              onClick={onAcceptRequest}
+              className="px-4 py-1.5 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+            >
+              Accept
+            </button>
+          </div>
+        </div>
+      )}
+
       <ChatInput
             onSendMessage={handleSendMessage}
             onTyping={setTyping}
-            disabled={loading}
+            disabled={loading || isRequest}
             replyTo={replyTo}
             onCancelReply={() => setReplyTo(null)}
             otherUserName={otherUser?.username || ''}

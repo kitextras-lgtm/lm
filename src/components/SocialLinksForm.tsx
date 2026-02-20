@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown } from 'lucide-react';
+import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown, CheckCircle, Check, ExternalLink, Loader } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../lib/supabase';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, supabase } from '../lib/supabase';
 import { AnimatedLinkIcon } from './AnimatedLinkIcon';
+
+const SOCIAL_LINKS_FN = `${SUPABASE_URL}/functions/v1/social-links`;
+const VERIFY_FN = `${SUPABASE_URL}/functions/v1/verify-social-link`;
+const fnHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` };
 
 interface SocialLink {
   id: string;
@@ -11,6 +15,7 @@ interface SocialLink {
   display_name: string;
   channel_type: string;
   channel_description: string;
+  verified: boolean;
 }
 
 const platformIcons: { [key: string]: any } = {
@@ -151,9 +156,10 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
 interface SocialLinksFormProps {
   appliedTheme?: string;
   userType?: 'artist' | 'creator' | 'freelancer' | 'business';
+  userId?: string;
 }
 
-export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps) {
+export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksFormProps) {
   const { t } = useTranslation();
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -165,24 +171,28 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
     channel_description: '',
   });
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const [verifyModal, setVerifyModal] = useState<{ link: SocialLink; phrase: string } | null>(null);
+  const [verifyChecking, setVerifyChecking] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<'idle' | 'success' | 'fail'>('idle');
+  const [copiedPhrase, setCopiedPhrase] = useState(false);
 
   useEffect(() => {
-    loadLinks();
-  }, []);
+    if (userId) loadLinks();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'social_links_updated') loadLinks();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [userId]);
 
   const loadLinks = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('social_links')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setLinks(data || []);
+      if (!userId) return;
+      const res = await fetch(`${SOCIAL_LINKS_FN}?userId=${userId}`, { headers: fnHeaders });
+      const json = await res.json();
+      if (json.success) setLinks(json.links || []);
     } catch (error) {
       console.error('Error loading links:', error);
     } finally {
@@ -190,113 +200,140 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
     }
   };
 
-  const normalizeUrl = (url: string): string => {
-    let normalized = url.trim();
-    // Remove leading/trailing whitespace and trailing slashes
-    normalized = normalized.replace(/\/+$/, '');
-    
-    // Ensure it starts with https:// or http://
-    if (!normalized.match(/^https?:\/\//i)) {
-      normalized = 'https://' + normalized;
+  const detectPlatform = (url: string): string => {
+    const lower = url.toLowerCase();
+    if (lower.includes('youtube.com') || lower.includes('youtu.be')) return 'YouTube';
+    if (lower.includes('instagram.com')) return 'Instagram';
+    if (lower.includes('tiktok.com')) return 'TikTok';
+    if (lower.includes('twitter.com') || lower.includes('x.com')) return 'Twitter';
+    if (lower.includes('twitch.tv')) return 'Twitch';
+    return 'Other';
+  };
+
+  const validateUrl = (url: string): { valid: boolean; normalized: string; error?: string } => {
+    const trimmed = url.trim().replace(/\/+$/, '');
+    if (!trimmed.match(/^https:\/\//i)) {
+      return { valid: false, normalized: trimmed, error: 'URL must start with https:// (e.g. https://www.youtube.com/@YourChannel)' };
     }
-    
-    return normalized;
+    return { valid: true, normalized: trimmed };
+  };
+
+  const checkWhitelisted = async (url: string): Promise<boolean> => {
+    try {
+      const { data } = await supabase
+        .from('whitelisted_channels')
+        .select('url_pattern');
+      if (!data) return false;
+      const lower = url.toLowerCase();
+      return data.some(row => lower.includes(row.url_pattern.toLowerCase()));
+    } catch {
+      return false;
+    }
   };
 
   const handleAddLink = async () => {
-    if (!newLink.url.trim()) return;
+    if (!newLink.url.trim() || !userId) return;
 
+    const { valid, normalized: normalizedUrl, error: validationError } = validateUrl(newLink.url);
+    if (!valid) {
+      setUrlError(validationError || 'Invalid URL');
+      return;
+    }
+    setUrlError(null);
+
+    setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
-      const normalizedUrl = normalizeUrl(newLink.url);
+      const isWhitelisted = await checkWhitelisted(normalizedUrl);
 
-      // Check if URL already exists
-      const { data: existingLinks, error: checkError } = await supabase
-        .from('social_links')
-        .select('id')
-        .eq('url', normalizedUrl)
-        .limit(1);
-
-      if (existingLinks && existingLinks.length > 0) {
-        alert(t('socialLinks.linkAlreadyRegistered'));
-        return;
-      }
-
-      const insertData: any = {
-        user_id: user.id,
+      const body: Record<string, string | boolean> = {
+        userId,
         platform: newLink.platform,
         url: normalizedUrl,
         display_name: newLink.display_name.trim() || newLink.platform,
+        ...(isWhitelisted ? { verified: true } : {}),
       };
-
-      // Only include channel_description for creator accounts
       if (userType === 'creator') {
-        insertData.channel_type = newLink.channel_type.trim();
-        insertData.channel_description = newLink.channel_description.trim();
+        body.channel_type = newLink.channel_type.trim();
+        body.channel_description = newLink.channel_description.trim();
       }
 
-      const { error } = await supabase
-        .from('social_links')
-        .insert(insertData);
+      const res = await fetch(SOCIAL_LINKS_FN, {
+        method: 'POST',
+        headers: fnHeaders,
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
 
-      if (error) {
-        // Check if it's a unique constraint violation
-        if (error.code === '23505') {
+      if (json.duplicate) {
+        if (json.own) {
           alert(t('socialLinks.linkAlreadyRegistered'));
         } else {
-          throw error;
+          alert('This link is already registered and verified by another user. Each social link can only belong to one account.');
         }
         return;
       }
-
-      // For creator accounts, submit a verification application for each new social link
-      if (userType === 'creator') {
-        try {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('email, full_name, username')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          await supabase.from('applications').insert({
-            user_id: user.id,
-            application_type: 'creator_verification',
-            status: 'pending',
-            full_name: userData?.full_name || null,
-            email: userData?.email || null,
-            username: userData?.username || null,
-            platform: insertData.platform,
-            social_url: normalizedUrl,
-            channel_type: insertData.channel_type || null,
-            channel_description: insertData.channel_description || null,
-          });
-        } catch (appErr) {
-          console.error('Error submitting verification application:', appErr);
-        }
-      }
+      if (!json.success) throw new Error(json.message || 'Insert failed');
 
       await loadLinks();
+      localStorage.setItem('social_links_updated', Date.now().toString());
       setNewLink({ platform: 'YouTube', url: '', display_name: '', channel_type: '', channel_description: '' });
       setIsAdding(false);
     } catch (error) {
       console.error('Error adding link:', error);
-      // Error already handled above if it's a duplicate
-      if (error && typeof error === 'object' && 'code' in error && error.code !== '23505') {
-        alert(t('socialLinks.errorAddingLink'));
+      alert(t('socialLinks.errorAddingLink'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openVerifyModal = async (link: SocialLink) => {
+    setVerifyResult('idle');
+    const res = await fetch(VERIFY_FN, {
+      method: 'POST',
+      headers: fnHeaders,
+      body: JSON.stringify({ action: 'get-phrase', linkId: link.id, userId }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      setVerifyModal({ link, phrase: json.phrase });
+    }
+  };
+
+  const handleCheckVerification = async () => {
+    if (!verifyModal) return;
+    setVerifyChecking(true);
+    setVerifyResult('idle');
+    try {
+      const res = await fetch(VERIFY_FN, {
+        method: 'POST',
+        headers: fnHeaders,
+        body: JSON.stringify({ action: 'check', linkId: verifyModal.link.id, userId }),
+      });
+      const json = await res.json();
+      if (json.verified) {
+        setVerifyResult('success');
+        await loadLinks();
+        setTimeout(() => {
+          setVerifyModal(null);
+          setVerifyResult('idle');
+        }, 2000);
+      } else {
+        setVerifyResult('fail');
       }
+    } finally {
+      setVerifyChecking(false);
     }
   };
 
   const handleDeleteLink = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('social_links')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      const res = await fetch(`${SOCIAL_LINKS_FN}?id=${id}&userId=${userId}`, {
+        method: 'DELETE',
+        headers: fnHeaders,
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message);
       await loadLinks();
     } catch (error) {
       console.error('Error deleting link:', error);
@@ -312,6 +349,7 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
   }
 
   return (
+    <>
     <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
       <div className="flex items-center justify-between mb-5 sm:mb-6">
         <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('socialLinks.title')}</h3>
@@ -356,12 +394,21 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
               <input
                 type="text"
                 value={newLink.url}
-                onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const platform = detectPlatform(val);
+                  setNewLink(prev => ({ ...prev, url: val, platform }));
+                  if (urlError) setUrlError(null);
+                }}
+                placeholder="https://www.youtube.com/@YourChannel"
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
-                style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
-                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
+                style={{ backgroundColor: 'transparent', borderColor: urlError ? '#ef4444' : 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                onFocus={(e) => { if (!urlError) e.target.style.borderColor = '#ffffff'; }}
+                onBlur={(e) => { if (!urlError) e.target.style.borderColor = 'var(--border-subtle)'; }}
               />
+              {urlError && (
+                <p className="mt-1.5 text-xs" style={{ color: '#ef4444' }}>{urlError}</p>
+              )}
             </div>
 
             <div>
@@ -432,10 +479,11 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
             <div className="flex gap-2 sm:gap-3 pt-2">
               <button
                 onClick={handleAddLink}
-                className="flex-1 px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
+                disabled={saving}
+                className="flex-1 px-4 py-2 sm:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 disabled:opacity-60"
                 style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
               >
-                {t('socialLinks.save')}
+                {saving ? 'Saving...' : t('socialLinks.save')}
               </button>
               <button
                 onClick={() => {
@@ -491,23 +539,135 @@ export function SocialLinksForm({ appliedTheme, userType }: SocialLinksFormProps
                     <div className="text-sm sm:text-base font-medium truncate" style={{ color: '#F8FAFC' }}>
                       {link.display_name || link.platform}
                     </div>
-                    <div className="text-xs sm:text-sm truncate" style={{ color: '#64748B' }}>
+                    <div className="text-xs sm:text-sm truncate" style={{ color: '#F8FAFC' }}>
                       {link.url.replace(/^https?:\/\//i, '')}
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDeleteLink(link.id)}
-                  className="ml-2 p-2 rounded-lg transition-all duration-200 hover:brightness-110 flex-shrink-0"
-                  style={{ backgroundColor: 'transparent', color: '#64748B' }}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                  {link.verified ? (
+                    <span className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
+                      style={{ color: '#22C55E', backgroundColor: '#22C55E15' }}>
+                      <CheckCircle className="w-3 h-3" /> Verified
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
+                        style={{ color: '#94A3B8', backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                        Unverified
+                      </span>
+                      <button
+                        onClick={() => openVerifyModal(link)}
+                        className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap transition-all duration-200 hover:opacity-80"
+                        style={{ color: 'var(--bg-primary)', backgroundColor: 'var(--text-primary)' }}
+                      >
+                        Verify Now
+                      </button>
+                    </div>
+                  )}
+                  {!link.verified && (
+                    <button
+                      onClick={() => handleDeleteLink(link.id)}
+                      className="p-2 rounded-lg transition-all duration-200 hover:brightness-110"
+                      style={{ backgroundColor: 'transparent', color: '#64748B' }}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })
         )}
       </div>
     </div>
+
+    {/* Verification Modal */}
+    {verifyModal && (() => {
+      const vm = verifyModal;
+      return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+        <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-lg font-bold" style={{ color: '#F8FAFC' }}>Verify Ownership</h3>
+            {verifyResult !== 'success' && (
+              <button onClick={() => { setVerifyModal(null); setVerifyResult('idle'); }} className="p-1 rounded-lg" style={{ color: '#64748B' }}>
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+
+          <div className="mb-5 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', border: '1px solid' }}>
+            <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Link being verified</p>
+            <p className="text-sm font-medium truncate" style={{ color: '#F8FAFC' }}>{vm.link.url}</p>
+          </div>
+
+          <div className="mb-5">
+            <p className="text-sm mb-3 leading-relaxed" style={{ color: '#CBD5E1' }}>
+              Add this phrase to your bio to verify account ownership and prevent impersonation.
+            </p>
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <span className="text-base font-bold tracking-wide" style={{ color: '#F8FAFC' }}>{vm.phrase}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard?.writeText(vm.phrase);
+                  setCopiedPhrase(true);
+                  setTimeout(() => setCopiedPhrase(false), 2000);
+                }}
+                className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full transition-all hover:opacity-80"
+                style={{ color: 'var(--bg-primary)', backgroundColor: 'var(--text-primary)' }}
+              >
+                {copiedPhrase ? <><Check className="w-3 h-3" /> Copied</> : 'Copy'}
+              </button>
+            </div>
+            <p className="text-xs mt-2" style={{ color: '#64748B' }}>
+              You can remove it once the check is complete.
+            </p>
+          </div>
+
+          <div className="mb-4">
+            <a
+              href={vm.link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm transition-all hover:opacity-70"
+              style={{ color: '#CBD5E1' }}
+            >
+              <ExternalLink className="w-4 h-4" />
+              Open {vm.link.platform} to add the phrase
+            </a>
+          </div>
+
+          {verifyResult === 'success' && (
+            <div className="flex items-center gap-2 p-3 rounded-lg mb-4" style={{ backgroundColor: '#22C55E10', border: '1px solid #22C55E40' }}>
+              <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#22C55E' }} />
+              <p className="text-sm font-medium" style={{ color: '#22C55E' }}>Verified! This link is now exclusively yours.</p>
+            </div>
+          )}
+
+          {verifyResult === 'fail' && (
+            <div className="p-3 rounded-lg mb-4" style={{ backgroundColor: '#EF444410', border: '1px solid #EF444440' }}>
+              <p className="text-sm font-medium" style={{ color: '#EF4444' }}>Phrase not found. Make sure you saved the change on {verifyModal.link.platform} and try again.</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleCheckVerification}
+            disabled={verifyChecking || verifyResult === 'success'}
+            className="w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 disabled:opacity-60 flex items-center justify-center gap-2"
+            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+          >
+            {verifyChecking ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                Checking...
+              </>
+            ) : 'Check Verification'}
+          </button>
+        </div>
+      </div>
+      );
+    })()}
+    </>
   );
 }

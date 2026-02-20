@@ -18,13 +18,19 @@ interface MessageToastProps {
   activeSection: string;
   onNavigateToMessages: () => void;
   theme?: Theme;
+  enabled?: boolean;
 }
 
-export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark' }: MessageToastProps) {
+export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark', enabled = true }: MessageToastProps) {
   const t = themeTokens[theme];
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const dismissTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const seenMessageIds = useRef<Set<string>>(new Set());
+  // Use a ref so the realtime callback always reads the latest value (avoids stale closure)
+  const enabledRef = useRef(enabled);
+  useEffect(() => { enabledRef.current = enabled; }, [enabled]);
+  // Also clear any visible toasts immediately when disabled
+  useEffect(() => { if (!enabled) setToasts([]); }, [enabled]);
 
   const dismissToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(t => t.id !== id));
@@ -72,6 +78,8 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
           if (seenMessageIds.current.has(msg.id)) return;
           // Don't show if already in messages section
           if (activeSection === 'messages') return;
+          // Don't show if user has disabled message notifications
+          if (!enabledRef.current) return;
 
           // Verify this message belongs to a conversation the user is part of
           const { data: conv } = await supabase
@@ -85,28 +93,37 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
 
           seenMessageIds.current.add(msg.id);
 
-          // Fetch sender info
-          let senderName = 'New message';
+          // Fetch sender info — try unified_users first (covers all user types + avatar)
+          let senderName = 'Someone';
           let senderAvatar: string | null = null;
 
-          // Check if sender is admin (from profiles table)
-          const { data: adminProfile } = await supabase
-            .from('profiles')
-            .select('name, avatar_url, is_admin')
+          const { data: unifiedUser } = await supabase
+            .from('unified_users')
+            .select('display_name, first_name, last_name, username, avatar_url, is_admin')
             .eq('id', msg.sender_id)
             .maybeSingle();
 
-          if (adminProfile?.is_admin) {
-            senderName = adminProfile.name || 'Elevate';
-            senderAvatar = adminProfile.avatar_url || ELEVATE_ADMIN_AVATAR_URL;
+          if (unifiedUser) {
+            if (unifiedUser.is_admin) {
+              senderName = unifiedUser.display_name || 'Elevate';
+              senderAvatar = unifiedUser.avatar_url || ELEVATE_ADMIN_AVATAR_URL;
+            } else {
+              const fullName = unifiedUser.display_name ||
+                [unifiedUser.first_name, unifiedUser.last_name].filter(Boolean).join(' ');
+              senderName = fullName || unifiedUser.username || 'Someone';
+              senderAvatar = unifiedUser.avatar_url || null;
+            }
           } else {
-            // Try users table
-            const { data: userData } = await supabase
-              .from('users')
-              .select('full_name, username')
+            // Fallback: check profiles table (admin-only profiles)
+            const { data: adminProfile } = await supabase
+              .from('profiles')
+              .select('name, avatar_url, is_admin')
               .eq('id', msg.sender_id)
               .maybeSingle();
-            senderName = userData?.full_name || userData?.username || 'Someone';
+            if (adminProfile?.is_admin) {
+              senderName = adminProfile.name || 'Elevate';
+              senderAvatar = adminProfile.avatar_url || ELEVATE_ADMIN_AVATAR_URL;
+            }
           }
 
           const toast: ToastMessage = {

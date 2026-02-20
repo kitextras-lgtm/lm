@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, Gift } from 'lucide-react';
+import { Copy, Check, Gift, Link2 } from 'lucide-react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 
 interface ReferralData {
@@ -9,11 +9,24 @@ interface ReferralData {
   total_earnings: number;
 }
 
-export function ReferralSection() {
+interface ReferralSectionProps {
+  userType?: 'artist' | 'creator' | 'freelancer' | 'business';
+  userId?: string;
+}
+
+const LANDING_PAGE: Record<string, string> = {
+  artist: '/learn/artist',
+  freelancer: '/learn/freelancer',
+  business: '/learn/brands',
+  creator: '/',
+};
+
+export function ReferralSection({ userType, userId: userIdProp }: ReferralSectionProps) {
   const { t } = useTranslation();
   const [referralData, setReferralData] = useState<ReferralData | null>(null);
   const [inputCode, setInputCode] = useState('');
   const [copied, setCopied] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -25,9 +38,13 @@ export function ReferralSection() {
 
   const loadReferralData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      let authUserId: string | null = null;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        authUserId = user?.id || null;
+      } catch (_) {}
       const verifiedUserId = localStorage.getItem('verifiedUserId');
-      const userId = user?.id || verifiedUserId;
+      const userId = userIdProp || authUserId || verifiedUserId;
       
       if (!userId) {
         console.warn('No user ID found');
@@ -118,15 +135,31 @@ export function ReferralSection() {
     }
   };
 
+  const getReferralLink = () => {
+    if (!referralData) return '';
+    const base = window.location.origin;
+    const page = LANDING_PAGE[userType || 'creator'] ?? '/';
+    return `${base}${page}?ref=${referralData.code}`;
+  };
+
   const handleCopy = async () => {
     if (!referralData) return;
-
     try {
       await navigator.clipboard.writeText(referralData.code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy:', error);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getReferralLink());
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy link:', error);
     }
   };
 
@@ -203,6 +236,26 @@ export function ReferralSection() {
             </button>
           </div>
         </div>
+
+        {referralData && (
+          <div className="mb-5">
+            <div className="text-xs font-medium mb-2" style={{ color: '#64748B' }}>YOUR REFERRAL LINK</div>
+            <div className="flex items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-subtle)' }}>
+              <Link2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#64748B' }} />
+              <span className="text-xs truncate flex-1" style={{ color: '#94A3B8' }}>
+                {getReferralLink()}
+              </span>
+              <button
+                onClick={handleCopyLink}
+                className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0 transition-all hover:opacity-80"
+                style={{ color: 'var(--bg-primary)', backgroundColor: 'var(--text-primary)' }}
+              >
+                {copiedLink ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                {copiedLink ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div>
           <div className="text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>

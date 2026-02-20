@@ -665,9 +665,9 @@ export function useCustomerConversations(customerId: string) {
     if (!conversationId && pendingConversation) {
       try {
         // Create conversation AND message together
-        const { data: newConversation, error: convError } = await supabase
-          .from('conversations')
-          .insert({
+        let newConversation: any = null;
+        {
+          const convPayload: any = {
             customer_id: customerId,
             admin_id: pendingConversation.recipientId,
             last_message: content.length > 80 ? content.substring(0, 80) + '...' : content,
@@ -675,13 +675,35 @@ export function useCustomerConversations(customerId: string) {
             last_message_sender_id: customerId,
             unread_count_admin: 1,
             unread_count_customer: 0,
-            is_ephemeral: false,  // NOT ephemeral - has message from start
+            is_ephemeral: false,
             has_messages: true,
-          })
-          .select()
-          .single();
-        
-        if (convError) throw convError;
+            is_request: true,
+          };
+          const { data: convData, error: convError } = await supabase
+            .from('conversations')
+            .insert(convPayload)
+            .select()
+            .single();
+
+          if (convError) {
+            // Fallback: column may not exist yet in schema cache — retry without is_request
+            if (convError.code === 'PGRST204' || convError.message?.includes('is_request')) {
+              const { is_request: _dropped, ...payloadWithout } = convPayload;
+              const { data: fallbackData, error: fallbackError } = await supabase
+                .from('conversations')
+                .insert(payloadWithout)
+                .select()
+                .single();
+              if (fallbackError) throw fallbackError;
+              newConversation = fallbackData;
+            } else {
+              throw convError;
+            }
+          } else {
+            newConversation = convData;
+          }
+        }
+        if (!newConversation) throw new Error('Failed to create conversation');
         
         // Insert the message
         const { data: newMessage, error: msgError } = await supabase
@@ -742,6 +764,37 @@ export function useCustomerConversations(customerId: string) {
     setPendingConversation(null);
   }, []);
 
+  // Accept a DM request: set is_request=false so it moves to Primary
+  const acceptRequest = useCallback(async (conversationId: string) => {
+    const { error } = await supabase
+      .from('conversations')
+      .update({ is_request: false })
+      .eq('id', conversationId);
+    if (!error) {
+      setState(prev => ({
+        ...prev,
+        conversations: prev.conversations.map(c =>
+          c.id === conversationId ? { ...c, is_request: false } : c
+        ),
+      }));
+    }
+    return { error };
+  }, []);
+
+  // Deny a DM request: delete the conversation and all its messages
+  const denyRequest = useCallback(async (conversationId: string) => {
+    await supabase.from('messages').delete().eq('conversation_id', conversationId);
+    const { error } = await supabase.from('conversations').delete().eq('id', conversationId);
+    if (!error) {
+      setState(prev => ({
+        ...prev,
+        conversations: prev.conversations.filter(c => c.id !== conversationId),
+        selectedConversationId: prev.selectedConversationId === conversationId ? null : prev.selectedConversationId,
+      }));
+    }
+    return { error };
+  }, []);
+
   return {
     conversations,
     loading,
@@ -758,6 +811,8 @@ export function useCustomerConversations(customerId: string) {
     startConversationWith,
     sendMessageToConversation,
     clearPendingConversation,
+    acceptRequest,
+    denyRequest,
   };
 }
 

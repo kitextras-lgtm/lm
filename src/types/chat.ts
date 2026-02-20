@@ -21,6 +21,7 @@ export interface Conversation {
   unread_count_admin: number;
   unread_count_customer: number;
   is_pinned: boolean;
+  is_request?: boolean;
   is_ephemeral?: boolean;
   has_messages?: boolean;
   created_at: string;

@@ -8,6 +8,7 @@ import { DoorTransition } from '../components/DoorTransition';
 import { MessagesPage } from './MessagesPage';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 import { useCustomerConversations } from '../hooks/useChat';
+import { useUnreadCount } from '../hooks/useUnreadCount';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
@@ -1157,6 +1158,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+  const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
   
   // Use centralized theme from context
   const { theme: backgroundTheme, setTheme: setBackgroundTheme } = useTheme();
@@ -1183,22 +1185,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
   const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
-  
-  // Calculate unreadCount - check if user is customer_id or admin_id and use appropriate unread field
-  const unreadCountsString = JSON.stringify(conversations.map(c => ({
-    id: c.id,
-    unread: c.customer_id === currentUserId ? (c.unread_count_customer || 0) : (c.unread_count_admin || 0)
-  })));
-  const unreadCount = useMemo(() => {
-    if (!currentUserId || conversations.length === 0) return 0;
-    const total = conversations.reduce((sum, conv) => {
-      const unread = conv.customer_id === currentUserId
-        ? (conv.unread_count_customer || 0)
-        : (conv.unread_count_admin || 0);
-      return sum + unread;
-    }, 0);
-    return total;
-  }, [currentUserId, conversations, unreadCountsString]);
+  const unreadCount = useUnreadCount(currentUserId || '');
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
@@ -2189,7 +2176,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
   const renderConnectedAccounts = () => (
     <div ref={accountsRef} className="scroll-mt-6">
-      <SocialLinksForm appliedTheme={appliedTheme} userType="creator" />
+      <SocialLinksForm appliedTheme={appliedTheme} userType="creator" userId={currentUserId} />
     </div>
   );
 
@@ -2467,6 +2454,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     await saveNotificationPreference('email_new_features', newValue);
   };
 
+  const handleToggleMessageNotifications = () => {
+    setMessageNotifications(prev => !prev);
+  };
+
   const handleTogglePlatformUpdates = async () => {
     const newValue = !emailPlatformUpdates;
     setEmailPlatformUpdates(newValue);
@@ -2558,6 +2549,22 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     <div ref={notificationsRef} className="scroll-mt-6">
 
       <div className="space-y-3 lg:space-y-8">
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface</h3>
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Message Notifications</h4>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
+              </div>
+              <ToggleSwitch
+                isActive={messageNotifications}
+                onToggle={handleToggleMessageNotifications}
+                backgroundTheme={backgroundTheme}
+              />
+            </div>
+          </div>
+        </div>
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('notifications.email')}</h3>
 
@@ -3085,6 +3092,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         activeSection={activeSection}
         onNavigateToMessages={handleNavigateToMessages}
         theme={backgroundTheme}
+        enabled={messageNotifications}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />
@@ -3442,7 +3450,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('home.myAccountsDesc')}</p>
           </div>
 
-          <SocialLinksForm appliedTheme={appliedTheme} userType="creator" />
+          <SocialLinksForm appliedTheme={appliedTheme} userType="creator" userId={currentUserId} />
         </section>
 
         <section className="mb-8">
@@ -3451,7 +3459,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
-          <ReferralSection />
+          <ReferralSection userType="creator" userId={currentUserId} />
         </section>
               </>
             ) : homeSubPage === 'opportunities' ? (
@@ -4379,56 +4387,50 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                   {/* Talent Card 1 */}
                   <div 
-                    className="rounded-xl p-5 border transition-all duration-200 hover:brightness-105 cursor-pointer"
-                    style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.05)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.1)', borderColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.2)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)' }}
+                    className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Shawn Grows</h4>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-semibold text-base" style={{ color: '#000000' }}>Shawn Grows</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{t('talentCards.natureBlogger')}</p>
-                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
+                        <p className="text-sm font-medium mb-1" style={{ color: '#000000' }}>{t('talentCards.natureBlogger')}</p>
+                        <p className="text-xs mb-3">
                           <a 
                             href="https://youtube.com/c/example" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
-                            style={{ color: '#F8FAFC' }}
+                            style={{ color: '#64748B' }}
                           >
                             youtube.com/c/example
                           </a>
                         </p>
-                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 California, USA</p>
+                        <p className="text-xs mb-3" style={{ color: '#000000' }}>📍 California, USA</p>
                         
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           {[t('talentCards.nature'), 'YouTube', 'TikTok', 'Instagram'].map((skill, i) => (
-                            <div 
+                            <span 
                               key={i}
-                              className="px-3 py-1 rounded-lg border"
-                              style={{ 
-                                backgroundColor: 'var(--bg-elevated)', 
-                                borderColor: 'var(--border-subtle)',
-                                color: '#CBD5E1'
-                              }}
-                            >
-                              <span className="text-xs font-medium">{skill}</span>
-                            </div>
+                              className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              style={{ backgroundColor: '#F1F5F9', color: '#000000' }}
+                            >{skill}</span>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
+                        <p className="text-sm line-clamp-2" style={{ color: '#000000' }}>
                           {t('talentCards.natureBloggerDesc')}
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
-                          <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:bg-slate-100" style={{ borderColor: 'rgba(0,0,0,0.15)', backgroundColor: '#F8FAFC' }}>
+                          <svg className="w-4 h-4" style={{ color: '#475569' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </button>
-                        <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:opacity-90" style={{ backgroundColor: '#0F172A', color: '#FFFFFF' }}>
                           {t('talent.seeProfile')}
                         </button>
                       </div>
@@ -4437,56 +4439,50 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                   {/* Talent Card 2 */}
                   <div 
-                    className="rounded-xl p-5 border transition-all duration-200 hover:brightness-105 cursor-pointer"
-                    style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.05)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.1)', borderColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.2)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)' }}
+                    className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Sarah K.</h4>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-semibold text-base" style={{ color: '#000000' }}>Sarah K.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{t('talentCards.creativeDesigner')}</p>
-                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
+                        <p className="text-sm font-medium mb-1" style={{ color: '#000000' }}>{t('talentCards.creativeDesigner')}</p>
+                        <p className="text-xs mb-3">
                           <a 
                             href="https://youtube.com/c/example" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
-                            style={{ color: '#F8FAFC' }}
+                            style={{ color: '#64748B' }}
                           >
                             youtube.com/c/example
                           </a>
                         </p>
-                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 London, UK</p>
+                        <p className="text-xs mb-3" style={{ color: '#000000' }}>📍 London, UK</p>
                         
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           {[t('talentCards.design'), t('talentCards.branding'), t('talentCards.uiux'), t('talentCards.figma')].map((skill, i) => (
-                            <div 
+                            <span 
                               key={i}
-                              className="px-3 py-1 rounded-lg border"
-                              style={{ 
-                                backgroundColor: 'var(--bg-elevated)', 
-                                borderColor: 'var(--border-subtle)',
-                                color: '#CBD5E1'
-                              }}
-                            >
-                              <span className="text-xs font-medium">{skill}</span>
-                            </div>
+                              className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              style={{ backgroundColor: '#F1F5F9', color: '#000000' }}
+                            >{skill}</span>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
+                        <p className="text-sm line-clamp-2" style={{ color: '#000000' }}>
                           {t('talentCards.creativeDesignerDesc')}
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
-                          <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:bg-slate-100" style={{ borderColor: 'rgba(0,0,0,0.15)', backgroundColor: '#F8FAFC' }}>
+                          <svg className="w-4 h-4" style={{ color: '#475569' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </button>
-                        <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:opacity-90" style={{ backgroundColor: '#0F172A', color: '#FFFFFF' }}>
                           {t('talent.seeProfile')}
                         </button>
                       </div>
@@ -4495,56 +4491,50 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                   {/* Talent Card 3 */}
                   <div 
-                    className="rounded-xl p-5 border transition-all duration-200 hover:brightness-105 cursor-pointer"
-                    style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.05)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.1)', borderColor: backgroundTheme === 'light' ? 'rgba(99, 102, 241, 0.2)' : backgroundTheme === 'grey' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)' }}
+                    className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Alex T.</h4>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-semibold text-base" style={{ color: '#000000' }}>Alex T.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{t('talentCards.musicProducer')}</p>
-                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>
+                        <p className="text-sm font-medium mb-1" style={{ color: '#000000' }}>{t('talentCards.musicProducer')}</p>
+                        <p className="text-xs mb-3">
                           <a 
                             href="https://youtube.com/c/example" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
-                            style={{ color: '#F8FAFC' }}
+                            style={{ color: '#64748B' }}
                           >
                             youtube.com/c/example
                           </a>
                         </p>
-                        <p className="text-xs mb-3" style={{ color: '#F8FAFC' }}>📍 Berlin, Germany</p>
+                        <p className="text-xs mb-3" style={{ color: '#000000' }}>📍 Berlin, Germany</p>
                         
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           {[t('explore.music'), t('talentCards.audio'), t('talentCards.production'), t('talentCards.mixing')].map((skill, i) => (
-                            <div 
+                            <span 
                               key={i}
-                              className="px-3 py-1 rounded-lg border"
-                              style={{ 
-                                backgroundColor: 'var(--bg-elevated)', 
-                                borderColor: 'var(--border-subtle)',
-                                color: '#CBD5E1'
-                              }}
-                            >
-                              <span className="text-xs font-medium">{skill}</span>
-                            </div>
+                              className="px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              style={{ backgroundColor: '#F1F5F9', color: '#000000' }}
+                            >{skill}</span>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: '#F8FAFC' }}>
+                        <p className="text-sm line-clamp-2" style={{ color: '#000000' }}>
                           {t('talentCards.musicProducerDesc')}
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)' }}>
-                          <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:bg-slate-100" style={{ borderColor: 'rgba(0,0,0,0.15)', backgroundColor: '#F8FAFC' }}>
+                          <svg className="w-4 h-4" style={{ color: '#475569' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </button>
-                        <button className="flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all duration-200 hover:bg-white/5" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:opacity-90" style={{ backgroundColor: '#0F172A', color: '#FFFFFF' }}>
                           {t('talent.seeProfile')}
                         </button>
                       </div>

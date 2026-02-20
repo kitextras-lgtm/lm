@@ -72,7 +72,7 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
             <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
               {normalizedUserType === 'artist' ? t('accountTypes.artist') : normalizedUserType === 'creator' ? t('accountTypes.creator') : normalizedUserType === 'freelancer' ? t('accountTypes.freelancer') : normalizedUserType === 'brand' || normalizedUserType === 'business' ? t('accountTypes.brand') : t('accountType.unknown')}
             </p>
-            <p className="text-sm" style={{ color: '#CBD5E1' }}>
+            <p className="text-sm" style={{ color: '#F8FAFC' }}>
               {normalizedUserType === 'artist' && t('accountType.artistDesc')}
               {normalizedUserType === 'creator' && t('accountType.creatorDesc')}
               {normalizedUserType === 'freelancer' && t('accountType.freelancerDesc')}
@@ -83,26 +83,25 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
       </div>
 
       {/* Two Column Layout for Account Status and Policy Warnings */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Account Status */}
-        <div className="p-6 rounded-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-          <div className="flex items-start justify-between mb-6">
-            <h3 className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Account Status</h3>
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" style={{ color: '#64748B' }}>
+        <div className="flex items-center gap-4 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#22C55E15' }}>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" style={{ color: '#22C55E' }}>
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" strokeWidth="2" fill="none"/>
               <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
           <div>
-            <p className="text-5xl font-bold mb-2" style={{ color: '#F8FAFC' }}>Healthy</p>
-            <p className="text-sm" style={{ color: '#94A3B8' }}>No policy violations</p>
+            <p className="text-sm font-medium mb-0.5" style={{ color: '#94A3B8' }}>Account Status</p>
+            <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Healthy</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>No policy violations</p>
           </div>
         </div>
 
         {/* Policy Warnings */}
-        <div className="p-6 rounded-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-          <div className="flex items-start justify-between mb-6">
-            <h3 className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Policy Warnings</h3>
+        <div className="flex items-center gap-4 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" style={{ color: '#64748B' }}>
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="currentColor" strokeWidth="2" fill="none"/>
               <path d="M12 9V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -110,8 +109,9 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
             </svg>
           </div>
           <div>
-            <p className="text-5xl font-bold mb-2" style={{ color: '#F8FAFC' }}>0</p>
-            <p className="text-sm" style={{ color: '#94A3B8' }}>Compliant with Terms of Service</p>
+            <p className="text-sm font-medium mb-0.5" style={{ color: '#94A3B8' }}>Policy Warnings</p>
+            <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>0 warnings</p>
+            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>Compliant with Terms of Service</p>
           </div>
         </div>
       </div>

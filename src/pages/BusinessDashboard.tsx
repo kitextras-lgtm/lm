@@ -14,6 +14,7 @@ import { CreditCardIcon } from '../components/CreditCardIcon';
 import { BellIcon } from '../components/BellIcon';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 import { useCustomerConversations } from '../hooks/useChat';
+import { useUnreadCount } from '../hooks/useUnreadCount';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
@@ -826,6 +827,7 @@ export function BusinessDashboard() {
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+  const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
   
   // Use centralized theme from context
   const { theme: backgroundTheme, setTheme: setBackgroundTheme } = useTheme();
@@ -852,23 +854,7 @@ export function BusinessDashboard() {
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
   const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
-  
-  // Calculate unreadCount - check if user is customer_id or admin_id and use appropriate unread field
-  const unreadCountsString = JSON.stringify(conversations.map(c => ({
-    id: c.id,
-    unread: c.customer_id === currentUserId ? (c.unread_count_customer || 0) : (c.unread_count_admin || 0)
-  })));
-  const unreadCount = useMemo(() => {
-    if (!currentUserId || conversations.length === 0) return 0;
-    const total = conversations.reduce((sum, conv) => {
-      // Use the correct unread count based on which side of the conversation the user is on
-      const unread = conv.customer_id === currentUserId
-        ? (conv.unread_count_customer || 0)
-        : (conv.unread_count_admin || 0);
-      return sum + unread;
-    }, 0);
-    return total;
-  }, [currentUserId, conversations, unreadCountsString]);
+  const unreadCount = useUnreadCount(currentUserId || '');
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
@@ -1745,7 +1731,7 @@ export function BusinessDashboard() {
 
   const renderConnectedAccounts = () => (
     <div ref={accountsRef} className="scroll-mt-6">
-      <SocialLinksForm appliedTheme={appliedTheme} userType="business" />
+      <SocialLinksForm appliedTheme={appliedTheme} userType="business" userId={currentUserId} />
     </div>
   );
 
@@ -2024,6 +2010,10 @@ export function BusinessDashboard() {
     await saveNotificationPreference('email_new_features', newValue);
   };
 
+  const handleToggleMessageNotifications = () => {
+    setMessageNotifications(prev => !prev);
+  };
+
   const handleTogglePlatformUpdates = async () => {
     const newValue = !emailPlatformUpdates;
     setEmailPlatformUpdates(newValue);
@@ -2115,6 +2105,22 @@ export function BusinessDashboard() {
     <div ref={notificationsRef} className="scroll-mt-6">
 
       <div className="space-y-3 lg:space-y-8">
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface</h3>
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Message Notifications</h4>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
+              </div>
+              <ToggleSwitch
+                isActive={messageNotifications}
+                onToggle={handleToggleMessageNotifications}
+                backgroundTheme={backgroundTheme}
+              />
+            </div>
+          </div>
+        </div>
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('notifications.email')}</h3>
 
@@ -2618,6 +2624,7 @@ export function BusinessDashboard() {
         activeSection={activeSection}
         onNavigateToMessages={handleNavigateToMessages}
         theme={backgroundTheme}
+        enabled={messageNotifications}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />
@@ -2841,7 +2848,7 @@ export function BusinessDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.myAccountsDesc')}</p>
           </div>
 
-          <SocialLinksForm appliedTheme={appliedTheme} userType="business" />
+          <SocialLinksForm appliedTheme={appliedTheme} userType="business" userId={currentUserId} />
         </section>
 
         <section className="mb-8">
@@ -2850,7 +2857,7 @@ export function BusinessDashboard() {
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
-          <ReferralSection />
+          <ReferralSection userType="business" userId={currentUserId} />
         </section>
           </div>
         )}

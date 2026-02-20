@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { X, User, Link2, CreditCard, Bell, Search, CheckCircle, XCircle, ExternalLink, Loader2, ShieldCheck, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { useAdmin } from '../hooks/useAdmin';
@@ -9,6 +9,7 @@ import { AdminMessagesPage } from './AdminMessagesPage';
 import { getAdminId } from '../hooks/useChat';
 import { AnnouncementSender } from '../components/AnnouncementSender';
 import { MessageToast } from '../components/MessageToast';
+import { useAdminUnreadCount } from '../hooks/useAdminUnreadCount';
 import { ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
@@ -61,11 +62,29 @@ export function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [userDetailSection, setUserDetailSection] = useState<'personal' | 'connected' | 'payment' | 'notifications'>('personal');
   const [adminProfileId, setAdminProfileId] = useState<string | null>(null);
+  const adminUnreadCount = useAdminUnreadCount();
   const [userSearch, setUserSearch] = useState('');
   const [applications, setApplications] = useState<Application[]>([]);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [appStatusFilter, setAppStatusFilter] = useState<'pending' | 'approved' | 'denied'>('pending');
   const [actioningId, setActioningId] = useState<string | null>(null);
+
+  // Whitelist state
+  interface WhitelistedChannel {
+    id: string;
+    url_pattern: string;
+    platform: string | null;
+    note: string | null;
+    created_at: string;
+  }
+  const [whitelistedChannels, setWhitelistedChannels] = useState<WhitelistedChannel[]>([]);
+  const [whitelistLoading, setWhitelistLoading] = useState(false);
+  const [whitelistInput, setWhitelistInput] = useState('');
+  const [whitelistPlatform, setWhitelistPlatform] = useState('');
+  const [whitelistNote, setWhitelistNote] = useState('');
+  const [whitelistAdding, setWhitelistAdding] = useState(false);
+  const [whitelistError, setWhitelistError] = useState<string | null>(null);
+  const [removingWhitelistId, setRemovingWhitelistId] = useState<string | null>(null);
   const navigate = useNavigate();
   const fetchingUsersRef = useRef(false);
   const lastFetchedSectionRef = useRef<string | null>(null);
@@ -91,7 +110,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     const fetchAdminProfileId = async () => {
-      if (admin && (activeSection === 'messages' || activeSection === 'alerts')) {
+      if (admin && !adminProfileId) {
         const profileId = await getAdminId();
         if (profileId) {
           setAdminProfileId(profileId);
@@ -99,7 +118,63 @@ export function AdminDashboard() {
       }
     };
     fetchAdminProfileId();
-  }, [admin, activeSection]);
+  }, [admin]);
+
+  const fetchWhitelistedChannels = useCallback(async () => {
+    setWhitelistLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('whitelisted_channels')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error) setWhitelistedChannels(data || []);
+    } catch (e) {
+      console.error('Error fetching whitelisted channels:', e);
+    } finally {
+      setWhitelistLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeSection === 'home') {
+      fetchWhitelistedChannels();
+    }
+  }, [activeSection, fetchWhitelistedChannels]);
+
+  const handleAddWhitelist = async () => {
+    const pattern = whitelistInput.trim();
+    if (!pattern) return;
+    setWhitelistAdding(true);
+    setWhitelistError(null);
+    try {
+      const { data, error } = await supabase
+        .from('whitelisted_channels')
+        .insert({ url_pattern: pattern, platform: whitelistPlatform.trim() || null, note: whitelistNote.trim() || null })
+        .select()
+        .single();
+      if (error) throw error;
+      setWhitelistedChannels(prev => [data, ...prev]);
+      setWhitelistInput('');
+      setWhitelistPlatform('');
+      setWhitelistNote('');
+    } catch (e: any) {
+      setWhitelistError(e?.message?.includes('unique') ? 'This pattern is already whitelisted.' : 'Failed to add. Try again.');
+    } finally {
+      setWhitelistAdding(false);
+    }
+  };
+
+  const handleRemoveWhitelist = async (id: string) => {
+    setRemovingWhitelistId(id);
+    try {
+      await supabase.from('whitelisted_channels').delete().eq('id', id);
+      setWhitelistedChannels(prev => prev.filter(c => c.id !== id));
+    } catch (e) {
+      console.error('Error removing whitelisted channel:', e);
+    } finally {
+      setRemovingWhitelistId(null);
+    }
+  };
 
   const fetchApplications = useCallback(async () => {
     setApplicationsLoading(true);
@@ -289,18 +364,17 @@ export function AdminDashboard() {
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         userProfile={null}
-        unreadCount={0}
+        unreadCount={adminUnreadCount}
         cachedProfilePic={ELEVATE_ADMIN_AVATAR_URL}
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
+        permanentlyCollapsed={false}
         userType="admin"
       />
-
-      {/* Mobile Bottom Navigation */}
       <MobileBottomNav
         activeSection={activeSection}
         setActiveSection={setActiveSection}
-        unreadCount={0}
+        unreadCount={adminUnreadCount}
         profilePicture={ELEVATE_ADMIN_AVATAR_URL}
         backgroundTheme={theme}
         userType="admin"
@@ -337,7 +411,7 @@ export function AdminDashboard() {
                   <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2" style={{ color: tokens.text.primary }}>Welcome back, Super Admin</h1>
                   <p className="text-base" style={{ color: tokens.text.secondary }}>Manage your platform from here</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                   <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                     <h3 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>Applications</h3>
                     <p className="text-sm" style={{ color: tokens.text.secondary }}>Review pending creator applications</p>
@@ -350,6 +424,98 @@ export function AdminDashboard() {
                     <h3 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>Alerts</h3>
                     <p className="text-sm" style={{ color: tokens.text.secondary }}>Send announcements to users</p>
                   </div>
+                </div>
+
+                {/* Channel Link Whitelist */}
+                <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="flex items-center gap-3 mb-1">
+                    <ShieldCheck className="w-5 h-5" style={{ color: '#60a5fa' }} />
+                    <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>Channel Link Whitelist</h2>
+                  </div>
+                  <p className="text-sm mb-6" style={{ color: tokens.text.secondary }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
+
+                  {/* Add form */}
+                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.muted }}>Add Pattern</p>
+                    <div className="flex flex-col sm:flex-row gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={whitelistInput}
+                        onChange={e => { setWhitelistInput(e.target.value); setWhitelistError(null); }}
+                        onKeyDown={e => e.key === 'Enter' && handleAddWhitelist()}
+                        placeholder="e.g. youtube.com/c/ or @handle"
+                        className="flex-1 h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                      />
+                      <input
+                        type="text"
+                        value={whitelistPlatform}
+                        onChange={e => setWhitelistPlatform(e.target.value)}
+                        placeholder="Platform (optional)"
+                        className="w-full sm:w-36 h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                      />
+                      <input
+                        type="text"
+                        value={whitelistNote}
+                        onChange={e => setWhitelistNote(e.target.value)}
+                        placeholder="Note (optional)"
+                        className="w-full sm:w-40 h-9 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                      />
+                      <button
+                        onClick={handleAddWhitelist}
+                        disabled={whitelistAdding || !whitelistInput.trim()}
+                        className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex-shrink-0"
+                        style={{ backgroundColor: '#2563eb', color: '#fff' }}
+                      >
+                        {whitelistAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                        Add
+                      </button>
+                    </div>
+                    {whitelistError && <p className="text-xs mt-1" style={{ color: '#ef4444' }}>{whitelistError}</p>}
+                  </div>
+
+                  {/* List */}
+                  {whitelistLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <AnimatedBarsLoader text="Loading..." />
+                    </div>
+                  ) : whitelistedChannels.length === 0 ? (
+                    <div className="text-center py-8">
+                      <ShieldCheck className="w-10 h-10 mx-auto mb-3" style={{ color: tokens.text.muted }} />
+                      <p className="text-sm" style={{ color: tokens.text.muted }}>No whitelisted patterns yet. Add one above.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {whitelistedChannels.map(ch => (
+                        <div
+                          key={ch.id}
+                          className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg"
+                          style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Link2 className="w-4 h-4 flex-shrink-0" style={{ color: '#60a5fa' }} />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate" style={{ color: tokens.text.primary }}>{ch.url_pattern}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                {ch.platform && <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>{ch.platform}</span>}
+                                {ch.note && <span className="text-xs truncate" style={{ color: tokens.text.muted }}>{ch.note}</span>}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRemoveWhitelist(ch.id)}
+                            disabled={removingWhitelistId === ch.id}
+                            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
+                            style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                          >
+                            {removingWhitelistId === ch.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

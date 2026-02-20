@@ -111,11 +111,17 @@ export function UserProfileProvider({ children }: UserProfileProviderProps) {
   const initializeProfile = useCallback(async () => {
     try {
       // Get user ID from auth or localStorage
-      const { data: { user } } = await supabase.auth.getUser();
+      let authUser: { id: string } | null = null;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        authUser = user;
+      } catch (_) {
+        // Auth session missing — fall through to localStorage
+      }
       const verifiedUserId = localStorage.getItem('verifiedUserId');
       const verifiedEmail = localStorage.getItem('verifiedEmail');
       
-      let uid = user?.id || verifiedUserId;
+      let uid = authUser?.id || verifiedUserId;
 
       // If we have email but no userId, try to find user by email
       if (!uid && verifiedEmail) {
