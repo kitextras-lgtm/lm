@@ -76,7 +76,7 @@ export default function FreelancerPortfolio() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             8/10
@@ -87,7 +87,7 @@ export default function FreelancerPortfolio() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '80%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '80%' }}
             />
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function FreelancerPortfolio() {
           className="text-lg mb-12"
           style={{
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            color: '#94A3B8',
+            color: 'var(--text-primary)',
           }}
         >
           Add your best work - images, documents, or links to external sites.
@@ -155,7 +155,7 @@ export default function FreelancerPortfolio() {
                     className="text-base mb-3"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Brief description of the project, the challenge, and the solution. This is where you can showcase your work and explain what makes it special.
@@ -166,7 +166,7 @@ export default function FreelancerPortfolio() {
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         backgroundColor: 'rgba(148, 163, 184, 0.2)',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Web Design
@@ -176,7 +176,7 @@ export default function FreelancerPortfolio() {
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         backgroundColor: 'rgba(148, 163, 184, 0.2)',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       2024
@@ -286,7 +286,7 @@ export default function FreelancerPortfolio() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Title *
@@ -311,7 +311,7 @@ export default function FreelancerPortfolio() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Description
@@ -336,7 +336,7 @@ export default function FreelancerPortfolio() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Type
@@ -363,7 +363,7 @@ export default function FreelancerPortfolio() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   {editingItem.type === 'link' ? 'URL' : 'File Upload'}
@@ -395,7 +395,7 @@ export default function FreelancerPortfolio() {
                       className="text-sm"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Click to upload or drag and drop
@@ -404,7 +404,7 @@ export default function FreelancerPortfolio() {
                       className="text-xs"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#64748B',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {editingItem.type === 'image' ? 'PNG, JPG, GIF up to 10MB' : 'PDF, DOC, DOCX up to 10MB'}

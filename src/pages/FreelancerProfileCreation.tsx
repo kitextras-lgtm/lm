@@ -25,7 +25,7 @@ export function FreelancerProfileCreation() {
               className="text-sm mb-2"
               style={{
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                color: '#94A3B8',
+                color: 'var(--text-primary)',
               }}
             >
               1/10
@@ -37,7 +37,7 @@ export function FreelancerProfileCreation() {
               <div
                 className="h-full rounded-full transition-all duration-300"
                 style={{
-                  backgroundColor: '#94A3B8',
+                  backgroundColor: 'var(--text-primary)',
                   width: '10%',
                 }}
               />
@@ -79,11 +79,11 @@ export function FreelancerProfileCreation() {
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   }}
                 >
-                  <Linkedin className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                  <Linkedin className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                   <span
                     className="font-medium"
                     style={{
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                       fontSize: '16px',
                     }}
                   >
@@ -101,11 +101,11 @@ export function FreelancerProfileCreation() {
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   }}
                 >
-                  <Upload className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                  <Upload className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                   <span
                     className="font-medium"
                     style={{
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                       fontSize: '16px',
                     }}
                   >

@@ -316,7 +316,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
             <ConversationListSkeleton count={4} backgroundTheme={theme} />
           ) : filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f0f13' }}>
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                 <MessageSquare className="w-8 h-8" style={{ color: tokens.text.muted }} />
               </div>
               <p className="text-sm font-medium" style={{ color: tokens.text.secondary }}>No conversations found</p>

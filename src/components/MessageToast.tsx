@@ -24,21 +24,32 @@ interface MessageToastProps {
 export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark', enabled = true }: MessageToastProps) {
   const t = themeTokens[theme];
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [dismissingIds, setDismissingIds] = useState<Set<string>>(new Set());
   const dismissTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const exitTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const seenMessageIds = useRef<Set<string>>(new Set());
   // Use a ref so the realtime callback always reads the latest value (avoids stale closure)
   const enabledRef = useRef(enabled);
   useEffect(() => { enabledRef.current = enabled; }, [enabled]);
   // Also clear any visible toasts immediately when disabled
-  useEffect(() => { if (!enabled) setToasts([]); }, [enabled]);
+  useEffect(() => { if (!enabled) { setToasts([]); setDismissingIds(new Set()); } }, [enabled]);
 
   const dismissToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    // Clear auto-dismiss timer
     const timer = dismissTimers.current.get(id);
     if (timer) {
       clearTimeout(timer);
       dismissTimers.current.delete(id);
     }
+    // Mark as dismissing to trigger exit animation
+    setDismissingIds(prev => new Set(prev).add(id));
+    // Remove from DOM after animation completes (350ms)
+    const exitTimer = setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+      setDismissingIds(prev => { const s = new Set(prev); s.delete(id); return s; });
+      exitTimers.current.delete(id);
+    }, 350);
+    exitTimers.current.set(id, exitTimer);
   }, []);
 
   const scheduleAutoDismiss = useCallback((id: string) => {
@@ -151,6 +162,7 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
   useEffect(() => {
     return () => {
       dismissTimers.current.forEach(t => clearTimeout(t));
+      exitTimers.current.forEach(t => clearTimeout(t));
     };
   }, []);
 
@@ -161,12 +173,20 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
     ? 'rgba(15, 15, 19, 0.95)'
     : theme === 'grey'
     ? 'rgba(30, 30, 36, 0.95)'
+    : theme === 'rose'
+    ? 'rgba(28, 10, 22, 0.95)'
+    : theme === 'white'
+    ? 'rgba(255, 255, 255, 0.97)'
     : 'rgba(20, 30, 50, 0.95)';
 
   const toastBorder = theme === 'dark'
     ? 'rgba(255,255,255,0.08)'
     : theme === 'grey'
     ? 'rgba(255,255,255,0.1)'
+    : theme === 'rose'
+    ? 'rgba(180,80,140,0.25)'
+    : theme === 'white'
+    ? 'rgba(15,23,42,0.15)'
     : 'rgba(255,255,255,0.15)';
 
   const avatarFallbackBg = t.bg.active;
@@ -174,6 +194,10 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
     ? 'rgba(255,255,255,0.06)'
     : theme === 'grey'
     ? 'rgba(255,255,255,0.08)'
+    : theme === 'rose'
+    ? 'rgba(255,255,255,0.08)'
+    : theme === 'white'
+    ? 'rgba(15,23,42,0.08)'
     : 'rgba(255,255,255,0.1)';
 
   return (
@@ -186,9 +210,11 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
           key={toast.id}
           className="pointer-events-auto"
           style={{
-            animation: 'messageToastSlideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+            animation: dismissingIds.has(toast.id)
+              ? 'messageToastSlideUp 0.35s cubic-bezier(0.4, 0, 1, 1) forwards'
+              : 'messageToastSlideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
             opacity: 0,
-            animationDelay: `${index * 60}ms`,
+            animationDelay: dismissingIds.has(toast.id) ? '0ms' : `${index * 60}ms`,
             animationFillMode: 'forwards',
           }}
         >
@@ -256,6 +282,16 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
           to {
             opacity: 1;
             transform: translateY(0) scale(1);
+          }
+        }
+        @keyframes messageToastSlideUp {
+          from {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
           }
         }
       `}</style>

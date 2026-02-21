@@ -349,13 +349,13 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               className="px-6 py-4 rounded-lg text-left flex items-center gap-3 transition-all duration-200 hover:brightness-95 cursor-pointer"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '2px solid #94A3B8',
+                border: '2px solid var(--border-subtle)',
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               }}
               onClick={handleChooseFile}
             >
-              <Upload className="w-5 h-5" style={{ color: '#94A3B8' }} />
-              <span className="font-medium" style={{ color: '#94A3B8', fontSize: '16px' }}>
+              <Upload className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+              <span className="font-medium" style={{ color: 'var(--text-primary)', fontSize: '16px' }}>
                 Upload your saved LinkedIn PDF
               </span>
             </div>
@@ -369,7 +369,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               className="rounded-lg px-6 py-5 flex items-center gap-3"
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}
             >
-              <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#94A3B8', borderTopColor: 'transparent' }} />
+              <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--text-primary)', borderTopColor: 'transparent' }} />
               <span
                 className="text-sm"
                 style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
@@ -388,7 +388,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}
             >
               <div className="flex items-center gap-3 mb-3">
-                <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+                <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
                 <span
                   className="text-sm truncate flex-1"
                   style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
@@ -397,7 +397,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
                 </span>
                 <span
                   className="text-xs flex-shrink-0"
-                  style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#94A3B8' }}
+                  style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'var(--text-primary)' }}
                 >
                   {uploadProgress}%
                 </span>
@@ -406,7 +406,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               <div className="h-1.5 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <div
                   className="h-full rounded-full transition-all duration-300"
-                  style={{ backgroundColor: '#94A3B8', width: `${uploadProgress}%` }}
+                  style={{ backgroundColor: 'var(--text-primary)', width: `${uploadProgress}%` }}
                 />
               </div>
             </div>
@@ -420,20 +420,20 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               className="rounded-lg px-6 py-4 flex items-center gap-3"
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}
             >
-              <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+              <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <span
                 className="text-sm truncate flex-1"
                 style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
               >
                 {selectedFile.name}
               </span>
-              <Check className="w-5 h-5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+              <Check className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <button
                 onClick={handleRemove}
                 className="flex-shrink-0 p-1 rounded transition-all duration-200"
-                style={{ color: '#94A3B8' }}
+                style={{ color: 'var(--text-primary)' }}
                 onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
               >
                 <Trash2 className="w-5 h-5" />
               </button>

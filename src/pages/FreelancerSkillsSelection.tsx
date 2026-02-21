@@ -139,7 +139,7 @@ export default function FreelancerSkillsSelection() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             3/10
@@ -151,7 +151,7 @@ export default function FreelancerSkillsSelection() {
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{
-                backgroundColor: '#94A3B8',
+                backgroundColor: 'var(--text-primary)',
                 width: '30%',
               }}
             />
@@ -250,7 +250,7 @@ export default function FreelancerSkillsSelection() {
             className="text-sm mt-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
               textAlign: 'right',
             }}
           >
@@ -294,7 +294,7 @@ export default function FreelancerSkillsSelection() {
                       height: '16px',
                     }}
                   >
-                    <X className="w-3 h-3" style={{ color: '#94A3B8' }} />
+                    <X className="w-3 h-3" style={{ color: 'var(--text-primary)' }} />
                   </button>
                 </div>
               ))}
@@ -309,7 +309,7 @@ export default function FreelancerSkillsSelection() {
               className="text-sm font-medium mb-3"
               style={{
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                color: '#94A3B8',
+                color: 'var(--text-primary)',
               }}
             >
               Suggested skills

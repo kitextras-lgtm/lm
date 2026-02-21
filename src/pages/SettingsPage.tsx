@@ -406,14 +406,14 @@ export function SettingsPage() {
           }}
           disabled={isLoading}
           className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: '#0f0f13', color: 'var(--text-primary)' }}
+          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
         >
           {isLoading ? 'Loading...' : 'Refresh Data'}
         </button>
       </div>
 
       {/* Debug panel - remove this after testing */}
-      <div className="mb-6 p-4 rounded-lg text-xs space-y-1" style={{ backgroundColor: '#0f0f13', color: '#94A3B8' }}>
+      <div className="mb-6 p-4 rounded-lg text-xs space-y-1" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
         <div className="font-bold mb-2 text-white">🔍 Debug Info:</div>
         <div><span className="font-semibold">userId:</span> {localStorage.getItem('verifiedUserId') || '❌ Not found'}</div>
         <div><span className="font-semibold">Email:</span> {localStorage.getItem('verifiedEmail') || '❌ Not found'}</div>
@@ -450,7 +450,7 @@ export function SettingsPage() {
       ) : (
         <div className="space-y-7">
         <div>
-          <label className="block text-sm font-medium mb-3" style={{ color: '#94A3B8' }}>Profile picture</label>
+          <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>Profile picture</label>
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-md">
               {profilePicturePreview ? (
@@ -472,7 +472,7 @@ export function SettingsPage() {
               )}
             </div>
             <label className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm cursor-pointer"
-              style={{ backgroundColor: '#0f0f13', color: 'var(--text-primary)' }}>
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
               <Camera className="w-4 h-4" />
               Replace picture
               <input
@@ -494,7 +494,7 @@ export function SettingsPage() {
 
         <div className="grid grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>First name</label>
+            <label className="block text-sm font-medium mb-2.5" style={{ color: 'var(--text-primary)' }}>First name</label>
             <div className="flex items-center gap-3">
               <input
                 type="text"
@@ -509,7 +509,7 @@ export function SettingsPage() {
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
                   color: 'var(--text-primary)',
-                  background: '#0f0f13',
+                  background: 'var(--bg-elevated)',
                   border: '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               />
@@ -517,7 +517,7 @@ export function SettingsPage() {
                 <button
                   onClick={() => setIsEditing(true)}
                   className="p-2.5 hover:brightness-110 transition-all rounded-lg"
-                  style={{ color: '#64748B' }}
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -528,7 +528,7 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>Last name</label>
+            <label className="block text-sm font-medium mb-2.5" style={{ color: 'var(--text-primary)' }}>Last name</label>
             <div className="flex items-center gap-3">
               <input
                 type="text"
@@ -543,7 +543,7 @@ export function SettingsPage() {
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
                   color: 'var(--text-primary)',
-                  background: '#0f0f13',
+                  background: 'var(--bg-elevated)',
                   border: '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               />
@@ -553,10 +553,10 @@ export function SettingsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>Username</label>
+          <label className="block text-sm font-medium mb-2.5" style={{ color: 'var(--text-primary)' }}>Username</label>
           <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center h-12 px-4 rounded-xl transition-all opacity-70" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <span style={{ color: '#64748B' }}>@</span>
+            <div className="flex-1 flex items-center h-12 px-4 rounded-xl transition-all opacity-70" style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
+              <span style={{ color: 'var(--text-primary)' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -569,16 +569,16 @@ export function SettingsPage() {
             </div>
             <div className="w-10 h-10"></div>
           </div>
-          <p className="text-xs mt-1.5" style={{ color: '#64748B' }}>
+          <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)' }}>
             Username cannot be changed after onboarding
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>Location</label>
+          <label className="block text-sm font-medium mb-2.5" style={{ color: 'var(--text-primary)' }}>Location</label>
           <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center h-12 px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <MapPin className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#64748B' }} />
+            <div className="flex-1 flex items-center h-12 px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
+              <MapPin className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -592,7 +592,7 @@ export function SettingsPage() {
                 style={{ color: 'var(--text-primary)' }}
               >
                 {COUNTRIES.map(country => (
-                  <option key={country} value={country} style={{ background: '#0f0f13' }}>{country}</option>
+                  <option key={country} value={country} style={{ background: 'var(--bg-elevated)' }}>{country}</option>
                 ))}
               </select>
             </div>
@@ -600,7 +600,7 @@ export function SettingsPage() {
               <button
                 onClick={() => setIsEditing(true)}
                 className="p-2.5 hover:brightness-110 transition-all rounded-lg"
-                style={{ color: '#64748B' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -611,10 +611,10 @@ export function SettingsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>Languages you post in</label>
+          <label className="block text-sm font-medium mb-2.5" style={{ color: 'var(--text-primary)' }}>Languages you post in</label>
           <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center h-12 px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: '#0f0f13', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
-              <Globe className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#64748B' }} />
+            <div className="flex-1 flex items-center h-12 px-4 rounded-xl focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(75, 85, 99, 0.2)' }}>
+              <Globe className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -628,7 +628,7 @@ export function SettingsPage() {
                 style={{ color: 'var(--text-primary)' }}
               >
                 {LANGUAGES.map(language => (
-                  <option key={language} value={language} style={{ background: '#0f0f13' }}>{language}</option>
+                  <option key={language} value={language} style={{ background: 'var(--bg-elevated)' }}>{language}</option>
                 ))}
               </select>
             </div>
@@ -636,7 +636,7 @@ export function SettingsPage() {
               <button
                 onClick={() => setIsEditing(true)}
                 className="p-2.5 hover:brightness-110 transition-all rounded-lg"
-                style={{ color: '#64748B' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -647,7 +647,7 @@ export function SettingsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2.5" style={{ color: '#94A3B8' }}>Email</label>
+          <label className="block text-sm font-medium mb-2.5" style={{ color: 'var(--text-primary)' }}>Email</label>
           <input
             type="email"
             value={formData.email}
@@ -655,11 +655,11 @@ export function SettingsPage() {
             className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none opacity-50"
             style={{
               color: 'var(--text-primary)',
-              background: '#0f0f13',
+              background: 'var(--bg-elevated)',
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
           />
-          <p className="text-xs mt-1.5" style={{ color: '#64748B' }}>
+          <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)' }}>
             Email cannot be changed
           </p>
         </div>
@@ -696,7 +696,7 @@ export function SettingsPage() {
                 }
               }}
               className="px-7 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: '#0f0f13', color: 'var(--text-primary)' }}
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
             >
               Cancel
             </button>
@@ -719,7 +719,7 @@ export function SettingsPage() {
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="text-center">
         <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h3>
-        <p className="text-sm" style={{ color: '#94A3B8' }}>{description}</p>
+        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{description}</p>
       </div>
     </div>
   );
@@ -732,7 +732,7 @@ export function SettingsPage() {
             <button
               onClick={handleBack}
               className="flex items-center gap-2 text-sm transition-colors hover:brightness-110"
-              style={{ color: '#94A3B8' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               <ArrowLeft className="w-4 h-4" />
               Back
@@ -771,7 +771,7 @@ export function SettingsPage() {
                   ? `${formData.firstName} ${formData.lastName}`.trim() 
                   : 'Your Name'}
               </h1>
-              <p className="text-base" style={{ color: '#64748B' }}>
+              <p className="text-base" style={{ color: 'var(--text-primary)' }}>
                 {formData.username ? `@${formData.username}` : ''} {formData.email}
               </p>
             </div>
@@ -787,7 +787,7 @@ export function SettingsPage() {
                       activeSection === 'personal' ? 'shadow-md' : 'hover:brightness-105'
                     }`}
                     style={{
-                      backgroundColor: activeSection === 'personal' ? '#0f0f13' : 'transparent',
+                      backgroundColor: activeSection === 'personal' ? 'var(--bg-elevated)' : 'transparent',
                       color: 'var(--text-primary)'
                     }}
                   >
@@ -799,7 +799,7 @@ export function SettingsPage() {
                       activeSection === 'accounts' ? 'shadow-md' : 'hover:brightness-105'
                     }`}
                     style={{
-                      backgroundColor: activeSection === 'accounts' ? '#0f0f13' : 'transparent',
+                      backgroundColor: activeSection === 'accounts' ? 'var(--bg-elevated)' : 'transparent',
                       color: 'var(--text-primary)'
                     }}
                   >
@@ -811,7 +811,7 @@ export function SettingsPage() {
                       activeSection === 'payout' ? 'shadow-md' : 'hover:brightness-105'
                     }`}
                     style={{
-                      backgroundColor: activeSection === 'payout' ? '#0f0f13' : 'transparent',
+                      backgroundColor: activeSection === 'payout' ? 'var(--bg-elevated)' : 'transparent',
                       color: 'var(--text-primary)'
                     }}
                   >
@@ -823,7 +823,7 @@ export function SettingsPage() {
                       activeSection === 'notifications' ? 'shadow-md' : 'hover:brightness-105'
                     }`}
                     style={{
-                      backgroundColor: activeSection === 'notifications' ? '#0f0f13' : 'transparent',
+                      backgroundColor: activeSection === 'notifications' ? 'var(--bg-elevated)' : 'transparent',
                       color: 'var(--text-primary)'
                     }}
                   >
@@ -835,7 +835,7 @@ export function SettingsPage() {
                       activeSection === 'close' ? 'shadow-md' : 'hover:brightness-105'
                     }`}
                     style={{
-                      backgroundColor: activeSection === 'close' ? '#0f0f13' : 'transparent',
+                      backgroundColor: activeSection === 'close' ? 'var(--bg-elevated)' : 'transparent',
                       color: 'var(--text-primary)'
                     }}
                   >

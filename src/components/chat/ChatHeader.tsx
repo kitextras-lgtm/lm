@@ -67,7 +67,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
         <button
           onClick={onClose}
           className="absolute top-3 right-3 p-1.5 rounded-full transition-colors hover:bg-white/10 z-10"
-          style={{ color: '#94A3B8' }}
+          style={{ color: 'var(--text-primary)' }}
         >
           <X className="w-4 h-4" />
         </button>
@@ -82,12 +82,12 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
           />
           <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
           {user.username && (
-            <p className="text-sm mt-0.5" style={{ color: '#94A3B8' }}>@{user.username}</p>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)' }}>@{user.username}</p>
           )}
           {user.user_type && (
             <span
               className="mt-2 px-3 py-0.5 rounded-full text-xs font-medium capitalize"
-              style={{ backgroundColor: 'rgba(255,255,255,0.07)', color: '#94A3B8' }}
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
             >
               {user.user_type}
             </span>
@@ -97,13 +97,13 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
         {/* Social links section */}
         {!user.is_admin && (
           <div className="px-5 py-4">
-            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#64748B' }}>Social Links</p>
+            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-primary)' }}>Social Links</p>
             {loadingLinks ? (
               <div className="flex justify-center py-4">
                 <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.7)' }} />
               </div>
             ) : links.length === 0 ? (
-              <p className="text-sm text-center py-3" style={{ color: '#64748B' }}>No social links added</p>
+              <p className="text-sm text-center py-3" style={{ color: 'var(--text-primary)' }}>No social links added</p>
             ) : (
               <div className="space-y-1">
                 {links.map(link => {
@@ -117,7 +117,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                       className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${rowHover}`}
                     >
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
-                        <Icon className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                        <Icon className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -126,11 +126,11 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                           </span>
                           {link.verified && <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: '#22C55E' }} />}
                         </div>
-                        <span className="text-xs truncate block" style={{ color: '#64748B' }}>
+                        <span className="text-xs truncate block" style={{ color: 'var(--text-primary)' }}>
                           {link.url.replace(/^https?:\/\//i, '')}
                         </span>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#64748B' }} />
+                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--text-primary)' }} />
                     </a>
                   );
                 })}
@@ -495,7 +495,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
             <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }} data-component-name="ChatHeader">{user.name}</h2>
           </button>
           {isTyping && (
-            <p className="text-[10px] lg:text-xs" style={{ color: '#94A3B8' }}>typing...</p>
+            <p className="text-[10px] lg:text-xs" style={{ color: 'var(--text-primary)' }}>typing...</p>
           )}
         </div>
       </div>

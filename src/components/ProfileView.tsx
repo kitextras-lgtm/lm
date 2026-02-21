@@ -232,15 +232,15 @@ export function ProfileView({
                 ? `${userProfile.first_name} ${userProfile.last_name}`
                 : t('profile.yourProfile')}
             </h1>
-            <p className="text-sm" style={{ color: '#CBD5E1' }}>0 {t('profile.posts')}</p>
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>0 {t('profile.posts')}</p>
           </div>
         </div>
       </div>
 
       {/* Banner */}
       <div 
-        className="relative h-48 cursor-pointer group border"
-        style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f' }}
+        className="relative h-48 cursor-pointer group"
+        style={{ backgroundColor: 'transparent' }}
         onMouseEnter={() => setBannerHovered(true)}
         onMouseLeave={() => setBannerHovered(false)}
         onClick={handleBannerClick}
@@ -362,7 +362,7 @@ export function ProfileView({
               onClick={() => setActiveTab(tab.id as any)}
               className="flex-1 py-4 text-center hover:bg-white/5 transition-colors relative"
             >
-              <span style={{ color: activeTab === tab.id ? '#F8FAFC' : '#CBD5E1', fontWeight: activeTab === tab.id ? 600 : 400 }}>
+              <span style={{ color: 'var(--text-primary)', fontWeight: activeTab === tab.id ? 600 : 400, opacity: activeTab === tab.id ? 1 : 0.6 }}>
                 {tab.label}
               </span>
               {activeTab === tab.id && (
@@ -377,14 +377,14 @@ export function ProfileView({
       <div className="p-8">
         {activeTab === 'overview' ? (
           <div style={{ color: 'var(--text-primary)' }}>
-            <p className="text-center py-8" style={{ color: '#CBD5E1' }}>
+            <p className="text-center py-8" style={{ color: 'var(--text-primary)' }}>
               {t('profile.noContent')}
             </p>
           </div>
         ) : (
           <div style={{ color: 'var(--text-primary)' }}>
             <h3 className="font-semibold text-lg mb-4">{t('profile.reviews')}</h3>
-            <div className="text-center py-8" style={{ color: '#CBD5E1' }}>
+            <div className="text-center py-8" style={{ color: 'var(--text-primary)' }}>
               <p>{t('profile.noReviews')}</p>
             </div>
           </div>

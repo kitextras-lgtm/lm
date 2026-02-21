@@ -28,6 +28,12 @@
   --border-default: rgba(75, 85, 99, 0.2);
 }
 
+/* ── White theme: override border variables to visible dark values ── */
+[data-theme="white"] {
+  --border-subtle: #B8C4CE !important;
+  --border-default: #9AAAB4 !important;
+}
+
 /* Theme-aware utility classes */
 .bg-theme-primary { background-color: var(--bg-primary); }
 .bg-theme-secondary { background-color: var(--bg-secondary); }
@@ -82,6 +88,277 @@
 }
 [data-theme="white"] .border-white\/20 {
   border-color: rgba(15, 23, 42, 0.18) !important;
+}
+
+/* ── Input / textarea focus: strong dark ring ── */
+[data-theme="white"] input:focus,
+[data-theme="white"] textarea:focus,
+[data-theme="white"] select:focus {
+  border-color: #0F172A !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.25) !important;
+  outline: none !important;
+}
+
+/* ── Override JS-set white border on focus (SocialLinksForm etc.) ── */
+[data-theme="white"] input[style*="border-color: rgb(255, 255, 255)"],
+[data-theme="white"] input[style*="border-color: white"],
+[data-theme="white"] textarea[style*="border-color: rgb(255, 255, 255)"],
+[data-theme="white"] textarea[style*="border-color: white"] {
+  border-color: #0F172A !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.25) !important;
+}
+
+/* ── Placeholder text: too light on white bg ── */
+[data-theme="white"] input::placeholder,
+[data-theme="white"] textarea::placeholder {
+  color: #94A3B8 !important;
+  opacity: 1 !important;
+}
+
+/* ── Hardcoded #CBD5E1 / rgb(203,213,225) secondary text → readable dark ── */
+[data-theme="white"] [style*="color: rgb(203, 213, 225)"],
+[data-theme="white"] [style*="color:#CBD5E1"],
+[data-theme="white"] [style*="color: #CBD5E1"] {
+  color: #536471 !important;
+}
+
+/* ── Hardcoded #94A3B8 muted text → readable on white (exclude dark theme-card containers) ── */
+[data-theme="white"] [style*="color: rgb(148, 163, 184)"]:not([data-theme-card-text]),
+[data-theme="white"] [style*="color:#94A3B8"]:not([data-theme-card-text]),
+[data-theme="white"] [style*="color: #94A3B8"]:not([data-theme-card-text]) {
+  color: #374151 !important;
+}
+
+/* ── Hardcoded #9CA3AF / rgb(156,163,175) muted text → readable on white ── */
+[data-theme="white"] [style*="color: rgb(156, 163, 175)"],
+[data-theme="white"] [style*="color:#9CA3AF"],
+[data-theme="white"] [style*="color: #9CA3AF"] {
+  color: #374151 !important;
+}
+
+/* ── Hardcoded #64748B (slate-500) text → readable on white ── */
+[data-theme="white"] [style*="color: rgb(100, 116, 139)"],
+[data-theme="white"] [style*="color:#64748B"],
+[data-theme="white"] [style*="color: #64748B"] {
+  color: #374151 !important;
+}
+
+/* ── Hardcoded #475569 (slate-600) text → readable on white ── */
+[data-theme="white"] [style*="color: rgb(71, 85, 105)"],
+[data-theme="white"] [style*="color:#475569"],
+[data-theme="white"] [style*="color: #475569"] {
+  color: #374151 !important;
+}
+
+/* ── Hardcoded #64748B background (typing dots etc.) → visible on white ── */
+[data-theme="white"] [style*="background-color: rgb(100, 116, 139)"],
+[data-theme="white"] [style*="background-color:#64748B"],
+[data-theme="white"] [style*="background-color: #64748B"] {
+  background-color: #6B7280 !important;
+}
+
+/* ── Tailwind text-gray-* / text-slate-* → readable on white ── */
+[data-theme="white"] .text-gray-300 {
+  color: #374151 !important;
+}
+[data-theme="white"] .text-gray-400 {
+  color: #374151 !important;
+}
+[data-theme="white"] .text-gray-500 {
+  color: #374151 !important;
+}
+[data-theme="white"] .text-gray-600 {
+  color: #374151 !important;
+}
+[data-theme="white"] .text-slate-400 {
+  color: #374151 !important;
+}
+[data-theme="white"] .text-slate-500 {
+  color: #374151 !important;
+}
+
+/* ── placeholder:text-slate-400 → visible on white ── */
+[data-theme="white"] .placeholder\:text-slate-400::placeholder {
+  color: #6B7280 !important;
+}
+
+/* NOTE: #ffffff text override intentionally removed — too broad, breaks theme cards & message bubbles */
+
+/* ── rgba(255,255,255,x) backgrounds → dark-tinted equivalents ── */
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.03)"],
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.04)"],
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.05)"] {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.08)"],
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.1)"],
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.10)"] {
+  background-color: rgba(15, 23, 42, 0.07) !important;
+}
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.15)"] {
+  background-color: rgba(15, 23, 42, 0.10) !important;
+}
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.2)"],
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.20)"] {
+  background-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+/* ── rgba(255,255,255,x) borders → dark-tinted equivalents ── */
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.1)"],
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.10)"] {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.15)"] {
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.2)"],
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.20)"] {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.3)"],
+[data-theme="white"] [style*="border: 1px solid rgba(255, 255, 255, 0.30)"] {
+  border-color: rgba(15, 23, 42, 0.25) !important;
+}
+[data-theme="white"] [style*="border: 1px dashed rgba(255, 255, 255, 0.15)"] {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+[data-theme="white"] [style*="borderRight: '1px solid rgba(255, 255, 255, 0.1)'"],
+[data-theme="white"] [style*="border-right: 1px solid rgba(255, 255, 255, 0.1)"] {
+  border-right-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+/* ── Progress bar tracks: white/10 → dark/10 ── */
+[data-theme="white"] [style*="background-color: rgba(255, 255, 255, 0.1)"].rounded-full {
+  background-color: rgba(15, 23, 42, 0.10) !important;
+}
+
+/* ── Cards / elevated surfaces: add subtle visible border ── */
+[data-theme="white"] .bg-theme-elevated,
+[data-theme="white"] .bg-theme-card {
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.10) !important;
+}
+
+/* ── Tailwind white opacity text classes (safe — only opacity variants) ── */
+[data-theme="white"] .text-white\/50 { color: rgba(15, 23, 42, 0.5) !important; }
+[data-theme="white"] .text-white\/60 { color: rgba(15, 23, 42, 0.6) !important; }
+[data-theme="white"] .text-white\/70 { color: rgba(15, 23, 42, 0.7) !important; }
+[data-theme="white"] .text-white\/80 { color: rgba(15, 23, 42, 0.8) !important; }
+[data-theme="white"] .text-white\/90 { color: rgba(15, 23, 42, 0.9) !important; }
+
+/* ── focus:ring-white/10 and focus:ring-white/20 → dark ring on white ── */
+[data-theme="white"] .focus\:ring-white\/10:focus,
+[data-theme="white"] .focus\:ring-white\/20:focus,
+[data-theme="white"] .focus-within\:ring-white\/10:focus-within,
+[data-theme="white"] .focus-within\:ring-white\/20:focus-within {
+  --tw-ring-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+/* ── hover:border-slate-500/40 → dark border on white ── */
+[data-theme="white"] .hover\:border-slate-500\/40:hover {
+  border-color: rgba(15, 23, 42, 0.3) !important;
+}
+
+/* ── hover:text-white (tab/nav items) → dark on white ── */
+[data-theme="white"] .hover\:text-white:hover {
+  color: #0F172A !important;
+}
+
+/* ── hover:bg-white/5 and hover:bg-white/10 → dark tint on white ── */
+[data-theme="white"] .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+[data-theme="white"] .hover\:bg-white\/10:hover {
+  background-color: rgba(15, 23, 42, 0.07) !important;
+}
+
+/* ── Dark inset+drop shadow on widget containers → light on white ── */
+[data-theme="white"] .shadow-\[inset_0_1px_0_rgba\(255\,255\,255\,0\.05\)\,0_4px_20px_rgba\(0\,0\,0\,0\.5\)\] {
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* ── Hardcoded #2f2f2f border (dark-only) → subtle on white ── */
+[data-theme="white"] [style*="border-color: rgb(47, 47, 47)"],
+[data-theme="white"] [style*="borderColor: '#2f2f2f'"],
+[data-theme="white"] [style*="border-color: #2f2f2f"] {
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+/* ── rgba(255,255,255,0.12) dashed border (empty state) → dark ── */
+[data-theme="white"] [style*="border: 1px dashed rgba(255,255,255,0.12)"],
+[data-theme="white"] [style*="border: 1px dashed rgba(255, 255, 255, 0.12)"] {
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+/* ── Sidebar / modal dividers that use rgba(255,255,255,x) ── */
+[data-theme="white"] [style*="border-top: 1px solid rgba(255, 255, 255"] {
+  border-top-color: rgba(15, 23, 42, 0.12) !important;
+}
+[data-theme="white"] [style*="border-bottom: 1px solid rgba(255, 255, 255"] {
+  border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+/* ── JS-set onFocus white border: React sets border-color directly on style ── */
+/* Catches both the full border shorthand and individual borderColor property    */
+[data-theme="white"] input:focus,
+[data-theme="white"] textarea:focus,
+[data-theme="white"] select:focus {
+  border-color: #0F172A !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.12) !important;
+  outline: none !important;
+}
+
+/* ── box-shadow inset focus (LoginPage pattern) ── */
+[data-theme="white"] input[style*="box-shadow: inset 0 0 0 2px rgb(255, 255, 255)"],
+[data-theme="white"] input[style*="boxShadow: 'inset 0 0 0 2px #ffffff'"] {
+  box-shadow: inset 0 0 0 2px #0F172A !important;
+}
+
+/* ── SVG stroke/fill attributes hardcoded to #94A3B8 → visible on white ── */
+[data-theme="white"] svg [stroke='#94A3B8'],
+[data-theme="white"] svg [stroke="#94A3B8"] {
+  stroke: #4B5563 !important;
+}
+[data-theme="white"] svg [fill='#94A3B8'],
+[data-theme="white"] svg [fill="#94A3B8"] {
+  fill: #4B5563 !important;
+}
+[data-theme="white"] svg [stroke='#64748B'],
+[data-theme="white"] svg [stroke="#64748B"] {
+  stroke: #4B5563 !important;
+}
+[data-theme="white"] svg [fill='#64748B'],
+[data-theme="white"] svg [fill="#64748B"] {
+  fill: #4B5563 !important;
+}
+
+/* NOTE: background-color:#ffffff override intentionally removed — breaks white theme card preview */
+
+/* ── rgba(255,255,255,x) used as borderRight / borderLeft inline ── */
+[data-theme="white"] [style*="border-right: 1px solid rgba(255, 255, 255"] {
+  border-right-color: rgba(15, 23, 42, 0.12) !important;
+}
+[data-theme="white"] [style*="border-left: 1px solid rgba(255, 255, 255"] {
+  border-left-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+/* ── Onboarding page backgrounds (full-page dark bg → white-friendly) ── */
+[data-theme="white"] [style*="background: rgba(255, 255, 255, 0.05)"],
+[data-theme="white"] [style*="background: rgba(255, 255, 255, 0.03)"] {
+  background: rgba(15, 23, 42, 0.04) !important;
+}
+[data-theme="white"] [style*="background: rgba(255, 255, 255, 0.1)"],
+[data-theme="white"] [style*="background: rgba(255, 255, 255, 0.10)"] {
+  background: rgba(15, 23, 42, 0.07) !important;
+}
+[data-theme="white"] [style*="background: rgba(255, 255, 255, 0.15)"] {
+  background: rgba(15, 23, 42, 0.10) !important;
+}
+
+/* ── Stroke colors on SVG icons that are hardcoded white ── */
+[data-theme="white"] [style*="color: rgb(255, 255, 255)"] svg,
+[data-theme="white"] [style*="color: #ffffff"] svg,
+[data-theme="white"] [style*="color: #FFFFFF"] svg {
+  color: inherit;
 }
 
 /* Outer glow / light beam effects: invert for white theme */

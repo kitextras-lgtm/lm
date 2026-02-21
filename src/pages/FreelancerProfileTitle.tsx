@@ -42,7 +42,7 @@ export default function FreelancerProfileTitle() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             4/10
@@ -54,7 +54,7 @@ export default function FreelancerProfileTitle() {
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{
-                backgroundColor: '#94A3B8',
+                backgroundColor: 'var(--text-primary)',
                 width: '40%',
               }}
             />
@@ -132,7 +132,7 @@ export default function FreelancerProfileTitle() {
               className="text-sm mt-2"
               style={{
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                color: '#94A3B8',
+                color: 'var(--text-primary)',
                 textAlign: 'right',
               }}
             >

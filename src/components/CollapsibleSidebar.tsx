@@ -61,14 +61,20 @@ const ICON_SIZE = "w-7 h-7";
 // Sound wave bars icon for collapsed state - Elevate brand icon
 function ElevateIcon({ className = "w-7 h-7" }: { className?: string }) {
   return (
-    <img
-      src="/elevate l0.png"
-      alt="Elevate"
-      style={{
-        maxWidth: 'unset'
-      }}
-      className={`${className} rounded-lg default-avatar-shake`}
-    />
+    <>
+      <img
+        src="/elevate l0.png"
+        alt="Elevate"
+        style={{ maxWidth: 'unset' }}
+        className={`${className} sidebar-logo-white rounded-lg default-avatar-shake`}
+      />
+      <img
+        src="/bb.png"
+        alt="Elevate"
+        style={{ maxWidth: 'unset' }}
+        className={`${className} sidebar-logo-black rounded-lg default-avatar-shake`}
+      />
+    </>
   );
 }
 
@@ -369,7 +375,7 @@ function MessagesIconSVG({ isHovered, isActive, unreadCount = 0 }: { isHovered: 
           d="M34 16H12C8.68629 16 6 18.6863 6 22V32C6 35.3137 8.68629 38 12 38H15L21 46L27 38H34C37.3137 38 40 35.3137 40 32V22C40 18.6863 37.3137 16 34 16Z" 
           stroke="currentColor" 
           strokeWidth="3" 
-          fill="rgba(0,0,0,0.8)"
+          fill="var(--bg-primary)"
           style={{ transform: shouldAnimate ? 'scale(1.08) translate(2px, 2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
         />
         <g style={{ opacity: shouldAnimate ? 1 : 0.7, transition: 'opacity 0.3s ease' }}>
@@ -731,16 +737,6 @@ export function CollapsibleSidebar({
             }}
           >
             <ElevateIcon className="w-12 h-12 sidebar-logo-white" />
-            <img
-              src="/elevate logo blck.png"
-              alt="ELEVATE"
-              className="sidebar-logo-black w-12 h-12 rounded-lg object-contain"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setActiveSection('home');
-              }}
-            />
           </div>
         </div>
 

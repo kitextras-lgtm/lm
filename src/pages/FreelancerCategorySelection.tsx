@@ -224,7 +224,7 @@ export default function FreelancerCategorySelection() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             2/10
@@ -236,7 +236,7 @@ export default function FreelancerCategorySelection() {
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{
-                backgroundColor: '#94A3B8',
+                backgroundColor: 'var(--text-primary)',
                 width: '20%',
               }}
             />
@@ -272,7 +272,7 @@ export default function FreelancerCategorySelection() {
               className="text-sm font-medium mb-4"
               style={{
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                color: '#94A3B8',
+                color: 'var(--text-primary)',
               }}
             >
               Select 1 category
@@ -294,7 +294,7 @@ export default function FreelancerCategorySelection() {
                         : '1px solid transparent',
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color:
-                      selectedCategory?.id === category.id ? '#ffffff' : '#94A3B8',
+                      selectedCategory?.id === category.id ? '#ffffff' : 'var(--text-primary)',
                   }}
                   onMouseEnter={(e) => {
                     if (selectedCategory?.id !== category.id) {
@@ -311,7 +311,7 @@ export default function FreelancerCategorySelection() {
                   <ChevronRight
                     className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{
-                      color: selectedCategory?.id === category.id ? '#ffffff' : '#94A3B8',
+                      color: selectedCategory?.id === category.id ? '#ffffff' : 'var(--text-primary)',
                     }}
                   />
                 </button>
@@ -327,7 +327,7 @@ export default function FreelancerCategorySelection() {
                   className="text-sm font-medium mb-4"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Now, select 1 to 3 specialties

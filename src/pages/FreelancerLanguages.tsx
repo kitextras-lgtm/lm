@@ -140,7 +140,7 @@ export default function FreelancerLanguages() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             7/10
@@ -151,7 +151,7 @@ export default function FreelancerLanguages() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '70%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '70%' }}
             />
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function FreelancerLanguages() {
           className="text-lg mb-12"
           style={{
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            color: '#94A3B8',
+            color: 'var(--text-primary)',
           }}
         >
           Add any languages you speak, even if you're not completely fluent.
@@ -275,7 +275,7 @@ export default function FreelancerLanguages() {
                       className="text-sm truncate"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {lang.proficiency}
@@ -371,7 +371,7 @@ export default function FreelancerLanguages() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Language *
@@ -396,7 +396,7 @@ export default function FreelancerLanguages() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Proficiency *

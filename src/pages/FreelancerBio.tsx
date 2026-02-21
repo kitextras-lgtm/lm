@@ -30,7 +30,7 @@ export default function FreelancerBio() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             8/10
@@ -41,7 +41,7 @@ export default function FreelancerBio() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '80%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '80%' }}
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function FreelancerBio() {
               className="text-base mb-8"
               style={{
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                color: '#94A3B8',
+                color: 'var(--text-primary)',
               }}
             >
               Help people get to know you at a glance. What work do you do best? Tell them clearly, using paragraphs or bullet points. You can always edit later; just make sure you proofread now.
@@ -85,7 +85,7 @@ export default function FreelancerBio() {
                 className="absolute bottom-3 right-3 text-sm"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#64748B',
+                  color: 'var(--text-primary)',
                 }}
               >
                 {bio.length}/{maxChars} characters left
@@ -123,7 +123,7 @@ export default function FreelancerBio() {
                         className="text-3xl"
                         style={{
                           fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                          color: '#94A3B8',
+                          color: 'var(--text-primary)',
                         }}
                       >
                         {profileData.firstName?.[0] || 'U'}
@@ -132,7 +132,7 @@ export default function FreelancerBio() {
                   </div>
                   <div
                     className="absolute top-0 right-0 w-4 h-4 rounded-full"
-                    style={{ backgroundColor: '#94A3B8', border: '2px solid #000000' }}
+                    style={{ backgroundColor: 'var(--text-primary)', border: '2px solid #000000' }}
                   />
                 </div>
               </div>
@@ -189,7 +189,7 @@ export default function FreelancerBio() {
                 className="text-sm leading-relaxed"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#CBD5E1',
+                  color: 'var(--text-primary)',
                 }}
               >
                 {bio || "I'm a developer experienced in building websites for small and medium-sized businesses. Whether you're trying to win work, list your services, or create a new online store, I can help.\n\n• Knows HTML and CSS3, PHP, jQuery, Wordpress, and SEO\n\n• Full project management from start to finish\n\n• Regular communication is important to me, so let's keep in touch."}

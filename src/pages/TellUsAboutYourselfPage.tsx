@@ -384,7 +384,7 @@ export function TellUsAboutYourselfPage() {
           <h1 className="text-2xl font-semibold mb-3" style={{ color: '#F2F4F7' }}>
             Tell us about yourself
           </h1>
-          <p className="text-sm" style={{ color: '#9CA3AF' }}>
+          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
             This helps us accurately create your profile.
           </p>
         </div>
@@ -402,7 +402,7 @@ export function TellUsAboutYourselfPage() {
         >
           <div className="space-y-4 relative z-10">
             <div>
-              <label className="block text-xs mb-1.5" style={{ color: '#9CA3AF' }}>
+              <label className="block text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>
                 Your location
               </label>
               <div className="relative">
@@ -416,15 +416,15 @@ export function TellUsAboutYourselfPage() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <svg className="w-4 h-4" style={{ color: '#9CA3AF' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span style={{ color: location ? '#F2F4F7' : '#9CA3AF' }}>
+                    <span style={{ color: 'var(--text-primary)', opacity: location ? 1 : 0.5 }}>
                       {location || 'Select your location'}
                     </span>
                   </div>
-                  <svg className="w-4 h-4" style={{ color: '#9CA3AF' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
@@ -456,7 +456,7 @@ export function TellUsAboutYourselfPage() {
             </div>
 
             <div>
-              <label className="block text-xs mb-1.5" style={{ color: '#9CA3AF' }}>
+              <label className="block text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>
                 What is your Primary Language?
               </label>
               <div className="relative">
@@ -470,14 +470,14 @@ export function TellUsAboutYourselfPage() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <svg className="w-4 h-4" style={{ color: '#9CA3AF' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                     </svg>
-                    <span style={{ color: primaryLanguage ? '#F2F4F7' : '#9CA3AF' }}>
+                    <span style={{ color: 'var(--text-primary)', opacity: primaryLanguage ? 1 : 0.5 }}>
                       {primaryLanguage || 'Select your language'}
                     </span>
                   </div>
-                  <svg className="w-4 h-4" style={{ color: '#9CA3AF' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
@@ -526,7 +526,7 @@ export function TellUsAboutYourselfPage() {
               `}
               style={{
                 background: location && primaryLanguage && !isLoading ? '#E8E8E8' : 'rgba(75, 85, 99, 1)',
-                color: location && primaryLanguage && !isLoading ? '#000000' : '#9CA3AF',
+                color: location && primaryLanguage && !isLoading ? '#000000' : 'var(--text-primary)',
               }}
             >
               {isLoading ? 'Saving...' : 'Continue'}

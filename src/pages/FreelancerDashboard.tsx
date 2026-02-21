@@ -47,7 +47,7 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'lig
           width="32" 
           height="24" 
           rx="6" 
-          stroke={isHovered ? "#FF0000" : ('#94A3B8')} 
+          stroke={isHovered ? "#FF0000" : 'currentColor'} 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -56,10 +56,10 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'lig
         />
         <path
           d="M20 18L32 24L20 30V18Z"
-          stroke={isHovered ? "#FF0000" : ('#94A3B8')}
+          stroke={isHovered ? "#FF0000" : 'currentColor'}
           strokeWidth="2.5"
           strokeLinejoin="round"
-          fill={isHovered ? "#FF0000" : ('#94A3B8')}
+          fill={isHovered ? "#FF0000" : 'currentColor'}
           style={{
             transform: isHovered ? "scale(1.15)" : "scale(1)",
             transformOrigin: "24px 24px",
@@ -121,13 +121,13 @@ function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'ligh
         >
           <path
             d={notePath}
-            stroke={'#94A3B8'}
+            stroke={'currentColor'}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <path d={wavePath} stroke={'#94A3B8'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d={wavePath} stroke={'currentColor'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
@@ -153,7 +153,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTh
           width="28" 
           height="28" 
           rx="8" 
-          stroke={isHovered ? "url(#igGradient)" : ('#94A3B8')}
+          stroke={isHovered ? "url(#igGradient)" : 'currentColor'}
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -164,7 +164,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTh
           cx="24"
           cy="24"
           r="7"
-          stroke={isHovered ? "url(#igGradient)" : ('#94A3B8')}
+          stroke={isHovered ? "url(#igGradient)" : 'currentColor'}
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -177,7 +177,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTh
           cx="32"
           cy="16"
           r="2"
-          fill={'#94A3B8'}
+          fill={'currentColor'}
           style={{
             opacity: isHovered ? 1 : 0.6,
             transition: "opacity 0.3s ease-in-out",
@@ -348,7 +348,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
         >
-          <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+          <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
         </button>
 
         {/* Header */}
@@ -366,8 +366,8 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
                   </svg>
                 </div>
               </div>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>{campaign.timeAgo}</p>
-              <p className="text-base font-medium mt-1.5" style={{ color: '#94A3B8' }}>{campaign.title}</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{campaign.timeAgo}</p>
+              <p className="text-base font-medium mt-1.5" style={{ color: 'var(--text-primary)' }}>{campaign.title}</p>
             </div>
           </div>
         </div>
@@ -376,15 +376,15 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
           <div className="flex items-start">
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Ends</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.endsIn}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Language</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.language}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-2" style={{ color: '#94A3B8' }}>Platforms</p>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-primary)' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
@@ -404,11 +404,11 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
               </div>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Pay Type</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Pay Type</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.payType}</p>
             </div>
             <div className="flex-1 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Payout</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Payout</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.payout}</p>
             </div>
           </div>
@@ -417,13 +417,13 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         {/* Details section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Details</h3>
-          <p className="text-sm leading-relaxed" style={{ color: '#94A3B8' }}>{campaign.description}</p>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{campaign.description}</p>
         </div>
 
         {/* Rules section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Rules</h3>
-          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#94A3B8' }}>
+          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: 'var(--text-primary)' }}>
             {campaign.rules.map((rule, index) => (
               <p key={index} className="mb-1.5">• {rule}</p>
             ))}
@@ -444,11 +444,11 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           <div className="px-7 pb-6">
             <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>What to include</h3>
             <div className="flex items-start gap-4">
-              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#94A3B8' }} />
+              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: 'var(--text-primary)' }} />
               <div>
                 <p className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>Caption, tags, text</p>
-                <p className="text-xs font-semibold mt-2" style={{ color: '#94A3B8' }}>REQUIRED HASHTAGS</p>
-                <p className="text-sm mt-1.5" style={{ color: '#94A3B8' }}>{campaign.requiredHashtags.join(' ')}</p>
+                <p className="text-xs font-semibold mt-2" style={{ color: 'var(--text-primary)' }}>REQUIRED HASHTAGS</p>
+                <p className="text-sm mt-1.5" style={{ color: 'var(--text-primary)' }}>{campaign.requiredHashtags.join(' ')}</p>
               </div>
             </div>
           </div>
@@ -662,7 +662,7 @@ const MobileSettingsButton = ({
         </div>
         <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
-      <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: '#64748B', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
+      <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: 'var(--text-primary)', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
     </button>
   );
 };
@@ -689,10 +689,10 @@ const MobileSettingsMenuItem = ({
       style={{ borderBottom: showBorder ? '1px solid rgba(75, 85, 99, 0.2)' : 'none' }}
     >
       <div className="flex items-center gap-3">
-        <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
+        <span style={{ color: 'var(--text-primary)' }}>{React.cloneElement(icon, { isHovered })}</span>
         <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
-      <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     </button>
@@ -1531,7 +1531,7 @@ export function FreelancerDashboard() {
               <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
-              <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
+              <p className="text-xs lg:text-sm" style={{ color: 'var(--text-primary)' }}>
                 {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : t('personalInfo.noUsername')}
               </p>
             </div>
@@ -1547,7 +1547,7 @@ export function FreelancerDashboard() {
 
         <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.firstName')}</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.firstName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1565,14 +1565,14 @@ export function FreelancerDashboard() {
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.lastName')}</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.lastName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1585,7 +1585,7 @@ export function FreelancerDashboard() {
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
@@ -1593,10 +1593,10 @@ export function FreelancerDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.username')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.username')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <span className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>@</span>
+              <span className="text-xs lg:text-sm" style={{ color: 'var(--text-primary)' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -1609,7 +1609,7 @@ export function FreelancerDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.bio')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.bio')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <textarea
               value={formData.bio || ''}
@@ -1622,17 +1622,17 @@ export function FreelancerDashboard() {
                 background: 'transparent',
                 border: '1px solid rgba(75, 85, 99, 0.5)',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+              onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
               onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.location')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.location')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -1654,10 +1654,10 @@ export function FreelancerDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.languagesPostIn')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.languagesPostIn')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -1679,7 +1679,7 @@ export function FreelancerDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.email')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.email')}</label>
           <input
             type="email"
             value={formData.email}
@@ -1751,7 +1751,7 @@ export function FreelancerDashboard() {
       {/* Tipalti Status at the top */}
       <div className="flex items-center gap-2 mb-6">
         <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-        <span className="text-sm" style={{ color: '#94A3B8' }}>
+        <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
           Tipalti: {isTipaltiConnected ? t('payment.tipaltiConnected') : t('payment.tipaltiNotConnected')}
         </span>
       </div>
@@ -1780,13 +1780,13 @@ export function FreelancerDashboard() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{t('payment.paymentMethod')}</h3>
-                <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>{t('payment.addPaymentDesc')}</p>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-primary)' }}>{t('payment.addPaymentDesc')}</p>
               </div>
               <button 
                 onClick={() => setShowPaymentForm(false)}
                 className="p-2 rounded-full hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
               </button>
             </div>
 
@@ -1852,7 +1852,7 @@ export function FreelancerDashboard() {
                 <>
                   {/* Name on Card */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.nameOnCard')}</label>
+                    <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.nameOnCard')}</label>
                     <input
                       type="text"
                       value={paymentFormData.nameOnCard}
@@ -1864,14 +1864,14 @@ export function FreelancerDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder="John Doe"
-                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                       onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
                   {/* City */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.city')}</label>
+                    <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.city')}</label>
                     <input
                       type="text"
                       value={paymentFormData.city}
@@ -1883,14 +1883,14 @@ export function FreelancerDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
-                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                       onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
                   {/* Card Number */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.cardNumber')}</label>
+                    <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.cardNumber')}</label>
                     <input
                       type="text"
                       value={paymentFormData.cardNumber}
@@ -1902,7 +1902,7 @@ export function FreelancerDashboard() {
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
-                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                       onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
@@ -1911,7 +1911,7 @@ export function FreelancerDashboard() {
                   <div className="grid grid-cols-3 gap-4">
                     {/* Expiry Month */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.expires')}</label>
+                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.expires')}</label>
                       <select
                         value={paymentFormData.expiryMonth}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
@@ -1921,7 +1921,7 @@ export function FreelancerDashboard() {
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>{t('payment.month')}</option>
@@ -1942,7 +1942,7 @@ export function FreelancerDashboard() {
 
                     {/* Expiry Year */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.year')}</label>
+                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.year')}</label>
                       <select
                         value={paymentFormData.expiryYear}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
@@ -1952,7 +1952,7 @@ export function FreelancerDashboard() {
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>{t('payment.year')}</option>
@@ -1966,7 +1966,7 @@ export function FreelancerDashboard() {
 
                     {/* CVC */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.cvc')}</label>
+                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.cvc')}</label>
                       <input
                         type="text"
                         value={paymentFormData.cvc}
@@ -1978,7 +1978,7 @@ export function FreelancerDashboard() {
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
                         placeholder="CVC"
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       />
                     </div>
@@ -1988,7 +1988,7 @@ export function FreelancerDashboard() {
 
               {/* PayPal/Apple Pay placeholder */}
               {(paymentFormData.paymentType === 'paypal' || paymentFormData.paymentType === 'apple') && (
-                <div className="text-center py-8" style={{ color: '#94A3B8' }}>
+                <div className="text-center py-8" style={{ color: 'var(--text-primary)' }}>
                   <p className="text-sm">{paymentFormData.paymentType === 'paypal' ? t('payment.redirectPaypal') : t('payment.redirectApple')}</p>
                 </div>
               )}
@@ -2116,7 +2116,7 @@ export function FreelancerDashboard() {
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Message Notifications</h4>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show notification dropdown for unread messages</p>
               </div>
               <ToggleSwitch
                 isActive={messageNotifications}
@@ -2133,7 +2133,7 @@ export function FreelancerDashboard() {
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('notifications.newFeatures')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.newFeaturesDesc')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('notifications.newFeaturesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailNewFeatures}
@@ -2146,7 +2146,7 @@ export function FreelancerDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('notifications.platformUpdates')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.platformUpdatesDesc')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('notifications.platformUpdatesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailPlatformUpdates}
@@ -2249,7 +2249,7 @@ export function FreelancerDashboard() {
             style={{
               backgroundColor: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.25)',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             {t('common.cancel')}
@@ -2374,8 +2374,8 @@ export function FreelancerDashboard() {
                   <div className="h-2 bg-gray-600 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">{t('display.navy')}</h4>
-                <p className="text-sm text-gray-300">{t('display.navyDesc')}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
@@ -2402,8 +2402,8 @@ export function FreelancerDashboard() {
                   <div className="h-2 bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">{t('display.grey')}</h4>
-                <p className="text-sm text-gray-400">{t('display.greyDesc')}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
@@ -2430,7 +2430,7 @@ export function FreelancerDashboard() {
                   <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#2E1A28' }}></div>
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">Rose</h4>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>Rose</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
               </div>
 
@@ -2458,8 +2458,8 @@ export function FreelancerDashboard() {
                   <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
-                <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.dark')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.darkDesc')}</p>
               </div>
 
               {/* Light Option */}
@@ -2487,7 +2487,7 @@ export function FreelancerDashboard() {
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
+                <p className="text-sm" style={{ color: '#64748B' }}>Clean white</p>
               </div>
             </div>
           </div>
@@ -2498,12 +2498,12 @@ export function FreelancerDashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-xl border transition-all duration-200" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                   <div>
                     <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('display.keepCollapsed')}</p>
-                    <p className="text-xs" style={{ color: '#9CA3AF' }}>{t('display.keepCollapsedDesc')}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('display.keepCollapsedDesc')}</p>
                   </div>
                 </div>
                 <ToggleSwitch
@@ -2553,7 +2553,7 @@ export function FreelancerDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="min-w-0 flex-1">
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('language.displayLanguage')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.chooseLanguage')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('language.chooseLanguage')}</p>
               </div>
               <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
                 <button
@@ -2576,7 +2576,7 @@ export function FreelancerDashboard() {
                   </div>
                   <ChevronDown 
                     className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
-                    style={{ color: '#94A3B8' }} 
+                    style={{ color: 'var(--text-primary)' }} 
                   />
                 </button>
 
@@ -2620,7 +2620,7 @@ export function FreelancerDashboard() {
                             <span className="text-base transition-all duration-300 group-hover/option:scale-125">{option.icon}</span>
                             <span className="transition-all duration-200">{option.name}</span>
                             {isSelected && (
-                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
+                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: 'var(--text-primary)' }}>✓</span>
                             )}
                           </button>
                         );
@@ -2640,7 +2640,7 @@ export function FreelancerDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('language.autoTranslate')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.autoTranslateDesc')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('language.autoTranslateDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={false}
@@ -2725,9 +2725,9 @@ export function FreelancerDashboard() {
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -2742,7 +2742,7 @@ export function FreelancerDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.availableBalance')}</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </div>
                 <div className="mt-auto">
                   <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
@@ -2753,7 +2753,7 @@ export function FreelancerDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Pending balance</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
@@ -2762,7 +2762,7 @@ export function FreelancerDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Lifetime earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
@@ -2771,7 +2771,7 @@ export function FreelancerDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.affiliateEarnings')}</h3>
-                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
@@ -2806,10 +2806,10 @@ export function FreelancerDashboard() {
 
               {/* Table Headers */}
               <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Date</div>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Clip</div>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Campaign/Description</div>
-                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Amount</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Date</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Clip</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Campaign/Description</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Amount</div>
               </div>
 
               {/* Empty State */}
@@ -2819,7 +2819,7 @@ export function FreelancerDashboard() {
                   {earningsTab === 'pending' && 'No pending earnings'}
                   {earningsTab === 'paidout' && 'No paid out earnings'}
                 </h3>
-                <p className="text-sm sm:text-base text-center" style={{ color: '#94A3B8' }}>Submit clips to campaigns and start earning!</p>
+                <p className="text-sm sm:text-base text-center" style={{ color: 'var(--text-primary)' }}>Submit clips to campaigns and start earning!</p>
               </div>
             </div>
           </div>
@@ -2873,7 +2873,7 @@ export function FreelancerDashboard() {
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Overview</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>View proposal history, earnings, profile analytics, and your Job Success Score.</p>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>View proposal history, earnings, profile analytics, and your Job Success Score.</p>
           </div>
 
           {/* Stats Grid */}
@@ -2881,12 +2881,12 @@ export function FreelancerDashboard() {
             {/* Earnings Card */}
             <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
               <div className="mb-4">
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Earnings</p>
-                <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>12 months</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Earnings</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)' }}>12 months</p>
               </div>
               <div className="mb-4">
-                <h3 className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$67,809</h3>
-                <p className="text-sm mt-1" style={{ color: '#EF4444' }}>↓ -1% in previous year</p>
+                <h3 className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</h3>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-primary)' }}>—</p>
               </div>
               <button className="text-sm font-medium transition-opacity hover:opacity-80" style={{ color: '#22c55e' }}>
                 Transaction history
@@ -2896,7 +2896,7 @@ export function FreelancerDashboard() {
             {/* Job Success Score Card */}
             <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
               <div className="mb-4">
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Job Success Score</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Job Success Score</p>
               </div>
               <div className="flex items-center justify-center mb-4">
                 <div className="relative w-32 h-32">
@@ -2922,7 +2922,7 @@ export function FreelancerDashboard() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>100<span className="text-lg">%</span></span>
+                    <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>—</span>
                   </div>
                 </div>
               </div>
@@ -2935,17 +2935,17 @@ export function FreelancerDashboard() {
             <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm" style={{ color: '#94A3B8' }}>Proposals</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>2 hrs ago</p>
+                  <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Proposals</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)' }}>2 hrs ago</p>
                 </div>
-                <select className="text-xs px-2 py-1 rounded border" style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: '#94A3B8' }}>
+                <select className="text-xs px-2 py-1 rounded border" style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
                   <option>Last 30 days</option>
                 </select>
               </div>
               <div className="mb-4">
-                <h3 className="text-3xl sm:text-4xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>25% hire</h3>
-                <p className="text-xs" style={{ color: '#64748B' }}>20 proposals sent</p>
-                <p className="text-xs" style={{ color: '#64748B' }}>16 organic | 5 boosted</p>
+                <h3 className="text-3xl sm:text-4xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>—</h3>
+                <p className="text-xs" style={{ color: 'var(--text-primary)' }}>0 proposals sent</p>
+                <p className="text-xs" style={{ color: 'var(--text-primary)' }}>0 organic | 0 boosted</p>
               </div>
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2">
@@ -2955,8 +2955,8 @@ export function FreelancerDashboard() {
                       <div className="h-full" style={{ width: '40%', backgroundColor: '#1E40AF' }}></div>
                     </div>
                   </div>
-                  <span className="text-xs" style={{ color: '#94A3B8' }}>20</span>
-                  <span className="text-xs" style={{ color: '#64748B' }}>proposals sent</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>0</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>proposals sent</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
@@ -2965,32 +2965,32 @@ export function FreelancerDashboard() {
                       <div className="h-full" style={{ width: '50%', backgroundColor: '#1E40AF' }}></div>
                     </div>
                   </div>
-                  <span className="text-xs" style={{ color: '#94A3B8' }}>10</span>
-                  <span className="text-xs" style={{ color: '#64748B' }}>were viewed</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>0</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>were viewed</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
                     <div className="h-full" style={{ width: '40%', backgroundColor: '#1E40AF' }}></div>
                   </div>
-                  <span className="text-xs" style={{ color: '#94A3B8' }}>8</span>
-                  <span className="text-xs" style={{ color: '#64748B' }}>interviews</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>0</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>interviews</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(148, 163, 184, 0.2)' }}>
                     <div className="h-full" style={{ width: '25%', backgroundColor: '#1E40AF' }}></div>
                   </div>
-                  <span className="text-xs" style={{ color: '#94A3B8' }}>5</span>
-                  <span className="text-xs" style={{ color: '#64748B' }}>hires</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>0</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)' }}>hires</span>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-xs">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#67E8F9' }}></div>
-                  <span style={{ color: '#94A3B8' }}>Organic</span>
+                  <span style={{ color: 'var(--text-primary)' }}>Organic</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#1E40AF' }}></div>
-                  <span style={{ color: '#94A3B8' }}>Boost</span>
+                  <span style={{ color: 'var(--text-primary)' }}>Boost</span>
                 </div>
               </div>
               <button className="text-sm font-medium mt-4 transition-opacity hover:opacity-80" style={{ color: '#22c55e' }}>
@@ -3001,7 +3001,7 @@ export function FreelancerDashboard() {
             {/* Client Relationships Card */}
             <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
               <div className="mb-4">
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Client relationships</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Client relationships</p>
               </div>
               <div className="flex items-center justify-center mb-4">
                 <div className="relative w-32 h-32">
@@ -3034,11 +3034,11 @@ export function FreelancerDashboard() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#DC2626' }}></div>
-                  <span style={{ color: '#94A3B8' }}>More than 3 months</span>
+                  <span style={{ color: 'var(--text-primary)' }}>More than 3 months</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'rgba(148, 163, 184, 0.3)' }}></div>
-                  <span style={{ color: '#94A3B8' }}>Less than 3 months</span>
+                  <span style={{ color: 'var(--text-primary)' }}>Less than 3 months</span>
                 </div>
               </div>
             </div>
@@ -3049,7 +3049,7 @@ export function FreelancerDashboard() {
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.myAccounts')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.myAccountsDesc')}</p>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('home.myAccountsDesc')}</p>
           </div>
 
           <SocialLinksForm appliedTheme={appliedTheme} userType="freelancer" userId={currentUserId} />
@@ -3058,7 +3058,7 @@ export function FreelancerDashboard() {
         <section className="mb-8">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.referralSection')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.referralSectionDesc')}</p>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
           <ReferralSection userType="freelancer" userId={currentUserId} />
@@ -3071,7 +3071,7 @@ export function FreelancerDashboard() {
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Discover Talent</h2>
-                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Find and connect with talented creators</p>
+                <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Find and connect with talented creators</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
@@ -3087,7 +3087,7 @@ export function FreelancerDashboard() {
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Opportunities</h2>
-                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
+                <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Discover new opportunities and exclusive campaigns</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">

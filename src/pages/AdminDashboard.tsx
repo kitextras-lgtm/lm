@@ -628,7 +628,7 @@ export function AdminDashboard() {
 
         {/* Other sections inside wrapper */}
         {activeSection !== 'messages' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-12">
+          <div className="px-4 sm:px-8 py-6 sm:py-12">
             {activeSection === 'home' && (
               <div className="animate-fade-in">
                 <div className="mb-8">
@@ -670,7 +670,7 @@ export function AdminDashboard() {
                         placeholder="e.g. youtube.com/c/ or @handle"
                         className="flex-1 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                       />
                       <input
@@ -680,7 +680,7 @@ export function AdminDashboard() {
                         placeholder="Platform (optional)"
                         className="w-full sm:w-36 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                       />
                       <input
@@ -690,7 +690,7 @@ export function AdminDashboard() {
                         placeholder="Note (optional)"
                         className="w-full sm:w-40 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                       />
                       <button
@@ -784,7 +784,7 @@ export function AdminDashboard() {
                             placeholder="e.g. Electronic Vibes"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                             onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
@@ -797,7 +797,7 @@ export function AdminDashboard() {
                             placeholder="English"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                             onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
@@ -813,7 +813,7 @@ export function AdminDashboard() {
                           placeholder="e.g. Earn per view promoting Neon Afterhours"
                           className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                           onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
@@ -828,7 +828,7 @@ export function AdminDashboard() {
                           rows={3}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                           onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
@@ -899,7 +899,7 @@ export function AdminDashboard() {
                             placeholder="e.g. $1.50 cpm"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                             onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
@@ -911,7 +911,7 @@ export function AdminDashboard() {
                             onChange={e => setCampaignForm(f => ({ ...f, ends_at: e.target.value }))}
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                             onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
@@ -927,7 +927,7 @@ export function AdminDashboard() {
                           rows={4}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                           onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
@@ -942,7 +942,7 @@ export function AdminDashboard() {
                           rows={4}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                           onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
@@ -970,7 +970,7 @@ export function AdminDashboard() {
                                 placeholder="Song title"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
                                 style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                                 onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                               />
                               <input
@@ -980,7 +980,7 @@ export function AdminDashboard() {
                                 placeholder="Artist"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
                                 style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                                 onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                               />
                               <input
@@ -990,7 +990,7 @@ export function AdminDashboard() {
                                 placeholder="Link (optional)"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
                                 style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                                 onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                               />
                               {campaignForm.songs.length > 1 && (
@@ -1074,7 +1074,7 @@ export function AdminDashboard() {
                                   placeholder="Search creators..."
                                   className="flex-1 text-xs bg-transparent focus:outline-none"
                                   style={{ color: tokens.text.primary }}
-                                  onFocus={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', '#ffffff')}
+                                  onFocus={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', 'var(--text-primary)')}
                                   onBlur={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', tokens.border.subtle)}
                                 />
                                 <button
@@ -1743,7 +1743,7 @@ export function AdminDashboard() {
                                 <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                               </div>
                               <h4 className="font-semibold text-white mb-1">Rose</h4>
-                              <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+                              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Midnight rose</p>
                             </div>
 
                             {/* Dark Option */}
@@ -1795,11 +1795,11 @@ export function AdminDashboard() {
                               </div>
                               <div className="mb-4">
                                 <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#F1F5F9' }}></div>
-                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
-                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: 'var(--text-primary)' }}></div>
+                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: 'var(--text-primary)' }}></div>
                               </div>
                               <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                              <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
+                              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Clean white</p>
                             </div>
                           </div>
                         </div>
@@ -1992,7 +1992,7 @@ export function AdminDashboard() {
                                 <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                               </div>
                               <h4 className="font-semibold text-white mb-1">Rose</h4>
-                              <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+                              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Midnight rose</p>
                             </div>
 
                             {/* Dark Option */}
@@ -2044,11 +2044,11 @@ export function AdminDashboard() {
                               </div>
                               <div className="mb-4">
                                 <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#F1F5F9' }}></div>
-                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
-                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: 'var(--text-primary)' }}></div>
+                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: 'var(--text-primary)' }}></div>
                               </div>
                               <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                              <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
+                              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Clean white</p>
                             </div>
                           </div>
                         </div>

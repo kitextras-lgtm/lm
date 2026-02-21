@@ -35,7 +35,7 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'lig
           width="32" 
           height="24" 
           rx="6" 
-          stroke={isHovered ? "#FF0000" : ('#CBD5E1')} 
+          stroke={isHovered ? "#FF0000" : 'currentColor'} 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -44,10 +44,10 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'lig
         />
         <path
           d="M20 18L32 24L20 30V18Z"
-          stroke={isHovered ? "#FF0000" : ('#CBD5E1')}
+          stroke={isHovered ? "#FF0000" : 'currentColor'}
           strokeWidth="2.5"
           strokeLinejoin="round"
-          fill={isHovered ? "#FF0000" : ('#CBD5E1')}
+          fill={isHovered ? "#FF0000" : 'currentColor'}
           style={{
             transform: isHovered ? "scale(1.15)" : "scale(1)",
             transformOrigin: "24px 24px",
@@ -109,13 +109,13 @@ function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'ligh
         >
           <path
             d={notePath}
-            stroke={'#CBD5E1'}
+            stroke={'currentColor'}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <path d={wavePath} stroke={'#CBD5E1'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d={wavePath} stroke={'currentColor'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
@@ -141,7 +141,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTh
           width="28" 
           height="28" 
           rx="8" 
-          stroke={isHovered ? "url(#igGradient)" : ('#CBD5E1')}
+          stroke={isHovered ? "url(#igGradient)" : 'currentColor'}
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -152,7 +152,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTh
           cx="24"
           cy="24"
           r="7"
-          stroke={isHovered ? "url(#igGradient)" : ('#CBD5E1')}
+          stroke={isHovered ? "url(#igGradient)" : 'currentColor'}
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -165,7 +165,7 @@ function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTh
           cx="32"
           cy="16"
           r="2"
-          fill={'#CBD5E1'}
+          fill={'currentColor'}
           style={{
             opacity: isHovered ? 1 : 0.6,
             transition: "opacity 0.3s ease-in-out",
@@ -226,15 +226,15 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
         >
-          <X className="w-5 h-5" style={{ color: '#CBD5E1' }} />
+          <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
         </button>
 
         {/* Header */}
         <div className="p-7 pb-5">
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{campaign.name}</h2>
-            <p className="text-sm" style={{ color: '#CBD5E1' }}>{campaign.timeAgo}</p>
-            {campaign.title && <p className="text-base font-medium mt-1.5" style={{ color: '#CBD5E1' }}>{campaign.title}</p>}
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{campaign.timeAgo}</p>
+            {campaign.title && <p className="text-base font-medium mt-1.5" style={{ color: 'var(--text-primary)' }}>{campaign.title}</p>}
           </div>
         </div>
 
@@ -242,15 +242,15 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
           <div className="flex items-start">
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Ends</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.endsIn}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Language</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.language}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-2" style={{ color: '#CBD5E1' }}>Platforms</p>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-primary)' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
@@ -270,7 +270,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
               </div>
             </div>
             <div className="flex-1 text-center">
-              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Pay Type</p>
+              <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Pay Type</p>
               <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.payType}</p>
             </div>
           </div>
@@ -279,13 +279,13 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         {/* Details section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Details</h3>
-          <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>{campaign.description}</p>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{campaign.description}</p>
         </div>
 
         {/* Rules section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Rules</h3>
-          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#CBD5E1' }}>
+          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: 'var(--text-primary)' }}>
             {campaign.rules.map((rule, index) => (
               <p key={index} className="mb-1.5">• {rule}</p>
             ))}
@@ -330,12 +330,12 @@ function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
       <div className="space-y-6 sm:space-y-8 flex-grow">
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.totalRevenue')}</span>
-          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$2,847.50</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$0.00</span>
         </div>
         
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.change')}</span>
-          <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+6.1%</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>—</span>
         </div>
       </div>
 
@@ -375,17 +375,17 @@ function ActiveCollaborationsCard({ setActiveSection }: { setActiveSection: (sec
       <div className="space-y-4 sm:space-y-5 flex-grow">
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.total')}</span>
-          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>12</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>0</span>
         </div>
         
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.pending')}</span>
-          <span className="font-semibold text-sm sm:text-base" style={{ color: '#ef4444' }}>4</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>0</span>
         </div>
 
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.active')}</span>
-          <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>8</span>
+          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>0</span>
         </div>
       </div>
 
@@ -767,7 +767,7 @@ const MobileSettingsButton = ({
         </div>
         <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
-      <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: '#64748B', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
+      <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: 'var(--text-primary)', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
     </button>
   );
 };
@@ -794,10 +794,10 @@ const MobileSettingsMenuItem = ({
       style={{ borderBottom: showBorder ? '1px solid rgba(75, 85, 99, 0.2)' : 'none' }}
     >
       <div className="flex items-center gap-3">
-        <span style={{ color: '#CBD5E1' }}>{React.cloneElement(icon, { isHovered })}</span>
+        <span style={{ color: 'var(--text-primary)' }}>{React.cloneElement(icon, { isHovered })}</span>
         <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
-      <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     </button>
@@ -1602,7 +1602,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
-              <p className="text-xs lg:text-sm" style={{ color: '#CBD5E1' }}>
+              <p className="text-xs lg:text-sm" style={{ color: 'var(--text-primary)' }}>
                 {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : t('personalInfo.noUsername')}
               </p>
             </div>
@@ -1618,7 +1618,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
         <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.firstName')}</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.firstName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1636,14 +1636,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.lastName')}</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.lastName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1656,7 +1656,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                 onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
               />
             </div>
@@ -1664,10 +1664,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.username')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.username')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <span className="text-xs lg:text-sm" style={{ color: '#CBD5E1' }}>@</span>
+              <span className="text-xs lg:text-sm" style={{ color: 'var(--text-primary)' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -1680,7 +1680,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.bio')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.bio')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <textarea
               value={formData.bio || ''}
@@ -1693,14 +1693,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 background: 'transparent',
                 border: '1px solid rgba(75, 85, 99, 0.5)',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+              onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
               onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.location')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.location')}</label>
           <div className="relative">
             <button
               type="button"
@@ -1733,7 +1733,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
               <svg 
                 className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${locationDropdownOpen ? 'rotate-180' : ''}`} 
-                style={{ color: '#CBD5E1' }} 
+                style={{ color: 'var(--text-primary)' }} 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -1787,7 +1787,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.languagesPostIn')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.languagesPostIn')}</label>
           <div className="relative">
             <button
               type="button"
@@ -1820,7 +1820,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
               <svg 
                 className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${languageDropdownOpen ? 'rotate-180' : ''}`} 
-                style={{ color: '#CBD5E1' }} 
+                style={{ color: 'var(--text-primary)' }} 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -1874,7 +1874,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.email')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.email')}</label>
           <input
             type="email"
             value={formData.email}
@@ -1946,7 +1946,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       {/* Tipalti Status at the top */}
       <div className="flex items-center gap-2 mb-6">
         <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-        <span className="text-sm" style={{ color: '#CBD5E1' }}>
+        <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
           Tipalti: {isTipaltiConnected ? t('payment.tipaltiConnected') : t('payment.tipaltiNotConnected')}
         </span>
       </div>
@@ -1959,7 +1959,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           style={{ 
             backgroundColor: 'var(--bg-card)', 
             borderColor: 'var(--border-subtle)', 
-            color: '#CBD5E1' 
+            color: 'var(--text-primary)' 
           }}>
           <Plus className="w-5 h-5" />
           {t('payment.connectPayment')}
@@ -1974,13 +1974,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{t('payment.paymentMethod')}</h3>
-                <p className="text-sm mt-1" style={{ color: '#CBD5E1' }}>{t('payment.addPaymentDesc')}</p>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-primary)' }}>{t('payment.addPaymentDesc')}</p>
               </div>
               <button 
                 onClick={() => setShowPaymentForm(false)}
                 className="p-2 rounded-full hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5" style={{ color: '#CBD5E1' }} />
+                <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
               </button>
             </div>
 
@@ -2046,7 +2046,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 <>
                   {/* Name on Card */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('payment.nameOnCard')}</label>
+                    <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.nameOnCard')}</label>
                     <input
                       type="text"
                       value={paymentFormData.nameOnCard}
@@ -2058,14 +2058,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder="John Doe"
-                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                       onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
                   {/* City */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('payment.city')}</label>
+                    <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.city')}</label>
                     <input
                       type="text"
                       value={paymentFormData.city}
@@ -2077,14 +2077,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
-                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                       onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
 
                   {/* Card Number */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('payment.cardNumber')}</label>
+                    <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.cardNumber')}</label>
                     <input
                       type="text"
                       value={paymentFormData.cardNumber}
@@ -2096,7 +2096,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
                       placeholder=""
-                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                       onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                     />
                   </div>
@@ -2105,7 +2105,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="grid grid-cols-3 gap-4">
                     {/* Expiry Month */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('payment.expires')}</label>
+                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.expires')}</label>
                       <select
                         value={paymentFormData.expiryMonth}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
@@ -2115,7 +2115,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>{t('payment.month')}</option>
@@ -2136,7 +2136,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                     {/* Expiry Year */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('payment.year')}</label>
+                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.year')}</label>
                       <select
                         value={paymentFormData.expiryYear}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
@@ -2146,7 +2146,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       >
                         <option value="" style={{ background: 'var(--bg-card)' }}>{t('payment.year')}</option>
@@ -2160,7 +2160,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                     {/* CVC */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{t('payment.cvc')}</label>
+                      <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('payment.cvc')}</label>
                       <input
                         type="text"
                         value={paymentFormData.cvc}
@@ -2172,7 +2172,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
                         placeholder="CVC"
-                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                         onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
                       />
                     </div>
@@ -2182,7 +2182,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
               {/* PayPal/Apple Pay placeholder */}
               {(paymentFormData.paymentType === 'paypal' || paymentFormData.paymentType === 'apple') && (
-                <div className="text-center py-8" style={{ color: '#CBD5E1' }}>
+                <div className="text-center py-8" style={{ color: 'var(--text-primary)' }}>
                   <p className="text-sm">{paymentFormData.paymentType === 'paypal' ? t('payment.redirectPaypal') : t('payment.redirectApple')}</p>
                 </div>
               )}
@@ -2310,7 +2310,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Message Notifications</h4>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show notification dropdown for unread messages</p>
               </div>
               <ToggleSwitch
                 isActive={messageNotifications}
@@ -2327,7 +2327,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('notifications.newFeatures')}</h4>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('notifications.newFeaturesDesc')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('notifications.newFeaturesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailNewFeatures}
@@ -2340,7 +2340,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('notifications.platformUpdates')}</h4>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('notifications.platformUpdatesDesc')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('notifications.platformUpdatesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailPlatformUpdates}
@@ -2443,7 +2443,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             style={{
               backgroundColor: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.25)',
-              color: '#CBD5E1',
+              color: 'var(--text-primary)',
             }}
           >
             {t('common.cancel')}
@@ -2568,8 +2568,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-600 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">{t('display.navy')}</h4>
-                <p className="text-sm text-gray-300">{t('display.navyDesc')}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
@@ -2596,8 +2596,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">{t('display.grey')}</h4>
-                <p className="text-sm text-gray-400">{t('display.greyDesc')}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
@@ -2624,7 +2624,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#2E1A28' }}></div>
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">Rose</h4>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>Rose</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
               </div>
 
@@ -2652,8 +2652,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
-                <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
-                <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
+                <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.dark')}</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.darkDesc')}</p>
               </div>
 
               {/* Light Option */}
@@ -2681,7 +2681,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
+                <p className="text-sm" style={{ color: '#64748B' }}>Clean white</p>
               </div>
             </div>
           </div>
@@ -2692,12 +2692,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-xl border transition-all duration-200" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                   <div>
                     <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('display.keepCollapsed')}</p>
-                    <p className="text-xs" style={{ color: '#9CA3AF' }}>{t('display.keepCollapsedDesc')}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('display.keepCollapsedDesc')}</p>
                   </div>
                 </div>
                 <ToggleSwitch
@@ -2747,7 +2747,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="min-w-0 flex-1">
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('language.displayLanguage')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.chooseLanguage')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('language.chooseLanguage')}</p>
               </div>
               <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
                 <button
@@ -2770,7 +2770,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   </div>
                   <ChevronDown 
                     className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
-                    style={{ color: '#CBD5E1' }} 
+                    style={{ color: 'var(--text-primary)' }} 
                   />
                 </button>
 
@@ -2814,7 +2814,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <span className="text-base transition-all duration-300 group-hover/option:scale-125">{option.icon}</span>
                             <span className="transition-all duration-200">{option.name}</span>
                             {isSelected && (
-                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#CBD5E1' }}>✓</span>
+                              <span className="ml-auto text-xs transition-all duration-200" style={{ color: 'var(--text-primary)' }}>✓</span>
                             )}
                           </button>
                         );
@@ -2835,7 +2835,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('language.autoTranslate')}</h4>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('language.autoTranslateDesc')}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('language.autoTranslateDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={false}
@@ -2920,9 +2920,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -2937,10 +2937,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.availableBalance')}</h3>
-                  <Info className="w-4 h-4" style={{ color: '#CBD5E1' }} />
+                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </div>
                 <div className="mt-auto">
-                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$12,847.50</div>
+                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</div>
                 </div>
               </div>
 
@@ -2948,9 +2948,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.affiliateEarnings')}</h3>
-                  <Info className="w-4 h-4" style={{ color: '#CBD5E1' }} />
+                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$2,450.00</div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</div>
               </div>
             </div>
 
@@ -2960,7 +2960,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{t('earnings.transactions')}</h3>
-                  <p className="text-xs mt-1" style={{ color: '#CBD5E1' }}>{t('earnings.updatedEvery')}</p>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('earnings.updatedEvery')}</p>
                 </div>
                 <button className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-80" style={{ color: 'var(--text-primary)' }}>
                   {t('earnings.viewAll')}
@@ -2976,7 +2976,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   onClick={() => setEarningsTab('available')}
                   className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
                   style={{ 
-                    color: earningsTab === 'available' ? 'var(--text-primary)' : '#CBD5E1',
+                    color: earningsTab === 'available' ? 'var(--text-primary)' : 'var(--text-primary)',
                     borderColor: earningsTab === 'available' ? 'var(--text-primary)' : 'transparent'
                   }}
                 >
@@ -2986,7 +2986,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   onClick={() => setEarningsTab('pending')}
                   className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
                   style={{ 
-                    color: earningsTab === 'pending' ? 'var(--text-primary)' : '#CBD5E1',
+                    color: earningsTab === 'pending' ? 'var(--text-primary)' : 'var(--text-primary)',
                     borderColor: earningsTab === 'pending' ? 'var(--text-primary)' : 'transparent'
                   }}
                 >
@@ -2999,16 +2999,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {/* Transaction Row 1 */}
                 <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>16 Aug 2025</span>
+                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>16 Aug 2025</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} JP Morgan Chase (0440)</p>
-                      <p className="text-xs" style={{ color: '#CBD5E1' }}>{t('earnings.completed')}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-1,275.79 USD</span>
                     <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
@@ -3018,16 +3018,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {/* Transaction Row 2 */}
                 <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>5 Aug 2025</span>
+                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>5 Aug 2025</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} Citibank (2290)</p>
-                      <p className="text-xs" style={{ color: '#CBD5E1' }}>{t('earnings.completed')}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-202.99 USD</span>
                     <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
@@ -3037,16 +3037,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {/* Transaction Row 3 */}
                 <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>4 Aug 2025</span>
+                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>4 Aug 2025</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.paymentFrom')} Paddle</p>
-                      <p className="text-xs" style={{ color: '#CBD5E1' }}>{t('earnings.completed')}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium" style={{ color: '#10b981' }}>+5,651.56 USD</span>
                     <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
@@ -3056,16 +3056,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {/* Transaction Row 4 */}
                 <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>4 Aug 2025</span>
+                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>4 Aug 2025</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} HSBC (5522)</p>
-                      <p className="text-xs" style={{ color: '#CBD5E1' }}>{t('earnings.completed')}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-1,679.35 USD</span>
                     <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
@@ -3075,16 +3075,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {/* Transaction Row 5 */}
                 <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>20 Aug 2025</span>
+                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>20 Aug 2025</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} JP Morgan Chase (1133)</p>
-                      <p className="text-xs" style={{ color: '#CBD5E1' }}>{t('earnings.completed')}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-3,420.00 USD</span>
                     <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
@@ -3094,16 +3094,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {/* Transaction Row 6 */}
                 <div className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>18 Aug 2025</span>
+                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>18 Aug 2025</span>
                     <div>
                       <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.paymentFrom')} Stripe</p>
-                      <p className="text-xs" style={{ color: '#CBD5E1' }}>{t('earnings.completed')}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm font-medium" style={{ color: '#10b981' }}>+2,345.75 USD</span>
                     <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
@@ -3216,7 +3216,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.myAccounts')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('home.myAccountsDesc')}</p>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('home.myAccountsDesc')}</p>
           </div>
 
           <SocialLinksForm appliedTheme={appliedTheme} userType="creator" userId={currentUserId} />
@@ -3225,7 +3225,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         <section className="mb-8">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.referralSection')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('home.referralSectionDesc')}</p>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
           <ReferralSection userType="creator" userId={currentUserId} />
@@ -3249,21 +3249,21 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 <section className="mb-10 sm:mb-20">
                   <div className="mb-5 sm:mb-7">
                     <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</h2>
-                    <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('opportunities.campaignDesc')}</p>
+                    <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaignDesc')}</p>
                   </div>
 
                   {campaignsLoading ? (
                     <div className="flex items-center justify-center py-16">
                       <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '300ms' }} />
                       </div>
                     </div>
                   ) : assignedCampaigns.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 rounded-2xl" style={{ border: '1px dashed rgba(255,255,255,0.12)' }}>
                       <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                        <svg className="w-7 h-7" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-7 h-7" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
                         </svg>
                       </div>
@@ -3304,9 +3304,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                   <div className="flex items-center gap-2 mb-1">
                                     <h4 className="font-bold text-base truncate" style={{ color: 'var(--text-primary)' }}>{c.name}</h4>
                                   </div>
-                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>{campaignData.timeAgo}</p>
+                                  <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{campaignData.timeAgo}</p>
                                   {(c.bio || c.description) && (
-                                    <p className="text-sm mt-1 line-clamp-2" style={{ color: '#CBD5E1' }}>{c.bio || c.description}</p>
+                                    <p className="text-sm mt-1 line-clamp-2" style={{ color: 'var(--text-primary)' }}>{c.bio || c.description}</p>
                                   )}
                                 </div>
                               </div>
@@ -3316,29 +3316,29 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <div className="mx-5 mb-4 rounded-xl py-3 px-2" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
                               <div className="flex items-center">
                                 <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                  <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Ends</p>
+                                  <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Ends</p>
                                   <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{endsIn}</p>
                                 </div>
                                 <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                  <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Language</p>
+                                  <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Language</p>
                                   <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.language || 'English'}</p>
                                 </div>
                                 <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                  <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Platforms</p>
+                                  <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Platforms</p>
                                   <div className="flex items-center justify-center gap-1.5">
                                     {platforms.includes('instagram') && <div className="w-4 h-4"><InstagramIconAnimated isHovered={true} /></div>}
                                     {platforms.includes('tiktok') && <div className="w-4 h-4"><TikTokIcon isHovered={true} /></div>}
                                     {platforms.includes('youtube') && <div className="w-4 h-4"><YouTubeIcon isHovered={true} /></div>}
-                                    {platforms.length === 0 && <span className="text-xs" style={{ color: '#64748B' }}>—</span>}
+                                    {platforms.length === 0 && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>—</span>}
                                   </div>
                                 </div>
                                 <div className="flex-1 text-center" style={c.payout ? { borderRight: '1px solid rgba(255,255,255,0.1)' } : {}}>
-                                  <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Pay Type</p>
+                                  <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Pay Type</p>
                                   <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.pay_type || '—'}</p>
                                 </div>
                                 {c.payout && (
                                   <div className="flex-1 text-center">
-                                    <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Payout</p>
+                                    <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Payout</p>
                                     <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.payout}</p>
                                   </div>
                                 )}
@@ -3369,7 +3369,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                   <div className="text-center py-12">
                     <p className="text-sm sm:text-base font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('opportunities.noEnrolledCampaigns')}</p>
-                    <p className="text-xs sm:text-sm" style={{ color: '#9CA3AF' }}>{t('opportunities.browseOpportunities')}</p>
+                    <p className="text-xs sm:text-sm" style={{ color: 'var(--text-primary)' }}>{t('opportunities.browseOpportunities')}</p>
                   </div>
                 </section>
               </>
@@ -3454,13 +3454,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                 opacity: 0,
                               }}
                             />
-                            {/* Campaign - 32% - White */}
+                            {/* Campaign - 32% - Light Blue */}
                             <circle
                               cx="50"
                               cy="50"
                               r="40"
                               fill="transparent"
-                              stroke="#FFFFFF"
+                              stroke="#93C5FD"
                               strokeWidth="12"
                               strokeDasharray={`${32 * 2.51} ${100 * 2.51}`}
                               strokeDashoffset={`${-48 * 2.51}`}
@@ -3507,7 +3507,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           {/* Center Total */}
                           <div className="absolute inset-0 flex items-center justify-center">
                             <span className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                              {analyticsView === 'monthly' ? '$2,847' : '$64,473'}
+                              $0.00
                             </span>
                           </div>
                         </div>
@@ -3519,28 +3519,28 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#E8DFD0' }}></div>
                               <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('analytics.sponsorship')}</span>
                             </div>
-                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>48%</span>
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>48%</span>
                           </div>
                           <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
                             <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FFFFFF' }}></div>
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#93C5FD' }}></div>
                               <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('analytics.campaign')}</span>
                             </div>
-                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>32%</span>
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>32%</span>
                           </div>
                           <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#6B7280' }}></div>
                               <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('analytics.affiliate')}</span>
                             </div>
-                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>13%</span>
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>13%</span>
                           </div>
                           <div className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#4B5563' }}></div>
                               <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('analytics.other')}</span>
                             </div>
-                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>7%</span>
+                            <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>7%</span>
                           </div>
                         </div>
                       </div>
@@ -3627,24 +3627,17 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                       {/* Total Amount and Percentage */}
                       <div className="flex items-center justify-between mb-6">
                         <p className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                          {analyticsView === 'weekly' ? '$12,480.00' : analyticsView === 'monthly' ? '$48,320.00' : '$256,890.00'}
+                          $0.00
                         </p>
                         <div className="flex items-center gap-1">
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
-                            <path d="M23 6l-9.5 9.5-5-5L1 18" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M17 6h6v6" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          <span style={{ color: '#10b981' }} className="font-medium">
-                            {analyticsView === 'weekly' ? '16%' : analyticsView === 'monthly' ? '12%' : '24%'}
-                          </span>
-                          <span style={{ color: '#CBD5E1' }} className="text-sm">{analyticsView === 'weekly' ? t('analytics.fromLastWeek') : analyticsView === 'monthly' ? t('analytics.fromLastMonth') : t('analytics.fromLastYear')}</span>
+                          <span style={{ color: 'var(--text-primary)' }} className="text-sm">—</span>
                         </div>
                       </div>
                       
                       {/* Chart with Y-axis */}
                       <div className="flex gap-4 h-72">
                         {/* Y-axis labels */}
-                        <div className="flex flex-col justify-between text-right py-2" style={{ color: '#CBD5E1' }}>
+                        <div className="flex flex-col justify-between text-right py-2" style={{ color: 'var(--text-primary)' }}>
                           <span className="text-xs">{analyticsView === 'weekly' ? '10K' : analyticsView === 'monthly' ? '50K' : '100K'}</span>
                           <span className="text-xs">{analyticsView === 'weekly' ? '8K' : analyticsView === 'monthly' ? '40K' : '80K'}</span>
                           <span className="text-xs">{analyticsView === 'weekly' ? '6K' : analyticsView === 'monthly' ? '30K' : '60K'}</span>
@@ -3667,7 +3660,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                     minHeight: '20px'
                                   }} 
                                 />
-                                <span className="text-xs" style={{ color: '#CBD5E1' }}>{item.day}</span>
+                                <span className="text-xs" style={{ color: 'var(--text-primary)' }}>{item.day}</span>
                               </div>
                             ))
                           ) : analyticsView === 'monthly' ? (
@@ -3682,7 +3675,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                     minHeight: '20px'
                                   }} 
                                 />
-                                <span className="text-xs" style={{ color: '#CBD5E1' }}>{item.week}</span>
+                                <span className="text-xs" style={{ color: 'var(--text-primary)' }}>{item.week}</span>
                               </div>
                             ))
                           ) : (
@@ -3697,7 +3690,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                     minHeight: '20px'
                                   }} 
                                 />
-                                <span className="text-xs" style={{ color: '#CBD5E1' }}>{item.month}</span>
+                                <span className="text-xs" style={{ color: 'var(--text-primary)' }}>{item.month}</span>
                               </div>
                             ))
                           )}
@@ -3712,33 +3705,33 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                       // Monthly metrics
                       <>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.averageRevenuePerUser')}</h4>
-                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$47.23</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+12.3% {t('analytics.fromLastMonth')}</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('analytics.averageRevenuePerUser')}</h4>
+                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                          <p className="text-sm mt-2" style={{ color: 'var(--text-primary)' }}>—</p>
                         </div>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.churnRate')}</h4>
-                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>2.1%</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>-0.5% {t('analytics.fromLastMonth')}</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('analytics.churnRate')}</h4>
+                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>0%</p>
+                          <p className="text-sm mt-2" style={{ color: 'var(--text-primary)' }}>—</p>
                         </div>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.lifetimeValue')}</h4>
-                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$1,842</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+8.7% {t('analytics.fromLastMonth')}</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('analytics.lifetimeValue')}</h4>
+                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                          <p className="text-sm mt-2" style={{ color: 'var(--text-primary)' }}>—</p>
                         </div>
                       </>
                     ) : (
                       // Creator metrics
                       <>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.totalCollaborations')}</h4>
-                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>1,247</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+156 {t('analytics.thisYear')}</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('analytics.totalCollaborations')}</h4>
+                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+                          <p className="text-sm mt-2" style={{ color: 'var(--text-primary)' }}>—</p>
                         </div>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.totalReferred')}</h4>
-                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$89.34</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+5.2% {t('analytics.yoy')}</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('analytics.totalReferred')}</h4>
+                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                          <p className="text-sm mt-2" style={{ color: 'var(--text-primary)' }}>—</p>
                           <div className="mt-6 pt-4 border-t flex items-center justify-start" style={{ borderColor: 'var(--border-subtle)' }}>
                             <button 
                               className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
@@ -3753,9 +3746,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </div>
                         </div>
                         <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-                          <h4 className="text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>{t('analytics.affiliateRevenue')}</h4>
-                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$18.5k</p>
-                          <p className="text-sm mt-2" style={{ color: '#10b981' }}>+2.3% {t('analytics.yoy')}</p>
+                          <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('analytics.affiliateRevenue')}</h4>
+                          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                          <p className="text-sm mt-2" style={{ color: 'var(--text-primary)' }}>—</p>
                           <div className="mt-6 pt-4 border-t flex items-center justify-start" style={{ borderColor: 'var(--border-subtle)' }}>
                             <button 
                               className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
@@ -3783,7 +3776,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
                 <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('talent.discoverTitle')}</h2>
-                <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('talent.discoverDesc')}</p>
+                <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('talent.discoverDesc')}</p>
               </div>
 
               {/* Search Bar */}
@@ -3804,7 +3797,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     className="w-full pl-12 pr-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                     style={{ 
                       backgroundColor: 'var(--bg-card)', 
-                      borderColor: searchFocused ? '#FFFFFF' : 'var(--border-subtle)', 
+                      borderColor: searchFocused ? 'var(--text-primary)' : 'var(--border-subtle)', 
                       color: 'var(--text-primary)' 
                     }}
                     onFocus={() => setSearchFocused(true)}
@@ -3932,7 +3925,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: locationFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          borderColor: locationFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: locationFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -3958,11 +3951,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <label 
                               key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
-                              style={{ color: 'white' }}
+                              style={{ color: 'var(--text-primary)' }}
                             >
                               <input 
                                 type="checkbox" 
-                                className="rounded border-gray-600 bg-transparent" 
+                                className="rounded border-gray-400 bg-transparent" 
                                 checked={selectedLocations.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
@@ -3986,7 +3979,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: talentTypeFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          borderColor: talentTypeFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: talentTypeFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4012,11 +4005,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <label 
                               key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
-                              style={{ color: 'white' }}
+                              style={{ color: 'var(--text-primary)' }}
                             >
                               <input 
                                 type="checkbox" 
-                                className="rounded border-gray-600 bg-transparent" 
+                                className="rounded border-gray-400 bg-transparent" 
                                 checked={selectedTalentTypes.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
@@ -4040,7 +4033,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: categoryFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          borderColor: categoryFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: categoryFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4066,11 +4059,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <label 
                               key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
-                              style={{ color: 'white' }}
+                              style={{ color: 'var(--text-primary)' }}
                             >
                               <input 
                                 type="checkbox" 
-                                className="rounded border-gray-600 bg-transparent" 
+                                className="rounded border-gray-400 bg-transparent" 
                                 checked={selectedCategories.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
@@ -4094,7 +4087,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: successRateFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          borderColor: successRateFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: successRateFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4120,12 +4113,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <label 
                               key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
-                              style={{ color: 'white' }}
+                              style={{ color: 'var(--text-primary)' }}
                             >
                               <input 
                                 type="radio" 
                                 name="successRate" 
-                                className="rounded border-gray-600 bg-transparent" 
+                                className="rounded border-gray-400 bg-transparent" 
                                 checked={selectedSuccessRate === key}
                                 onChange={() => setSelectedSuccessRate(key)}
                               />
@@ -4143,7 +4136,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: socialMediaFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          borderColor: socialMediaFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: socialMediaFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4169,11 +4162,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <label 
                               key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
-                              style={{ color: 'white' }}
+                              style={{ color: 'var(--text-primary)' }}
                             >
                               <input 
                                 type="checkbox" 
-                                className="rounded border-gray-600 bg-transparent"
+                                className="rounded border-gray-400 bg-transparent"
                                 checked={selectedSocialMedia.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
@@ -4197,7 +4190,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
                         style={{ 
                           backgroundColor: 'var(--bg-elevated)', 
-                          borderColor: skillsFilterOpen ? '#FFFFFF' : 'var(--border-subtle)', 
+                          borderColor: skillsFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', 
                           color: 'var(--text-primary)',
                           transform: skillsFilterOpen ? 'translateY(-1px)' : 'none'
                         }}
@@ -4223,11 +4216,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             <label 
                               key={key} 
                               className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" 
-                              style={{ color: 'white' }}
+                              style={{ color: 'var(--text-primary)' }}
                             >
                               <input 
                                 type="checkbox" 
-                                className="rounded border-gray-600 bg-transparent"
+                                className="rounded border-gray-400 bg-transparent"
                                 checked={selectedSkills.includes(key)}
                                 onChange={(e) => {
                                   if (e.target.checked) {
@@ -4444,7 +4437,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3 transition-all duration-300 hover:scale-105" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' }}>
                 {t('explore.comingSoon')}
               </h1>
-              <p className="text-lg text-white/80 transition-all duration-300 hover:scale-105" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
+              <p className="text-lg text-white transition-all duration-300 hover:scale-105" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
                 {t('explore.comingSoonDesc')}
               </p>
             </div>
@@ -4499,7 +4492,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   alt="ELEVATE" 
                   className="h-32 mx-auto cursor-pointer hover:opacity-80 transition-opacity" 
                 />
-                <p className="text-sm font-semibold -mt-6" style={{ color: '#CBD5E1', lineHeight: '1' }}>
+                <p className="text-sm font-semibold -mt-6" style={{ color: 'var(--text-primary)', lineHeight: '1' }}>
                   {t('explore.discoverServices')}
                 </p>
               </section>

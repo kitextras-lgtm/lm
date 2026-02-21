@@ -39,7 +39,7 @@ const AccountTypeIcon = () => (
       </g>
       {/* Card B */}
       <g className="transition-all duration-300 group-hover:rotate-[5deg] group-hover:translate-x-0.5 origin-center">
-        <rect x="10" y="5" width="9" height="13" rx="1" fill="rgba(0,0,0,0.6)" stroke="currentColor" strokeWidth="1.5" transform="rotate(10 14.5 11.5)" />
+        <rect x="10" y="5" width="9" height="13" rx="1" fill="var(--bg-primary)" stroke="currentColor" strokeWidth="1.5" transform="rotate(10 14.5 11.5)" />
         <text x="15.5" y="13" fill="currentColor" fontSize="6" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fontFamily="system-ui, sans-serif" transform="rotate(10 15.5 13)">B</text>
       </g>
     </svg>

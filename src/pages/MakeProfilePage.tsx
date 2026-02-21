@@ -289,7 +289,7 @@ export function MakeProfilePage() {
           <h1 className="text-2xl font-semibold mb-3" style={{ color: '#F2F4F7' }}>
             Make your profile
           </h1>
-          <p className="text-sm" style={{ color: '#9CA3AF' }}>
+          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
             Create your unique identity on Elevate
           </p>
         </div>
@@ -332,7 +332,7 @@ export function MakeProfilePage() {
             </div>
 
             <div>
-              <label className="block text-xs mb-1.5" style={{ color: '#9CA3AF' }}>
+              <label className="block text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>
                 What's your name?
               </label>
               <div className="flex gap-3">
@@ -376,11 +376,11 @@ export function MakeProfilePage() {
             </div>
 
             <div>
-              <label className="block text-xs mb-1.5" style={{ color: '#9CA3AF' }}>
+              <label className="block text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>
                 Choose a username
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: '#9CA3AF' }}>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--text-primary)' }}>
                   @
                 </span>
                 <input
@@ -412,7 +412,7 @@ export function MakeProfilePage() {
                 <h3 className="text-xl font-semibold mb-1" style={{ color: '#F2F4F7' }}>
                   {displayName}
                 </h3>
-                <p className="text-sm" style={{ color: '#9CA3AF' }}>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
                   {displayUsername}
                 </p>
               </div>
@@ -436,7 +436,7 @@ export function MakeProfilePage() {
               `}
               style={{
                 background: firstName && username && !isLoading ? '#E8E8E8' : 'rgba(75, 85, 99, 1)',
-                color: firstName && username && !isLoading ? '#000000' : '#9CA3AF',
+                color: firstName && username && !isLoading ? '#000000' : 'var(--text-primary)',
               }}
             >
               {isLoading ? 'Saving...' : 'Continue'}

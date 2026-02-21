@@ -90,22 +90,22 @@ export const themeTokens = {
   white: {
     bg: {
       primary: '#FFFFFF',
-      secondary: '#F8FAFC',
-      elevated: '#EFF3F4',
-      active: '#E7ECF0',
-      sidebar: '#F8FAFC',
-      input: '#EFF3F4',
-      card: '#F8FAFC',
+      secondary: '#FFFFFF',
+      elevated: '#FFFFFF',
+      active: '#F1F5F9',
+      sidebar: '#FFFFFF',
+      input: '#FFFFFF',
+      card: '#FFFFFF',
       modal: '#FFFFFF',
     },
     text: {
       primary: '#0F172A',
-      secondary: '#536471',
-      muted: '#8899A6',
+      secondary: '#374151',
+      muted: '#4B5563',
     },
     border: {
-      subtle: '#E7ECF0',
-      default: '#CFD9DE',
+      subtle: '#B8C4CE',
+      default: '#9AAAB4',
     },
   },
 } as const;

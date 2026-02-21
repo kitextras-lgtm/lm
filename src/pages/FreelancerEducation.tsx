@@ -138,7 +138,7 @@ export default function FreelancerEducation() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             6/10
@@ -149,7 +149,7 @@ export default function FreelancerEducation() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '60%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '60%' }}
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function FreelancerEducation() {
           className="text-lg mb-12"
           style={{
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            color: '#94A3B8',
+            color: 'var(--text-primary)',
           }}
         >
           Again, this is worth taking a moment on. People who include their education get seen three times more.
@@ -273,7 +273,7 @@ export default function FreelancerEducation() {
                       className="text-sm truncate"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {edu.degree}
@@ -287,7 +287,7 @@ export default function FreelancerEducation() {
                     className="text-sm mb-3"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     {formatDateRange(edu)}
@@ -299,7 +299,7 @@ export default function FreelancerEducation() {
                     className="text-sm line-clamp-3"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      color: '#CBD5E1',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     {edu.description}
@@ -394,7 +394,7 @@ export default function FreelancerEducation() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   School *
@@ -419,7 +419,7 @@ export default function FreelancerEducation() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Degree *
@@ -444,7 +444,7 @@ export default function FreelancerEducation() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Field of Study
@@ -470,7 +470,7 @@ export default function FreelancerEducation() {
                     className="block text-sm font-medium mb-2"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Start Month
@@ -490,7 +490,7 @@ export default function FreelancerEducation() {
                     className="block text-sm font-medium mb-2"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Start Year
@@ -517,7 +517,7 @@ export default function FreelancerEducation() {
                   className="text-sm"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   I currently study here
@@ -531,7 +531,7 @@ export default function FreelancerEducation() {
                       className="block text-sm font-medium mb-2"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       End Month
@@ -551,7 +551,7 @@ export default function FreelancerEducation() {
                       className="block text-sm font-medium mb-2"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#94A3B8',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       End Year
@@ -573,7 +573,7 @@ export default function FreelancerEducation() {
                   className="block text-sm font-medium mb-2"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Description

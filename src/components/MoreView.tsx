@@ -100,7 +100,7 @@ function MoreMenuItem({
       <div className="flex-1 min-w-0">
         <div className="text-[15px]" style={{ color: 'var(--text-primary)' }}>{label}</div>
       </div>
-      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: '#94A3B8' }} />
+      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
     </div>
   );
 }
@@ -188,7 +188,7 @@ export function MoreView({ isMobile: _isMobile = false }: MoreViewProps) {
           <div className="space-y-6">
             <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--bg-card)' }}>
               <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Share your feedback</h3>
-              <p className="mb-4" style={{ color: '#94A3B8' }}>
+              <p className="mb-4" style={{ color: 'var(--text-primary)' }}>
                 We'd love to hear your thoughts and suggestions to improve your experience.
               </p>
               <div className="space-y-3">
@@ -260,7 +260,7 @@ export function MoreView({ isMobile: _isMobile = false }: MoreViewProps) {
           <div className="space-y-6">
             <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--bg-card)' }}>
               <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>Are you sure you want to log out?</h3>
-              <p className="mb-6" style={{ color: '#94A3B8' }}>
+              <p className="mb-6" style={{ color: 'var(--text-primary)' }}>
                 You'll need to sign in again to access your account.
               </p>
               <div className="flex gap-3">
@@ -319,7 +319,7 @@ export function MoreView({ isMobile: _isMobile = false }: MoreViewProps) {
             {/* Section Header */}
             <div className="p-6 border-b" style={{ borderColor: '#1a1a1a' }}>
               <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{getSectionTitle()}</h2>
-              <p className="text-[15px] leading-relaxed" style={{ color: '#94A3B8' }}>{getSectionDescription()}</p>
+              <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-primary)' }}>{getSectionDescription()}</p>
             </div>
 
             {/* Content */}

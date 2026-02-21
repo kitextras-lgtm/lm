@@ -22,10 +22,16 @@ export function ToggleSwitch({
         return 'bg-zinc-800';
       case 'rose':
         return 'bg-rose-950';
+      case 'white':
+        return 'bg-slate-700';
       case 'dark':
       default:
         return 'bg-zinc-900';
     }
+  };
+
+  const getInactiveBackgroundColor = () => {
+    return backgroundTheme === 'white' ? 'bg-gray-300' : 'bg-gray-600';
   };
 
   const sizeClasses = {
@@ -51,7 +57,7 @@ export function ToggleSwitch({
       onClick={onToggle}
       disabled={disabled}
       className={`relative inline-flex ${sizeClasses[size]} items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 ${
-        isActive ? getActiveBackgroundColor() : 'bg-gray-600'
+        isActive ? getActiveBackgroundColor() : getInactiveBackgroundColor()
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span

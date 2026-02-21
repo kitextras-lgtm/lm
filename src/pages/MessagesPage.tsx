@@ -326,7 +326,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             </div>
             
             <div className="relative mb-3 lg:mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 lg:w-4 lg:h-4" style={{ color: '#94A3B8' }} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 lg:w-4 lg:h-4" style={{ color: 'var(--text-primary)' }} />
               <input
                 type="text"
                 value={searchQuery}
@@ -349,7 +349,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
                     filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                   }`}
-                  style={filter === 'all' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: '#94A3B8', border: '1px solid transparent' }}
+                  style={filter === 'all' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
                 >
                   {t('messages.primary')}
                 </button>
@@ -358,7 +358,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
                     filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                   }`}
-                  style={filter === 'unread' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: '#94A3B8', border: '1px solid transparent' }}
+                  style={filter === 'unread' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
                 >
                   {t('messages.general')}
                 </button>
@@ -367,7 +367,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 relative ${
                     filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                   }`}
-                  style={filter === 'pinned' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: '#94A3B8', border: '1px solid transparent' }}
+                  style={filter === 'pinned' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
                 >
                   {requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests')}
                 </button>
@@ -385,8 +385,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 </div>
                 {userType === 'artist' ? (
                   <>
-                    <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('messages.noMessagesYet')}</p>
-                    <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>{t('messages.supportTeamReachOut')}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noMessagesYet')}</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('messages.supportTeamReachOut')}</p>
                   </>
                 ) : (
                   <>
@@ -430,7 +430,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
         <div className="px-5 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-primary)' }}>
           <div className="relative mb-4">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#94A3B8' }} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-primary)' }} />
             <input
               type="text"
               value={searchQuery}
@@ -453,7 +453,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                 }`}
-                style={filter === 'all' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: '#94A3B8', border: '1px solid transparent' }}
+                style={filter === 'all' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
               >
                 {t('messages.primary')}
               </button>
@@ -462,7 +462,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                 }`}
-                style={filter === 'unread' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: '#94A3B8', border: '1px solid transparent' }}
+                style={filter === 'unread' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
               >
                 {t('messages.general')}
               </button>
@@ -471,7 +471,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative ${
                   filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
                 }`}
-                style={filter === 'pinned' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: '#94A3B8', border: '1px solid transparent' }}
+                style={filter === 'pinned' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
               >
                 {requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests')}
               </button>
@@ -489,8 +489,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
               </div>
               {userType === 'artist' ? (
                 <>
-                  <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('messages.noMessagesYet')}</p>
-                  <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>{t('messages.supportTeamReachOut')}</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noMessagesYet')}</p>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('messages.supportTeamReachOut')}</p>
                 </>
               ) : (
                 <>
@@ -564,10 +564,10 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
-                <MessageSquare className="w-10 h-10" style={{ color: '#94A3B8' }} />
+                <MessageSquare className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
               </div>
               <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('messages.selectConversation')}</h2>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>{t('messages.chooseFromList')}</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('messages.chooseFromList')}</p>
             </div>
           </div>
         )}

@@ -328,7 +328,7 @@ export function UserTypeSelectionPage() {
           <h1 className="text-2xl font-semibold mb-3" style={{ color: '#F2F4F7' }}>
             What are you?
           </h1>
-          <p className="text-sm" style={{ color: '#9CA3AF' }}>
+          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
             Select the option that best describes you
           </p>
         </div>
@@ -357,7 +357,7 @@ export function UserTypeSelectionPage() {
                 <h3 className="text-lg font-semibold mb-1" style={{ color: '#F2F4F7' }}>
                   {type.title}
                 </h3>
-                <p className="text-sm" style={{ color: '#9CA3AF' }}>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
                   {type.description}
                 </p>
               </div>
@@ -393,7 +393,7 @@ export function UserTypeSelectionPage() {
           `}
           style={{
             background: selectedType && !isLoading ? '#E8E8E8' : 'rgba(75, 85, 99, 1)',
-            color: selectedType && !isLoading ? '#000000' : '#9CA3AF',
+            color: selectedType && !isLoading ? '#000000' : 'var(--text-primary)',
           }}
         >
           {isLoading ? 'Saving...' : 'Continue'}

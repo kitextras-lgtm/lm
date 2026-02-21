@@ -209,7 +209,7 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
               {isSerious && <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#ef4444' }} />}
               {latestAnnouncement.title}
             </h3>
-            <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{ color: isSerious ? '#F8FAFC' : '#94A3B8' }}>
+            <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{ color: isSerious ? '#F8FAFC' : 'var(--text-primary)' }}>
               {latestAnnouncement.content}
             </p>
           </div>
@@ -218,7 +218,7 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
             className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.2)' : '#0f0f13',
-              color: isSerious ? '#ef4444' : '#94A3B8',
+              color: isSerious ? '#ef4444' : 'var(--text-primary)',
             }}
             aria-label="Dismiss announcement"
           >

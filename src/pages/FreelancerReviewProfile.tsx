@@ -75,7 +75,7 @@ export default function FreelancerReviewProfile() {
           <h1 className="text-3xl font-semibold mb-3" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#ffffff' }}>
             Application submitted!
           </h1>
-          <p className="text-base mb-8" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#94A3B8' }}>
+          <p className="text-base mb-8" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: 'var(--text-primary)' }}>
             Your freelancer application is under review. We'll notify you once it's been approved.
           </p>
           <button
@@ -100,11 +100,11 @@ export default function FreelancerReviewProfile() {
     >
       <div className="max-w-2xl w-full">
         <div className="mb-8">
-          <p className="text-sm mb-2" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#94A3B8' }}>
+          <p className="text-sm mb-2" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: 'var(--text-primary)' }}>
             Final step
           </p>
           <div className="h-1 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
-            <div className="h-full rounded-full" style={{ backgroundColor: '#94A3B8', width: '100%' }} />
+            <div className="h-full rounded-full" style={{ backgroundColor: 'var(--text-primary)', width: '100%' }} />
           </div>
         </div>
 
@@ -114,7 +114,7 @@ export default function FreelancerReviewProfile() {
         >
           Review and submit your profile
         </h1>
-        <p className="text-base mb-10" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#94A3B8' }}>
+        <p className="text-base mb-10" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: 'var(--text-primary)' }}>
           Once submitted, our team will review your application. You'll be notified when it's approved.
         </p>
 
@@ -125,31 +125,31 @@ export default function FreelancerReviewProfile() {
         >
           {profileData.professionalTitle && (
             <div>
-              <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>TITLE</p>
+              <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>TITLE</p>
               <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{profileData.professionalTitle}</p>
             </div>
           )}
           {profileData.selectedCategoryName && (
             <div>
-              <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>CATEGORY</p>
+              <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>CATEGORY</p>
               <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{profileData.selectedCategoryName}</p>
             </div>
           )}
           {profileData.selectedSkills && profileData.selectedSkills.length > 0 && (
             <div>
-              <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>SKILLS</p>
+              <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>SKILLS</p>
               <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{profileData.selectedSkills.slice(0, 5).join(', ')}{profileData.selectedSkills.length > 5 ? ` +${profileData.selectedSkills.length - 5} more` : ''}</p>
             </div>
           )}
           {profileData.hourlyRate ? (
             <div>
-              <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>HOURLY RATE</p>
+              <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>HOURLY RATE</p>
               <p className="text-sm" style={{ color: 'var(--text-primary)' }}>${profileData.hourlyRate}/hr</p>
             </div>
           ) : null}
           {profileData.country && (
             <div>
-              <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>LOCATION</p>
+              <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>LOCATION</p>
               <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{[profileData.city, profileData.country].filter(Boolean).join(', ')}</p>
             </div>
           )}

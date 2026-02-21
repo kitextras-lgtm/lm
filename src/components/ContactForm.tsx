@@ -57,7 +57,7 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
         <span className="transition-all duration-200">{selectedLabel}</span>
         <ChevronDown 
           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isOpen ? 'rotate-180' : ''}`} 
-          style={{ color: '#94A3B8' }} 
+          style={{ color: 'var(--text-primary)' }} 
         />
       </button>
 
@@ -93,7 +93,7 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
                 >
                   <span className="transition-all duration-200">{option.label}</span>
                   {isSelected && (
-                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#94A3B8' }}>✓</span>
+                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: 'var(--text-primary)' }}>✓</span>
                   )}
                 </button>
               );

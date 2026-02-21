@@ -91,7 +91,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
         </div>
         <ChevronDown 
           className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isOpen ? 'rotate-180' : ''}`} 
-          style={{ color: '#CBD5E1' }} 
+          style={{ color: 'var(--text-primary)' }} 
         />
       </button>
 
@@ -141,7 +141,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
                   )}
                   <span className="transition-all duration-200">{option.label}</span>
                   {isSelected && (
-                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: '#CBD5E1' }}>✓</span>
+                    <span className="ml-auto text-xs transition-all duration-200" style={{ color: 'var(--text-primary)' }}>✓</span>
                   )}
                 </button>
               );
@@ -166,7 +166,7 @@ function ArtistDD({ value, options, onChange }: { value: string; options: string
   }, [open]);
   return (
     <div className="relative" ref={ref}>
-      <button type="button" onClick={() => setOpen(o => !o)} className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border flex items-center justify-between" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: open ? '#ffffff' : 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+      <button type="button" onClick={() => setOpen(o => !o)} className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border flex items-center justify-between" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: open ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)' }}>
         <span>{value}</span>
         <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -174,7 +174,7 @@ function ArtistDD({ value, options, onChange }: { value: string; options: string
         <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden shadow-xl animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
           {options.map(opt => (
             <button key={opt} type="button" onClick={() => { onChange(opt); setOpen(false); }} className="w-full px-4 py-2.5 text-sm text-left flex items-center justify-between transition-all" style={{ color: 'var(--text-primary)', backgroundColor: value === opt ? 'var(--bg-elevated)' : 'transparent' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.backgroundColor = value === opt ? 'var(--bg-elevated)' : 'transparent'; }}>
-              {opt}{value === opt && <span style={{ color: '#CBD5E1' }}>✓</span>}
+              {opt}{value === opt && <span style={{ color: 'var(--text-primary)' }}>✓</span>}
             </button>
           ))}
         </div>
@@ -186,7 +186,7 @@ function ArtistDD({ value, options, onChange }: { value: string; options: string
 function ArtistRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-4">
-      <span className="text-sm font-medium flex-shrink-0 w-40 text-right pt-2.5" style={{ color: '#CBD5E1' }}>{label}</span>
+      <span className="text-sm font-medium flex-shrink-0 w-40 text-right pt-2.5" style={{ color: 'var(--text-primary)' }}>{label}</span>
       <div className="flex-1">{children}</div>
     </div>
   );
@@ -199,22 +199,22 @@ function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (
     <div className="space-y-5 mb-6">
       <div className="flex items-center justify-between pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
         <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Add <span className="font-bold">New Artist</span></h3>
-        <button onClick={onClose} style={{ color: '#CBD5E1' }}><X className="w-5 h-5" /></button>
+        <button onClick={onClose} style={{ color: 'var(--text-primary)' }}><X className="w-5 h-5" /></button>
       </div>
 
       <ArtistRow label="Artist name:">
-        <input type="text" placeholder="Enter stage name" value={af.name} onChange={e => setAf({ name: e.target.value })} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+        <input type="text" placeholder="Enter stage name" value={af.name} onChange={e => setAf({ name: e.target.value })} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
       </ArtistRow>
 
       <ArtistRow label="Artist image:">
         <div className="flex gap-4">
           <div className="w-32 h-32 rounded-xl flex items-center justify-center flex-shrink-0" style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
-            {af.imagePreview ? <img src={af.imagePreview} alt="preview" className="w-full h-full object-cover rounded-xl" /> : <User className="w-10 h-10" style={{ color: '#CBD5E1' }} />}
+            {af.imagePreview ? <img src={af.imagePreview} alt="preview" className="w-full h-full object-cover rounded-xl" /> : <User className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />}
           </div>
-          <label className="flex-1 flex flex-col items-center justify-center gap-2 rounded-xl cursor-pointer transition-all duration-200" style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)', minHeight: '128px' }} onMouseEnter={e => e.currentTarget.style.borderColor = '#ffffff'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'} onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; }} onDragLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'} onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--border-subtle)'; const file = e.dataTransfer.files[0]; if (file) setAf({ imageFile: file, imagePreview: URL.createObjectURL(file) }); }}>
+          <label className="flex-1 flex flex-col items-center justify-center gap-2 rounded-xl cursor-pointer transition-all duration-200" style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)', minHeight: '128px' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--text-primary)'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'} onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--text-primary)'; }} onDragLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'} onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--border-subtle)'; const file = e.dataTransfer.files[0]; if (file) setAf({ imageFile: file, imagePreview: URL.createObjectURL(file) }); }}>
             <input type="file" accept="image/*" className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) setAf({ imageFile: file, imagePreview: URL.createObjectURL(file) }); }} />
-            <Info className="w-6 h-6" style={{ color: '#CBD5E1' }} />
-            <p className="text-xs text-center" style={{ color: '#CBD5E1' }}>Drag image here<br />or</p>
+            <Info className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
+            <p className="text-xs text-center" style={{ color: 'var(--text-primary)' }}>Drag image here<br />or</p>
             <span className="px-4 py-1 rounded-full text-xs font-semibold" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>Select file</span>
           </label>
         </div>
@@ -225,8 +225,8 @@ function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (
         return (
           <ArtistRow key={key} label={labels[key]}>
             <div className="flex items-center gap-2">
-              <input type="text" placeholder="Enter ID if you already have one" value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-              <Info className="w-5 h-5 flex-shrink-0" style={{ color: '#CBD5E1' }} />
+              <input type="text" placeholder="Enter ID if you already have one" value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+              <Info className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
             </div>
           </ArtistRow>
         );
@@ -237,7 +237,7 @@ function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (
       <ArtistRow label="Main Genre"><ArtistDD value={af.genre} options={['Pop', 'Hip-Hop / Rap', 'R&B / Soul', 'Rock', 'Electronic', 'Jazz', 'Classical', 'Country', 'Latin', 'Reggae', 'Gospel', 'Other']} onChange={v => setAf({ genre: v })} /></ArtistRow>
 
       <ArtistRow label="Artist bio:">
-        <textarea placeholder="Add a short description of you and your music" value={af.bio} onChange={e => setAf({ bio: e.target.value })} rows={4} className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border resize-none" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+        <textarea placeholder="Add a short description of you and your music" value={af.bio} onChange={e => setAf({ bio: e.target.value })} rows={4} className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border resize-none" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
       </ArtistRow>
 
       <ArtistRow label="Country"><ArtistDD value={af.country} options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Brazil', 'Nigeria', 'South Africa', 'India', 'Other']} onChange={v => setAf({ country: v })} /></ArtistRow>
@@ -247,7 +247,7 @@ function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (
         const [label, ph] = meta[key].split('|');
         return (
           <ArtistRow key={key} label={label}>
-            <input type="text" placeholder={ph} value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+            <input type="text" placeholder={ph} value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
           </ArtistRow>
         );
       })}
@@ -451,7 +451,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
   if (loading) {
     return (
       <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="text-center" style={{ color: '#CBD5E1' }}>{t('common.loading')}</div>
+        <div className="text-center" style={{ color: 'var(--text-primary)' }}>{t('common.loading')}</div>
       </div>
     );
   }
@@ -476,7 +476,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
         <div className="mb-5 p-4 sm:p-5 rounded-xl" style={{ backgroundColor: 'transparent' }}>
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
+              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 {t('socialLinks.platform')}
               </label>
               <CustomDropdown
@@ -495,7 +495,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
+              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 {t('socialLinks.url')}
               </label>
               <input
@@ -510,7 +510,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                 placeholder="https://www.youtube.com/@YourChannel"
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                 style={{ backgroundColor: 'transparent', borderColor: urlError ? '#ef4444' : 'var(--border-subtle)', color: 'var(--text-primary)' }}
-                onFocus={(e) => { if (!urlError) e.target.style.borderColor = '#ffffff'; }}
+                onFocus={(e) => { if (!urlError) e.target.style.borderColor = 'var(--text-primary)'; }}
                 onBlur={(e) => { if (!urlError) e.target.style.borderColor = 'var(--border-subtle)'; }}
               />
               {urlError && (
@@ -519,7 +519,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#CBD5E1' }}>
+              <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 {t('socialLinks.displayName')}
               </label>
               <input
@@ -529,7 +529,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                 placeholder={t('socialLinks.displayNamePlaceholder')}
                 className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
                 style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
-                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                 onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
               />
             </div>
@@ -537,7 +537,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
             {userType === 'creator' && (
               <>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
+                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                     {t('socialLinks.channelType')}
                   </label>
                   <CustomDropdown
@@ -566,7 +566,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                 </div>
 
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: '#9CA3AF' }}>
+                  <label className="block text-xs sm:text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                     {t('socialLinks.channelDescription')}
                   </label>
                   <textarea
@@ -576,7 +576,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                     rows={3}
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border resize-none"
                     style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
-                    onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
                     onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
                   />
                 </div>
@@ -634,12 +634,12 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
               {userType === 'artist' ? 'No Artists added yet' : t('socialLinks.noLinksYet')}
             </p>
             {userType === 'artist' ? (
-              <p className="text-xs sm:text-sm" style={{ color: '#CBD5E1' }}>
+              <p className="text-xs sm:text-sm" style={{ color: 'var(--text-primary)' }}>
                 Artists added will show up here
               </p>
             ) : (
               userType === 'creator' || userType === 'business' ? null : (
-                <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
+                <p className="text-xs sm:text-sm" style={{ color: 'var(--text-primary)' }}>
                   {t('socialLinks.distributeToStart')}
                 </p>
               )
@@ -662,7 +662,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                     {link.platform === 'Artist' && link.url
                       ? <img src={link.url} alt={link.display_name} className="w-full h-full object-cover" />
                       : link.platform === 'Artist'
-                        ? <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#CBD5E1' }} />
+                        ? <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-primary)' }} />
                         : <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-primary)' }} />
                     }
                   </div>
@@ -686,7 +686,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                   ) : (
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
-                        style={{ color: '#94A3B8', backgroundColor: 'rgba(255,255,255,0.06)' }}>
+                        style={{ color: 'var(--text-primary)', backgroundColor: 'var(--bg-elevated)' }}>
                         Unverified
                       </span>
                       <button
@@ -702,7 +702,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                     <button
                       onClick={() => handleDeleteLink(link.id)}
                       className="p-2 rounded-lg transition-all duration-200 hover:brightness-110"
-                      style={{ backgroundColor: 'transparent', color: '#64748B' }}
+                      style={{ backgroundColor: 'transparent', color: 'var(--text-primary)' }}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -724,19 +724,19 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Verify Ownership</h3>
             {verifyResult !== 'success' && (
-              <button onClick={() => { setVerifyModal(null); setVerifyResult('idle'); }} className="p-1 rounded-lg" style={{ color: '#64748B' }}>
+              <button onClick={() => { setVerifyModal(null); setVerifyResult('idle'); }} className="p-1 rounded-lg" style={{ color: 'var(--text-primary)' }}>
                 <X className="w-5 h-5" />
               </button>
             )}
           </div>
 
           <div className="mb-5 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', border: '1px solid' }}>
-            <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Link being verified</p>
+            <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Link being verified</p>
             <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{vm.link.url}</p>
           </div>
 
           <div className="mb-5">
-            <p className="text-sm mb-3 leading-relaxed" style={{ color: '#CBD5E1' }}>
+            <p className="text-sm mb-3 leading-relaxed" style={{ color: 'var(--text-primary)' }}>
               Add this phrase to your bio to verify account ownership and prevent impersonation.
             </p>
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -753,7 +753,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                 {copiedPhrase ? <><Check className="w-3 h-3" /> Copied</> : 'Copy'}
               </button>
             </div>
-            <p className="text-xs mt-2" style={{ color: '#64748B' }}>
+            <p className="text-xs mt-2" style={{ color: 'var(--text-primary)' }}>
               You can remove it once the check is complete.
             </p>
           </div>
@@ -764,7 +764,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm transition-all hover:opacity-70"
-              style={{ color: '#CBD5E1' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               <ExternalLink className="w-4 h-4" />
               Open {vm.link.platform} to add the phrase

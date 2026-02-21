@@ -60,7 +60,7 @@ export default function FreelancerPhotoLocation() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             10/10
@@ -71,7 +71,7 @@ export default function FreelancerPhotoLocation() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '100%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '100%' }}
             />
           </div>
         </div>
@@ -88,7 +88,7 @@ export default function FreelancerPhotoLocation() {
           className="text-base mb-12"
           style={{
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            color: '#94A3B8',
+            color: 'var(--text-primary)',
           }}
         >
           A professional photo helps you build trust with your clients. To keep things safe and simple, they'll pay you through us - which is why we need your personal information.

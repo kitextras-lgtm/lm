@@ -32,7 +32,7 @@ export default function FreelancerSetRate() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             9/10
@@ -43,7 +43,7 @@ export default function FreelancerSetRate() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '90%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '90%' }}
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function FreelancerSetRate() {
           className="text-base mb-12"
           style={{
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            color: '#94A3B8',
+            color: 'var(--text-primary)',
           }}
         >
           Clients will see this rate on your profile and in search results once you publish your profile. You can adjust your rate every time you submit a proposal.
@@ -83,7 +83,7 @@ export default function FreelancerSetRate() {
                 className="text-sm"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Total amount the client will see.
@@ -109,7 +109,7 @@ export default function FreelancerSetRate() {
                 className="text-base"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 /hr
@@ -137,7 +137,7 @@ export default function FreelancerSetRate() {
                   className="text-sm underline"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    color: '#94A3B8',
+                    color: 'var(--text-primary)',
                   }}
                   onClick={(e) => e.preventDefault()}
                 >
@@ -148,7 +148,7 @@ export default function FreelancerSetRate() {
                 className="text-sm max-w-md"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 This helps us run the platform and provide services like payment protection and customer support. Fees vary and are shown before contract acceptance.
@@ -161,7 +161,7 @@ export default function FreelancerSetRate() {
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 ${serviceFee.toFixed(2)}
@@ -170,7 +170,7 @@ export default function FreelancerSetRate() {
                 className="text-base"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 /hr
@@ -196,7 +196,7 @@ export default function FreelancerSetRate() {
                 className="text-sm"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 The estimated amount you'll receive after service fees
@@ -218,7 +218,7 @@ export default function FreelancerSetRate() {
                 className="text-base"
                 style={{
                   fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  color: '#94A3B8',
+                  color: 'var(--text-primary)',
                 }}
               >
                 /hr

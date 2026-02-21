@@ -76,7 +76,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
           </div>
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Send Notifications</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>
               Send emails to users who have opted in for notifications
             </p>
           </div>
@@ -86,7 +86,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
       <div className="space-y-6">
         {/* Notification Type Selection */}
         <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-4" style={{ color: '#94A3B8' }}>
+          <label className="block text-sm font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
             Notification Type
           </label>
           <div className="flex gap-4">
@@ -96,7 +96,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
                 notificationType === 'new_features' ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: notificationType === 'new_features' ? '#0f0f13' : 'transparent',
+                backgroundColor: notificationType === 'new_features' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
                 border: notificationType === 'new_features' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
@@ -109,7 +109,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
                 notificationType === 'platform_updates' ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: notificationType === 'platform_updates' ? '#0f0f13' : 'transparent',
+                backgroundColor: notificationType === 'platform_updates' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
                 border: notificationType === 'platform_updates' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
@@ -117,14 +117,14 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
               Platform Updates
             </button>
           </div>
-          <p className="text-xs mt-3" style={{ color: '#64748B' }}>
+          <p className="text-xs mt-3" style={{ color: 'var(--text-primary)' }}>
             Only users who have opted in for {notificationType === 'new_features' ? 'New Features' : 'Platform Updates'} will receive this email.
           </p>
         </div>
 
         {/* Subject Input */}
         <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-3" style={{ color: '#94A3B8' }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>
             Subject Line
           </label>
           <input
@@ -135,7 +135,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
             className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
             style={{
               color: 'var(--text-primary)',
-              background: '#0f0f13',
+              background: 'var(--bg-elevated)',
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
             disabled={isSending}
@@ -144,7 +144,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
 
         {/* Content Textarea */}
         <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
-          <label className="block text-sm font-medium mb-3" style={{ color: '#94A3B8' }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>
             Email Content
           </label>
           <textarea
@@ -155,12 +155,12 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
             className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
             style={{
               color: 'var(--text-primary)',
-              background: '#0f0f13',
+              background: 'var(--bg-elevated)',
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
             disabled={isSending}
           />
-          <p className="text-xs mt-3" style={{ color: '#64748B' }}>
+          <p className="text-xs mt-3" style={{ color: 'var(--text-primary)' }}>
             The email will be styled consistently with Elevate branding (black background, white text).
           </p>
         </div>
@@ -186,7 +186,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
                   {sendResult.message}
                 </p>
                 {sendResult.success && sendResult.total !== undefined && (
-                  <p className="text-xs mt-1" style={{ color: '#64748B' }}>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>
                     {sendResult.sent} sent, {sendResult.failed} failed out of {sendResult.total} recipients
                   </p>
                 )}

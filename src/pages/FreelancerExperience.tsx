@@ -276,7 +276,7 @@ export default function FreelancerExperience() {
             className="text-sm mb-2"
             style={{
               fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              color: '#94A3B8',
+              color: 'var(--text-primary)',
             }}
           >
             5/10
@@ -287,7 +287,7 @@ export default function FreelancerExperience() {
           >
             <div
               className="h-full rounded-full transition-all duration-300"
-              style={{ backgroundColor: '#94A3B8', width: '50%' }}
+              style={{ backgroundColor: 'var(--text-primary)', width: '50%' }}
             />
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function FreelancerExperience() {
               }}
             >
               <div className="flex items-center justify-center gap-3 mb-3">
-                <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#94A3B8', borderTopColor: 'transparent' }} />
+                <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--text-primary)', borderTopColor: 'transparent' }} />
                 <p
                   className="text-base"
                   style={{
@@ -459,7 +459,7 @@ export default function FreelancerExperience() {
                         className="w-10 h-10 rounded-lg flex items-center justify-center"
                         style={{ backgroundColor: 'rgba(148, 163, 184, 0.15)' }}
                       >
-                        <Folder className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                        <Folder className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3
@@ -484,7 +484,7 @@ export default function FreelancerExperience() {
                         onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                       >
-                        <Pencil className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+                        <Pencil className="w-3.5 h-3.5" style={{ color: 'var(--text-primary)' }} />
                       </button>
                       <button
                         onClick={() => handleDelete(exp.id)}
@@ -496,7 +496,7 @@ export default function FreelancerExperience() {
                         onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                       >
-                        <Trash2 className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+                        <Trash2 className="w-3.5 h-3.5" style={{ color: 'var(--text-primary)' }} />
                       </button>
                     </div>
                   </div>
@@ -506,7 +506,7 @@ export default function FreelancerExperience() {
                     className="text-sm mb-2"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      color: '#94A3B8',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     {exp.company}
@@ -519,7 +519,7 @@ export default function FreelancerExperience() {
                       className="text-sm leading-relaxed"
                       style={{
                         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: '#64748B',
+                        color: 'var(--text-primary)',
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
                         WebkitBoxOrient: 'vertical',
@@ -620,7 +620,7 @@ export default function FreelancerExperience() {
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; }}
               >
-                <X className="w-4 h-4" style={{ color: '#94A3B8' }} />
+                <X className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
               </button>
             </div>
 
@@ -742,8 +742,8 @@ export default function FreelancerExperience() {
                   onClick={() => updateField('isCurrent', !editingExp.isCurrent)}
                   className="w-5 h-5 rounded flex items-center justify-center transition-all duration-200"
                   style={{
-                    backgroundColor: editingExp.isCurrent ? '#94A3B8' : 'transparent',
-                    border: editingExp.isCurrent ? '1px solid #94A3B8' : '1px solid rgba(255, 255, 255, 0.3)',
+                    backgroundColor: editingExp.isCurrent ? 'var(--text-primary)' : 'transparent',
+                    border: editingExp.isCurrent ? '1px solid var(--border-subtle)' : '1px solid rgba(255, 255, 255, 0.3)',
                   }}
                 >
                   {editingExp.isCurrent && (

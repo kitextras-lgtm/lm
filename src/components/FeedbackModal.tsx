@@ -30,7 +30,7 @@ function CategoryButton({ isActive, onClick, icon, label }: CategoryButtonProps)
         isActive ? 'shadow-md' : 'hover:brightness-105'
       }`}
       style={{
-        backgroundColor: isActive ? '#0f0f13' : 'transparent',
+        backgroundColor: isActive ? 'var(--bg-elevated)' : 'transparent',
         color: 'var(--text-primary)',
         border: isActive ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
       }}
@@ -123,7 +123,7 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
           <button
             onClick={onClose}
             className="p-2 sm:p-1.5 rounded-lg transition-colors hover:brightness-110"
-            style={{ backgroundColor: 'transparent', color: '#64748B' }}
+            style={{ backgroundColor: 'transparent', color: 'var(--text-primary)' }}
           >
             <X className="w-6 h-6 sm:w-5 sm:h-5" />
           </button>
@@ -180,12 +180,12 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
               required
               className="w-full px-3 sm:px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
               style={{
-                backgroundColor: '#0f0f13',
-                border: '1px solid rgba(75, 85, 99, 0.25)',
+                backgroundColor: 'var(--bg-elevated)',
+                border: '1px solid var(--border-subtle)',
                 color: 'var(--text-primary)',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.25)'}
+              onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
             />
           </div>
 
@@ -209,8 +209,8 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
               className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-110"
               style={{
                 backgroundColor: 'transparent',
-                border: '1px solid rgba(75, 85, 99, 0.25)',
-                color: '#94A3B8',
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-primary)',
               }}
             >
               Cancel
