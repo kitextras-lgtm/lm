@@ -223,6 +223,8 @@ export function ChatInput({
             borderRadius: 0,
             opacity: 0.7
           }}
+          onFocus={(e) => { e.target.style.borderColor = '#ffffff'; e.target.style.opacity = '1'; }}
+          onBlur={(e) => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.opacity = '0.7'; }}
         />
         <button
           ref={sendButtonRef}

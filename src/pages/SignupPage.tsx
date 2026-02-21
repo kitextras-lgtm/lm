@@ -395,6 +395,8 @@ export function SignupPage() {
                       MozAppearance: 'textfield',
                       appearance: 'none'
                     }}
+                    onFocus={(e) => { e.target.style.border = '1px solid #ffffff'; }}
+                    onBlur={(e) => { e.target.style.border = '1px solid rgba(255, 255, 255, 0.1)'; }}
                     disabled={loading}
                   />
                 ))}

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown, CheckCircle, Check, ExternalLink, Loader } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown, CheckCircle, Check, ExternalLink, Loader, User, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabase } from '../lib/supabase';
 import { AnimatedLinkIcon } from './AnimatedLinkIcon';
@@ -149,6 +149,114 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+const fCls = 'w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border';
+const fStyle = { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' };
+
+function ArtistDD({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    if (open) document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  return (
+    <div className="relative" ref={ref}>
+      <button type="button" onClick={() => setOpen(o => !o)} className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border flex items-center justify-between" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: open ? '#ffffff' : 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+        <span>{value}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden shadow-xl animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+          {options.map(opt => (
+            <button key={opt} type="button" onClick={() => { onChange(opt); setOpen(false); }} className="w-full px-4 py-2.5 text-sm text-left flex items-center justify-between transition-all" style={{ color: 'var(--text-primary)', backgroundColor: value === opt ? 'var(--bg-elevated)' : 'transparent' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.backgroundColor = value === opt ? 'var(--bg-elevated)' : 'transparent'; }}>
+              {opt}{value === opt && <span style={{ color: '#CBD5E1' }}>✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ArtistRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-4">
+      <span className="text-sm font-medium flex-shrink-0 w-40 text-right pt-2.5" style={{ color: '#CBD5E1' }}>{label}</span>
+      <div className="flex-1">{children}</div>
+    </div>
+  );
+}
+
+function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (name: string, imagePreview: string) => void }) {
+  const [af, setAfState] = useState({ name: '', imageFile: null as File | null, imagePreview: '', appleMusicId: '', spotifyId: '', soundcloudId: '', deezerId: '', audiomackId: '', amazonId: '', type: 'Solo Artist', role: 'Artist role', genre: 'Select a main genre', bio: '', country: 'United States', websiteUrl: '', facebookUrl: '', xHandle: '', instagramHandle: '', youtubeChannel: '', tiktokUsername: '' });
+  const setAf = (p: Partial<typeof af>) => setAfState(f => ({ ...f, ...p }));
+  return (
+    <div className="space-y-5 mb-6">
+      <div className="flex items-center justify-between pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Add <span className="font-bold">New Artist</span></h3>
+        <button onClick={onClose} style={{ color: '#CBD5E1' }}><X className="w-5 h-5" /></button>
+      </div>
+
+      <ArtistRow label="Artist name:">
+        <input type="text" placeholder="Enter stage name" value={af.name} onChange={e => setAf({ name: e.target.value })} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+      </ArtistRow>
+
+      <ArtistRow label="Artist image:">
+        <div className="flex gap-4">
+          <div className="w-32 h-32 rounded-xl flex items-center justify-center flex-shrink-0" style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+            {af.imagePreview ? <img src={af.imagePreview} alt="preview" className="w-full h-full object-cover rounded-xl" /> : <User className="w-10 h-10" style={{ color: '#CBD5E1' }} />}
+          </div>
+          <label className="flex-1 flex flex-col items-center justify-center gap-2 rounded-xl cursor-pointer transition-all duration-200" style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)', minHeight: '128px' }} onMouseEnter={e => e.currentTarget.style.borderColor = '#ffffff'} onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'} onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; }} onDragLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'} onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--border-subtle)'; const file = e.dataTransfer.files[0]; if (file) setAf({ imageFile: file, imagePreview: URL.createObjectURL(file) }); }}>
+            <input type="file" accept="image/*" className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) setAf({ imageFile: file, imagePreview: URL.createObjectURL(file) }); }} />
+            <Info className="w-6 h-6" style={{ color: '#CBD5E1' }} />
+            <p className="text-xs text-center" style={{ color: '#CBD5E1' }}>Drag image here<br />or</p>
+            <span className="px-4 py-1 rounded-full text-xs font-semibold" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>Select file</span>
+          </label>
+        </div>
+      </ArtistRow>
+
+      {(['appleMusicId', 'spotifyId', 'soundcloudId', 'deezerId', 'audiomackId', 'amazonId'] as const).map((key) => {
+        const labels: Record<string, string> = { appleMusicId: 'Apple Music ID:', spotifyId: 'Spotify ID:', soundcloudId: 'Soundcloud ID:', deezerId: 'Deezer ID:', audiomackId: 'Audiomack ID:', amazonId: 'Amazon ID:' };
+        return (
+          <ArtistRow key={key} label={labels[key]}>
+            <div className="flex items-center gap-2">
+              <input type="text" placeholder="Enter ID if you already have one" value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+              <Info className="w-5 h-5 flex-shrink-0" style={{ color: '#CBD5E1' }} />
+            </div>
+          </ArtistRow>
+        );
+      })}
+
+      <ArtistRow label="Type"><ArtistDD value={af.type} options={['Solo Artist', 'Band / Group', 'Orchestra', 'Choir']} onChange={v => setAf({ type: v })} /></ArtistRow>
+      <ArtistRow label="Role"><ArtistDD value={af.role} options={['Main Artist', 'Featured Artist', 'Composer', 'Producer', 'Lyricist']} onChange={v => setAf({ role: v })} /></ArtistRow>
+      <ArtistRow label="Main Genre"><ArtistDD value={af.genre} options={['Pop', 'Hip-Hop / Rap', 'R&B / Soul', 'Rock', 'Electronic', 'Jazz', 'Classical', 'Country', 'Latin', 'Reggae', 'Gospel', 'Other']} onChange={v => setAf({ genre: v })} /></ArtistRow>
+
+      <ArtistRow label="Artist bio:">
+        <textarea placeholder="Add a short description of you and your music" value={af.bio} onChange={e => setAf({ bio: e.target.value })} rows={4} className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all border resize-none" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+      </ArtistRow>
+
+      <ArtistRow label="Country"><ArtistDD value={af.country} options={['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'Brazil', 'Nigeria', 'South Africa', 'India', 'Other']} onChange={v => setAf({ country: v })} /></ArtistRow>
+
+      {(['websiteUrl', 'facebookUrl', 'xHandle', 'instagramHandle', 'youtubeChannel', 'tiktokUsername'] as const).map((key) => {
+        const meta: Record<string, string> = { websiteUrl: 'Website URL:|Enter your website address', facebookUrl: 'Facebook URL:|Enter page name', xHandle: 'X handle:|Enter X user name', instagramHandle: 'Instagram handle:|Enter Instagram user name', youtubeChannel: 'YouTube channel:|Enter YouTube channel name', tiktokUsername: 'TikTok username:|Enter TikTok page name' };
+        const [label, ph] = meta[key].split('|');
+        return (
+          <ArtistRow key={key} label={label}>
+            <input type="text" placeholder={ph} value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = '#ffffff'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+          </ArtistRow>
+        );
+      })}
+
+      <div className="flex justify-end pt-2">
+        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imagePreview)}>
+          Create Artist
+        </button>
+      </div>
     </div>
   );
 }
@@ -351,21 +459,20 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
   return (
     <>
     <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-      <div className="flex items-center justify-between mb-5 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('socialLinks.title')}</h3>
-        {!isAdding && userType !== 'artist' && (
+      <div className="flex items-center justify-end mb-5 sm:mb-6">
+        {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 border"
             style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">{t('socialLinks.addLink')}</span>
+            <span>{userType === 'artist' ? 'Add New Artist' : t('socialLinks.addLink')}</span>
           </button>
         )}
       </div>
 
-      {isAdding && (
+      {isAdding && userType !== 'artist' && (
         <div className="mb-5 p-4 sm:p-5 rounded-xl" style={{ backgroundColor: 'transparent' }}>
           <div className="space-y-3 sm:space-y-4">
             <div>
@@ -500,16 +607,35 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
         </div>
       )}
 
+      {isAdding && userType === 'artist' && (
+        <AddArtistForm
+          onClose={() => setIsAdding(false)}
+          onSubmit={(name, imagePreview) => {
+            const newArtist: SocialLink = {
+              id: `local-${Date.now()}`,
+              platform: 'Artist',
+              url: imagePreview || '',
+              display_name: name || 'New Artist',
+              channel_type: '',
+              channel_description: '',
+              verified: false,
+            };
+            setLinks(prev => [...prev, newArtist]);
+            setIsAdding(false);
+          }}
+        />
+      )}
+
       <div className="space-y-3">
         {links.length === 0 ? (
           <div className="text-center py-8 sm:py-12">
             <AnimatedLinkIcon />
             <p className="text-sm sm:text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
-              {t('socialLinks.noLinksYet')}
+              {userType === 'artist' ? 'No Artists added yet' : t('socialLinks.noLinksYet')}
             </p>
             {userType === 'artist' ? (
-              <p className="text-xs sm:text-sm" style={{ color: '#64748B' }}>
-                {t('socialLinks.accountsFromDistribution')}
+              <p className="text-xs sm:text-sm" style={{ color: '#CBD5E1' }}>
+                Artists added will show up here
               </p>
             ) : (
               userType === 'creator' || userType === 'business' ? null : (
@@ -530,18 +656,25 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: 'transparent' }}
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                    style={{ backgroundColor: 'var(--bg-elevated)' }}
                   >
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#F8FAFC' }} />
+                    {link.platform === 'Artist' && link.url
+                      ? <img src={link.url} alt={link.display_name} className="w-full h-full object-cover" />
+                      : link.platform === 'Artist'
+                        ? <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#CBD5E1' }} />
+                        : <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#F8FAFC' }} />
+                    }
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm sm:text-base font-medium truncate" style={{ color: '#F8FAFC' }}>
                       {link.display_name || link.platform}
                     </div>
-                    <div className="text-xs sm:text-sm truncate" style={{ color: '#F8FAFC' }}>
-                      {link.url.replace(/^https?:\/\//i, '')}
-                    </div>
+                    {link.platform !== 'Artist' && (
+                      <div className="text-xs sm:text-sm truncate" style={{ color: '#F8FAFC' }}>
+                        {link.url.replace(/^https?:\/\//i, '')}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0 ml-2">

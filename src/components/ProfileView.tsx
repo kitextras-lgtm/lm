@@ -21,7 +21,7 @@ interface ProfileViewProps {
   isEditing?: boolean;
   setIsEditing?: (editing: boolean) => void;
   onEditProfile?: () => void;
-  appliedTheme?: 'light' | 'grey' | 'dark';
+  appliedTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }
 
 // Account type icons with custom hover animations (matching UserTypeSelectionPage)
@@ -214,9 +214,9 @@ export function ProfileView({
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: appliedTheme === 'light' ? '#0F172A' : appliedTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-md border-b" style={{ backgroundColor: appliedTheme === 'light' ? 'rgba(15, 23, 42, 0.8)' : appliedTheme === 'grey' ? 'rgba(26, 26, 30, 0.8)' : 'rgba(0, 0, 0, 0.8)', borderColor: appliedTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : appliedTheme === 'grey' ? '#2A2A2E' : '#1a1a1a' }}>
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-subtle)' }}>
         <div className="flex items-center gap-6 px-4 py-3">
           {onBack && (
             <button 

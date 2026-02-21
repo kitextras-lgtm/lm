@@ -12,7 +12,7 @@ interface MobileBottomNavProps {
   setActiveSection: (section: string) => void;
   unreadCount?: number;
   profilePicture?: string | null;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
   userType?: 'artist' | 'creator' | 'business' | 'admin';
 }
 

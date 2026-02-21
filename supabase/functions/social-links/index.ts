@@ -21,16 +21,20 @@ Deno.serve(async (req: Request) => {
     if (req.method === "GET") {
       const url = new URL(req.url);
       const userId = url.searchParams.get("userId");
-      if (!userId) {
-        return new Response(JSON.stringify({ success: false, message: "userId required" }), {
+      const platform = url.searchParams.get("platform");
+
+      if (!userId && !platform) {
+        return new Response(JSON.stringify({ success: false, message: "userId or platform required" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const { data, error } = await supabase
-        .from("social_links")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+
+      let query = supabase.from("social_links").select("*");
+      if (userId) query = query.eq("user_id", userId);
+      if (platform) query = query.ilike("platform", platform);
+      query = query.order("created_at", { ascending: false });
+
+      const { data, error } = await query;
       if (error) throw error;
       return new Response(JSON.stringify({ success: true, links: data }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },

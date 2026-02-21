@@ -468,6 +468,8 @@ export function LoginPage() {
                         borderRadius: '8px',
                         boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'
                       }}
+                      onFocus={(e) => { e.target.style.boxShadow = 'inset 0 0 0 2px #ffffff'; }}
+                      onBlur={(e) => { e.target.style.boxShadow = 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'; }}
                       disabled={loading}
                     />
                   ))}

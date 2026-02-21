@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare, User } from 'lucide-react';
+import { Video, Instagram, Music2, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare, User, ImageIcon } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
 import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
@@ -37,7 +37,7 @@ import MoreView from '../components/MoreView';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGE_MAP, LOCALE_TO_NAME } from '../i18n';
 
-function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
+function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -47,7 +47,7 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
           width="32" 
           height="24" 
           rx="6" 
-          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')} 
+          stroke={isHovered ? "#FF0000" : '#94A3B8'} 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -56,10 +56,10 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
         />
         <path
           d="M20 18L32 24L20 30V18Z"
-          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          stroke={isHovered ? "#FF0000" : '#94A3B8'}
           strokeWidth="2.5"
           strokeLinejoin="round"
-          fill={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          fill={isHovered ? "#FF0000" : '#94A3B8'}
           style={{
             transform: isHovered ? "scale(1.15)" : "scale(1)",
             transformOrigin: "24px 24px",
@@ -71,7 +71,7 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
   );
 }
 
-function TikTokIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
+function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   const notePath = "M32 8V28C32 34.6 26.6 40 20 40C13.4 40 8 34.6 8 28C8 21.4 13.4 16 20 16V22C16.7 22 14 24.7 14 28C14 31.3 16.7 34 20 34C23.3 34 26 31.3 26 28V8H32Z";
   const wavePath = "M32 8C32 8 36 9 38 12C40 15 40 18 40 18";
 
@@ -121,20 +121,20 @@ function TikTokIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgr
         >
           <path
             d={notePath}
-            stroke={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'}
+            stroke='#94A3B8'
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <path d={wavePath} stroke={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d={wavePath} stroke='#94A3B8' strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
   );
 }
 
-function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
+function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -153,7 +153,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           width="28" 
           height="28" 
           rx="8" 
-          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          stroke={isHovered ? "url(#igGradient)" : '#94A3B8'}
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -164,7 +164,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           cx="24"
           cy="24"
           r="7"
-          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8')}
+          stroke={isHovered ? "url(#igGradient)" : '#94A3B8'}
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -177,7 +177,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           cx="32"
           cy="16"
           r="2"
-          fill={backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8'}
+          fill='#94A3B8'
           style={{
             opacity: isHovered ? 1 : 0.6,
             transition: "opacity 0.3s ease-in-out",
@@ -319,7 +319,7 @@ const OPPORTUNITIES: CampaignData[] = [
   }
 ];
 
-function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
+function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   const [showFullRules, setShowFullRules] = useState(false);
 
   if (!campaign) return null;
@@ -333,7 +333,7 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
       <div 
         className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
         style={{ 
-          backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
+          backgroundColor: 'var(--bg-card)',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           animation: 'popOut 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
@@ -366,8 +366,8 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
                   </svg>
                 </div>
               </div>
-              <p className="text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>{campaign.timeAgo}</p>
-              <p className="text-base font-medium mt-1.5" style={{ color: '#94A3B8' }}>{campaign.title}</p>
+              <p className="text-sm" style={{ color: '#CBD5E1' }}>{campaign.timeAgo}</p>
+              <p className="text-base font-medium mt-1.5" style={{ color: '#CBD5E1' }}>{campaign.title}</p>
             </div>
           </div>
         </div>
@@ -376,15 +376,15 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
         <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
           <div className="flex items-start">
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Ends</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Language</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-2" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Platforms</p>
+              <p className="text-xs mb-2" style={{ color: '#CBD5E1' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
@@ -404,11 +404,11 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
               </div>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Pay Type</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Pay Type</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
             </div>
             <div className="flex-1 text-center">
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Payout</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Payout</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
             </div>
           </div>
@@ -417,13 +417,13 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
         {/* Details section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Details</h3>
-          <p className="text-sm leading-relaxed" style={{ color: '#94A3B8' }}>{campaign.description}</p>
+          <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>{campaign.description}</p>
         </div>
 
         {/* Rules section */}
         <div className="px-7 pb-5">
           <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Rules</h3>
-          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#94A3B8' }}>
+          <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#CBD5E1' }}>
             {campaign.rules.map((rule, index) => (
               <p key={index} className="mb-1.5">• {rule}</p>
             ))}
@@ -444,11 +444,11 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
           <div className="px-7 pb-6">
             <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>What to include</h3>
             <div className="flex items-start gap-4">
-              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#CBD5E1' }} />
               <div>
                 <p className="text-base font-medium" style={{ color: '#F8FAFC' }}>Caption, tags, text</p>
-                <p className="text-xs font-semibold mt-2" style={{ color: '#94A3B8' }}>REQUIRED HASHTAGS</p>
-                <p className="text-sm mt-1.5" style={{ color: '#94A3B8' }}>{campaign.requiredHashtags.join(' ')}</p>
+                <p className="text-xs font-semibold mt-2" style={{ color: '#CBD5E1' }}>REQUIRED HASHTAGS</p>
+                <p className="text-sm mt-1.5" style={{ color: '#CBD5E1' }}>{campaign.requiredHashtags.join(' ')}</p>
               </div>
             </div>
           </div>
@@ -481,12 +481,12 @@ function RevenueAnalyticsCard() {
 
       <div className="space-y-6 sm:space-y-8">
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('home.totalRevenue')}</span>
+          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.totalRevenue')}</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$2,847.50</span>
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('home.change')}</span>
+          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.change')}</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+6.1%</span>
         </div>
       </div>
@@ -757,7 +757,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
       
       <div className="flex flex-col items-center gap-3 mt-8">
         <PowerWidgetDischarged />
-        <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+        <div className="text-sm" style={{ color: 'var(--text-primary)' }}>
           Status: <span style={{ color: '#ef4444' }}>Disconnected</span>
         </div>
       </div>
@@ -777,12 +777,12 @@ function TotalSongsDistributedCard() {
 
       <div className="space-y-6 sm:space-y-8">
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Songs</span>
+          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Total Songs</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>127</span>
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>This Month</span>
+          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>This Month</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: '#10b981' }}>+12</span>
         </div>
       </div>
@@ -794,14 +794,13 @@ const SettingsNavButton = ({
   onClick, 
   isActive, 
   icon, 
-  label,
-  backgroundTheme 
+  label
 }: { 
   onClick: () => void; 
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
-  backgroundTheme: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -814,7 +813,7 @@ const SettingsNavButton = ({
         isActive ? 'shadow-md' : 'hover:brightness-105'
       }`}
       style={{
-        backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent',
+        backgroundColor: isActive ? 'var(--bg-active)' : 'transparent',
         color: 'var(--text-primary)'
       }}
     >
@@ -828,14 +827,13 @@ const MobileSettingsButton = ({
   onClick, 
   isActive, 
   icon, 
-  label,
-  backgroundTheme 
+  label
 }: { 
   onClick: () => void; 
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
-  backgroundTheme: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -848,7 +846,7 @@ const MobileSettingsButton = ({
       onTouchEnd={() => setIsHovered(false)}
       className="lg:hidden w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200"
       style={{ 
-        backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : (isHovered ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent'),
+        backgroundColor: isActive ? 'var(--bg-active)' : (isHovered ? 'var(--bg-active)' : 'transparent'),
         transform: isHovered ? 'scale(0.98)' : 'scale(1)'
       }}
     >
@@ -890,10 +888,10 @@ const MobileSettingsMenuItem = ({
       style={{ borderBottom: showBorder ? '1px solid rgba(75, 85, 99, 0.2)' : 'none' }}
     >
       <div className="flex items-center gap-3">
-        <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
+        <span style={{ color: '#F8FAFC' }}>{React.cloneElement(icon, { isHovered })}</span>
         <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
       </div>
-      <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     </button>
@@ -988,6 +986,31 @@ export function ArtistDashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(false);
+  const [releaseStep, setReleaseStep] = useState(1);
+  const [showReleaseForm, setShowReleaseForm] = useState(false);
+  const [myReleasesTab, setMyReleasesTab] = useState<'in-progress' | 'complete' | 'inactive'>('in-progress');
+  const [releasesFilter, setReleasesFilter] = useState('Any release type');
+  const [releasesFilterOpen, setReleasesFilterOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const [releaseChecklist, setReleaseChecklist] = useState([false, false, false]);
+  const [releaseForm, setReleaseForm] = useState({
+    title: '',
+    copyrightHolder: '',
+    copyrightYear: String(new Date().getFullYear()),
+    productionHolder: '',
+    productionYear: String(new Date().getFullYear()),
+    recordLabel: 'Independent',
+    releaseArtists: '',
+    genre: '',
+    secondaryGenre: '',
+    language: 'English',
+    releaseDate: '',
+    stores: [] as string[],
+    tracks: [] as { title: string; featuring: string; explicit: boolean }[],
+    artworkFile: null as File | null,
+    artworkPreview: '' as string,
+  });
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
   const [earningsTab, setEarningsTab] = useState<'available' | 'pending' | 'paidout'>('available');
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('personal');
@@ -1692,6 +1715,12 @@ export function ArtistDashboard() {
   };
 
   useEffect(() => {
+    const h = (e: MouseEvent) => { if (filterRef.current && !filterRef.current.contains(e.target as Node)) setReleasesFilterOpen(false); };
+    if (releasesFilterOpen) document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [releasesFilterOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -1740,7 +1769,7 @@ export function ArtistDashboard() {
               <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: '#F8FAFC' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
-              <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
+              <p className="text-xs lg:text-sm" style={{ color: '#CBD5E1' }}>
                 {(formData.username || userProfile?.username) ? `@${formData.username || userProfile?.username}` : t('personalInfo.noUsername')}
               </p>
             </div>
@@ -1756,7 +1785,7 @@ export function ArtistDashboard() {
 
         <div className="grid grid-cols-2 gap-2 lg:gap-3">
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.firstName')}</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.firstName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1781,7 +1810,7 @@ export function ArtistDashboard() {
           </div>
 
           <div>
-            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.lastName')}</label>
+            <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.lastName')}</label>
             <div className="flex items-center gap-1 lg:gap-2">
               <input
                 type="text"
@@ -1802,10 +1831,10 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.username')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.username')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <span className="text-xs lg:text-sm" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>@</span>
+              <span className="text-xs lg:text-sm" style={{ color: '#F8FAFC' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -1818,7 +1847,7 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.bio')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.bio')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <textarea
               value={formData.bio || ''}
@@ -1838,10 +1867,10 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.location')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.location')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#F8FAFC' }} />
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -1863,10 +1892,10 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.languagesPostIn')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.languagesPostIn')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: '#F8FAFC' }} />
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -1888,7 +1917,7 @@ export function ArtistDashboard() {
         </div>
 
         <div>
-          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#94A3B8' }}>{t('personalInfo.email')}</label>
+          <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#F8FAFC' }}>{t('personalInfo.email')}</label>
           <input
             type="email"
             value={formData.email}
@@ -1926,7 +1955,7 @@ export function ArtistDashboard() {
                 fetchUserProfile();
               }}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', color: backgroundTheme === 'light' ? '#000000' : 'var(--text-primary)' }}
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
             >
               {t('common.cancel')}
             </button>
@@ -1960,7 +1989,7 @@ export function ArtistDashboard() {
       {/* Tipalti Status at the top */}
       <div className="flex items-center gap-2 mb-6">
         <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-        <span className="text-sm" style={{ color: '#94A3B8' }}>
+        <span className="text-sm" style={{ color: '#F8FAFC' }}>
           Tipalti: {isTipaltiConnected ? t('payment.tipaltiConnected') : t('payment.tipaltiNotConnected')}
         </span>
       </div>
@@ -1971,9 +2000,9 @@ export function ArtistDashboard() {
           onClick={() => setShowPaymentForm(true)}
           className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110 border" 
           style={{ 
-            backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', 
-            borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', 
-            color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' 
+            backgroundColor: 'var(--bg-card)', 
+            borderColor: 'var(--border-subtle)', 
+            color: '#94A3B8' 
           }}>
           <Plus className="w-5 h-5" />
           {t('payment.connectPayment')}
@@ -1983,18 +2012,18 @@ export function ArtistDashboard() {
       {/* Payment Method Form */}
       {showPaymentForm && (
         <div className="mt-8 w-full max-w-[450px] mx-auto">
-          <div className="rounded-2xl border p-6" style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(15, 23, 42, 0.5)' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+          <div className="rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>{t('payment.paymentMethod')}</h3>
-                <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>{t('payment.addPaymentDesc')}</p>
+                <p className="text-sm mt-1" style={{ color: '#CBD5E1' }}>{t('payment.addPaymentDesc')}</p>
               </div>
               <button 
                 onClick={() => setShowPaymentForm(false)}
                 className="p-2 rounded-full hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5" style={{ color: '#94A3B8' }} />
+                <X className="w-5 h-5" style={{ color: '#F8FAFC' }} />
               </button>
             </div>
 
@@ -2060,7 +2089,7 @@ export function ArtistDashboard() {
                 <>
                   {/* Name on Card */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.nameOnCard')}</label>
+                    <label className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('payment.nameOnCard')}</label>
                     <input
                       type="text"
                       value={paymentFormData.nameOnCard}
@@ -2079,7 +2108,7 @@ export function ArtistDashboard() {
 
                   {/* City */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.city')}</label>
+                    <label className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('payment.city')}</label>
                     <input
                       type="text"
                       value={paymentFormData.city}
@@ -2098,7 +2127,7 @@ export function ArtistDashboard() {
 
                   {/* Card Number */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.cardNumber')}</label>
+                    <label className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('payment.cardNumber')}</label>
                     <input
                       type="text"
                       value={paymentFormData.cardNumber}
@@ -2119,7 +2148,7 @@ export function ArtistDashboard() {
                   <div className="grid grid-cols-3 gap-4">
                     {/* Expiry Month */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.expires')}</label>
+                      <label className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('payment.expires')}</label>
                       <select
                         value={paymentFormData.expiryMonth}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
@@ -2150,7 +2179,7 @@ export function ArtistDashboard() {
 
                     {/* Expiry Year */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.year')}</label>
+                      <label className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('payment.year')}</label>
                       <select
                         value={paymentFormData.expiryYear}
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
@@ -2174,7 +2203,7 @@ export function ArtistDashboard() {
 
                     {/* CVC */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium" style={{ color: '#94A3B8' }}>{t('payment.cvc')}</label>
+                      <label className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('payment.cvc')}</label>
                       <input
                         type="text"
                         value={paymentFormData.cvc}
@@ -2196,7 +2225,7 @@ export function ArtistDashboard() {
 
               {/* PayPal/Apple Pay placeholder */}
               {(paymentFormData.paymentType === 'paypal' || paymentFormData.paymentType === 'apple') && (
-                <div className="text-center py-8" style={{ color: '#94A3B8' }}>
+                <div className="text-center py-8" style={{ color: '#CBD5E1' }}>
                   <p className="text-sm">{paymentFormData.paymentType === 'paypal' ? t('payment.redirectPaypal') : t('payment.redirectApple')}</p>
                 </div>
               )}
@@ -2321,7 +2350,7 @@ export function ArtistDashboard() {
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface</h3>
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Message Notifications</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
@@ -2338,10 +2367,10 @@ export function ArtistDashboard() {
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('notifications.email')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.newFeatures')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.newFeaturesDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('notifications.newFeaturesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailNewFeatures}
@@ -2354,7 +2383,7 @@ export function ArtistDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.platformUpdates')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.platformUpdatesDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('notifications.platformUpdatesDesc')}</p>
               </div>
               <ToggleSwitch
                 isActive={emailPlatformUpdates}
@@ -2459,7 +2488,7 @@ export function ArtistDashboard() {
             style={{
               backgroundColor: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.25)',
-              color: backgroundTheme === 'light' ? '#FFFFFF' : '#94A3B8',
+              color: '#94A3B8',
             }}
           >
             {t('common.cancel')}
@@ -2483,16 +2512,16 @@ export function ArtistDashboard() {
   const renderGuides = () => (
     <div className="scroll-mt-6 px-4 lg:px-6 py-6">
       <h3 className="text-xl font-bold mb-4" style={{ color: '#F8FAFC' }}>Guides</h3>
-      <p className="text-sm mb-6" style={{ color: '#94A3B8' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
+      <p className="text-sm mb-6" style={{ color: '#CBD5E1' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+        <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <h4 className="font-semibold mb-2" style={{ color: '#F8FAFC' }}>Getting Started</h4>
-          <p className="text-sm" style={{ color: '#94A3B8' }}>Learn the basics of using Elevate and setting up your profile.</p>
+          <p className="text-sm" style={{ color: '#CBD5E1' }}>Learn the basics of using Elevate and setting up your profile.</p>
         </div>
-        <div className="p-4 rounded-xl border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+        <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <h4 className="font-semibold mb-2" style={{ color: '#F8FAFC' }}>Campaign Tips</h4>
-          <p className="text-sm" style={{ color: '#94A3B8' }}>Discover best practices for creating successful campaign submissions.</p>
+          <p className="text-sm" style={{ color: '#CBD5E1' }}>Discover best practices for creating successful campaign submissions.</p>
         </div>
       </div>
     </div>
@@ -2522,7 +2551,7 @@ export function ArtistDashboard() {
       </button>
       <button 
         className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200" 
-        style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}
+        style={{ borderColor: 'var(--border-subtle)', color: '#F8FAFC' }}
         onClick={() => setActiveSection('home')}
       >
         {t('common.cancel')}
@@ -2537,6 +2566,8 @@ export function ArtistDashboard() {
           return '#0F172A';
         case 'grey':
           return '#1A1A1E';
+        case 'rose':
+          return '#120810';
         case 'dark':
         default:
           return '#000000';
@@ -2575,14 +2606,14 @@ export function ArtistDashboard() {
               className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
               style={{ 
                 backgroundColor: getPreviewBackground(), 
-                borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' 
+                borderColor: 'var(--border-subtle)' 
               }}
             >
               <div className="flex items-center gap-4 mb-4">
                 <div 
                   className="w-10 h-10 rounded-full overflow-hidden"
                   style={{ 
-                    backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#2f2f2f',
+                    backgroundColor: 'var(--bg-elevated)',
                   }}
                 >
                   <img
@@ -2607,7 +2638,7 @@ export function ArtistDashboard() {
           {/* Background Selector */}
           <div>
             <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.backgroundTheme')}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {/* Light Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -2703,6 +2734,59 @@ export function ArtistDashboard() {
                 <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
                 <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
               </div>
+
+              {/* Rose Option */}
+              <div
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'rose' ? 'border-white' : 'border-gray-600'
+                }`}
+                style={{ backgroundColor: '#120810' }}
+                onClick={() => setBackgroundTheme('rose')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'rose'
+                      ? 'bg-white border-white'
+                      : 'bg-white border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'rose' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#1C1018' }}></div>
+                  <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#2E1A28' }}></div>
+                  <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
+                </div>
+                <h4 className="font-semibold text-white mb-1">Rose</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar Settings */}
+          <div>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.sidebar')}</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-xl border transition-all duration-200" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5" style={{ color: '#CBD5E1' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>{t('display.keepCollapsed')}</p>
+                    <p className="text-xs" style={{ color: '#9CA3AF' }}>{t('display.keepCollapsedDesc')}</p>
+                  </div>
+                </div>
+                <ToggleSwitch
+                  isActive={sidebarPermanentlyCollapsed}
+                  onToggle={() => setSidebarPermanentlyCollapsed(!sidebarPermanentlyCollapsed)}
+                  backgroundTheme={backgroundTheme}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -2741,19 +2825,19 @@ export function ArtistDashboard() {
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('language.interfaceLanguage')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="min-w-0 flex-1">
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('language.displayLanguage')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.chooseLanguage')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('language.chooseLanguage')}</p>
               </div>
               <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
                 <button
                   type="button"
                   onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                   className="w-full px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
-                  style={{ backgroundColor: 'transparent', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: '#F8FAFC' }}
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: '#F8FAFC' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = backgroundTheme === 'light' ? 'rgba(255, 255, 255, 0.1)' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0a0a0a';
+                    e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                     e.currentTarget.style.transform = 'translateY(-1px)';
                   }}
                   onMouseLeave={(e) => {
@@ -2774,7 +2858,7 @@ export function ArtistDashboard() {
                 {isLanguageDropdownOpen && (
                   <div
                     className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
-                    style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : 'rgba(0, 0, 0, 0.95)', border: backgroundTheme === 'light' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.5)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
                   >
                     <div className="max-h-60 overflow-y-auto">
                       {languageOptions.map((option) => {
@@ -2869,8 +2953,9 @@ export function ArtistDashboard() {
           userProfile={userProfile || cachedProfile}
           unreadCount={unreadCount}
           cachedProfilePic={cachedProfilePic}
-          isCollapsed={sidebarCollapsed}
+          isCollapsed={sidebarPermanentlyCollapsed ? true : sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
+          permanentlyCollapsed={sidebarPermanentlyCollapsed}
           userType="artist"
         />
 
@@ -2885,7 +2970,7 @@ export function ArtistDashboard() {
 
         {/* Main Content Area - margin adjusts based on sidebar state */}
         <main 
-          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
+          className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarPermanentlyCollapsed || sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
           style={{ 
             backgroundColor: 'var(--bg-primary)',
             color: 'var(--text-primary)'
@@ -2929,10 +3014,10 @@ export function ArtistDashboard() {
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.availableBalance')}</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="mt-auto">
                   <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
@@ -2940,66 +3025,66 @@ export function ArtistDashboard() {
               </div>
 
               {/* Pending Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Lifetime Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.affiliateEarnings')}</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }} />
+                  <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
               </div>
             </div>
 
             {/* Transaction History Section */}
-            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
               {/* Tabs */}
               <div className="flex gap-2 mb-6">
                 <button 
                   onClick={() => setEarningsTab('available')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
-                  style={{ backgroundColor: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'available' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'available' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'available' ? '#F8FAFC' : '#94A3B8', border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Available
                 </button>
                 <button 
                   onClick={() => setEarningsTab('pending')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'pending' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'pending' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'pending' ? '#F8FAFC' : '#94A3B8', border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Pending
                 </button>
                 <button 
                   onClick={() => setEarningsTab('paidout')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000') : 'transparent', color: earningsTab === 'paidout' ? (backgroundTheme === 'light' ? '#FFFFFF' : backgroundTheme === 'grey' ? '#F8FAFC' : '#F8FAFC') : (backgroundTheme === 'light' ? '#94A3B8' : backgroundTheme === 'grey' ? '#94A3B8' : '#94A3B8'), border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'paidout' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'paidout' ? '#F8FAFC' : '#94A3B8', border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Paid out
                 </button>
               </div>
 
               {/* Table Headers */}
-              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Date</div>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Clip</div>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Campaign/Description</div>
-                <div className="text-xs font-medium" style={{ color: backgroundTheme === 'light' ? '#94A3B8' : '#94A3B8' }}>Amount</div>
+              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Date</div>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Clip</div>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Campaign/Description</div>
+                <div className="text-xs font-medium" style={{ color: '#94A3B8' }}>Amount</div>
               </div>
 
               {/* Empty State */}
@@ -3079,7 +3164,7 @@ export function ArtistDashboard() {
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.myAccounts')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.myAccountsDesc')}</p>
+            <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>Add New Artist</p>
           </div>
 
           <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} />
@@ -3088,7 +3173,7 @@ export function ArtistDashboard() {
         <section className="mb-8">
           <div className="mb-5 sm:mb-7">
             <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.referralSection')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.referralSectionDesc')}</p>
+            <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
           <ReferralSection userType="artist" userId={currentUserId} />
@@ -3111,16 +3196,780 @@ export function ArtistDashboard() {
           </div>
         )}
 
-        {activeSection === 'explore' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
-            <section className="mb-10 sm:mb-20">
-              <div className="mb-5 sm:mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Create Submission</h2>
-                <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
+        {activeSection === 'explore' && !showReleaseForm && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
+
+            {/* Page header */}
+            <div className="mb-10">
+              <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Distribution</h1>
+              <p className="text-base" style={{ color: '#CBD5E1' }}>Distribute your music to all major streaming platforms worldwide.</p>
+            </div>
+
+            {/* New Release section */}
+            <div className="mb-14">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: '#CBD5E1', letterSpacing: '0.12em' }}>New Release</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Standard Release card */}
+                <div
+                  className="group rounded-2xl p-6 flex flex-col gap-5 cursor-pointer transition-all duration-200 hover:brightness-110"
+                  style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+                  onClick={() => { setShowReleaseForm(true); setReleaseStep(1); }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <Music2 className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Standard Release</p>
+                    <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>Singles, EPs and albums distributed to all major stores.</p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowReleaseForm(true); setReleaseStep(1); }}
+                    className="self-start flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110"
+                    style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Create New
+                  </button>
+                </div>
               </div>
-            </section>
+            </div>
+
+            {/* My Releases section */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>My Releases</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm" style={{ color: '#CBD5E1' }}>Filter by:</span>
+                  <div className="relative" ref={filterRef}>
+                    <button
+                      type="button"
+                      onClick={() => setReleasesFilterOpen(o => !o)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border"
+                      style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                      onFocus={e => e.currentTarget.style.borderColor = '#ffffff'}
+                      onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+                    >
+                      {releasesFilter}
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${releasesFilterOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {releasesFilterOpen && (
+                      <div className="absolute right-0 z-50 mt-1 rounded-xl overflow-hidden shadow-xl animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', minWidth: '160px' }}>
+                        {['Any release type', 'Single', 'EP', 'Album'].map(opt => (
+                          <button key={opt} type="button" onClick={() => { setReleasesFilter(opt); setReleasesFilterOpen(false); }} className="w-full px-4 py-2.5 text-sm text-left flex items-center justify-between transition-all" style={{ color: 'var(--text-primary)', backgroundColor: releasesFilter === opt ? 'var(--bg-elevated)' : 'transparent' }} onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }} onMouseLeave={e => { e.currentTarget.style.backgroundColor = releasesFilter === opt ? 'var(--bg-elevated)' : 'transparent'; e.currentTarget.style.transform = ''; }}>
+                            {opt}{releasesFilter === opt && <span style={{ color: '#CBD5E1' }}>✓</span>}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex items-center gap-0 mb-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                {(['in-progress', 'complete', 'inactive'] as const).map((tab) => {
+                  const label = tab === 'in-progress' ? 'In-Progress' : tab.charAt(0).toUpperCase() + tab.slice(1);
+                  const active = myReleasesTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setMyReleasesTab(tab)}
+                      className="px-4 py-3 text-sm font-semibold transition-all duration-200 relative"
+                      style={{ color: active ? 'var(--text-primary)' : '#CBD5E1' }}
+                    >
+                      {label}
+                      {active && (
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Empty state */}
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                  <Music2 className="w-6 h-6" style={{ color: '#CBD5E1' }} />
+                </div>
+                <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                  {myReleasesTab === 'in-progress' ? 'No releases in progress' : myReleasesTab === 'complete' ? 'No completed releases' : 'No inactive releases'}
+                </p>
+                <p className="text-sm max-w-xs" style={{ color: '#CBD5E1' }}>
+                  {myReleasesTab === 'in-progress' ? 'Create a new release above to get started.' : 'Submitted releases will appear here once processed.'}
+                </p>
+              </div>
+            </div>
           </div>
         )}
+
+        {activeSection === 'explore' && showReleaseForm && (() => {
+          const steps = ['Details', 'Tracks', 'Schedule', 'Stores', 'Review'];
+          const currentYear = new Date().getFullYear();
+          const years = Array.from({ length: 10 }, (_, i) => String(currentYear + 1 - i));
+          const allStores = ['Spotify', 'Apple Music', 'Amazon Music', 'YouTube Music', 'Tidal', 'Deezer', 'Pandora', 'SoundCloud'];
+          const rf = releaseForm;
+          const setRf = (patch: Partial<typeof releaseForm>) => setReleaseForm(f => ({ ...f, ...patch }));
+
+          const inputCls = 'w-full px-4 py-3 rounded-xl text-base focus:outline-none transition-all';
+          const inputStyle = { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' };
+          const labelStyle = { color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em', marginBottom: '8px', display: 'block' };
+
+          const ReleaseDropdown = ({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) => {
+            const [open, setOpen] = React.useState(false);
+            const ref = React.useRef<HTMLDivElement>(null);
+            React.useEffect(() => {
+              const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+              if (open) document.addEventListener('mousedown', handler);
+              return () => document.removeEventListener('mousedown', handler);
+            }, [open]);
+            return (
+              <div className="relative" ref={ref}>
+                <button
+                  type="button"
+                  onClick={() => setOpen(v => !v)}
+                  className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all duration-200 flex items-center justify-between group border"
+                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-card)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#ffffff'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+                >
+                  <span className="transition-all duration-200">{value || options[0]}</span>
+                  <ChevronDown className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${open ? 'rotate-180' : ''}`} style={{ color: '#CBD5E1' }} />
+                </button>
+                {open && (
+                  <div className="absolute z-50 w-full mt-1 rounded-xl shadow-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+                    <div className="max-h-52 overflow-y-auto">
+                      {options.map(opt => {
+                        const isSelected = opt === value;
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => { onChange(opt); setOpen(false); }}
+                            className="w-full px-4 py-2.5 text-left text-sm transition-all duration-200 flex items-center justify-between group/opt"
+                            style={{ backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
+                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                          >
+                            <span className="transition-all duration-200">{opt}</span>
+                            {isSelected && <span className="text-xs" style={{ color: '#CBD5E1' }}>✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          };
+
+          return (
+            <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            <div className="flex gap-10 items-start">
+            <div className="flex-1 min-w-0">
+
+              {/* Back to lobby */}
+              <button
+                onClick={() => setShowReleaseForm(false)}
+                className="flex items-center gap-2 mb-6 text-sm font-medium transition-all hover:opacity-70"
+                style={{ color: '#CBD5E1' }}
+              >
+                <ChevronDown className="w-4 h-4 rotate-90" />
+                Back to My Music
+              </button>
+
+              {/* Step labels (no connector lines) */}
+              <div className="flex items-center gap-8 mb-10">
+                {steps.map((step, i) => {
+                  const num = i + 1;
+                  const done = releaseStep > num;
+                  const active = releaseStep === num;
+                  return (
+                    <button
+                      key={step}
+                      onClick={() => done && setReleaseStep(num)}
+                      className="flex items-center gap-2"
+                      style={{ cursor: done ? 'pointer' : 'default', opacity: active || done ? 1 : 0.4 }}
+                    >
+                      <span className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{num}</span>
+                      <span className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{step}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Title */}
+              <h2 className="text-3xl sm:text-4xl font-bold mb-10 tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                Create your release
+              </h2>
+
+              {/* ── STEP 1: Details ── */}
+              {releaseStep === 1 && (
+                <div className="space-y-8">
+                  {/* Section header */}
+                  <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>1</div>
+                    <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Release <span className="font-bold">Information</span></h3>
+                  </div>
+
+                  {/* Title */}
+                  <div>
+                    <label style={labelStyle}>Title of album, EP or single</label>
+                    <input
+                      type="text"
+                      value={rf.title}
+                      onChange={e => setRf({ title: e.target.value })}
+                      className={inputCls}
+                      style={inputStyle}
+                      placeholder=""
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
+                    />
+                  </div>
+
+                  {/* Copyright row */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label style={labelStyle}>Copyright Holder</label>
+                      <input type="text" value={rf.copyrightHolder} onChange={e => setRf({ copyrightHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Copyright Year</label>
+                      <ReleaseDropdown value={rf.copyrightYear} options={years} onChange={v => setRf({ copyrightYear: v })} />
+                    </div>
+                  </div>
+
+                  {/* Production row */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label style={labelStyle}>Production Holder</label>
+                      <input type="text" value={rf.productionHolder} onChange={e => setRf({ productionHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Production Year</label>
+                      <ReleaseDropdown value={rf.productionYear} options={years} onChange={v => setRf({ productionYear: v })} />
+                    </div>
+                  </div>
+
+                  {/* Record label row */}
+                  <div>
+                    <label style={labelStyle}>Record label</label>
+                    <ReleaseDropdown value={rf.recordLabel} options={['Independent', 'Sony Music', 'Universal Music', 'Warner Music']} onChange={v => setRf({ recordLabel: v })} />
+                  </div>
+
+                  {/* Release artists */}
+                  <div>
+                    <label style={labelStyle}>Release artist(s)</label>
+                    <input type="text" value={rf.releaseArtists} onChange={e => setRf({ releaseArtists: e.target.value })} className={inputCls} style={inputStyle} placeholder="Artist name" onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
+                  </div>
+
+                  {/* Genre — primary, secondary, language */}
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label style={labelStyle}>Primary genre</label>
+                        <ReleaseDropdown value={rf.genre || 'Select genre'} options={['Select genre', 'Pop', 'Hip-Hop', 'R&B', 'Rock', 'Electronic', 'Jazz', 'Classical', 'Country', 'Latin', 'Afrobeats', 'Alternative Rock', 'Indie', 'Soul', 'Other']} onChange={v => setRf({ genre: v === 'Select genre' ? '' : v })} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Secondary genre</label>
+                        <ReleaseDropdown value={rf.secondaryGenre || 'Optional'} options={['Optional', 'Pop', 'Hip-Hop', 'R&B', 'Rock', 'Electronic', 'Jazz', 'Classical', 'Country', 'Latin', 'Afrobeats', 'Alternative Rock', 'Indie', 'Soul', 'Samba', 'Other']} onChange={v => setRf({ secondaryGenre: v === 'Optional' ? '' : v })} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Language</label>
+                        <ReleaseDropdown value={rf.language} options={['English', 'Spanish', 'French', 'Portuguese', 'German', 'Italian', 'Japanese', 'Korean', 'Mandarin', 'Arabic', 'Hindi', 'Instrumental']} onChange={v => setRf({ language: v })} />
+                      </div>
+                    </div>
+
+                    {/* Info boxes */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-start gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
+                        <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>
+                          Not all genres are available on every store. When a genre you have selected does not exist on a specific store, we will select the closest alternative. The stores we distribute to will use this info when they categorize your release.<br /><br />
+                          You must select a primary genre, but a secondary genre is optional.
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
+                        <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>
+                          If your tracks have no lyrics, this can be used to target a language-specific audience.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Release Artwork */}
+                  <div className="space-y-4 pt-2">
+                    <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>2</div>
+                      <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Release <span className="font-bold">Artwork</span></h3>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-5">
+                      {/* Preview */}
+                      <div className="aspect-square rounded-xl overflow-hidden flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        {rf.artworkPreview ? (
+                          <img src={rf.artworkPreview} alt="Cover art preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="flex flex-col items-center gap-2">
+                            <ImageIcon className="w-10 h-10" style={{ color: '#CBD5E1' }} />
+                            <span className="text-xs" style={{ color: '#CBD5E1' }}>No artwork</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Requirements */}
+                      <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}>
+                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#93C5FD' }} />
+                        <div className="text-sm leading-relaxed space-y-2 text-center" style={{ color: '#CBD5E1' }}>
+                          <p className="font-semibold" style={{ color: '#F8FAFC' }}>Artwork requirements:</p>
+                          <p>Cover art must be a square .jpg or .jpeg file, at least 1400x1400 pixels, not blurry or pixelated and no more than 10MB in size.</p>
+                          <p>Cover art cannot contain:</p>
+                          <ul className="space-y-0.5 pl-3 list-none">
+                            <li className="flex items-start gap-1"><span>-</span><span>Social media logos or handles</span></li>
+                            <li className="flex items-start gap-1"><span>-</span><span>Website links or brand/record label logos</span></li>
+                            <li className="flex items-start gap-1"><span>-</span><span>Any text except for artist names and/or the name of the release</span></li>
+                          </ul>
+                          <p>If your cover art contains any of the above, we will have to reject your release. These rules are set by the music stores and we have to follow them.</p>
+                        </div>
+                      </div>
+
+                      {/* Upload */}
+                      <label
+                        className="aspect-square rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200"
+                        style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                      >
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const url = URL.createObjectURL(file);
+                              setRf({ artworkFile: file, artworkPreview: url });
+                            }
+                          }}
+                        />
+                        <ImageIcon className="w-8 h-8" style={{ color: '#CBD5E1' }} />
+                        <div className="text-center">
+                          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Drag files here</p>
+                          <p className="text-xs mt-0.5" style={{ color: '#CBD5E1' }}>or</p>
+                        </div>
+                        <span className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:brightness-110" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>
+                          Select file
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 2: Tracks ── */}
+              {releaseStep === 2 && (
+                <div className="space-y-8">
+                  {/* Section 1: Tracks and metadata */}
+                  <div className="space-y-5">
+                    <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>1</div>
+                      <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Tracks <span className="font-normal">and</span> <span className="font-bold">metadata</span></h3>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-5">
+                      {/* Left: audio upload + requirements */}
+                      <div className="space-y-4">
+                        <label
+                          className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all duration-200"
+                          style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+                          onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
+                          onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                          onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; e.currentTarget.style.backgroundColor = 'var(--bg-card)'; }}
+                          onDragLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; }}
+                          onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--border-subtle)'; e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; }}
+                        >
+                          <input type="file" accept=".wav,.mp3" className="hidden" />
+                          <Music2 className="w-9 h-9" style={{ color: '#CBD5E1' }} />
+                          <div className="text-center">
+                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Drag files here</p>
+                            <p className="text-xs mt-0.5" style={{ color: '#CBD5E1' }}>or</p>
+                          </div>
+                          <span className="px-4 py-1.5 rounded-full text-xs font-semibold" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>Select files</span>
+                        </label>
+
+                        {/* Audio requirements */}
+                        <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                          <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
+                          <div className="space-y-1">
+                            <p className="text-sm font-semibold" style={{ color: '#F8FAFC' }}>Audio file requirements</p>
+                            <div className="space-y-0.5 text-sm" style={{ color: '#CBD5E1' }}>
+                              <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file format must be .wav or .mp3 (.wav is preferred)</p>
+                              <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file size no larger than 200Mb</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: track list */}
+                      <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track List</p>
+
+                        {rf.tracks.length === 0 && (
+                          <div className="flex items-start gap-2 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
+                            <p className="text-sm" style={{ color: '#CBD5E1' }}>This release does not have any tracks, use the button on the left to start adding some.</p>
+                          </div>
+                        )}
+
+                        {rf.tracks.map((track, i) => (
+                          <div key={i} className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track {i + 1}</span>
+                              <button onClick={() => setRf({ tracks: rf.tracks.filter((_, j) => j !== i) })} style={{ color: 'var(--text-primary)' }}>
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <input type="text" placeholder="Track title" value={track.title} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, title: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
+                            <input type="text" placeholder="Featuring artists (optional)" value={track.featuring} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, featuring: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" checked={track.explicit} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, explicit: e.target.checked } : t) })} className="w-4 h-4 rounded" />
+                              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Explicit content</span>
+                            </label>
+                          </div>
+                        ))}
+
+                        <button
+                          onClick={() => setRf({ tracks: [...rf.tracks, { title: '', featuring: '', explicit: false }] })}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold w-full justify-center transition-all hover:brightness-110"
+                          style={{ border: '1px dashed var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}
+                        >
+                          <Plus className="w-4 h-4" /> Add track
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Checklist */}
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
+                      <div>
+                        <p className="text-sm font-semibold" style={{ color: '#F8FAFC' }}>Please complete the following checklist before proceeding</p>
+                        <p className="text-sm mt-0.5" style={{ color: '#CBD5E1' }}>Please note that answering incorrectly to any of the following questions may result in delays to your music being sent to retailers.</p>
+                      </div>
+                    </div>
+                    {[
+                      "I understand my release may be rejected from stores if I don't correctly label tracks as explicit that contain swear words or obscenities.",
+                      "I am authorised to distribute this music to stores and territories I select.",
+                      "I'm not using any other artist's name in my name, song titles, or album title, without their approval.",
+                    ].map((item, i) => (
+                      <label key={i} className="flex items-start gap-3 cursor-pointer" onClick={() => setReleaseChecklist(prev => prev.map((v, j) => j === i ? !v : v))}>
+                        <div
+                          className="w-5 h-5 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-all duration-200"
+                          style={{
+                            borderColor: releaseChecklist[i] ? 'var(--text-primary)' : 'var(--border-default)',
+                            backgroundColor: releaseChecklist[i] ? 'var(--text-primary)' : 'transparent',
+                          }}
+                        >
+                          {releaseChecklist[i] && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--bg-primary)' }} />}
+                        </div>
+                        <span className="text-sm select-none" style={{ color: 'var(--text-primary)' }}>{item}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* Section 2: Covers and Copyrighted Materials */}
+                  <div className="space-y-5">
+                    <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>2</div>
+                      <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Covers <span className="font-normal">and</span> <span className="font-bold">Copyrighted Materials</span></h3>
+                    </div>
+
+                    <p className="text-sm leading-relaxed" style={{ color: '#CBD5E1' }}>
+                      If your release contains any copyrighted material such as samples, please upload the documentation proving you own the copyright to the audio.<br />
+                      Without the required licensing documentation, music containing copyrighted material may be rejected by stores.
+                    </p>
+
+                    {(() => {
+                      const [copyrightOption, setCopyrightOption] = React.useState<'none' | 'upload'>('none');
+                      const [copyrightDocs, setCopyrightDocs] = React.useState<File[]>([]);
+                      return (
+                        <>
+                          <div className="space-y-3">
+                            {([
+                              { id: 'none', label: 'Continue without uploading copyright documentation' },
+                              { id: 'upload', label: 'Upload documentation proving I own the copyright to the audio' },
+                            ] as { id: 'none' | 'upload'; label: string }[]).map(({ id, label }) => (
+                              <label key={id} className="flex items-center gap-3 cursor-pointer" onClick={() => setCopyrightOption(id)}>
+                                <div
+                                  className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all duration-200"
+                                  style={{
+                                    borderColor: copyrightOption === id ? 'var(--text-primary)' : 'var(--border-default)',
+                                    backgroundColor: copyrightOption === id ? 'var(--text-primary)' : 'transparent',
+                                  }}
+                                >
+                                  {copyrightOption === id && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--bg-primary)' }} />}
+                                </div>
+                                <span className="text-sm font-medium select-none" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                              </label>
+                            ))}
+                          </div>
+
+                          {copyrightOption === 'upload' && (
+                            <div className="grid grid-cols-2 gap-5 mt-5">
+                              {/* File upload */}
+                              <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>File Upload</p>
+                                <label
+                                  className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all duration-200"
+                                  style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-card)' }}
+                                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
+                                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; }}
+                                  onDragLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
+                                  onDrop={(e) => {
+                                    e.preventDefault();
+                                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                                    const files = Array.from(e.dataTransfer.files);
+                                    setCopyrightDocs(prev => [...prev, ...files]);
+                                  }}
+                                >
+                                  <input
+                                    type="file"
+                                    className="hidden"
+                                    multiple
+                                    onChange={(e) => {
+                                      if (e.target.files) setCopyrightDocs(prev => [...prev, ...Array.from(e.target.files!)]);
+                                    }}
+                                  />
+                                  <svg className="w-10 h-10" style={{ color: '#CBD5E1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                                  <p className="text-sm" style={{ color: '#CBD5E1' }}>Drag here to upload</p>
+                                </label>
+                                <button
+                                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                                  style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                                  onClick={() => (document.querySelector('input[type=file]') as HTMLInputElement)?.click()}
+                                >
+                                  Select files...
+                                </button>
+                              </div>
+
+                              {/* Documents list */}
+                              <div className="rounded-xl p-5 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Documents</p>
+                                {copyrightDocs.length === 0 ? (
+                                  <p className="text-sm" style={{ color: '#CBD5E1' }}>No documents uploaded yet.</p>
+                                ) : (
+                                  <div className="space-y-2">
+                                    {copyrightDocs.map((f, i) => (
+                                      <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                                        <span className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{f.name}</span>
+                                        <button onClick={() => setCopyrightDocs(prev => prev.filter((_, j) => j !== i))} style={{ color: '#CBD5E1' }}>
+                                          <X className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 3: Schedule ── */}
+              {releaseStep === 3 && (
+                <div className="space-y-8">
+                  <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>3</div>
+                    <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Release <span className="font-bold">Schedule</span></h3>
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Release date</label>
+                    <input
+                      type="date"
+                      value={rf.releaseDate}
+                      onChange={e => setRf({ releaseDate: e.target.value })}
+                      className={inputCls}
+                      style={{ ...inputStyle, colorScheme: 'dark' }}
+                      onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                      onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
+                    />
+                  </div>
+                  <div className="rounded-xl p-5 space-y-2" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Delivery timeline</p>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Releases typically take 2–5 business days to appear on all stores. We recommend scheduling at least 7 days in advance for best results.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* ── STEP 4: Stores ── */}
+              {releaseStep === 4 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>4</div>
+                    <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Select <span className="font-bold">Stores</span></h3>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {allStores.map(store => {
+                      const selected = rf.stores.includes(store);
+                      return (
+                        <button
+                          key={store}
+                          onClick={() => setRf({ stores: selected ? rf.stores.filter(s => s !== store) : [...rf.stores, store] })}
+                          className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:brightness-110"
+                          style={{
+                            backgroundColor: selected ? 'var(--bg-active)' : 'var(--bg-elevated)',
+                            color: 'var(--text-primary)',
+                            border: `1px solid ${selected ? 'var(--border-default)' : 'var(--border-subtle)'}`,
+                          }}
+                        >
+                          {store}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    onClick={() => setRf({ stores: rf.stores.length === allStores.length ? [] : [...allStores] })}
+                    className="text-sm font-medium transition-all hover:opacity-80"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    {rf.stores.length === allStores.length ? 'Deselect all' : 'Select all stores'}
+                  </button>
+                </div>
+              )}
+
+              {/* ── STEP 5: Review ── */}
+              {releaseStep === 5 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>5</div>
+                    <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Review <span className="font-bold">& Submit</span></h3>
+                  </div>
+
+                  {[
+                    { label: 'Title', value: rf.title || '—' },
+                    { label: 'Artist(s)', value: rf.releaseArtists || '—' },
+                    { label: 'Genre', value: rf.genre || '—' },
+                    { label: 'Record Label', value: rf.recordLabel },
+                    { label: 'Copyright', value: `${rf.copyrightHolder || '—'} (${rf.copyrightYear})` },
+                    { label: 'Production', value: `${rf.productionHolder || '—'} (${rf.productionYear})` },
+                    { label: 'Release Date', value: rf.releaseDate || '—' },
+                    { label: 'Tracks', value: rf.tracks.length ? rf.tracks.map(t => t.title || 'Untitled').join(', ') : '—' },
+                    { label: 'Stores', value: rf.stores.length ? rf.stores.join(', ') : '—' },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-start justify-between gap-4 py-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <span className="text-sm font-medium flex-shrink-0" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                      <span className="text-sm text-right" style={{ color: 'var(--text-primary)' }}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Navigation buttons + progress bar */}
+              <div className="mt-10 pt-6 space-y-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                {/* Progress bar */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Step {releaseStep} of {steps.length}</span>
+                    <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{steps[releaseStep - 1]}</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {steps.map((_, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 h-1 rounded-full transition-all duration-300"
+                        style={{ backgroundColor: releaseStep > i ? 'var(--text-primary)' : 'var(--border-subtle)' }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                <button
+                  onClick={() => releaseStep > 1 ? setReleaseStep(s => s - 1) : setActiveSection('home')}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                  style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {releaseStep > 1 ? 'Back' : 'Cancel'}
+                </button>
+
+                {releaseStep < 5 ? (
+                  <button
+                    onClick={() => setReleaseStep(s => s + 1)}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                    style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                  >
+                    Continue <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setReleaseStep(1); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                    style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                  >
+                    Submit Release
+                  </button>
+                )}
+              </div>
+                </div>
+            </div>
+
+            {/* Right-side summary panel */}
+            <div className="hidden lg:block w-72 flex-shrink-0 sticky top-8">
+              <div className="rounded-2xl p-6 space-y-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                <h3 className="text-base font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Release Summary</h3>
+
+                <div className="space-y-3">
+                  {[
+                    { label: 'Title', value: rf.title || '—' },
+                    { label: 'Artist', value: rf.releaseArtists || '—' },
+                    { label: 'Genre', value: rf.genre || '—' },
+                    { label: 'Label', value: rf.recordLabel },
+                    { label: 'Release Date', value: rf.releaseDate || '—' },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-start justify-between gap-3">
+                      <span className="text-sm flex-shrink-0" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                      <span className="text-sm text-right font-medium" style={{ color: 'var(--text-primary)' }}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {rf.tracks.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Tracks ({rf.tracks.length})</p>
+                    <div className="space-y-1">
+                      {rf.tracks.map((t, i) => (
+                        <p key={i} className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{i + 1}. {t.title || 'Untitled'}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {rf.stores.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Stores ({rf.stores.length})</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {rf.stores.map(s => (
+                        <span key={s} className="text-sm px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+
+            </div>
+          </div>
+          );
+        })()}
 
               </main>
 

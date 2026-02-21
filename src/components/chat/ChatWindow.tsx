@@ -26,7 +26,7 @@ interface ChatWindowProps {
   currentUserId: string;
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
   onBack?: () => void;
   showBackButton?: boolean;
   // Instagram/X pattern: Pending conversation props
@@ -175,7 +175,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   currentUserId: string;
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
   onBack?: () => void;
   showBackButton?: boolean;
   isRequest?: boolean;

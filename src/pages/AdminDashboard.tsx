@@ -87,6 +87,7 @@ export function AdminDashboard() {
   interface SongEntry { title: string; artist: string; url: string; }
   interface CampaignForm {
     name: string;
+    bio: string;
     description: string;
     rules: string;
     how_it_works: string;
@@ -102,6 +103,7 @@ export function AdminDashboard() {
   interface Campaign {
     id: string;
     name: string;
+    bio: string | null;
     description: string | null;
     rules: string[] | null;
     how_it_works: string[] | null;
@@ -116,19 +118,24 @@ export function AdminDashboard() {
   }
 
   const emptyCampaignForm: CampaignForm = {
-    name: '', description: '', rules: '', how_it_works: '',
+    name: '', bio: '', description: '', rules: '', how_it_works: '',
     songs: [{ title: '', artist: '', url: '' }],
     language: 'English', platforms: [], pay_type: 'Per view', payout: '', ends_at: '',
     assign_to: 'all', assigned_user_ids: [],
   };
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaignUserSearch, setCampaignUserSearch] = useState('');
+  const [campaignYoutubeOnly, setCampaignYoutubeOnly] = useState(false);
+  const [userYoutubeIds, setUserYoutubeIds] = useState<Set<string>>(new Set());
   const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [showCampaignForm, setShowCampaignForm] = useState(false);
   const [campaignForm, setCampaignForm] = useState<CampaignForm>(emptyCampaignForm);
   const [campaignSaving, setCampaignSaving] = useState(false);
   const [campaignError, setCampaignError] = useState<string | null>(null);
   const [deletingCampaignId, setDeletingCampaignId] = useState<string | null>(null);
+  const [payTypeDropdownOpen, setPayTypeDropdownOpen] = useState(false);
+  const [reassigningCampaignId, setReassigningCampaignId] = useState<string | null>(null);
   const [expandedCampaignId, setExpandedCampaignId] = useState<string | null>(null);
 
   // Whitelist state
@@ -257,6 +264,7 @@ export function AdminDashboard() {
       const songsArr = campaignForm.songs.filter(s => s.title.trim() || s.artist.trim());
       const payload = {
         name: campaignForm.name.trim(),
+        bio: campaignForm.bio.trim() || null,
         description: campaignForm.description.trim() || null,
         rules: rulesArr.length ? rulesArr : null,
         how_it_works: howArr.length ? howArr : null,
@@ -266,9 +274,35 @@ export function AdminDashboard() {
         pay_type: campaignForm.pay_type,
         payout: campaignForm.payout.trim(),
         ends_at: campaignForm.ends_at ? new Date(campaignForm.ends_at).toISOString() : null,
+        assign_to: campaignForm.assign_to,
+        assigned_user_ids: campaignForm.assigned_user_ids,
       };
       const { data, error } = await supabase.from('campaigns').insert(payload).select().single();
       if (error) throw error;
+
+      // Insert user_campaigns rows
+      if (campaignForm.assign_to === 'specific' && campaignForm.assigned_user_ids.length > 0) {
+        const rows = campaignForm.assigned_user_ids.map(uid => ({ campaign_id: data.id, user_id: uid }));
+        const { error: ucErr } = await supabase.from('user_campaigns').insert(rows);
+        if (ucErr) console.error('user_campaigns insert error:', ucErr.message);
+      } else if (campaignForm.assign_to === 'all') {
+        // Use adminFetch (session-authenticated) to get all creator IDs
+        let creatorIds: string[] = users.filter(u => u.user_type === 'creator').map(u => u.id);
+        if (creatorIds.length === 0) {
+          try {
+            const res = await adminFetch('admin-users', { method: 'GET' });
+            if (res?.users) {
+              creatorIds = (res.users as any[]).filter(u => u.user_type === 'creator').map(u => u.id);
+            }
+          } catch (e) { console.error('Failed to fetch creator IDs via adminFetch:', e); }
+        }
+        if (creatorIds.length > 0) {
+          const rows = creatorIds.map(uid => ({ campaign_id: data.id, user_id: uid }));
+          const { error: ucErr } = await supabase.from('user_campaigns').insert(rows);
+          if (ucErr) console.error('user_campaigns insert error (all):', ucErr.message);
+        }
+      }
+
       setCampaigns(prev => [data, ...prev]);
       setCampaignForm(emptyCampaignForm);
       setShowCampaignForm(false);
@@ -276,6 +310,29 @@ export function AdminDashboard() {
       setCampaignError(e?.message || 'Failed to save campaign.');
     } finally {
       setCampaignSaving(false);
+    }
+  };
+
+  const handleReassignCampaign = async (campaign: Campaign) => {
+    setReassigningCampaignId(campaign.id);
+    try {
+      // Delete existing assignments first
+      await supabase.from('user_campaigns').delete().eq('campaign_id', campaign.id);
+      // Re-fetch all creator IDs via adminFetch
+      let creatorIds: string[] = users.filter(u => u.user_type === 'creator').map(u => u.id);
+      if (creatorIds.length === 0) {
+        const res = await adminFetch('admin-users', { method: 'GET' });
+        if (res?.users) creatorIds = (res.users as any[]).filter(u => u.user_type === 'creator').map(u => u.id);
+      }
+      if (creatorIds.length > 0) {
+        const rows = creatorIds.map(uid => ({ campaign_id: campaign.id, user_id: uid }));
+        const { error } = await supabase.from('user_campaigns').insert(rows);
+        if (error) throw error;
+      }
+    } catch (e) {
+      console.error('Error reassigning campaign:', e);
+    } finally {
+      setReassigningCampaignId(null);
     }
   };
 
@@ -481,6 +538,23 @@ export function AdminDashboard() {
     };
   }, [activeSection, adminFetch, sessionToken, verifySession, isAuthenticated, navigate]);
 
+  // Fetch which users have YouTube channels (runs once on mount)
+  useEffect(() => {
+    const fetchYoutubeIds = async () => {
+      try {
+        const { SUPABASE_URL, SUPABASE_ANON_KEY } = await import('../lib/config');
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/social-links?platform=YouTube`, {
+          headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+        });
+        const json = await res.json();
+        if (json.success && Array.isArray(json.links)) {
+          setUserYoutubeIds(new Set<string>(json.links.map((l: { user_id: string }) => l.user_id)));
+        }
+      } catch (_) { /* non-critical */ }
+    };
+    fetchYoutubeIds();
+  }, []);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
@@ -559,34 +633,34 @@ export function AdminDashboard() {
               <div className="animate-fade-in">
                 <div className="mb-8">
                   <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2" style={{ color: tokens.text.primary }}>Welcome back, Super Admin</h1>
-                  <p className="text-base" style={{ color: tokens.text.secondary }}>Manage your platform from here</p>
+                  <p className="text-base" style={{ color: tokens.text.primary }}>Manage your platform from here</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                   <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                     <h3 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>Applications</h3>
-                    <p className="text-sm" style={{ color: tokens.text.secondary }}>Review pending creator applications</p>
+                    <p className="text-sm" style={{ color: tokens.text.primary }}>Review pending creator applications</p>
                   </div>
                   <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                     <h3 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>Users</h3>
-                    <p className="text-sm" style={{ color: tokens.text.secondary }}>Manage all registered users</p>
+                    <p className="text-sm" style={{ color: tokens.text.primary }}>Manage all registered users</p>
                   </div>
                   <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                     <h3 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>Alerts</h3>
-                    <p className="text-sm" style={{ color: tokens.text.secondary }}>Send announcements to users</p>
+                    <p className="text-sm" style={{ color: tokens.text.primary }}>Send announcements to users</p>
                   </div>
                 </div>
 
                 {/* Channel Link Whitelist */}
                 <div className="rounded-xl p-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                   <div className="flex items-center gap-3 mb-1">
-                    <ShieldCheck className="w-5 h-5" style={{ color: tokens.text.secondary }} />
+                    <ShieldCheck className="w-5 h-5" style={{ color: tokens.text.primary }} />
                     <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>Channel Link Whitelist</h2>
                   </div>
-                  <p className="text-sm mb-6" style={{ color: tokens.text.secondary }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
+                  <p className="text-sm mb-6" style={{ color: tokens.text.primary }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
 
                   {/* Add form */}
                   <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.muted }}>Add Pattern</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.primary }}>Add Pattern</p>
                     <div className="flex flex-col sm:flex-row gap-2 mb-2">
                       <input
                         type="text"
@@ -596,6 +670,8 @@ export function AdminDashboard() {
                         placeholder="e.g. youtube.com/c/ or @handle"
                         className="flex-1 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                       />
                       <input
                         type="text"
@@ -604,6 +680,8 @@ export function AdminDashboard() {
                         placeholder="Platform (optional)"
                         className="w-full sm:w-36 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                       />
                       <input
                         type="text"
@@ -612,6 +690,8 @@ export function AdminDashboard() {
                         placeholder="Note (optional)"
                         className="w-full sm:w-40 h-9 px-3 rounded-lg text-sm focus:outline-none"
                         style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                        onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                       />
                       <button
                         onClick={handleAddWhitelist}
@@ -633,8 +713,8 @@ export function AdminDashboard() {
                     </div>
                   ) : whitelistedChannels.length === 0 ? (
                     <div className="text-center py-8">
-                      <ShieldCheck className="w-10 h-10 mx-auto mb-3" style={{ color: tokens.text.muted }} />
-                      <p className="text-sm" style={{ color: tokens.text.muted }}>No whitelisted patterns yet. Add one above.</p>
+                      <ShieldCheck className="w-10 h-10 mx-auto mb-3" style={{ color: tokens.text.primary }} />
+                      <p className="text-sm" style={{ color: tokens.text.primary }}>No whitelisted patterns yet. Add one above.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -649,8 +729,8 @@ export function AdminDashboard() {
                             <div className="min-w-0">
                               <p className="text-sm font-medium truncate" style={{ color: tokens.text.primary }}>{ch.url_pattern}</p>
                               <div className="flex items-center gap-2 mt-0.5">
-                                {ch.platform && <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>{ch.platform}</span>}
-                                {ch.note && <span className="text-xs truncate" style={{ color: tokens.text.muted }}>{ch.note}</span>}
+                                {ch.platform && <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}>{ch.platform}</span>}
+                                {ch.note && <span className="text-xs truncate" style={{ color: tokens.text.primary }}>{ch.note}</span>}
                               </div>
                             </div>
                           </div>
@@ -672,7 +752,7 @@ export function AdminDashboard() {
                 <div className="rounded-xl p-6 mt-6" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-3">
-                      <Megaphone className="w-5 h-5" style={{ color: tokens.text.secondary }} />
+                      <Megaphone className="w-5 h-5" style={{ color: tokens.text.primary }} />
                       <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>Campaign Manager</h2>
                     </div>
                     <button
@@ -683,20 +763,20 @@ export function AdminDashboard() {
                       {showCampaignForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> New Campaign</>}
                     </button>
                   </div>
-                  <p className="text-sm mb-5" style={{ color: tokens.text.secondary }}>Create campaigns and assign them to users. Assigned campaigns appear in the user's dashboard.</p>
+                  <p className="text-sm mb-5" style={{ color: tokens.text.primary }}>Create campaigns and assign them to users. Assigned campaigns appear in the user's dashboard.</p>
 
                   {/* Create form */}
                   {showCampaignForm && (
                     <div className="rounded-xl mb-6 overflow-hidden" style={{ border: `1px solid ${tokens.border.default}` }}>
                       <div className="px-5 py-3.5" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
-                        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: tokens.text.muted }}>New Campaign</p>
+                        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: tokens.text.primary }}>New Campaign</p>
                       </div>
                       <div className="p-5 space-y-5" style={{ backgroundColor: tokens.bg.elevated }}>
 
                       {/* Name + Language row */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Campaign Name <span style={{ color: tokens.text.primary }}>*</span></label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Campaign Name <span style={{ color: tokens.text.primary }}>*</span></label>
                           <input
                             type="text"
                             value={campaignForm.name}
@@ -704,10 +784,12 @@ export function AdminDashboard() {
                             placeholder="e.g. Electronic Vibes"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Language</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Language</label>
                           <input
                             type="text"
                             value={campaignForm.language}
@@ -715,13 +797,30 @@ export function AdminDashboard() {
                             placeholder="English"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
                       </div>
 
+                      {/* Bio */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Bio <span className="normal-case font-normal" style={{ color: tokens.text.primary }}>(short tagline shown on the card)</span></label>
+                        <input
+                          type="text"
+                          value={campaignForm.bio}
+                          onChange={e => setCampaignForm(f => ({ ...f, bio: e.target.value }))}
+                          placeholder="e.g. Earn per view promoting Neon Afterhours"
+                          className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                        />
+                      </div>
+
                       {/* Description */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Description</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Description</label>
                         <textarea
                           value={campaignForm.description}
                           onChange={e => setCampaignForm(f => ({ ...f, description: e.target.value }))}
@@ -729,12 +828,14 @@ export function AdminDashboard() {
                           rows={3}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
 
                       {/* Platforms */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.muted }}>Platforms</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary }}>Platforms</label>
                         <div className="flex flex-wrap gap-2">
                           {['Instagram', 'TikTok', 'YouTube', 'Twitter', 'Twitch'].map(p => (
                             <button
@@ -747,7 +848,7 @@ export function AdminDashboard() {
                               className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                               style={{
                                 backgroundColor: campaignForm.platforms.includes(p) ? tokens.bg.active : tokens.bg.primary,
-                                color: campaignForm.platforms.includes(p) ? tokens.text.primary : tokens.text.muted,
+                                color: tokens.text.primary,
                                 border: `1px solid ${campaignForm.platforms.includes(p) ? tokens.border.default : tokens.border.subtle}`,
                               }}
                             >
@@ -759,21 +860,38 @@ export function AdminDashboard() {
 
                       {/* Pay type + Payout + Ends at */}
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Pay Type</label>
-                          <select
-                            value={campaignForm.pay_type}
-                            onChange={e => setCampaignForm(f => ({ ...f, pay_type: e.target.value }))}
-                            className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
+                        <div className="relative">
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Pay Type</label>
+                          <button
+                            type="button"
+                            onClick={() => setPayTypeDropdownOpen(v => !v)}
+                            className="w-full h-9 px-3 rounded-lg text-sm flex items-center justify-between focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                           >
-                            <option>Per view</option>
-                            <option>Flat fee</option>
-                            <option>Revenue share</option>
-                          </select>
+                            <span>{campaignForm.pay_type}</span>
+                            {payTypeDropdownOpen ? <ChevronUp className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tokens.text.primary }} /> : <ChevronDown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tokens.text.primary }} />}
+                          </button>
+                          {payTypeDropdownOpen && (
+                            <div className="absolute z-20 w-full mt-1 rounded-lg overflow-hidden shadow-xl" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}>
+                              {['Per view', 'Flat fee', 'Revenue share', 'Varied'].map(opt => (
+                                <button
+                                  key={opt}
+                                  type="button"
+                                  onClick={() => { setCampaignForm(f => ({ ...f, pay_type: opt })); setPayTypeDropdownOpen(false); }}
+                                  className="w-full text-left px-3 py-2 text-sm transition-all hover:brightness-110"
+                                  style={{
+                                    backgroundColor: campaignForm.pay_type === opt ? tokens.bg.active : 'transparent',
+                                    color: tokens.text.primary,
+                                  }}
+                                >
+                                  {opt}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Payout</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Payout</label>
                           <input
                             type="text"
                             value={campaignForm.payout}
@@ -781,23 +899,27 @@ export function AdminDashboard() {
                             placeholder="e.g. $1.50 cpm"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Ends At</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Ends At</label>
                           <input
                             type="date"
                             value={campaignForm.ends_at}
                             onChange={e => setCampaignForm(f => ({ ...f, ends_at: e.target.value }))}
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
                             style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
                       </div>
 
                       {/* How it works */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>How It Works <span className="normal-case font-normal" style={{ color: tokens.text.muted }}>(one step per line)</span></label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>How It Works <span className="normal-case font-normal" style={{ color: tokens.text.primary }}>(one step per line)</span></label>
                         <textarea
                           value={campaignForm.how_it_works}
                           onChange={e => setCampaignForm(f => ({ ...f, how_it_works: e.target.value }))}
@@ -805,12 +927,14 @@ export function AdminDashboard() {
                           rows={4}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
 
                       {/* Rules */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Rules <span className="normal-case font-normal" style={{ color: tokens.text.muted }}>(one rule per line)</span></label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Rules <span className="normal-case font-normal" style={{ color: tokens.text.primary }}>(one rule per line)</span></label>
                         <textarea
                           value={campaignForm.rules}
                           onChange={e => setCampaignForm(f => ({ ...f, rules: e.target.value }))}
@@ -818,18 +942,20 @@ export function AdminDashboard() {
                           rows={4}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
                           style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                         />
                       </div>
 
                       {/* Songs to use */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.muted }}>Songs to Use</label>
+                          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary }}>Songs to Use</label>
                           <button
                             type="button"
                             onClick={() => setCampaignForm(f => ({ ...f, songs: [...f.songs, { title: '', artist: '', url: '' }] }))}
                             className="text-xs flex items-center gap-1 hover:opacity-80 transition-opacity font-medium"
-                            style={{ color: tokens.text.secondary }}
+                            style={{ color: tokens.text.primary }}
                           >
                             <Plus className="w-3 h-3" /> Add song
                           </button>
@@ -844,6 +970,8 @@ export function AdminDashboard() {
                                 placeholder="Song title"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
                                 style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                                onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                               />
                               <input
                                 type="text"
@@ -852,6 +980,8 @@ export function AdminDashboard() {
                                 placeholder="Artist"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
                                 style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                                onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                               />
                               <input
                                 type="text"
@@ -860,13 +990,15 @@ export function AdminDashboard() {
                                 placeholder="Link (optional)"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
                                 style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                                onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                               />
                               {campaignForm.songs.length > 1 && (
                                 <button
                                   type="button"
                                   onClick={() => setCampaignForm(f => ({ ...f, songs: f.songs.filter((_, j) => j !== i) }))}
                                   className="w-7 h-7 flex items-center justify-center rounded-lg flex-shrink-0 hover:brightness-110"
-                                  style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}
+                                  style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}
                                 >
                                   <X className="w-3 h-3" />
                                 </button>
@@ -878,7 +1010,7 @@ export function AdminDashboard() {
 
                       {/* Assign To */}
                       <div className="pt-1" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.muted }}>Assign To</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.primary }}>Assign To</label>
                         <div className="flex gap-2 mb-3">
                           <button
                             type="button"
@@ -905,49 +1037,103 @@ export function AdminDashboard() {
                             Specific Users
                           </button>
                         </div>
-                        {campaignForm.assign_to === 'specific' && (
-                          <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${tokens.border.subtle}` }}>
-                            <div className="px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
-                              <p className="text-xs" style={{ color: tokens.text.muted }}>Select users to assign this campaign to</p>
+
+                        {/* All Creators summary */}
+                        {campaignForm.assign_to === 'all' && (() => {
+                          const creatorCount = users.filter(u => u.user_type === 'creator').length;
+                          return (
+                            <div className="rounded-lg px-4 py-3" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                              <p className="text-xs" style={{ color: tokens.text.primary }}>
+                                This campaign will be assigned to <span className="font-semibold" style={{ color: tokens.text.primary }}>{creatorCount} creator{creatorCount !== 1 ? 's' : ''}</span> on the platform.
+                              </p>
                             </div>
-                            <div className="max-h-48 overflow-y-auto">
-                              {users.length === 0 ? (
-                                <div className="px-3 py-4 text-center">
-                                  <p className="text-xs" style={{ color: tokens.text.muted }}>No users available</p>
+                          );
+                        })()}
+
+                        {/* Specific Users picker */}
+                        {campaignForm.assign_to === 'specific' && (() => {
+                          const creatorUsers = users.filter(u => u.user_type === 'creator');
+                          const q = campaignUserSearch.toLowerCase().trim();
+                          const filtered = creatorUsers.filter(u => {
+                            const matchesSearch = !q ||
+                              (u.full_name?.toLowerCase().includes(q)) ||
+                              (u.username?.toLowerCase().includes(q)) ||
+                              (u.email?.toLowerCase().includes(q));
+                            const matchesYoutube = !campaignYoutubeOnly || userYoutubeIds.has(u.id);
+                            return matchesSearch && matchesYoutube;
+                          });
+                          return (
+                            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${tokens.border.subtle}` }}>
+                              {/* Search + filter bar */}
+                              <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
+                                <Search className="w-3.5 h-3.5 flex-shrink-0" style={{ color: tokens.text.primary }} />
+                                <input
+                                  type="text"
+                                  value={campaignUserSearch}
+                                  onChange={e => setCampaignUserSearch(e.target.value)}
+                                  placeholder="Search creators..."
+                                  className="flex-1 text-xs bg-transparent focus:outline-none"
+                                  style={{ color: tokens.text.primary }}
+                                  onFocus={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', '#ffffff')}
+                                  onBlur={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', tokens.border.subtle)}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setCampaignYoutubeOnly(v => !v)}
+                                  className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium flex-shrink-0 transition-all"
+                                  style={{
+                                    backgroundColor: campaignYoutubeOnly ? tokens.bg.active : 'transparent',
+                                    color: tokens.text.primary,
+                                    border: `1px solid ${campaignYoutubeOnly ? tokens.border.default : tokens.border.subtle}`,
+                                  }}
+                                >
+                                  YT only
+                                </button>
+                              </div>
+                              <div className="max-h-48 overflow-y-auto">
+                                {filtered.length === 0 ? (
+                                  <div className="px-3 py-4 text-center">
+                                    <p className="text-xs" style={{ color: tokens.text.primary }}>
+                                      {creatorUsers.length === 0 ? 'No creator accounts found' : 'No creators match your search'}
+                                    </p>
+                                  </div>
+                                ) : (
+                                  filtered.map(u => (
+                                    <label
+                                      key={u.id}
+                                      className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:brightness-105 transition-all"
+                                      style={{ backgroundColor: tokens.bg.elevated, borderBottom: `1px solid ${tokens.border.subtle}` }}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={campaignForm.assigned_user_ids.includes(u.id)}
+                                        onChange={e => setCampaignForm(f => ({
+                                          ...f,
+                                          assigned_user_ids: e.target.checked
+                                            ? [...f.assigned_user_ids, u.id]
+                                            : f.assigned_user_ids.filter(id => id !== u.id)
+                                        }))}
+                                        className="w-3.5 h-3.5 rounded flex-shrink-0"
+                                      />
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-medium truncate" style={{ color: tokens.text.primary }}>{u.full_name || u.username || u.email}</p>
+                                        <p className="text-xs truncate" style={{ color: tokens.text.primary }}>{u.email}</p>
+                                      </div>
+                                      {userYoutubeIds.has(u.id) && (
+                                        <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>YT</span>
+                                      )}
+                                    </label>
+                                  ))
+                                )}
+                              </div>
+                              {campaignForm.assigned_user_ids.length > 0 && (
+                                <div className="px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                                  <p className="text-xs font-medium" style={{ color: tokens.text.primary }}>{campaignForm.assigned_user_ids.length} creator{campaignForm.assigned_user_ids.length !== 1 ? 's' : ''} selected</p>
                                 </div>
-                              ) : (
-                                users.map(u => (
-                                  <label
-                                    key={u.id}
-                                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:brightness-105 transition-all"
-                                    style={{ backgroundColor: tokens.bg.elevated, borderBottom: `1px solid ${tokens.border.subtle}` }}
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={campaignForm.assigned_user_ids.includes(u.id)}
-                                      onChange={e => setCampaignForm(f => ({
-                                        ...f,
-                                        assigned_user_ids: e.target.checked
-                                          ? [...f.assigned_user_ids, u.id]
-                                          : f.assigned_user_ids.filter(id => id !== u.id)
-                                      }))}
-                                      className="w-3.5 h-3.5 rounded flex-shrink-0"
-                                    />
-                                    <div className="min-w-0">
-                                      <p className="text-xs font-medium truncate" style={{ color: tokens.text.primary }}>{u.full_name || u.username || u.email}</p>
-                                      <p className="text-xs truncate" style={{ color: tokens.text.muted }}>{u.email}</p>
-                                    </div>
-                                  </label>
-                                ))
                               )}
                             </div>
-                            {campaignForm.assigned_user_ids.length > 0 && (
-                              <div className="px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
-                                <p className="text-xs font-medium" style={{ color: tokens.text.secondary }}>{campaignForm.assigned_user_ids.length} user{campaignForm.assigned_user_ids.length !== 1 ? 's' : ''} selected</p>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                          );
+                        })()}
                       </div>
 
                       {campaignError && <p className="text-xs pt-1" style={{ color: tokens.text.primary, opacity: 0.7 }}>{campaignError}</p>}
@@ -956,7 +1142,7 @@ export function AdminDashboard() {
                         <button
                           onClick={() => { setShowCampaignForm(false); setCampaignForm(emptyCampaignForm); setCampaignError(null); }}
                           className="px-4 h-9 rounded-lg text-sm font-medium transition-all hover:brightness-110"
-                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.secondary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                         >
                           Cancel
                         </button>
@@ -981,8 +1167,8 @@ export function AdminDashboard() {
                     </div>
                   ) : campaigns.length === 0 ? (
                     <div className="text-center py-8">
-                      <Megaphone className="w-10 h-10 mx-auto mb-3" style={{ color: tokens.text.muted }} />
-                      <p className="text-sm" style={{ color: tokens.text.muted }}>No campaigns yet. Create one above.</p>
+                      <Megaphone className="w-10 h-10 mx-auto mb-3" style={{ color: tokens.text.primary }} />
+                      <p className="text-sm" style={{ color: tokens.text.primary }}>No campaigns yet. Create one above.</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -994,38 +1180,47 @@ export function AdminDashboard() {
                             onClick={() => setExpandedCampaignId(expandedCampaignId === c.id ? null : c.id)}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <Megaphone className="w-4 h-4 flex-shrink-0" style={{ color: tokens.text.muted }} />
+                              <Megaphone className="w-4 h-4 flex-shrink-0" style={{ color: tokens.text.primary }} />
                               <div className="min-w-0">
                                 <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{c.name}</p>
                                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                  <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}>{c.status}</span>
-                                  {c.payout && <span className="text-xs" style={{ color: tokens.text.muted }}>{c.payout}</span>}
-                                  {c.platforms?.length > 0 && <span className="text-xs" style={{ color: tokens.text.muted }}>{c.platforms.join(', ')}</span>}
+                                  <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>{c.status}</span>
+                                  {c.payout && <span className="text-xs" style={{ color: tokens.text.primary }}>{c.payout}</span>}
+                                  {c.platforms?.length > 0 && <span className="text-xs" style={{ color: tokens.text.primary }}>{c.platforms.join(', ')}</span>}
                                 </div>
                               </div>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
                               <button
+                                onClick={(e) => { e.stopPropagation(); handleReassignCampaign(c); }}
+                                disabled={reassigningCampaignId === c.id}
+                                title="Reassign to all creators"
+                                className="flex items-center gap-1 px-2 h-7 rounded-lg text-xs font-medium transition-all hover:brightness-110 disabled:opacity-50"
+                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                              >
+                                {reassigningCampaignId === c.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Reassign'}
+                              </button>
+                              <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}
                                 disabled={deletingCampaignId === c.id}
                                 className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
-                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted, border: `1px solid ${tokens.border.subtle}` }}
+                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
                               >
                                 {deletingCampaignId === c.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                               </button>
-                              {expandedCampaignId === c.id ? <ChevronUp className="w-4 h-4" style={{ color: tokens.text.muted }} /> : <ChevronDown className="w-4 h-4" style={{ color: tokens.text.muted }} />}
+                              {expandedCampaignId === c.id ? <ChevronUp className="w-4 h-4" style={{ color: tokens.text.primary }} /> : <ChevronDown className="w-4 h-4" style={{ color: tokens.text.primary }} />}
                             </div>
                           </div>
                           {expandedCampaignId === c.id && (
                             <div className="px-4 pb-4 pt-2 space-y-3" style={{ backgroundColor: tokens.bg.elevated }}>
-                              {c.description && <p className="text-sm" style={{ color: tokens.text.secondary }}>{c.description}</p>}
+                              {c.description && <p className="text-sm" style={{ color: tokens.text.primary }}>{c.description}</p>}
                               {c.how_it_works && c.how_it_works.length > 0 && (
                                 <div>
-                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>How It Works</p>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>How It Works</p>
                                   <ol className="space-y-1">
                                     {c.how_it_works.map((step, i) => (
-                                      <li key={i} className="text-xs flex gap-2" style={{ color: tokens.text.secondary }}>
-                                        <span className="font-semibold flex-shrink-0" style={{ color: tokens.text.muted }}>{i + 1}.</span>{step}
+                                      <li key={i} className="text-xs flex gap-2" style={{ color: tokens.text.primary }}>
+                                        <span className="font-semibold flex-shrink-0" style={{ color: tokens.text.primary }}>{i + 1}.</span>{step}
                                       </li>
                                     ))}
                                   </ol>
@@ -1033,24 +1228,24 @@ export function AdminDashboard() {
                               )}
                               {c.rules && c.rules.length > 0 && (
                                 <div>
-                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Rules</p>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Rules</p>
                                   <ul className="space-y-1">
                                     {c.rules.map((rule, i) => (
-                                      <li key={i} className="text-xs" style={{ color: tokens.text.secondary }}>• {rule}</li>
+                                      <li key={i} className="text-xs" style={{ color: tokens.text.primary }}>• {rule}</li>
                                     ))}
                                   </ul>
                                 </div>
                               )}
                               {c.songs_to_use && c.songs_to_use.length > 0 && (
                                 <div>
-                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.muted }}>Songs to Use</p>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Songs to Use</p>
                                   <div className="space-y-1">
                                     {c.songs_to_use.map((s, i) => (
                                       <div key={i} className="flex items-center gap-2">
-                                        <Music className="w-3 h-3 flex-shrink-0" style={{ color: tokens.text.muted }} />
+                                        <Music className="w-3 h-3 flex-shrink-0" style={{ color: tokens.text.primary }} />
                                         <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{s.title}</span>
-                                        {s.artist && <span className="text-xs" style={{ color: tokens.text.muted }}>— {s.artist}</span>}
-                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.secondary }}><ExternalLink className="w-3 h-3 inline" /></a>}
+                                        {s.artist && <span className="text-xs" style={{ color: tokens.text.primary }}>— {s.artist}</span>}
+                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}><ExternalLink className="w-3 h-3 inline" /></a>}
                                       </div>
                                     ))}
                                   </div>
@@ -1425,15 +1620,15 @@ export function AdminDashboard() {
                           <div 
                             className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
                             style={{ 
-                              backgroundColor: theme === 'light' ? themeTokens.light.bg.primary : theme === 'grey' ? themeTokens.grey.bg.primary : themeTokens.dark.bg.primary, 
-                              borderColor: theme === 'light' ? themeTokens.light.border.subtle : theme === 'grey' ? themeTokens.grey.border.subtle : themeTokens.dark.border.subtle
+                              backgroundColor: 'var(--bg-primary)', 
+                              borderColor: 'var(--border-subtle)'
                             }}
                           >
                             <div className="flex items-center gap-4 mb-4">
                               <div 
                                 className="w-10 h-10 rounded-full overflow-hidden"
                                 style={{ 
-                                  backgroundColor: theme === 'light' ? themeTokens.light.bg.elevated : theme === 'grey' ? themeTokens.grey.bg.elevated : themeTokens.dark.bg.elevated,
+                                  backgroundColor: 'var(--bg-elevated)',
                                 }}
                               >
                                 <img
@@ -1458,7 +1653,7 @@ export function AdminDashboard() {
                         {/* Background Selector */}
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -1553,6 +1748,34 @@ export function AdminDashboard() {
                               
                               <h4 className="font-semibold text-white mb-1">Dark</h4>
                               <p className="text-sm text-gray-400">Pure black background (default)</p>
+                            </div>
+
+                            {/* Rose Option */}
+                            <div
+                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                                theme === 'rose' ? 'border-white' : 'border-gray-600'
+                              }`}
+                              style={{ backgroundColor: '#120810' }}
+                              onClick={() => setTheme('rose')}
+                            >
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-5 h-5 rounded-full border-2 ${
+                                  theme === 'rose' ? 'bg-white border-white' : 'bg-white border-gray-400'
+                                }`}>
+                                  {theme === 'rose' && (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <span className="text-white text-xs">✓</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mb-4">
+                                <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#1C1018' }}></div>
+                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#2E1A28' }}></div>
+                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
+                              </div>
+                              <h4 className="font-semibold text-white mb-1">Rose</h4>
+                              <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
                             </div>
                           </div>
                         </div>
@@ -1622,15 +1845,15 @@ export function AdminDashboard() {
                           <div 
                             className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
                             style={{ 
-                              backgroundColor: theme === 'light' ? themeTokens.light.bg.primary : theme === 'grey' ? themeTokens.grey.bg.primary : themeTokens.dark.bg.primary, 
-                              borderColor: theme === 'light' ? themeTokens.light.border.subtle : theme === 'grey' ? themeTokens.grey.border.subtle : themeTokens.dark.border.subtle
+                              backgroundColor: 'var(--bg-primary)', 
+                              borderColor: 'var(--border-subtle)'
                             }}
                           >
                             <div className="flex items-center gap-4 mb-4">
                               <div 
                                 className="w-10 h-10 rounded-full overflow-hidden"
                                 style={{ 
-                                  backgroundColor: theme === 'light' ? themeTokens.light.bg.elevated : theme === 'grey' ? themeTokens.grey.bg.elevated : themeTokens.dark.bg.elevated,
+                                  backgroundColor: 'var(--bg-elevated)',
                                 }}
                               >
                                 <img
@@ -1655,7 +1878,7 @@ export function AdminDashboard() {
                         {/* Background Selector */}
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -1750,6 +1973,34 @@ export function AdminDashboard() {
                               
                               <h4 className="font-semibold text-white mb-1">Dark</h4>
                               <p className="text-sm text-gray-400">Pure black background (default)</p>
+                            </div>
+
+                            {/* Rose Option */}
+                            <div
+                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                                theme === 'rose' ? 'border-white' : 'border-gray-600'
+                              }`}
+                              style={{ backgroundColor: '#120810' }}
+                              onClick={() => setTheme('rose')}
+                            >
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-5 h-5 rounded-full border-2 ${
+                                  theme === 'rose' ? 'bg-white border-white' : 'bg-white border-gray-400'
+                                }`}>
+                                  {theme === 'rose' && (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <span className="text-white text-xs">✓</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mb-4">
+                                <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#1C1018' }}></div>
+                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#2E1A28' }}></div>
+                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
+                              </div>
+                              <h4 className="font-semibold text-white mb-1">Rose</h4>
+                              <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
                             </div>
                           </div>
                         </div>

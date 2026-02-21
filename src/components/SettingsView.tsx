@@ -25,7 +25,7 @@ interface SettingsViewProps {
   isMobile?: boolean;
   onBack?: () => void;
   userType?: string;
-  appliedTheme?: 'light' | 'grey' | 'dark';
+  appliedTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }
 
 // Account Type Icon Component

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Send, AlertTriangle, Users, User, X, Search, Palette, Music, AlertCircle, Bell, ChevronRight, ChevronDown, Video, Network, MapPin, Globe, Plus, Info } from 'lucide-react';
+import { Send, AlertTriangle, Users, User, X, Search, Palette, Music, AlertCircle, Bell, ChevronRight, ChevronDown, Network, MapPin, Globe, Plus, Info } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
@@ -25,7 +25,7 @@ import { ToggleSwitch } from '../components/ToggleSwitch';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGE_MAP, LOCALE_TO_NAME } from '../i18n';
 
-function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
+function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -35,7 +35,7 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
           width="32" 
           height="24" 
           rx="6" 
-          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')} 
+          stroke={isHovered ? "#FF0000" : ('#CBD5E1')} 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -44,10 +44,10 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
         />
         <path
           d="M20 18L32 24L20 30V18Z"
-          stroke={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
+          stroke={isHovered ? "#FF0000" : ('#CBD5E1')}
           strokeWidth="2.5"
           strokeLinejoin="round"
-          fill={isHovered ? "#FF0000" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
+          fill={isHovered ? "#FF0000" : ('#CBD5E1')}
           style={{
             transform: isHovered ? "scale(1.15)" : "scale(1)",
             transformOrigin: "24px 24px",
@@ -59,7 +59,7 @@ function YouTubeIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backg
   );
 }
 
-function TikTokIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
+function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   const notePath = "M32 8V28C32 34.6 26.6 40 20 40C13.4 40 8 34.6 8 28C8 21.4 13.4 16 20 16V22C16.7 22 14 24.7 14 28C14 31.3 16.7 34 20 34C23.3 34 26 31.3 26 28V8H32Z";
   const wavePath = "M32 8C32 8 36 9 38 12C40 15 40 18 40 18";
 
@@ -109,20 +109,20 @@ function TikTokIcon({ isHovered, backgroundTheme }: { isHovered: boolean; backgr
         >
           <path
             d={notePath}
-            stroke={backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1'}
+            stroke={'#CBD5E1'}
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <path d={wavePath} stroke={backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+          <path d={wavePath} stroke={'#CBD5E1'} strokeWidth="2.5" strokeLinecap="round" fill="none" />
         </g>
       </svg>
     </div>
   );
 }
 
-function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' }) {
+function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -141,7 +141,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           width="28" 
           height="28" 
           rx="8" 
-          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
+          stroke={isHovered ? "url(#igGradient)" : ('#CBD5E1')}
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -152,7 +152,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           cx="24"
           cy="24"
           r="7"
-          stroke={isHovered ? "url(#igGradient)" : (backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1')}
+          stroke={isHovered ? "url(#igGradient)" : ('#CBD5E1')}
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -165,7 +165,7 @@ function InstagramIconAnimated({ isHovered, backgroundTheme }: { isHovered: bool
           cx="32"
           cy="16"
           r="2"
-          fill={backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1'}
+          fill={'#CBD5E1'}
           style={{
             opacity: isHovered ? 1 : 0.6,
             transition: "opacity 0.3s ease-in-out",
@@ -196,7 +196,7 @@ interface CampaignData {
   requiredHashtags?: string[];
 }
 
-function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme: 'light' | 'grey' | 'dark' }) {
+function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
   const [showFullRules, setShowFullRules] = useState(false);
 
   if (!campaign) return null;
@@ -210,7 +210,7 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
       <div 
         className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
         style={{ 
-          backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000',
+          backgroundColor: 'var(--bg-card)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
@@ -231,17 +231,10 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
 
         {/* Header */}
         <div className="p-7 pb-5">
-          <div className="flex items-start gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-              <Video className="w-9 h-9 text-white" />
-            </div>
-            <div className="flex-1 min-w-0 pt-1">
-              <div className="flex items-center gap-2 mb-1.5">
-                <h2 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{campaign.name}</h2>
-              </div>
-              <p className="text-sm" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>{campaign.timeAgo}</p>
-              <p className="text-base font-medium mt-1.5" style={{ color: '#CBD5E1' }}>{campaign.title}</p>
-            </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl font-bold mb-1" style={{ color: '#F8FAFC' }}>{campaign.name}</h2>
+            <p className="text-sm" style={{ color: '#CBD5E1' }}>{campaign.timeAgo}</p>
+            {campaign.title && <p className="text-base font-medium mt-1.5" style={{ color: '#CBD5E1' }}>{campaign.title}</p>}
           </div>
         </div>
 
@@ -249,15 +242,15 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
         <div className="mx-7 mb-6 rounded-2xl py-5 px-2" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
           <div className="flex items-start">
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Ends</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Ends</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Language</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Language</p>
               <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-2" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Platforms</p>
+              <p className="text-xs mb-2" style={{ color: '#CBD5E1' }}>Platforms</p>
               <div className="flex items-center justify-center gap-2">
                 {campaign.platforms.includes('instagram') && (
                   <div className="w-5 h-5">
@@ -276,13 +269,9 @@ function CampaignDetailModal({ campaign, onClose, backgroundTheme }: { campaign:
                 )}
               </div>
             </div>
-            <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Pay Type</p>
-              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
-            </div>
             <div className="flex-1 text-center">
-              <p className="text-xs mb-1.5" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>Payout</p>
-              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
+              <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Pay Type</p>
+              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
             </div>
           </div>
         </div>
@@ -743,14 +732,13 @@ const SettingsNavButton = ({
   onClick, 
   isActive, 
   icon, 
-  label,
-  backgroundTheme 
+  label
 }: { 
   onClick: () => void; 
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
-  backgroundTheme: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -763,7 +751,7 @@ const SettingsNavButton = ({
         isActive ? 'shadow-md' : 'hover:brightness-105'
       }`}
       style={{
-        backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent',
+        backgroundColor: isActive ? 'var(--bg-active)' : 'transparent',
         color: 'var(--text-primary)'
       }}
     >
@@ -777,14 +765,13 @@ const MobileSettingsButton = ({
   onClick, 
   isActive, 
   icon, 
-  label,
-  backgroundTheme 
+  label
 }: { 
   onClick: () => void; 
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
-  backgroundTheme: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -797,7 +784,7 @@ const MobileSettingsButton = ({
       onTouchEnd={() => setIsHovered(false)}
       className="lg:hidden w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200"
       style={{ 
-        backgroundColor: isActive ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : (isHovered ? (backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0f0f13') : 'transparent'),
+        backgroundColor: isActive ? 'var(--bg-active)' : (isHovered ? 'var(--bg-active)' : 'transparent'),
         transform: isHovered ? 'scale(0.98)' : 'scale(1)'
       }}
     >
@@ -928,6 +915,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     email: ''
   });
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [assignedCampaigns, setAssignedCampaigns] = useState<any[]>([]);
+  const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -1037,6 +1026,30 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       return () => clearTimeout(timeoutId);
     }
   }, [activeSection, currentUserId, refetchConversations]);
+
+  // Fetch campaigns assigned to this creator
+  useEffect(() => {
+    if (!currentUserId) return;
+    const fetchAssignedCampaigns = async () => {
+      setCampaignsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('user_campaigns')
+          .select('campaign_id, campaigns(*)')
+          .eq('user_id', currentUserId);
+        if (error) throw error;
+        const campaigns = (data || [])
+          .map((row: any) => row.campaigns)
+          .filter(Boolean);
+        setAssignedCampaigns(campaigns);
+      } catch (e) {
+        console.error('[Campaigns] Error fetching assigned campaigns:', e);
+      } finally {
+        setCampaignsLoading(false);
+      }
+    };
+    fetchAssignedCampaigns();
+  }, [currentUserId]);
 
   // Debug: Log when formData changes
   useEffect(() => {
@@ -1686,7 +1699,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: '#CBD5E1' }}>{t('personalInfo.username')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <span className="text-xs lg:text-sm" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }}>@</span>
+              <span className="text-xs lg:text-sm" style={{ color: '#CBD5E1' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
@@ -1931,7 +1944,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 fetchUserProfile();
               }}
               className="px-6 py-2.5 lg:px-7 lg:py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#000000', color: backgroundTheme === 'light' ? '#000000' : 'var(--text-primary)' }}
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
             >
               {t('common.cancel')}
             </button>
@@ -1976,9 +1989,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           onClick={() => setShowPaymentForm(true)}
           className="flex items-center gap-2.5 lg:gap-3 px-5 py-3.5 lg:px-5 lg:py-4 rounded-xl text-sm lg:text-sm font-medium transition-all duration-200 hover:brightness-110 border" 
           style={{ 
-            backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', 
-            borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', 
-            color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' 
+            backgroundColor: 'var(--bg-card)', 
+            borderColor: 'var(--border-subtle)', 
+            color: '#CBD5E1' 
           }}>
           <Plus className="w-5 h-5" />
           {t('payment.connectPayment')}
@@ -1988,7 +2001,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       {/* Payment Method Form */}
       {showPaymentForm && (
         <div className="mt-8 w-full max-w-[450px] mx-auto">
-          <div className="rounded-2xl border p-6" style={{ backgroundColor: backgroundTheme === 'light' ? 'rgba(15, 23, 42, 0.5)' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+          <div className="rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -2326,7 +2339,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface</h3>
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Message Notifications</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
@@ -2343,7 +2356,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('notifications.email')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.newFeatures')}</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('notifications.newFeaturesDesc')}</p>
@@ -2462,7 +2475,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             style={{
               backgroundColor: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.25)',
-              color: backgroundTheme === 'light' ? '#FFFFFF' : '#CBD5E1',
+              color: '#CBD5E1',
             }}
           >
             {t('common.cancel')}
@@ -2507,7 +2520,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       </button>
       <button 
         className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200" 
-        style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }}
+        style={{ borderColor: 'var(--border-subtle)', color: '#F8FAFC' }}
         onClick={() => setActiveSection('home')}
       >
         {t('common.cancel')}
@@ -2560,14 +2573,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
               style={{ 
                 backgroundColor: getPreviewBackground(), 
-                borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' 
+                borderColor: 'var(--border-subtle)' 
               }}
             >
               <div className="flex items-center gap-4 mb-4">
                 <div 
                   className="w-10 h-10 rounded-full overflow-hidden"
                   style={{ 
-                    backgroundColor: backgroundTheme === 'light' ? '#F3F4F6' : backgroundTheme === 'grey' ? '#2A2A2E' : '#2f2f2f',
+                    backgroundColor: 'var(--bg-elevated)',
                   }}
                 >
                   <img
@@ -2592,7 +2605,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           {/* Background Selector */}
           <div>
             <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.backgroundTheme')}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {/* Light Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -2688,6 +2701,34 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
                 <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
               </div>
+
+              {/* Rose Option */}
+              <div
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'rose' ? 'border-white' : 'border-gray-600'
+                }`}
+                style={{ backgroundColor: '#120810' }}
+                onClick={() => setBackgroundTheme('rose')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'rose' ? 'bg-white border-white' : 'bg-white border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'rose' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#1C1018' }}></div>
+                  <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#2E1A28' }}></div>
+                  <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
+                </div>
+                <h4 className="font-semibold text-white mb-1">Rose</h4>
+                <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+              </div>
             </div>
           </div>
 
@@ -2749,7 +2790,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('language.interfaceLanguage')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="min-w-0 flex-1">
                 <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('language.displayLanguage')}</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.chooseLanguage')}</p>
@@ -2759,9 +2800,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   type="button"
                   onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                   className="w-full px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
-                  style={{ backgroundColor: 'transparent', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f', color: '#F8FAFC' }}
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: '#F8FAFC' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = backgroundTheme === 'light' ? 'rgba(255, 255, 255, 0.1)' : backgroundTheme === 'grey' ? '#2A2A2E' : '#0a0a0a';
+                    e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                     e.currentTarget.style.transform = 'translateY(-1px)';
                   }}
                   onMouseLeave={(e) => {
@@ -2782,7 +2823,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 {isLanguageDropdownOpen && (
                   <div
                     className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden animate-fade-in-down"
-                    style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : 'rgba(0, 0, 0, 0.95)', border: backgroundTheme === 'light' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.5)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
                   >
                     <div className="max-h-60 overflow-y-auto">
                       {languageOptions.map((option) => {
@@ -2939,10 +2980,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             {/* Summary Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.availableBalance')}</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
+                  <Info className="w-4 h-4" style={{ color: '#CBD5E1' }} />
                 </div>
                 <div className="mt-auto">
                   <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>$12,847.50</div>
@@ -2950,17 +2991,17 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.affiliateEarnings')}</h3>
-                  <Info className="w-4 h-4" style={{ color: backgroundTheme === 'light' ? '#CBD5E1' : '#CBD5E1' }} />
+                  <Info className="w-4 h-4" style={{ color: '#CBD5E1' }} />
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>$2,450.00</div>
               </div>
             </div>
 
             {/* Transactions Section */}
-            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000', borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+            <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -2976,7 +3017,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
 
               {/* Tabs */}
-              <div className="flex gap-4 mb-6 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.3)' : '#2f2f2f' }}>
+              <div className="flex gap-4 mb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                 <button 
                   onClick={() => setEarningsTab('available')}
                   className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
@@ -3002,7 +3043,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               {/* Transaction List */}
               <div className="space-y-0">
                 {/* Transaction Row 1 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
                     <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>16 Aug 2025</span>
                     <div>
@@ -3021,7 +3062,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
 
                 {/* Transaction Row 2 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
                     <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>5 Aug 2025</span>
                     <div>
@@ -3040,7 +3081,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
 
                 {/* Transaction Row 3 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
                     <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>4 Aug 2025</span>
                     <div>
@@ -3059,7 +3100,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
 
                 {/* Transaction Row 4 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
                     <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>4 Aug 2025</span>
                     <div>
@@ -3078,7 +3119,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
 
                 {/* Transaction Row 5 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.2)' : '#2f2f2f' }}>
+                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                   <div className="flex items-center gap-6">
                     <span className="text-sm w-24" style={{ color: '#CBD5E1' }}>20 Aug 2025</span>
                     <div>
@@ -3257,15 +3298,114 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     <p className="text-sm sm:text-base" style={{ color: '#CBD5E1' }}>{t('opportunities.campaignDesc')}</p>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center py-16 rounded-2xl" style={{ border: '1px dashed rgba(255,255,255,0.12)' }}>
-                    <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                      <svg className="w-7 h-7" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                      </svg>
+                  {campaignsLoading ? (
+                    <div className="flex items-center justify-center py-16">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#64748B', animationDelay: '300ms' }} />
+                      </div>
                     </div>
-                    <p className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>No campaigns available</p>
-                    <p className="text-sm text-center max-w-xs" style={{ color: '#64748B' }}>Campaigns will appear here once they've been assigned to your account.</p>
-                  </div>
+                  ) : assignedCampaigns.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 rounded-2xl" style={{ border: '1px dashed rgba(255,255,255,0.12)' }}>
+                      <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                        <svg className="w-7 h-7" style={{ color: '#64748B' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                        </svg>
+                      </div>
+                      <p className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>No campaigns available</p>
+                      <p className="text-sm text-center max-w-xs" style={{ color: '#F8FAFC' }}>Campaigns will appear here once they've been assigned to your account.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {assignedCampaigns.map(c => {
+                        const endsIn = c.ends_at ? new Date(c.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Ongoing';
+                        const isActive = c.status === 'active';
+                        const platforms = (c.platforms || []).map((p: string) => p.toLowerCase());
+                        const campaignData: CampaignData = {
+                          id: c.id,
+                          name: c.name,
+                          timeAgo: new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                          title: c.description || '',
+                          description: c.description || '',
+                          status: isActive ? 'Active' : 'Ended',
+                          endsIn,
+                          language: c.language || 'English',
+                          platforms: platforms as any,
+                          payType: c.pay_type || '',
+                          payout: c.payout || '',
+                          rules: c.rules || [],
+                        };
+                        return (
+                          <div
+                            key={c.id}
+                            className="rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:brightness-110"
+                            style={{ backgroundColor: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.1)' }}
+                            onClick={() => setSelectedCampaign(campaignData)}
+                          >
+                            {/* Card header */}
+                            <div className="p-5 pb-4">
+                              <div className="flex items-start gap-4">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="font-bold text-base truncate" style={{ color: '#F8FAFC' }}>{c.name}</h4>
+                                  </div>
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>{campaignData.timeAgo}</p>
+                                  {(c.bio || c.description) && (
+                                    <p className="text-sm mt-1 line-clamp-2" style={{ color: '#CBD5E1' }}>{c.bio || c.description}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Stats row */}
+                            <div className="mx-5 mb-4 rounded-xl py-3 px-2" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                              <div className="flex items-center">
+                                <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                                  <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Ends</p>
+                                  <p className="text-sm font-semibold" style={{ color: '#F8FAFC' }}>{endsIn}</p>
+                                </div>
+                                <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                                  <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Language</p>
+                                  <p className="text-sm font-semibold" style={{ color: '#F8FAFC' }}>{c.language || 'English'}</p>
+                                </div>
+                                <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                                  <p className="text-xs mb-1.5" style={{ color: '#CBD5E1' }}>Platforms</p>
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    {platforms.includes('instagram') && <div className="w-4 h-4"><InstagramIconAnimated isHovered={true} /></div>}
+                                    {platforms.includes('tiktok') && <div className="w-4 h-4"><TikTokIcon isHovered={true} /></div>}
+                                    {platforms.includes('youtube') && <div className="w-4 h-4"><YouTubeIcon isHovered={true} /></div>}
+                                    {platforms.length === 0 && <span className="text-xs" style={{ color: '#64748B' }}>—</span>}
+                                  </div>
+                                </div>
+                                <div className="flex-1 text-center" style={c.payout ? { borderRight: '1px solid rgba(255,255,255,0.1)' } : {}}>
+                                  <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Pay Type</p>
+                                  <p className="text-sm font-semibold" style={{ color: '#F8FAFC' }}>{c.pay_type || '—'}</p>
+                                </div>
+                                {c.payout && (
+                                  <div className="flex-1 text-center">
+                                    <p className="text-xs mb-1" style={{ color: '#CBD5E1' }}>Payout</p>
+                                    <p className="text-sm font-semibold" style={{ color: '#F8FAFC' }}>{c.payout}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Join button */}
+                            <div className="px-5 pb-5">
+                              <button
+                                className="w-full py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
+                                style={{ backgroundColor: '#F8FAFC', color: '#000000' }}
+                                onClick={(e) => { e.stopPropagation(); setSelectedCampaign(campaignData); }}
+                              >
+                                View campaign
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </section>
 
                 <section className="mb-10 sm:mb-20">
@@ -4167,49 +4307,49 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   {/* Talent Card 1 */}
                   <div 
                     className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer"
-                    style={{ backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h4 className="font-semibold text-base" style={{ color: '#000000' }}>Shawn Grows</h4>
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Shawn Grows</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: '#000000' }}>{t('talentCards.natureBlogger')}</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.natureBlogger')}</p>
                         <p className="text-xs mb-3">
                           <a 
                             href="https://youtube.com/c/example" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
-                            style={{ color: '#64748B' }}
+                            style={{ color: 'var(--text-muted)' }}
                           >
                             youtube.com/c/example
                           </a>
                         </p>
-                        <p className="text-xs mb-3" style={{ color: '#000000' }}>📍 California, USA</p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>📍 California, USA</p>
                         
                         <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           {[t('talentCards.nature'), 'YouTube', 'TikTok', 'Instagram'].map((skill, i) => (
                             <span 
                               key={i}
                               className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                              style={{ backgroundColor: '#F1F5F9', color: '#000000' }}
+                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
                             >{skill}</span>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: '#000000' }}>
+                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
                           {t('talentCards.natureBloggerDesc')}
                         </p>
                       </div>
                       <div className="flex flex-col gap-2 flex-shrink-0">
-                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:bg-slate-100" style={{ borderColor: 'rgba(0,0,0,0.15)', backgroundColor: '#F8FAFC' }}>
-                          <svg className="w-4 h-4" style={{ color: '#475569' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:brightness-110" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </button>
-                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:opacity-90" style={{ backgroundColor: '#0F172A', color: '#FFFFFF' }}>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>
                           {t('talent.seeProfile')}
                         </button>
                       </div>
@@ -4219,49 +4359,49 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   {/* Talent Card 2 */}
                   <div 
                     className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer"
-                    style={{ backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h4 className="font-semibold text-base" style={{ color: '#000000' }}>Sarah K.</h4>
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Sarah K.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: '#000000' }}>{t('talentCards.creativeDesigner')}</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.creativeDesigner')}</p>
                         <p className="text-xs mb-3">
                           <a 
                             href="https://youtube.com/c/example" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
-                            style={{ color: '#64748B' }}
+                            style={{ color: 'var(--text-muted)' }}
                           >
                             youtube.com/c/example
                           </a>
                         </p>
-                        <p className="text-xs mb-3" style={{ color: '#000000' }}>📍 London, UK</p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>📍 London, UK</p>
                         
                         <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           {[t('talentCards.design'), t('talentCards.branding'), t('talentCards.uiux'), t('talentCards.figma')].map((skill, i) => (
                             <span 
                               key={i}
                               className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                              style={{ backgroundColor: '#F1F5F9', color: '#000000' }}
+                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
                             >{skill}</span>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: '#000000' }}>
+                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
                           {t('talentCards.creativeDesignerDesc')}
                         </p>
                       </div>
                       <div className="flex flex-col gap-2 flex-shrink-0">
-                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:bg-slate-100" style={{ borderColor: 'rgba(0,0,0,0.15)', backgroundColor: '#F8FAFC' }}>
-                          <svg className="w-4 h-4" style={{ color: '#475569' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:brightness-110" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </button>
-                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:opacity-90" style={{ backgroundColor: '#0F172A', color: '#FFFFFF' }}>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>
                           {t('talent.seeProfile')}
                         </button>
                       </div>
@@ -4271,49 +4411,49 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   {/* Talent Card 3 */}
                   <div 
                     className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer"
-                    style={{ backgroundColor: '#FFFFFF', borderColor: 'rgba(0,0,0,0.08)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h4 className="font-semibold text-base" style={{ color: '#000000' }}>Alex T.</h4>
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Alex T.</h4>
                         </div>
-                        <p className="text-sm font-medium mb-1" style={{ color: '#000000' }}>{t('talentCards.musicProducer')}</p>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.musicProducer')}</p>
                         <p className="text-xs mb-3">
                           <a 
                             href="https://youtube.com/c/example" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
-                            style={{ color: '#64748B' }}
+                            style={{ color: 'var(--text-muted)' }}
                           >
                             youtube.com/c/example
                           </a>
                         </p>
-                        <p className="text-xs mb-3" style={{ color: '#000000' }}>📍 Berlin, Germany</p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>📍 Berlin, Germany</p>
                         
                         <div className="flex flex-wrap items-center gap-1.5 mb-3">
                           {[t('explore.music'), t('talentCards.audio'), t('talentCards.production'), t('talentCards.mixing')].map((skill, i) => (
                             <span 
                               key={i}
                               className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                              style={{ backgroundColor: '#F1F5F9', color: '#000000' }}
+                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
                             >{skill}</span>
                           ))}
                         </div>
 
-                        <p className="text-sm line-clamp-2" style={{ color: '#000000' }}>
+                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
                           {t('talentCards.musicProducerDesc')}
                         </p>
                       </div>
                       <div className="flex flex-col gap-2 flex-shrink-0">
-                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:bg-slate-100" style={{ borderColor: 'rgba(0,0,0,0.15)', backgroundColor: '#F8FAFC' }}>
-                          <svg className="w-4 h-4" style={{ color: '#475569' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:brightness-110" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </button>
-                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:opacity-90" style={{ backgroundColor: '#0F172A', color: '#FFFFFF' }}>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>
                           {t('talent.seeProfile')}
                         </button>
                       </div>

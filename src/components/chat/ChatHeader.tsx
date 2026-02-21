@@ -28,14 +28,14 @@ interface SocialLink {
 interface UserProfilePopupProps {
   user: Profile;
   onClose: () => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }
 
-function UserProfilePopup({ user, onClose, backgroundTheme = 'dark' }: UserProfilePopupProps) {
-  const modalBg = backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#111117';
-  const borderColor = backgroundTheme === 'light' ? 'rgba(255,255,255,0.12)' : backgroundTheme === 'grey' ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.1)';
-  const dividerColor = backgroundTheme === 'light' ? 'rgba(255,255,255,0.1)' : backgroundTheme === 'grey' ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.08)';
-  const rowHover = backgroundTheme === 'light' ? 'hover:bg-white/10' : 'hover:bg-white/5';
+function UserProfilePopup({ user, onClose }: UserProfilePopupProps) {
+  const modalBg = 'var(--bg-card)';
+  const borderColor = 'var(--border-default)';
+  const dividerColor = 'var(--border-subtle)';
+  const rowHover = 'hover:bg-white/5';
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -146,11 +146,11 @@ function UserProfilePopup({ user, onClose, backgroundTheme = 'dark' }: UserProfi
 interface AnimatedIconProps {
   className?: string;
   style?: React.CSSProperties;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }
 
 // Video Camera Icon Component
-function VideoCameraIcon({ className, style, backgroundTheme }: AnimatedIconProps) {
+function VideoCameraIcon({ className, style }: AnimatedIconProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -385,7 +385,7 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
             x="10" y="20" width="28" height="8" rx="1" 
             stroke="white" 
             strokeWidth="3" 
-            fill={backgroundTheme === 'light' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(0,0,0,0.9)'} 
+            fill='rgba(0,0,0,0.9)' 
           />
           <line 
             x1="20" y1="24" x2="28" y2="24" 
@@ -402,9 +402,9 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
             <rect x="22" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.6" />
             
             {/* Small details on documents */}
-            <line x1="13" y1="23.5" x2="15" y2="23.5" stroke={backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.5)' : 'rgba(0,0,0,0.5)'} strokeWidth="0.5" />
-            <line x1="18" y1="23.5" x2="20" y2="23.5" stroke={backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.5)' : 'rgba(0,0,0,0.5)'} strokeWidth="0.5" />
-            <line x1="23" y1="23.5" x2="25" y2="23.5" stroke={backgroundTheme === 'light' ? 'rgba(148, 163, 184, 0.5)' : 'rgba(0,0,0,0.5)'} strokeWidth="0.5" />
+            <line x1="13" y1="23.5" x2="15" y2="23.5" stroke='rgba(0,0,0,0.5)' strokeWidth="0.5" />
+            <line x1="18" y1="23.5" x2="20" y2="23.5" stroke='rgba(0,0,0,0.5)' strokeWidth="0.5" />
+            <line x1="23" y1="23.5" x2="25" y2="23.5" stroke='rgba(0,0,0,0.5)' strokeWidth="0.5" />
           </g>
         </g>
         
@@ -457,7 +457,7 @@ interface ChatHeaderProps {
   onScheduleMeeting?: () => void;
   onOpenDrawer?: () => void;
   isDrawerOpen?: boolean;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }
 
 export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer, isDrawerOpen, backgroundTheme = 'dark' }: ChatHeaderProps) {
@@ -468,13 +468,13 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
 
   return (
     <>
-    <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid rgba(75, 85, 99, 0.2)', backgroundColor: backgroundTheme === 'light' ? '#0F172A' : backgroundTheme === 'grey' ? '#1A1A1E' : '#000000' }}>
+    <div className="h-14 lg:h-16 px-3 lg:px-4 flex items-center justify-between min-w-0" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-primary)' }}>
       <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
         {showBackButton && (
           <button
             onClick={onBack}
             className="p-1.5 lg:p-2 -ml-1 lg:-ml-2 rounded-full hover:brightness-110 transition-colors lg:hidden"
-            style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}
+            style={{ color: 'var(--text-secondary)' }}
           >
             <ArrowLeft className="w-4 h-4 lg:w-5 lg:h-5" />
           </button>
@@ -484,7 +484,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
             src={user.is_admin ? ELEVATE_ADMIN_AVATAR_URL : (user.avatar_url || DEFAULT_AVATAR_DATA_URI)}
             alt={user.name}
             className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover default-avatar-shake"
-            style={{ backgroundColor: '#0f0f13' }}
+            style={{ backgroundColor: 'var(--bg-active)' }}
           />
         </div>
         <div className="min-w-0 flex-1">
@@ -492,10 +492,10 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
             onClick={() => setShowProfilePopup(true)}
             className="text-left hover:underline transition-all"
           >
-            <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: backgroundTheme === 'light' ? '#FFFFFF' : '#F8FAFC' }} data-component-name="ChatHeader">{user.name}</h2>
+            <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: '#F8FAFC' }} data-component-name="ChatHeader">{user.name}</h2>
           </button>
           {isTyping && (
-            <p className="text-[10px] lg:text-xs" style={{ color: backgroundTheme === 'light' ? '#64748B' : '#94A3B8' }}>typing...</p>
+            <p className="text-[10px] lg:text-xs" style={{ color: '#94A3B8' }}>typing...</p>
           )}
         </div>
       </div>

@@ -14,7 +14,7 @@ interface MessageBubbleProps {
   onScrollToMessage?: (messageId: string) => void;
   senderName?: string;
   onImageLoad?: (messageId: string, loaded: boolean) => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
 }
 
 export const MessageBubble = memo(function MessageBubble({ message, isOwn, onReply, onScrollToMessage, senderName, onImageLoad, onDelete, backgroundTheme = 'dark' }: MessageBubbleProps) {
