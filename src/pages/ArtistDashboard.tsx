@@ -1140,35 +1140,41 @@ export function ArtistDashboard() {
   useEffect(() => {
     const el = artworkDropElRef.current;
     if (!el) return;
+    const onDragEnter = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); };
     const onDragOver  = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = '#ffffff'; el.style.backgroundColor = 'var(--bg-card)'; };
-    const onDragLeave = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; };
+    const onDragLeave = (e: DragEvent) => { if (el.contains(e.relatedTarget as Node)) return; e.preventDefault(); e.stopPropagation(); el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; };
     const onDrop      = (e: DragEvent) => artworkDropHandlerRef.current(e);
+    el.addEventListener('dragenter', onDragEnter);
     el.addEventListener('dragover',  onDragOver);
     el.addEventListener('dragleave', onDragLeave);
     el.addEventListener('drop',      onDrop);
     return () => {
+      el.removeEventListener('dragenter', onDragEnter);
       el.removeEventListener('dragover',  onDragOver);
       el.removeEventListener('dragleave', onDragLeave);
       el.removeEventListener('drop',      onDrop);
     };
-  }, [releaseStep]); // re-attach when step changes (element remounts)
+  }, [releaseStep, showReleaseForm, activeSection]); // re-attach when form mounts or step changes
 
   // Attach/detach audio drop listeners — stable, no stale closures
   useEffect(() => {
     const el = audioDropElRef.current;
     if (!el) return;
+    const onDragEnter = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); };
     const onDragOver  = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = '#ffffff'; el.style.backgroundColor = 'var(--bg-card)'; };
-    const onDragLeave = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; };
+    const onDragLeave = (e: DragEvent) => { if (el.contains(e.relatedTarget as Node)) return; e.preventDefault(); e.stopPropagation(); el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; };
     const onDrop      = (e: DragEvent) => audioDropHandlerRef.current(e);
+    el.addEventListener('dragenter', onDragEnter);
     el.addEventListener('dragover',  onDragOver);
     el.addEventListener('dragleave', onDragLeave);
     el.addEventListener('drop',      onDrop);
     return () => {
+      el.removeEventListener('dragenter', onDragEnter);
       el.removeEventListener('dragover',  onDragOver);
       el.removeEventListener('dragleave', onDragLeave);
       el.removeEventListener('drop',      onDrop);
     };
-  }, [releaseStep]); // re-attach when step changes (element remounts)
+  }, [releaseStep, showReleaseForm, activeSection]); // re-attach when form mounts or step changes
 
   // Scroll to top when release step changes
   useEffect(() => {
