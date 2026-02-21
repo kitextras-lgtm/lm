@@ -4292,6 +4292,7 @@ export function ArtistDashboard() {
                       value={rf.releaseDate}
                       onChange={e => setRf({ releaseDate: e.target.value })}
                       className={inputCls}
+                      placeholder="Most Recent"
                       style={{ ...inputStyle, colorScheme: 'dark', maxWidth: '280px' }}
                       onFocus={(e) => e.target.style.borderColor = '#ffffff'}
                       onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
