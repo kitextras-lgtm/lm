@@ -1,11 +1,13 @@
 // Fix 22 & 23: Input State Preservation (Drafts) and Typing Indicators
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, ImagePlus, AlertCircle } from 'lucide-react';
+import { Send, ImagePlus, AlertCircle, Mic, Square, Loader2, X } from 'lucide-react';
 import { ImageUploadPreview } from './ImageUploadPreview';
 import { ReplyPreview } from './ReplyPreview';
 import type { ReplyTo } from '../../types/chat';
 import { MAX_IMAGE_SIZE, SUPPORTED_IMAGE_TYPES } from '../../utils/chatConstants';
+import { useSpeechToText } from '../../hooks/useSpeechToText';
+import { WaveformVisualizer } from './WaveformVisualizer';
 
 interface ChatInputProps {
   onSendMessage: (content: string, imageFile?: File, replyTo?: ReplyTo) => void;
@@ -140,7 +142,39 @@ export function ChatInput({
     e.target.value = '';
   }, []);
 
+  // Speech-to-text
+  const stt = useSpeechToText();
+  const micButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleMicClick = async () => {
+    if (stt.state === 'recording') {
+      const transcript = await stt.stopAndTranscribe();
+      if (transcript) {
+        const updated = message ? message + ' ' + transcript : transcript;
+        setMessage(updated);
+        handleDraftSave(updated);
+        // Focus the textarea so user can edit / send
+        setTimeout(() => textareaRef.current?.focus(), 50);
+      }
+    } else if (stt.state === 'idle' || stt.state === 'error') {
+      await stt.startRecording();
+    }
+  };
+
+  const handleMicCancel = () => {
+    stt.cancelRecording();
+  };
+
+  // Force sharp corners on mic button
+  useEffect(() => {
+    if (micButtonRef.current) {
+      micButtonRef.current.style.borderRadius = '0';
+    }
+  }, []);
+
   const hasContent = message.trim() || imageFile;
+  const isRecording = stt.state === 'recording';
+  const isTranscribing = stt.state === 'transcribing';
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,6 +186,12 @@ export function ChatInput({
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const formatDuration = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -176,6 +216,52 @@ export function ChatInput({
         </div>
       )}
 
+      {/* Recording indicator bar */}
+      {isRecording && (
+        <div
+          className="flex items-center gap-2 px-4 py-2 animate-fade-in"
+          style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }}
+        >
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: '#ef4444' }} />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ backgroundColor: '#ef4444' }} />
+          </span>
+          <span className="text-xs font-medium shrink-0" style={{ color: 'var(--text-primary)' }}>{formatDuration(stt.duration)}</span>
+          <WaveformVisualizer getWaveformData={stt.getWaveformData} isActive={isRecording} />
+          <button
+            type="button"
+            onClick={handleMicCancel}
+            className="ml-auto shrink-0 p-1 transition-colors hover:brightness-125"
+            style={{ color: 'var(--text-primary)', opacity: 0.6 }}
+            aria-label="Cancel recording"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Transcribing indicator */}
+      {isTranscribing && (
+        <div
+          className="flex items-center gap-3 px-4 py-2 animate-fade-in"
+          style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }}
+        >
+          <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--text-primary)' }} />
+          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Transcribing…</span>
+        </div>
+      )}
+
+      {/* STT error */}
+      {stt.error && stt.state === 'error' && (
+        <div
+          className="flex items-center gap-2 px-4 py-2 text-xs"
+          style={{ borderTop: '1px solid rgba(239,68,68,0.3)', backgroundColor: 'rgba(239,68,68,0.08)', color: '#f87171' }}
+        >
+          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+          <span>{stt.error}</span>
+        </div>
+      )}
+
       <form 
         onSubmit={handleFormSubmit} 
         className="flex gap-2 items-center safe-area-inset-bottom"
@@ -192,7 +278,7 @@ export function ChatInput({
           ref={imageButtonRef}
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          disabled={disabled}
+          disabled={disabled || isRecording || isTranscribing}
           className="shrink-0 hover:bg-transparent group h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ color: 'var(--text-secondary)', borderRadius: 0, border: '1px solid var(--border-default)' }}
         >
@@ -208,8 +294,8 @@ export function ChatInput({
             handleDraftSave(e.target.value);
           }}
           onKeyDown={handleKeyDown}
-          placeholder={otherUserName ? t('messages.messageAt', { username: otherUserName }) : t('messages.sendAMessage')}
-          disabled={disabled}
+          placeholder={isTranscribing ? 'Transcribing…' : otherUserName ? t('messages.messageAt', { username: otherUserName }) : t('messages.sendAMessage')}
+          disabled={disabled || isTranscribing}
           rows={1}
           maxLength={5000}
           aria-label="Message input"
@@ -226,6 +312,27 @@ export function ChatInput({
           onFocus={(e) => { e.target.style.borderColor = 'var(--text-primary)'; e.target.style.opacity = '1'; }}
           onBlur={(e) => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.opacity = '0.7'; }}
         />
+        {/* Mic button — toggles between start/stop recording */}
+        <button
+          ref={micButtonRef}
+          type="button"
+          onClick={handleMicClick}
+          disabled={disabled || isTranscribing}
+          className="shrink-0 h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+          style={isRecording
+            ? { backgroundColor: 'rgba(239,68,68,0.15)', color: '#f87171', borderRadius: 0, border: '1px solid rgba(239,68,68,0.4)' }
+            : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', borderRadius: 0, border: '1px solid var(--border-default)', opacity: 0.6 }
+          }
+          aria-label={isRecording ? 'Stop recording' : 'Start voice input'}
+        >
+          {isRecording ? (
+            <Square className="w-3.5 h-3.5" fill="currentColor" />
+          ) : isTranscribing ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Mic className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+          )}
+        </button>
         <button
           ref={sendButtonRef}
           type="submit"

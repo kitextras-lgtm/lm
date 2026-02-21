@@ -138,6 +138,23 @@ export function AdminDashboard() {
   const [reassigningCampaignId, setReassigningCampaignId] = useState<string | null>(null);
   const [expandedCampaignId, setExpandedCampaignId] = useState<string | null>(null);
 
+  // Feedback state
+  interface FeedbackEntry {
+    id: string;
+    user_id: string;
+    category: string;
+    content: string;
+    status: string;
+    created_at: string;
+    user_email?: string;
+    username?: string;
+  }
+  const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackCategoryFilter, setFeedbackCategoryFilter] = useState<string>('all');
+  const [feedbackStatusFilter, setFeedbackStatusFilter] = useState<string>('all');
+  const [updatingFeedbackId, setUpdatingFeedbackId] = useState<string | null>(null);
+
   // Whitelist state
   interface WhitelistedChannel {
     id: string;
@@ -403,6 +420,59 @@ export function AdminDashboard() {
       fetchApplications();
     }
   }, [activeSection, fetchApplications]);
+
+  const fetchFeedback = useCallback(async () => {
+    setFeedbackLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('feedback')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching feedback:', error);
+      } else if (data) {
+        // Fetch user info separately to avoid FK join issues
+        const userIds = [...new Set(data.map((f: any) => f.user_id))];
+        let userMap: Record<string, { email?: string; username?: string }> = {};
+        if (userIds.length > 0) {
+          const { data: users } = await supabase
+            .from('users')
+            .select('id, email, username')
+            .in('id', userIds);
+          if (users) {
+            users.forEach((u: any) => { userMap[u.id] = { email: u.email, username: u.username }; });
+          }
+        }
+        setFeedbackEntries(data.map((f: any) => ({
+          ...f,
+          user_email: userMap[f.user_id]?.email,
+          username: userMap[f.user_id]?.username,
+        })));
+      }
+    } catch (e) {
+      console.error('Error fetching feedback:', e);
+    } finally {
+      setFeedbackLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeSection === 'feedback') {
+      fetchFeedback();
+    }
+  }, [activeSection, fetchFeedback]);
+
+  const handleFeedbackStatusUpdate = async (id: string, status: string) => {
+    setUpdatingFeedbackId(id);
+    try {
+      const { error } = await supabase.from('feedback').update({ status }).eq('id', id);
+      if (!error) {
+        setFeedbackEntries(prev => prev.map(f => f.id === id ? { ...f, status } : f));
+      }
+    } finally {
+      setUpdatingFeedbackId(null);
+    }
+  };
 
   const handleApplicationAction = async (id: string, action: 'approved' | 'denied') => {
     setActioningId(id);
@@ -1588,6 +1658,170 @@ export function AdminDashboard() {
                 )}
               </div>
             )}
+
+            {activeSection === 'feedback' && (() => {
+              const categoryColors: Record<string, string> = {
+                suggestion: 'rgba(59,130,246,0.15)',
+                bug: 'rgba(239,68,68,0.15)',
+                feature: 'rgba(168,85,247,0.15)',
+                other: 'rgba(107,114,128,0.15)',
+              };
+              const categoryBorders: Record<string, string> = {
+                suggestion: 'rgba(59,130,246,0.4)',
+                bug: 'rgba(239,68,68,0.4)',
+                feature: 'rgba(168,85,247,0.4)',
+                other: 'rgba(107,114,128,0.4)',
+              };
+              const categoryLabels: Record<string, string> = {
+                suggestion: 'Suggestion',
+                bug: 'Bug Report',
+                feature: 'Feature Request',
+                other: 'Other',
+              };
+              const statusColors: Record<string, string> = {
+                pending: 'rgba(234,179,8,0.15)',
+                reviewed: 'rgba(59,130,246,0.15)',
+                resolved: 'rgba(34,197,94,0.15)',
+                closed: 'rgba(107,114,128,0.15)',
+              };
+              const statusBorders: Record<string, string> = {
+                pending: 'rgba(234,179,8,0.4)',
+                reviewed: 'rgba(59,130,246,0.4)',
+                resolved: 'rgba(34,197,94,0.4)',
+                closed: 'rgba(107,114,128,0.4)',
+              };
+              const filtered = feedbackEntries.filter(f => {
+                if (feedbackCategoryFilter !== 'all' && f.category !== feedbackCategoryFilter) return false;
+                if (feedbackStatusFilter !== 'all' && f.status !== feedbackStatusFilter) return false;
+                return true;
+              });
+              const counts = {
+                total: feedbackEntries.length,
+                pending: feedbackEntries.filter(f => f.status === 'pending').length,
+                bug: feedbackEntries.filter(f => f.category === 'bug').length,
+                feature: feedbackEntries.filter(f => f.category === 'feature').length,
+                suggestion: feedbackEntries.filter(f => f.category === 'suggestion').length,
+              };
+              return (
+                <div className="animate-fade-in">
+                  <div className="mb-6">
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>User Feedback</h2>
+                    <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Review and triage feedback to inform product decisions</p>
+                  </div>
+
+                  {/* Stats row */}
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+                    {[
+                      { label: 'Total', value: counts.total, color: tokens.text.primary },
+                      { label: 'Pending', value: counts.pending, color: '#EAB308' },
+                      { label: 'Bug Reports', value: counts.bug, color: '#EF4444' },
+                      { label: 'Features', value: counts.feature, color: '#A855F7' },
+                      { label: 'Suggestions', value: counts.suggestion, color: '#3B82F6' },
+                    ].map(s => (
+                      <div key={s.label} className="rounded-xl p-4 border" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.subtle }}>
+                        <p className="text-2xl font-bold mb-0.5" style={{ color: s.color }}>{s.value}</p>
+                        <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Filters */}
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    <div className="flex gap-1.5 flex-wrap">
+                      {['all', 'suggestion', 'bug', 'feature', 'other'].map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => setFeedbackCategoryFilter(cat)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                          style={{
+                            backgroundColor: feedbackCategoryFilter === cat ? tokens.text.primary : tokens.bg.elevated,
+                            color: feedbackCategoryFilter === cat ? tokens.bg.primary : tokens.text.primary,
+                            border: `1px solid ${tokens.border.subtle}`,
+                          }}
+                        >
+                          {cat === 'all' ? 'All Types' : categoryLabels[cat]}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex gap-1.5 flex-wrap ml-auto">
+                      {['all', 'pending', 'reviewed', 'resolved', 'closed'].map(st => (
+                        <button
+                          key={st}
+                          onClick={() => setFeedbackStatusFilter(st)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                          style={{
+                            backgroundColor: feedbackStatusFilter === st ? tokens.text.primary : tokens.bg.elevated,
+                            color: feedbackStatusFilter === st ? tokens.bg.primary : tokens.text.primary,
+                            border: `1px solid ${tokens.border.subtle}`,
+                          }}
+                        >
+                          {st === 'all' ? 'All Statuses' : st.charAt(0).toUpperCase() + st.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Feedback list */}
+                  {feedbackLoading ? (
+                    <div className="flex items-center justify-center py-20">
+                      <AnimatedBarsLoader text="Loading feedback..." />
+                    </div>
+                  ) : filtered.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                        <svg className="w-6 h-6" style={{ color: tokens.text.primary, opacity: 0.4 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
+                      </div>
+                      <p className="font-semibold" style={{ color: tokens.text.primary }}>No feedback found</p>
+                      <p className="text-sm mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>Try adjusting your filters</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {filtered.map(f => (
+                        <div key={f.id} className="rounded-2xl p-5 border" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.subtle }}>
+                          <div className="flex items-start gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: categoryColors[f.category] || categoryColors.other, border: `1px solid ${categoryBorders[f.category] || categoryBorders.other}`, color: tokens.text.primary }}>
+                                  {categoryLabels[f.category] || f.category}
+                                </span>
+                                <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>
+                                  {f.username ? `@${f.username}` : f.user_email || f.user_id.slice(0, 8)}
+                                </span>
+                                <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>
+                                  {new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                              <p className="text-sm leading-relaxed" style={{ color: tokens.text.primary }}>{f.content}</p>
+                            </div>
+                            {/* Status selector */}
+                            <div className="flex-shrink-0">
+                              <div className="flex flex-col gap-1.5">
+                                <span className="px-2.5 py-1 rounded-lg text-xs font-semibold text-center" style={{ backgroundColor: statusColors[f.status] || statusColors.pending, border: `1px solid ${statusBorders[f.status] || statusBorders.pending}`, color: tokens.text.primary }}>
+                                  {f.status.charAt(0).toUpperCase() + f.status.slice(1)}
+                                </span>
+                                <div className="flex flex-col gap-1">
+                                  {['pending', 'reviewed', 'resolved', 'closed'].filter(s => s !== f.status).map(s => (
+                                    <button
+                                      key={s}
+                                      onClick={() => handleFeedbackStatusUpdate(f.id, s)}
+                                      disabled={updatingFeedbackId === f.id}
+                                      className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all hover:brightness-110"
+                                      style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary, opacity: updatingFeedbackId === f.id ? 0.5 : 1 }}
+                                    >
+                                      → {s.charAt(0).toUpperCase() + s.slice(1)}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {activeSection === 'data' && (
               <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">

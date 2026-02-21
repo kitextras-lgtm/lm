@@ -26,6 +26,7 @@ export function SignupPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [fromArtistPage, setFromArtistPage] = useState(false);
   const [fromFreelancerPage, setFromFreelancerPage] = useState(false);
+  const [fromBrandPage, setFromBrandPage] = useState(false);
   const [isContinuation, setIsContinuation] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -56,6 +57,9 @@ export function SignupPage() {
     } else if (source === 'freelancer') {
       setFromFreelancerPage(true);
       localStorage.setItem('signupSource', 'freelancer');
+    } else if (source === 'brand') {
+      setFromBrandPage(true);
+      localStorage.setItem('signupSource', 'brand');
     } else {
       // Also check localStorage as fallback
       const signupSource = localStorage.getItem('signupSource');
@@ -65,6 +69,8 @@ export function SignupPage() {
         setFromArtistPage(true);
       } else if (signupSource === 'freelancer' || sessionSource === 'freelancer') {
         setFromFreelancerPage(true);
+      } else if (signupSource === 'brand' || sessionSource === 'brand') {
+        setFromBrandPage(true);
       }
     }
   }, [searchParams]);
@@ -237,6 +243,9 @@ export function SignupPage() {
       } else if (fromFreelancerPage) {
         localStorage.removeItem('signupSource');
         navigate('/make-profile', { state: { userType: 'freelancer' } });
+      } else if (fromBrandPage) {
+        localStorage.removeItem('signupSource');
+        navigate('/make-profile', { state: { userType: 'business' } });
       } else {
         navigate('/make-profile');
       }

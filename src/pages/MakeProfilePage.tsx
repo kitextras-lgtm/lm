@@ -44,13 +44,17 @@ export function MakeProfilePage() {
   }, []);
 
   useEffect(() => {
-    // Check if artist or freelancer type was passed from navigation state
+    // Check if artist, freelancer, or business type was passed from navigation state
     if (location.state?.userType === 'artist') {
       setUserType('artist');
       return;
     }
     if (location.state?.userType === 'freelancer') {
       setUserType('freelancer');
+      return;
+    }
+    if (location.state?.userType === 'business') {
+      setUserType('business');
       return;
     }
 
@@ -221,11 +225,13 @@ export function MakeProfilePage() {
       localStorage.setItem('tempProfile', JSON.stringify(tempProfileData));
       console.log('💾 Saved to localStorage. Verifying:', localStorage.getItem('tempProfile'));
 
-      // Check if this is an artist or freelancer flow
+      // Check if this is an artist, freelancer, or business flow
       if (userType === 'artist' || location.state?.userType === 'artist') {
         navigate('/tell-us-about-yourself', { state: { userType: 'artist' } });
       } else if (userType === 'freelancer' || location.state?.userType === 'freelancer') {
         navigate('/tell-us-about-yourself', { state: { userType: 'freelancer' } });
+      } else if (userType === 'business' || location.state?.userType === 'business') {
+        navigate('/tell-us-about-yourself', { state: { userType: 'business' } });
       } else {
         navigate('/tell-us-about-yourself');
       }
@@ -353,6 +359,8 @@ export function MakeProfilePage() {
                     background: 'transparent',
                     border: '1px solid rgba(75, 85, 99, 1)',
                   }}
+                  onFocus={(e) => { e.target.style.border = '1px solid #ffffff'; }}
+                  onBlur={(e) => { e.target.style.border = '1px solid rgba(75, 85, 99, 1)'; }}
                 />
                 <input
                   type="text"
@@ -371,6 +379,8 @@ export function MakeProfilePage() {
                     background: 'transparent',
                     border: '1px solid rgba(75, 85, 99, 1)',
                   }}
+                  onFocus={(e) => { e.target.style.border = '1px solid #ffffff'; }}
+                  onBlur={(e) => { e.target.style.border = '1px solid rgba(75, 85, 99, 1)'; }}
                 />
               </div>
             </div>
@@ -403,6 +413,8 @@ export function MakeProfilePage() {
                     background: 'transparent',
                     border: '1px solid rgba(75, 85, 99, 1)',
                   }}
+                  onFocus={(e) => { e.target.style.border = '1px solid #ffffff'; }}
+                  onBlur={(e) => { e.target.style.border = '1px solid rgba(75, 85, 99, 1)'; }}
                 />
               </div>
             </div>

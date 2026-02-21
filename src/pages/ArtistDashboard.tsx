@@ -1206,6 +1206,10 @@ export function ArtistDashboard() {
   const appliedTheme = backgroundTheme;
   
   const [feedbackCategory, setFeedbackCategory] = useState<'suggestion' | 'bug-report' | 'feature-request' | 'other' | null>(null);
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [guideSearch, setGuideSearch] = useState('');
   const { t, i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(() => LOCALE_TO_NAME[i18n.language] || 'English');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -2547,8 +2551,43 @@ export function ArtistDashboard() {
     </div>
   );
 
-  const renderSendFeedback = () => (
+  const renderSendFeedback = () => {
+    const categoryMap: Record<string, string> = {
+      'suggestion': 'suggestion',
+      'bug-report': 'bug',
+      'feature-request': 'feature',
+      'other': 'other',
+    };
+    const handleSubmitFeedback = async () => {
+      if (!feedbackCategory || !feedbackText.trim()) return;
+      setFeedbackSubmitting(true);
+      try {
+        const { error } = await supabase.from('feedback').insert({
+          user_id: currentUserId,
+          category: categoryMap[feedbackCategory],
+          content: feedbackText.trim(),
+          status: 'pending',
+        });
+        if (error) {
+          console.error('❌ Feedback insert error:', error);
+        } else {
+          setFeedbackSubmitted(true);
+          setFeedbackCategory(null);
+          setFeedbackText('');
+          setTimeout(() => setFeedbackSubmitted(false), 4000);
+        }
+      } finally {
+        setFeedbackSubmitting(false);
+      }
+    };
+    return (
     <div className="scroll-mt-6">
+      {feedbackSubmitted && (
+        <div className="mb-5 flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: 'var(--text-primary)' }}>
+          <svg className="w-5 h-5 flex-shrink-0" style={{ color: '#22C55E' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          Thanks! Your feedback has been submitted and will help shape the product roadmap.
+        </div>
+      )}
       <div className="space-y-5">
         {/* Category Selection */}
         <div>
@@ -2618,6 +2657,8 @@ export function ArtistDashboard() {
           <textarea
             placeholder={t('feedback.feedbackPlaceholder')}
             rows={5}
+            value={feedbackText}
+            onChange={(e) => setFeedbackText(e.target.value)}
             className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
             style={{
               backgroundColor: 'transparent',
@@ -2632,7 +2673,7 @@ export function ArtistDashboard() {
         {/* Submit Button */}
         <div className="flex items-center gap-3 pt-2">
           <button
-            onClick={() => setFeedbackCategory(null)}
+            onClick={() => { setFeedbackCategory(null); setFeedbackText(''); }}
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: 'transparent',
@@ -2643,38 +2684,148 @@ export function ArtistDashboard() {
             {t('common.cancel')}
           </button>
           <button
+            onClick={handleSubmitFeedback}
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
             style={{
-              backgroundColor: feedbackCategory ? 'var(--text-primary)' : 'transparent',
-              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-secondary)',
-              border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
+              backgroundColor: feedbackCategory && feedbackText.trim() ? 'var(--text-primary)' : 'transparent',
+              color: feedbackCategory && feedbackText.trim() ? 'var(--bg-primary)' : 'var(--text-primary)',
+              border: feedbackCategory && feedbackText.trim() ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
+              opacity: feedbackSubmitting ? 0.7 : 1,
             }}
-            disabled={!feedbackCategory}
+            disabled={!feedbackCategory || !feedbackText.trim() || feedbackSubmitting}
           >
-            {t('feedback.submitFeedback')}
+            {feedbackSubmitting ? 'Submitting...' : t('feedback.submitFeedback')}
           </button>
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
-  const renderGuides = () => (
-    <div className="scroll-mt-6 px-4 lg:px-6 py-6">
-      <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Guides</h3>
-      <p className="text-sm mb-6" style={{ color: 'var(--text-primary)' }}>Coming soon! We're working on creating helpful guides and tutorials for you.</p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-          <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Getting Started</h4>
-          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Learn the basics of using Elevate and setting up your profile.</p>
+  const renderGuides = () => {
+    const guideCategories = [
+      {
+        icon: (
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+        ),
+        title: 'Frequently Asked Questions',
+        desc: 'Answers to questions we\'re asked the most often.',
+        count: '27 articles',
+        accent: 'rgba(99,102,241,0.15)',
+        accentBorder: 'rgba(99,102,241,0.35)',
+        accentColor: '#818CF8',
+      },
+      {
+        icon: (
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        ),
+        title: 'The Basics',
+        desc: 'How to get started releasing music.',
+        count: '18 articles',
+        accent: 'rgba(34,197,94,0.12)',
+        accentBorder: 'rgba(34,197,94,0.3)',
+        accentColor: '#4ADE80',
+      },
+      {
+        icon: (
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+        ),
+        title: 'Uploading Music',
+        desc: 'Advice on using our Release Builder.',
+        count: '23 articles',
+        accent: 'rgba(59,130,246,0.12)',
+        accentBorder: 'rgba(59,130,246,0.3)',
+        accentColor: '#60A5FA',
+      },
+      {
+        icon: (
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l5.654-4.654m5.654-4.654l3.029-2.498a1.875 1.875 0 012.652 2.652l-3.029 2.497m-5.654 4.654l-3.029 2.497" /></svg>
+        ),
+        title: 'Making Edits',
+        desc: 'How to make changes to your releases.',
+        count: '5 articles',
+        accent: 'rgba(234,179,8,0.12)',
+        accentBorder: 'rgba(234,179,8,0.3)',
+        accentColor: '#FACC15',
+      },
+      {
+        icon: (
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>
+        ),
+        title: 'Getting Paid',
+        desc: 'How royalties and payouts work on Elevate.',
+        count: '12 articles',
+        accent: 'rgba(16,185,129,0.12)',
+        accentBorder: 'rgba(16,185,129,0.3)',
+        accentColor: '#34D399',
+      },
+      {
+        icon: (
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" /></svg>
+        ),
+        title: 'Campaigns & Earnings',
+        desc: 'Submit clips and earn from brand campaigns.',
+        count: '9 articles',
+        accent: 'rgba(239,68,68,0.12)',
+        accentBorder: 'rgba(239,68,68,0.3)',
+        accentColor: '#F87171',
+      },
+    ];
+    const filtered = guideCategories.filter(c =>
+      !guideSearch.trim() ||
+      c.title.toLowerCase().includes(guideSearch.toLowerCase()) ||
+      c.desc.toLowerCase().includes(guideSearch.toLowerCase())
+    );
+    return (
+      <div className="scroll-mt-6">
+        {/* Header */}
+        <div className="px-1 pb-6">
+          <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>How can we help?</h3>
+          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>Browse guides and tutorials to get the most out of Elevate.</p>
         </div>
-        <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-          <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Campaign Tips</h4>
-          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Discover best practices for creating successful campaign submissions.</p>
+
+        {/* Search bar */}
+        <div className="relative mb-6">
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'var(--text-primary)', opacity: 0.5 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input
+            type="text"
+            placeholder="Search for articles..."
+            value={guideSearch}
+            onChange={e => setGuideSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3.5 rounded-xl text-sm focus:outline-none transition-all"
+            style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+            onFocus={e => e.target.style.borderColor = 'var(--text-primary)'}
+            onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'}
+          />
+        </div>
+
+        {/* Category list */}
+        <div className="space-y-3">
+          {filtered.length === 0 ? (
+            <div className="py-12 text-center text-sm" style={{ color: '#CBD5E1' }}>No articles found for "{guideSearch}"</div>
+          ) : filtered.map((cat, idx) => (
+            <button
+              key={idx}
+              className="w-full flex items-center gap-5 p-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
+              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
+            >
+              <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: cat.accent, border: `1px solid ${cat.accentBorder}`, color: cat.accentColor }}>
+                {cat.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-base mb-0.5" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>{cat.desc}</p>
+                <p className="text-xs mt-1" style={{ color: cat.accentColor, opacity: 0.85 }}>{cat.count}</p>
+              </div>
+              <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </button>
+          ))}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderLogOut = () => (
     <div className="scroll-mt-6 flex gap-3">
@@ -2783,7 +2934,7 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.navyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
@@ -2813,7 +2964,7 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.greyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
@@ -2843,7 +2994,7 @@ export function ArtistDashboard() {
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>Rose</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Midnight rose</p>
               </div>
 
               {/* Dark Option */}
@@ -2873,7 +3024,7 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.dark')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.darkDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.darkDesc')}</p>
               </div>
 
               {/* Light Option */}
@@ -2903,7 +3054,7 @@ export function ArtistDashboard() {
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                <p className="text-sm" style={{ color: '#64748B' }}>Clean white</p>
+                <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
               </div>
             </div>
           </div>
@@ -3971,14 +4122,24 @@ export function ArtistDashboard() {
                                         const rect = e.currentTarget.getBoundingClientRect();
                                         const trackDuration = track.duration;
                                         const trackIdx = i;
+                                        // Pause audio during drag to prevent static noise
+                                        const audioEl = document.getElementById(`audio-preview-${trackIdx}`) as HTMLAudioElement | null;
+                                        const wasPlaying = audioEl && !audioEl.paused;
+                                        if (audioEl && wasPlaying) audioEl.pause();
                                         const onMove = (mv: MouseEvent) => {
                                           const pct = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
                                           const maxStart = Math.max(0, trackDuration - 30);
                                           const newStart = Math.min(Math.round(pct * trackDuration), maxStart);
-                                          // Use functional updater + latestTracksRef to avoid stale closure
                                           setReleaseForm(f => ({ ...f, tracks: latestTracksRef.current.map((t, j) => j === trackIdx ? { ...t, previewStart: newStart } : t) }));
+                                          const el = document.getElementById(`audio-preview-${trackIdx}`) as HTMLAudioElement | null;
+                                          if (el) el.currentTime = newStart;
                                         };
-                                        const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+                                        const onUp = () => {
+                                          window.removeEventListener('mousemove', onMove);
+                                          window.removeEventListener('mouseup', onUp);
+                                          // Resume playback from new position after drag ends
+                                          if (wasPlaying && audioEl) audioEl.play();
+                                        };
                                         window.addEventListener('mousemove', onMove);
                                         window.addEventListener('mouseup', onUp);
                                         onMove(e.nativeEvent);
@@ -4536,16 +4697,6 @@ export function ArtistDashboard() {
                   {/* Header */}
                   <div className="flex items-center justify-between pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Review Your Release</h2>
-                    <button
-                      onClick={() => { setReleaseStep(1); setUploadingTracks([]); setEditingTrackIndex(null); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all hover:opacity-80"
-                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Complete Release
-                    </button>
                   </div>
 
                   {/* Release Info Card */}
@@ -4565,13 +4716,13 @@ export function ArtistDashboard() {
                       {/* Metadata */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-xl font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>{rf.title || 'Untitled'}</h3>
-                        <p className="text-sm mb-4" style={{ color: '#3B82F6' }}>{rf.releaseArtists || '[Untitled]'}{!rf.releaseArtists && <span className="ml-1.5 text-yellow-400">⚠</span>}</p>
+                        <p className="text-sm mb-4" style={{ color: '#3B82F6' }}>{rf.releaseArtists || '[Untitled]'}</p>
 
                         <div className="grid grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
-                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Type: </span><span style={{ color: 'var(--text-primary)' }}>{rf.tracks.length > 1 ? 'Album' : rf.tracks.length === 1 ? 'Single' : <span className="text-yellow-400">⚠</span>}</span></div>
+                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Type: </span><span style={{ color: 'var(--text-primary)' }}>{rf.tracks.length > 1 ? 'Album' : rf.tracks.length === 1 ? 'Single' : '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Price Band: </span><span style={{ color: 'var(--text-primary)' }}>Budget</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Primary Genre: </span><span style={{ color: 'var(--text-primary)' }}>{rf.genre || '—'}</span></div>
-                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{rf.releaseDate ? rf.releaseDate : <span className="text-yellow-400">⚠</span>}</span></div>
+                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{rf.releaseDate ? rf.releaseDate : '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Secondary Genre: </span><span style={{ color: 'var(--text-primary)' }}>{rf.secondaryGenre || '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Original Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{rf.originalReleaseDate || 'N/A'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Language: </span><span style={{ color: 'var(--text-primary)' }}>{rf.language || '—'}</span></div>
@@ -4590,8 +4741,7 @@ export function ArtistDashboard() {
                   <div>
                     <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Tracklist</h3>
                     {rf.tracks.length === 0 ? (
-                      <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm" style={{ backgroundColor: 'rgba(234, 179, 8, 0.08)', border: '1px solid rgba(234, 179, 8, 0.3)', color: 'var(--text-primary)' }}>
-                        <span className="text-yellow-400 text-base">⚠</span>
+                      <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                         No uploaded tracks yet.
                       </div>
                     ) : (

@@ -24,11 +24,15 @@ if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'undefined') {
   console.error('❌ VITE_SUPABASE_ANON_KEY is not set! Check your .env file.');
 }
 
+// ASR (Speech-to-Text) Service
+export const ASR_SERVICE_URL = import.meta.env.VITE_ASR_SERVICE_URL || 'http://localhost:8000';
+
 // Log config status in development
 if (import.meta.env.DEV) {
   console.log('🔧 Config loaded:', {
     supabaseUrl: SUPABASE_URL?.substring(0, 30) + '...',
     hasAnonKey: !!SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 10,
+    asrServiceUrl: ASR_SERVICE_URL,
   });
 }
 

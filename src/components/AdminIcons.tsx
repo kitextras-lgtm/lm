@@ -175,6 +175,18 @@ export function AdminDataIconSVG({ isHovered, isActive }: { isHovered?: boolean;
   );
 }
 
+export function AdminFeedbackIconSVG({ isHovered, isActive }: { isHovered?: boolean; isActive?: boolean }) {
+  const shouldAnimate = isHovered || isActive;
+  return (
+    <div className="relative w-7 h-7">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 overflow-visible">
+        <path d="M8 10C8 8.89543 8.89543 8 10 8H38C39.1046 8 40 8.89543 40 10V30C40 31.1046 39.1046 32 38 32H26L18 40V32H10C8.89543 32 8 31.1046 8 30V10Z" stroke="currentColor" strokeWidth="3.5" fill="none" className="transition-transform duration-300" style={{ transform: shouldAnimate ? 'translateY(-1px)' : 'translateY(0)' }} />
+        <path d="M17 20L22 25L31 16" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-300" style={{ opacity: shouldAnimate ? 1 : 0.7 }} />
+      </svg>
+    </div>
+  );
+}
+
 export function AdminNotificationsIconSVG({ }: { isHovered?: boolean; isActive?: boolean }) {
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="overflow-visible">

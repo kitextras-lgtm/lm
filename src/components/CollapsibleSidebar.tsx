@@ -5,7 +5,8 @@ import {
   AdminAlertsIconSVG, 
   AdminMessagesIconSVG, 
   AdminUsersIconSVG, 
-  AdminDataIconSVG
+  AdminDataIconSVG,
+  AdminFeedbackIconSVG
 } from './AdminIcons';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
 
@@ -603,6 +604,7 @@ const getNavItems = (userType?: 'artist' | 'creator' | 'freelancer' | 'business'
       { id: 'alerts', label: 'Alerts', Icon: AdminAlertsIconSVG },
       { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: AdminMessagesIconSVG },
       { id: 'users', label: 'Users', Icon: AdminUsersIconSVG },
+      { id: 'feedback', label: 'Feedback', Icon: AdminFeedbackIconSVG },
       { id: 'data', label: 'Data', Icon: AdminDataIconSVG },
       { id: 'settings', label: tr('nav.settings', 'Settings'), Icon: SettingsIconSVG },
     ];
