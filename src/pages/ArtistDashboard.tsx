@@ -1006,8 +1006,11 @@ export function ArtistDashboard() {
     secondaryGenre: '',
     language: 'English',
     releaseDate: '',
+    countryRestrictions: false,
+    releasedBefore: false,
+    originalReleaseDate: '',
     stores: [] as string[],
-    tracks: [] as { title: string; featuring: string; explicit: boolean }[],
+    tracks: [] as { title: string; featuring: string; explicit: boolean; duration: number; fileName: string; fileObject: File | null; previewStart: number; addLyrics: boolean; credits: { composer: string; songwriter: string; songwriterRole: string; engineer: string; engineerRole: string; performer: string; performerRole: string } }[],
     artworkFile: null as File | null,
     artworkPreview: '' as string,
   });
@@ -1050,7 +1053,140 @@ export function ArtistDashboard() {
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
   const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
-  
+  const [copyrightOption, setCopyrightOption] = useState<'none' | 'upload'>('none');
+  const [copyrightDocs, setCopyrightDocs] = useState<File[]>([]);
+  const [uploadingTracks, setUploadingTracks] = useState<{ name: string; size: number; progress: number; done: boolean }[]>([]);
+  const [editingTrackIndex, setEditingTrackIndex] = useState<number | null>(null);
+  const [playingTrackIndex, setPlayingTrackIndex] = useState<number | null>(null);
+  // Always-fresh ref to tracks — used in scrubber drag to avoid stale closures
+  const latestTracksRef = useRef(releaseForm.tracks);
+  latestTracksRef.current = releaseForm.tracks;
+
+  // Stable object URL cache — created once per file, never recreated on re-render
+  const trackObjectUrls = useRef<Map<string, string>>(new Map());
+  const getTrackUrl = (track: { fileObject: File | null; fileName: string }) => {
+    if (!track.fileObject) return null;
+    const key = track.fileName;
+    if (!trackObjectUrls.current.has(key)) {
+      trackObjectUrls.current.set(key, URL.createObjectURL(track.fileObject));
+    }
+    return trackObjectUrls.current.get(key)!;
+  };
+  const releaseFormScrollRef = useRef<HTMLDivElement>(null);
+  const artworkInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
+  const isUploading = uploadingTracks.some(t => !t.done);
+  const handleAudioFiles = useCallback((files: FileList | File[]) => {
+    const fileArr = Array.from(files).filter((f: File) => f.name.endsWith('.wav') || f.name.endsWith('.mp3'));
+    if (!fileArr.length) return;
+    fileArr.forEach((file: File) => {
+      setUploadingTracks(prev => [...prev, { name: file.name, size: file.size, progress: 0, done: false }]);
+      const startTime = Date.now();
+      const simDuration = 3000 + Math.random() * 2000;
+      // Read actual audio duration
+      const audioEl = new Audio();
+      const objectUrl = URL.createObjectURL(file);
+      audioEl.src = objectUrl;
+      let audioDuration = 0;
+      audioEl.addEventListener('loadedmetadata', () => {
+        audioDuration = audioEl.duration;
+        URL.revokeObjectURL(objectUrl);
+      });
+      const interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(100, Math.round((elapsed / simDuration) * 100));
+        setUploadingTracks(prev => prev.map(t => t.name === file.name && !t.done ? { ...t, progress } : t));
+        if (progress >= 100) {
+          clearInterval(interval);
+          setUploadingTracks(prev => prev.map(t => t.name === file.name ? { ...t, progress: 100, done: true } : t));
+          setReleaseForm(f => ({ ...f, tracks: [...f.tracks, { title: file.name.replace(/\.(wav|mp3)$/i, ''), featuring: '', explicit: false, duration: audioDuration, fileName: file.name, fileObject: file, previewStart: 0, addLyrics: false, credits: { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' } }] }));
+        }
+      }, 80);
+    });
+  }, []);
+  // DOM element refs for drop zones
+  const artworkDropElRef = useRef<HTMLDivElement>(null);
+  const audioDropElRef = useRef<HTMLDivElement>(null);
+
+  // Handler refs — always point to latest logic, never stale
+  const artworkDropHandlerRef = useRef<(e: DragEvent) => void>(() => {});
+  const audioDropHandlerRef = useRef<(e: DragEvent) => void>(() => {});
+
+  // Keep artwork handler ref up to date every render
+  useEffect(() => {
+    artworkDropHandlerRef.current = (e: DragEvent) => {
+      e.preventDefault(); e.stopPropagation();
+      const el = artworkDropElRef.current;
+      if (el) { el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; }
+      const file = e.dataTransfer?.files?.[0];
+      if (file && (file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg'))) {
+        const url = URL.createObjectURL(file);
+        setReleaseForm(f => ({ ...f, artworkFile: file, artworkPreview: url }));
+      }
+    };
+  });
+
+  // Keep audio handler ref up to date every render
+  useEffect(() => {
+    audioDropHandlerRef.current = (e: DragEvent) => {
+      e.preventDefault(); e.stopPropagation();
+      const el = audioDropElRef.current;
+      if (el) { el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; }
+      if (e.dataTransfer?.files) handleAudioFiles(e.dataTransfer.files);
+    };
+  });
+
+  // Attach/detach artwork drop listeners — stable, no stale closures
+  useEffect(() => {
+    const el = artworkDropElRef.current;
+    if (!el) return;
+    const onDragOver  = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = '#ffffff'; el.style.backgroundColor = 'var(--bg-card)'; };
+    const onDragLeave = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; };
+    const onDrop      = (e: DragEvent) => artworkDropHandlerRef.current(e);
+    el.addEventListener('dragover',  onDragOver);
+    el.addEventListener('dragleave', onDragLeave);
+    el.addEventListener('drop',      onDrop);
+    return () => {
+      el.removeEventListener('dragover',  onDragOver);
+      el.removeEventListener('dragleave', onDragLeave);
+      el.removeEventListener('drop',      onDrop);
+    };
+  }, [releaseStep]); // re-attach when step changes (element remounts)
+
+  // Attach/detach audio drop listeners — stable, no stale closures
+  useEffect(() => {
+    const el = audioDropElRef.current;
+    if (!el) return;
+    const onDragOver  = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = '#ffffff'; el.style.backgroundColor = 'var(--bg-card)'; };
+    const onDragLeave = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); el.style.borderColor = 'var(--border-subtle)'; el.style.backgroundColor = 'var(--bg-elevated)'; };
+    const onDrop      = (e: DragEvent) => audioDropHandlerRef.current(e);
+    el.addEventListener('dragover',  onDragOver);
+    el.addEventListener('dragleave', onDragLeave);
+    el.addEventListener('drop',      onDrop);
+    return () => {
+      el.removeEventListener('dragover',  onDragOver);
+      el.removeEventListener('dragleave', onDragLeave);
+      el.removeEventListener('drop',      onDrop);
+    };
+  }, [releaseStep]); // re-attach when step changes (element remounts)
+
+  // Scroll to top when release step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [releaseStep]);
+
+  // Prevent browser from navigating away when files are dropped outside a drop zone
+  useEffect(() => {
+    const prevent = (e: DragEvent) => { e.preventDefault(); };
+    document.addEventListener('dragover', prevent);
+    document.addEventListener('drop', prevent);
+    return () => {
+      document.removeEventListener('dragover', prevent);
+      document.removeEventListener('drop', prevent);
+    };
+  }, []);
+
+
   // Use centralized theme from context
   const { theme: backgroundTheme, setTheme: setBackgroundTheme } = useTheme();
   // appliedTheme is now the same as backgroundTheme (single source of truth)
@@ -3357,9 +3493,9 @@ export function ArtistDashboard() {
           };
 
           return (
-            <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
-            <div className="flex gap-10 items-start">
-            <div className="flex-1 min-w-0">
+            <div ref={releaseFormScrollRef} className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            <div className="flex gap-10 items-start justify-center">
+            <div className="w-full max-w-3xl min-w-0">
 
               {/* Back to lobby */}
               <button
@@ -3506,40 +3642,42 @@ export function ArtistDashboard() {
                       </div>
 
                       {/* Requirements */}
-                      <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}>
-                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#93C5FD' }} />
-                        <div className="text-sm leading-relaxed space-y-2 text-center" style={{ color: '#CBD5E1' }}>
+                      <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}>
+                        <div className="text-sm leading-relaxed space-y-2" style={{ color: '#CBD5E1' }}>
                           <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Artwork requirements:</p>
                           <p>Cover art must be a square .jpg or .jpeg file, at least 1400x1400 pixels, not blurry or pixelated and no more than 10MB in size.</p>
                           <p>Cover art cannot contain:</p>
-                          <ul className="space-y-0.5 pl-3 list-none">
-                            <li className="flex items-start gap-1"><span>-</span><span>Social media logos or handles</span></li>
-                            <li className="flex items-start gap-1"><span>-</span><span>Website links or brand/record label logos</span></li>
-                            <li className="flex items-start gap-1"><span>-</span><span>Any text except for artist names and/or the name of the release</span></li>
+                          <ul className="space-y-0.5 list-none">
+                            <li>- Social media logos or handles</li>
+                            <li>- Website links or brand/record label logos</li>
+                            <li>- Any text except for artist names and/or the name of the release</li>
                           </ul>
                           <p>If your cover art contains any of the above, we will have to reject your release. These rules are set by the music stores and we have to follow them.</p>
                         </div>
                       </div>
 
                       {/* Upload */}
-                      <label
+                      <input
+                        ref={artworkInputRef}
+                        type="file"
+                        accept=".jpg,.jpeg"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const url = URL.createObjectURL(file);
+                            setRf({ artworkFile: file, artworkPreview: url });
+                          }
+                        }}
+                      />
+                      <div
+                        ref={artworkDropElRef}
                         className="aspect-square rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200"
                         style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+                        onClick={() => artworkInputRef.current?.click()}
                         onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
                         onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
                       >
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const url = URL.createObjectURL(file);
-                              setRf({ artworkFile: file, artworkPreview: url });
-                            }
-                          }}
-                        />
                         <ImageIcon className="w-8 h-8" style={{ color: '#CBD5E1' }} />
                         <div className="text-center">
                           <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Drag files here</p>
@@ -3548,7 +3686,7 @@ export function ArtistDashboard() {
                         <span className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:brightness-110" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>
                           Select file
                         </span>
-                      </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3564,76 +3702,447 @@ export function ArtistDashboard() {
                       <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Tracks <span className="font-normal">and</span> <span className="font-bold">metadata</span></h3>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-5">
-                      {/* Left: audio upload + requirements */}
-                      <div className="space-y-4">
-                        <label
-                          className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all duration-200"
-                          style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
-                          onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
-                          onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
-                          onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; e.currentTarget.style.backgroundColor = 'var(--bg-card)'; }}
-                          onDragLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; }}
-                          onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--border-subtle)'; e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; }}
-                        >
-                          <input type="file" accept=".wav,.mp3" className="hidden" />
-                          <Music2 className="w-9 h-9" style={{ color: '#CBD5E1' }} />
-                          <div className="text-center">
-                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Drag files here</p>
-                            <p className="text-xs mt-0.5" style={{ color: '#CBD5E1' }}>or</p>
-                          </div>
-                          <span className="px-4 py-1.5 rounded-full text-xs font-semibold" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>Select files</span>
-                        </label>
+                    {/* Upload row */}
+                    <div className="flex gap-4 items-start">
+                      <input ref={audioInputRef} type="file" accept=".wav,.mp3" multiple className="hidden" disabled={isUploading}
+                        onChange={(e) => { if (e.target.files) handleAudioFiles(e.target.files); }} />
+                      <div
+                        ref={audioDropElRef}
+                        className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl transition-all duration-200 flex-shrink-0"
+                        style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)', cursor: isUploading ? 'not-allowed' : 'pointer', width: '200px', minHeight: '160px' }}
+                        onClick={() => { if (!isUploading) audioInputRef.current?.click(); }}
+                        onMouseEnter={(e) => { if (!isUploading) e.currentTarget.style.borderColor = '#ffffff'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
+                      >
+                        {isUploading ? (
+                          <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#CBD5E1' }} />
+                        ) : (
+                          <Music2 className="w-8 h-8" style={{ color: '#CBD5E1' }} />
+                        )}
+                        <div className="text-center">
+                          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{isUploading ? 'Uploading...' : 'Drag files here'}</p>
+                          {!isUploading && <p className="text-xs mt-0.5" style={{ color: '#CBD5E1' }}>or</p>}
+                        </div>
+                        <span
+                          className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                          style={{ border: `1px solid ${isUploading ? 'var(--border-subtle)' : 'var(--text-primary)'}`, color: isUploading ? '#CBD5E1' : 'var(--text-primary)', opacity: isUploading ? 0.5 : 1 }}
+                        >Select files</span>
+                      </div>
 
-                        {/* Audio requirements */}
-                        <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                          <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
-                          <div className="space-y-1">
-                            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Audio file requirements</p>
-                            <div className="space-y-0.5 text-sm" style={{ color: '#CBD5E1' }}>
-                              <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file format must be .wav or .mp3 (.wav is preferred)</p>
-                              <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file size no larger than 200Mb</p>
-                            </div>
+                      {/* Audio requirements */}
+                      <div className="flex items-start gap-3 p-4 rounded-xl flex-1" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
+                        <div className="space-y-1">
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Audio file requirements</p>
+                          <div className="space-y-0.5 text-sm" style={{ color: '#CBD5E1' }}>
+                            <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file format must be .wav or .mp3 (.wav is preferred)</p>
+                            <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file size no larger than 200Mb</p>
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                      {/* Right: track list */}
-                      <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track List</p>
-
-                        {rf.tracks.length === 0 && (
-                          <div className="flex items-start gap-2 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#CBD5E1' }} />
-                            <p className="text-sm" style={{ color: '#CBD5E1' }}>This release does not have any tracks, use the button on the left to start adding some.</p>
+                    {/* Track list table */}
+                    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+                      {/* Header: always show title; show columns only when tracks exist */}
+                      <div className="px-5 py-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                        <p className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track List</p>
+                        {(rf.tracks.length > 0 || uploadingTracks.filter(t => !t.done).length > 0) && (
+                          <div className="grid gap-4 mt-2.5 text-xs font-semibold uppercase tracking-wider" style={{ color: '#CBD5E1', gridTemplateColumns: '48px 56px 1fr 180px 90px 140px' }}>
+                            <span>Order</span>
+                            <span>Play</span>
+                            <span>Title / Artist(s) / Copyright</span>
+                            <span>Metadata</span>
+                            <span>Status</span>
+                            <span>Actions</span>
                           </div>
                         )}
+                      </div>
 
-                        {rf.tracks.map((track, i) => (
-                          <div key={i} className="rounded-xl p-4 space-y-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track {i + 1}</span>
-                              <button onClick={() => setRf({ tracks: rf.tracks.filter((_, j) => j !== i) })} style={{ color: 'var(--text-primary)' }}>
-                                <X className="w-4 h-4" />
+                      {/* Uploading rows */}
+                      {uploadingTracks.filter(t => !t.done).map((ut, i) => (
+                        <div key={i} className="px-5 py-4 space-y-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
+                            <span className="text-sm truncate flex-1" style={{ color: 'var(--text-primary)' }}>{ut.name}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-subtle)' }}>
+                              <div className="h-full rounded-full transition-all duration-150" style={{ width: `${ut.progress}%`, backgroundColor: 'var(--text-primary)' }} />
+                            </div>
+                            <span className="text-xs font-medium flex-shrink-0 w-36 text-right" style={{ color: '#CBD5E1' }}>
+                              {ut.progress}% &nbsp;{(ut.size * ut.progress / 100 / 1024 / 1024).toFixed(1)}Mb of {(ut.size / 1024 / 1024).toFixed(1)}Mb
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Empty state */}
+                      {rf.tracks.length === 0 && uploadingTracks.filter(t => !t.done).length === 0 && (
+                        <div className="px-5 py-8 text-center text-sm" style={{ color: '#CBD5E1', borderTop: '1px solid var(--border-subtle)' }}>
+                          No tracks yet — drag & drop or select files above to add tracks.
+                        </div>
+                      )}
+
+                      {/* Track rows */}
+                      {rf.tracks.map((track, i) => (
+                        <div key={i}>
+                          <div className="grid gap-4 px-5 py-4 items-center" style={{ gridTemplateColumns: '48px 56px 1fr 180px 90px 140px', borderTop: '1px solid var(--border-subtle)' }}>
+                            {/* Order */}
+                            <span className="text-sm font-medium" style={{ color: '#CBD5E1' }}>{i + 1}</span>
+                            {/* Play */}
+                            <button
+                              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70"
+                              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+                              onClick={() => {
+                                const url = getTrackUrl(track);
+                                if (!url) return;
+                                const audioId = `audio-row-${i}`;
+                                let el = document.getElementById(audioId) as HTMLAudioElement | null;
+                                if (!el) {
+                                  el = document.createElement('audio');
+                                  el.id = audioId;
+                                  el.src = url;
+                                  el.onended = () => setPlayingTrackIndex(null);
+                                  document.body.appendChild(el);
+                                }
+                                if (playingTrackIndex === i) {
+                                  el.pause();
+                                  setPlayingTrackIndex(null);
+                                } else {
+                                  // pause any other playing audio
+                                  if (playingTrackIndex !== null) {
+                                    const prev = document.getElementById(`audio-row-${playingTrackIndex}`) as HTMLAudioElement | null;
+                                    if (prev) prev.pause();
+                                    const prevEdit = document.getElementById(`audio-preview-${playingTrackIndex}`) as HTMLAudioElement | null;
+                                    if (prevEdit) prevEdit.pause();
+                                  }
+                                  el.currentTime = 0;
+                                  el.play();
+                                  setPlayingTrackIndex(i);
+                                }
+                              }}
+                            >
+                              {playingTrackIndex === i ? (
+                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" style={{ color: 'var(--text-primary)' }}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                              ) : (
+                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5" style={{ color: 'var(--text-primary)' }}><path d="M8 5v14l11-7z"/></svg>
+                              )}
+                            </button>
+                            {/* Title / Artist / Copyright */}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{track.title || 'Untitled'}</p>
+                              <p className="text-xs mt-0.5 truncate" style={{ color: '#CBD5E1' }}>{track.featuring ? `by ${track.featuring}` : 'by —'}</p>
+                              <p className="text-xs mt-0.5" style={{ color: '#CBD5E1' }}>© {new Date().getFullYear()}</p>
+                            </div>
+                            {/* Metadata */}
+                            <div className="text-sm" style={{ color: '#CBD5E1' }}>
+                              Explicit: {track.explicit ? 'Yes' : 'No'}
+                            </div>
+                            {/* Status */}
+                            <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-default)', color: '#CBD5E1' }}>
+                              <X className="w-3.5 h-3.5" />
+                            </div>
+                            {/* Actions */}
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setEditingTrackIndex(editingTrackIndex === i ? null : i)}
+                                className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border transition-all hover:opacity-70"
+                                style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)' }}
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => { setRf({ tracks: rf.tracks.filter((_, j) => j !== i) }); if (editingTrackIndex === i) setEditingTrackIndex(null); }}
+                                className="w-7 h-7 flex items-center justify-center rounded transition-all hover:opacity-70"
+                                style={{ color: '#CBD5E1' }}
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                               </button>
                             </div>
-                            <input type="text" placeholder="Track title" value={track.title} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, title: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
-                            <input type="text" placeholder="Featuring artists (optional)" value={track.featuring} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, featuring: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = '#ffffff'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input type="checkbox" checked={track.explicit} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, explicit: e.target.checked } : t) })} className="w-4 h-4 rounded" />
-                              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Explicit content</span>
-                            </label>
                           </div>
-                        ))}
 
-                        <button
-                          onClick={() => setRf({ tracks: [...rf.tracks, { title: '', featuring: '', explicit: false }] })}
-                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold w-full justify-center transition-all hover:brightness-110"
-                          style={{ border: '1px dashed var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}
-                        >
-                          <Plus className="w-4 h-4" /> Add track
-                        </button>
-                      </div>
+                          {/* Inline edit panel */}
+                          {editingTrackIndex === i && (() => {
+                            const audioSrc = getTrackUrl(track);
+                            const previewW = track.duration > 0 ? Math.min(100, (30 / track.duration) * 100) : 20;
+                            const previewLeft = track.duration > 0 ? (track.previewStart / track.duration) * 100 : 0;
+                            const fmtTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+                            return (
+                            <div className="px-5 pb-8 space-y-8" style={{ borderTop: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-card)' }}>
+                              <div className="flex items-center justify-between pt-5">
+                                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track Editing</p>
+                                <button onClick={() => setEditingTrackIndex(null)} className="flex items-center gap-1.5 text-xs font-semibold transition-all hover:opacity-70" style={{ color: 'var(--text-primary)' }}>
+                                  Close <X className="w-4 h-4" />
+                                </button>
+                              </div>
+
+                              {/* Uploaded file */}
+                              <div className="flex items-center gap-3 text-sm" style={{ color: '#CBD5E1' }}>
+                                <span>Uploaded file:</span>
+                                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{track.fileName || track.title}</span>
+                                <button className="text-xs underline transition-all hover:opacity-70" style={{ color: 'var(--text-primary)' }}>Replace audio file</button>
+                              </div>
+
+                              {/* Track number + preview scrubber */}
+                              <div className="flex items-start gap-5 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                                <div className="space-y-1.5 flex-shrink-0">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Track</p>
+                                  <div className="w-20 px-3 py-2.5 rounded-xl text-sm text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{i + 1}</div>
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Select your track preview start time</p>
+                                  {/* Time markers */}
+                                  {track.duration > 0 && (
+                                    <div className="flex justify-between text-xs px-10" style={{ color: '#CBD5E1' }}>
+                                      <span>0:00</span>
+                                      <span>{fmtTime(track.duration * 0.25)}</span>
+                                      <span>{fmtTime(track.duration * 0.5)}</span>
+                                      <span>{fmtTime(track.duration * 0.75)}</span>
+                                      <span>{fmtTime(track.duration)}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-2">
+                                    {/* Hidden audio element */}
+                                    {audioSrc && (
+                                      <audio
+                                        id={`audio-preview-${i}`}
+                                        src={audioSrc}
+                                        onEnded={() => setPlayingTrackIndex(null)}
+                                        onPause={() => setPlayingTrackIndex(p => p === i ? null : p)}
+                                      />
+                                    )}
+                                    {/* Play/pause button — icon driven by React state */}
+                                    <button
+                                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70"
+                                      style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+                                      onClick={() => {
+                                        const el = document.getElementById(`audio-preview-${i}`) as HTMLAudioElement | null;
+                                        if (!el) return;
+                                        if (playingTrackIndex === i) {
+                                          el.pause();
+                                          setPlayingTrackIndex(null);
+                                        } else {
+                                          el.currentTime = track.previewStart;
+                                          el.play();
+                                          setPlayingTrackIndex(i);
+                                        }
+                                      }}
+                                    >
+                                      {playingTrackIndex === i ? (
+                                        /* Pause icon */
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" style={{ color: 'var(--text-primary)' }}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                                      ) : (
+                                        /* Play icon */
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5" style={{ color: 'var(--text-primary)' }}><path d="M8 5v14l11-7z"/></svg>
+                                      )}
+                                    </button>
+                                    {/* Scrubber track */}
+                                    <div
+                                      className="flex-1 h-10 rounded-lg relative cursor-pointer select-none"
+                                      style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+                                      onMouseDown={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        const trackDuration = track.duration;
+                                        const trackIdx = i;
+                                        const onMove = (mv: MouseEvent) => {
+                                          const pct = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
+                                          const maxStart = Math.max(0, trackDuration - 30);
+                                          const newStart = Math.min(Math.round(pct * trackDuration), maxStart);
+                                          // Use functional updater + latestTracksRef to avoid stale closure
+                                          setReleaseForm(f => ({ ...f, tracks: latestTracksRef.current.map((t, j) => j === trackIdx ? { ...t, previewStart: newStart } : t) }));
+                                        };
+                                        const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+                                        window.addEventListener('mousemove', onMove);
+                                        window.addEventListener('mouseup', onUp);
+                                        onMove(e.nativeEvent);
+                                      }}
+                                    >
+                                      {/* Preview window (30 sec highlight) */}
+                                      <div
+                                        className="absolute inset-y-1 rounded flex items-center justify-center text-xs font-semibold pointer-events-none"
+                                        style={{ left: `${previewLeft}%`, width: `${previewW}%`, backgroundColor: 'var(--border-default)', color: 'var(--text-primary)' }}
+                                      >
+                                        {track.duration > 0 ? `${fmtTime(track.previewStart)} – ${fmtTime(Math.min(track.previewStart + 30, track.duration))}` : '30 sec'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Drag the preview bar to select your track preview start time. The 30-second preview will be featured on your SmartLink and platforms such as TikTok.</p>
+                                </div>
+                              </div>
+
+                              {/* Track title + mix version */}
+                              <div className="grid grid-cols-2 gap-4 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Track title</p>
+                                  <input type="text" placeholder="Track title" value={track.title} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, title: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Track mix version</p>
+                                  <input type="text" placeholder="Track mix version" className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                              </div>
+
+                              {/* Track artist */}
+                              <div className="space-y-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Track artist(s)</p>
+                                  <input type="text" placeholder="Artist name" value={track.featuring} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, featuring: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Release Artist</p>
+                                  <input type="text" placeholder="(Missing release artist)" value={rf.releaseArtists} onChange={e => setRf({ releaseArtists: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <p className="text-xs" style={{ color: '#CBD5E1' }}>Do you want to add primary, featuring or remix artists?</p>
+                                <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: '#CBD5E1', backgroundColor: 'transparent' }}>
+                                  <Plus className="w-4 h-4" /> Add another track artist
+                                </button>
+                              </div>
+
+                              {/* Copyright / ISRC / Production */}
+                              <div className="grid grid-cols-3 gap-4 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Copyright year</p>
+                                  <input type="text" placeholder={String(new Date().getFullYear())} value={rf.copyrightYear} onChange={e => setRf({ copyrightYear: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Copyright holder</p>
+                                  <input type="text" placeholder="Copyright holder name" value={rf.copyrightHolder} onChange={e => setRf({ copyrightHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>ISRC code</p>
+                                  <input type="text" placeholder="Auto Generated" className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Year published</p>
+                                  <input type="text" placeholder={String(new Date().getFullYear())} value={rf.productionYear} onChange={e => setRf({ productionYear: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Sound recording copyright</p>
+                                  <input type="text" placeholder="Enter phonograph holder" value={rf.productionHolder} onChange={e => setRf({ productionHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Digital audio fingerprint</p>
+                                  <div className="px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: '#CBD5E1' }}>Requires permission</div>
+                                </div>
+                              </div>
+
+                              {/* Do you want to add lyrics? */}
+                              <div className="flex items-center gap-4 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                                <span className="text-sm" style={{ color: '#CBD5E1' }}>Do you want to add lyrics?</span>
+                                {[{ val: false, label: 'No' }, { val: true, label: 'Yes' }].map(({ val, label }) => (
+                                  <button
+                                    key={String(val)}
+                                    onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, addLyrics: val } : t) })}
+                                    className="px-5 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+                                    style={{
+                                      backgroundColor: track.addLyrics === val ? 'var(--text-primary)' : 'transparent',
+                                      color: track.addLyrics === val ? 'var(--bg-primary)' : 'var(--text-primary)',
+                                      border: '1px solid var(--border-default)'
+                                    }}
+                                  >{label}</button>
+                                ))}
+                              </div>
+
+                              {/* Explicit */}
+                              <div className="space-y-2">
+                                <p className="text-xs" style={{ color: '#CBD5E1' }}>Explicit content</p>
+                                <div className="flex items-center gap-6">
+                                  {[{ val: true, label: 'Yes, these lyrics contain explicit content.' }, { val: false, label: 'No explicit content.' }].map(({ val, label }) => (
+                                    <label key={String(val)} className="flex items-center gap-2 cursor-pointer" onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, explicit: val } : t) })}>
+                                      <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all" style={{ borderColor: track.explicit === val ? 'var(--text-primary)' : 'var(--border-default)', backgroundColor: track.explicit === val ? 'var(--text-primary)' : 'transparent' }}>
+                                        {track.explicit === val && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--bg-primary)' }} />}
+                                      </div>
+                                      <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                                    </label>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Track Credits */}
+                              <div className="space-y-4 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                                <div>
+                                  <p className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track Credits</p>
+                                  <p className="text-xs mt-1" style={{ color: '#CBD5E1' }}>You need to add <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>at least one name for each category</span> of credits on this release.</p>
+                                </div>
+                                {/* Composer */}
+                                <div className="space-y-1.5">
+                                  <p className="text-xs" style={{ color: '#CBD5E1' }}>Composer</p>
+                                  <input type="text" placeholder="Name" value={track.credits.composer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, composer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                </div>
+                                {/* Songwriter */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="space-y-1.5">
+                                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Songwriter</p>
+                                    <input type="text" placeholder="Name" value={track.credits.songwriter} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, songwriter: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Role</p>
+                                    <input type="text" placeholder="e.g. Lyricist" value={track.credits.songwriterRole} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, songwriterRole: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  </div>
+                                </div>
+                                {/* Production/Engineer */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="space-y-1.5">
+                                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Production/Engineer</p>
+                                    <input type="text" placeholder="Name" value={track.credits.engineer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, engineer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Role</p>
+                                    <input type="text" placeholder="e.g. Producer" value={track.credits.engineerRole} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, engineerRole: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  </div>
+                                </div>
+                                {/* Performer */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="space-y-1.5">
+                                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Performer</p>
+                                    <input type="text" placeholder="Name" value={track.credits.performer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, performer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Role</p>
+                                    <input type="text" placeholder="e.g. Lead Vocals" value={track.credits.performerRole} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, performerRole: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  </div>
+                                </div>
+                                {/* Add more / Copy to all tracks */}
+                                <div className="flex items-center gap-3">
+                                  <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
+                                    <Plus className="w-4 h-4" /> Add more
+                                  </button>
+                                  <button className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-70" style={{ border: '1px solid var(--border-subtle)', color: '#CBD5E1', backgroundColor: 'transparent' }}>
+                                    Copy to all tracks
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Finished button */}
+                              <div className="flex justify-end pt-2">
+                                <button onClick={() => setEditingTrackIndex(null)} className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>
+                                  Finished editing track
+                                </button>
+                              </div>
+                            </div>
+                            );
+                          })()}
+                        </div>
+                      ))}
+
+                      {/* Footer: track count + total duration */}
+                      {rf.tracks.length > 0 && (() => {
+                        const totalSecs = rf.tracks.reduce((acc, t) => acc + (t.duration || 0), 0);
+                        const mins = Math.floor(totalSecs / 60);
+                        const secs = Math.floor(totalSecs % 60);
+                        const timeStr = totalSecs > 0 ? `${mins}:${String(secs).padStart(2, '0')}` : '—:——';
+                        return (
+                          <div className="flex items-center gap-3 px-4 py-3 text-sm" style={{ borderTop: '1px solid var(--border-subtle)', color: '#CBD5E1' }}>
+                            <span>{rf.tracks.length} track{rf.tracks.length !== 1 ? 's' : ''}</span>
+                            <span>🕐</span>
+                            <span>{timeStr}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -3678,119 +4187,164 @@ export function ArtistDashboard() {
                       Without the required licensing documentation, music containing copyrighted material may be rejected by stores.
                     </p>
 
-                    {(() => {
-                      const [copyrightOption, setCopyrightOption] = React.useState<'none' | 'upload'>('none');
-                      const [copyrightDocs, setCopyrightDocs] = React.useState<File[]>([]);
-                      return (
-                        <>
-                          <div className="space-y-3">
-                            {([
-                              { id: 'none', label: 'Continue without uploading copyright documentation' },
-                              { id: 'upload', label: 'Upload documentation proving I own the copyright to the audio' },
-                            ] as { id: 'none' | 'upload'; label: string }[]).map(({ id, label }) => (
-                              <label key={id} className="flex items-center gap-3 cursor-pointer" onClick={() => setCopyrightOption(id)}>
-                                <div
-                                  className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all duration-200"
-                                  style={{
-                                    borderColor: copyrightOption === id ? 'var(--text-primary)' : 'var(--border-default)',
-                                    backgroundColor: copyrightOption === id ? 'var(--text-primary)' : 'transparent',
-                                  }}
-                                >
-                                  {copyrightOption === id && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--bg-primary)' }} />}
-                                </div>
-                                <span className="text-sm font-medium select-none" style={{ color: 'var(--text-primary)' }}>{label}</span>
-                              </label>
-                            ))}
+                    <div className="space-y-3">
+                      {([
+                        { id: 'none', label: 'Continue without uploading copyright documentation' },
+                        { id: 'upload', label: 'Upload documentation proving I own the copyright to the audio' },
+                      ] as { id: 'none' | 'upload'; label: string }[]).map(({ id, label }) => (
+                        <label key={id} className="flex items-center gap-3 cursor-pointer" onClick={() => setCopyrightOption(id)}>
+                          <div
+                            className="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all duration-200"
+                            style={{
+                              borderColor: copyrightOption === id ? 'var(--text-primary)' : 'var(--border-default)',
+                              backgroundColor: copyrightOption === id ? 'var(--text-primary)' : 'transparent',
+                            }}
+                          >
+                            {copyrightOption === id && <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--bg-primary)' }} />}
                           </div>
+                          <span className="text-sm font-medium select-none" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                        </label>
+                      ))}
+                    </div>
 
-                          {copyrightOption === 'upload' && (
-                            <div className="grid grid-cols-2 gap-5 mt-5">
-                              {/* File upload */}
-                              <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>File Upload</p>
-                                <label
-                                  className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all duration-200"
-                                  style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-card)' }}
-                                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
-                                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
-                                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; }}
-                                  onDragLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
-                                  onDrop={(e) => {
-                                    e.preventDefault();
-                                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                                    const files = Array.from(e.dataTransfer.files);
-                                    setCopyrightDocs(prev => [...prev, ...files]);
-                                  }}
-                                >
-                                  <input
-                                    type="file"
-                                    className="hidden"
-                                    multiple
-                                    onChange={(e) => {
-                                      if (e.target.files) setCopyrightDocs(prev => [...prev, ...Array.from(e.target.files!)]);
-                                    }}
-                                  />
-                                  <svg className="w-10 h-10" style={{ color: '#CBD5E1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
-                                  <p className="text-sm" style={{ color: '#CBD5E1' }}>Drag here to upload</p>
-                                </label>
-                                <button
-                                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
-                                  style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                                  onClick={() => (document.querySelector('input[type=file]') as HTMLInputElement)?.click()}
-                                >
-                                  Select files...
-                                </button>
-                              </div>
+                    {copyrightOption === 'upload' && (
+                      <div className="grid grid-cols-2 gap-5 mt-5">
+                        {/* File upload */}
+                        <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>File Upload</p>
+                          <label
+                            className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all duration-200"
+                            style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-card)' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#ffffff')}
+                            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                            onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#ffffff'; }}
+                            onDragLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                              const files = Array.from(e.dataTransfer.files);
+                              setCopyrightDocs(prev => [...prev, ...files]);
+                            }}
+                          >
+                            <input
+                              type="file"
+                              className="hidden"
+                              multiple
+                              onChange={(e) => {
+                                if (e.target.files) setCopyrightDocs(prev => [...prev, ...Array.from(e.target.files!)]);
+                              }}
+                            />
+                            <svg className="w-10 h-10" style={{ color: '#CBD5E1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                            <p className="text-sm" style={{ color: '#CBD5E1' }}>Drag here to upload</p>
+                          </label>
+                          <button
+                            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                            onClick={() => (document.querySelector('input[type=file]') as HTMLInputElement)?.click()}
+                          >
+                            Select files...
+                          </button>
+                        </div>
 
-                              {/* Documents list */}
-                              <div className="rounded-xl p-5 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Documents</p>
-                                {copyrightDocs.length === 0 ? (
-                                  <p className="text-sm" style={{ color: '#CBD5E1' }}>No documents uploaded yet.</p>
-                                ) : (
-                                  <div className="space-y-2">
-                                    {copyrightDocs.map((f, i) => (
-                                      <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                                        <span className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{f.name}</span>
-                                        <button onClick={() => setCopyrightDocs(prev => prev.filter((_, j) => j !== i))} style={{ color: '#CBD5E1' }}>
-                                          <X className="w-4 h-4" />
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
+                        {/* Documents list */}
+                        <div className="rounded-xl p-5 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Documents</p>
+                          {copyrightDocs.length === 0 ? (
+                            <p className="text-sm" style={{ color: '#CBD5E1' }}>No documents uploaded yet.</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {copyrightDocs.map((f, i) => (
+                                <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                                  <span className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{f.name}</span>
+                                  <button onClick={() => setCopyrightDocs(prev => prev.filter((_, j) => j !== i))} style={{ color: '#CBD5E1' }}>
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ))}
                             </div>
                           )}
-                        </>
-                      );
-                    })()}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
               {/* ── STEP 3: Schedule ── */}
               {releaseStep === 3 && (
-                <div className="space-y-8">
+                <div className="space-y-10">
                   <div className="flex items-center gap-3 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>3</div>
                     <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Release <span className="font-bold">Schedule</span></h3>
                   </div>
-                  <div>
-                    <label style={labelStyle}>Release date</label>
+
+                  {/* Release date */}
+                  <div className="space-y-2">
+                    <p className="text-sm" style={{ color: '#CBD5E1' }}>Release date</p>
                     <input
                       type="date"
                       value={rf.releaseDate}
                       onChange={e => setRf({ releaseDate: e.target.value })}
                       className={inputCls}
-                      style={{ ...inputStyle, colorScheme: 'dark' }}
+                      style={{ ...inputStyle, colorScheme: 'dark', maxWidth: '280px' }}
                       onFocus={(e) => e.target.style.borderColor = '#ffffff'}
                       onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
                     />
+                    <p className="text-xs" style={{ color: '#CBD5E1' }}>Releases typically take 2–5 business days to appear on all stores. We recommend scheduling at least 7 days in advance.</p>
                   </div>
-                  <div className="rounded-xl p-5 space-y-2" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Delivery timeline</p>
-                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Releases typically take 2–5 business days to appear on all stores. We recommend scheduling at least 7 days in advance for best results.</p>
+
+                  {/* Country restrictions */}
+                  <div className="space-y-4" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '2rem' }}>
+                    <p className="text-base" style={{ color: 'var(--text-primary)' }}>Would you like to add <strong>country restrictions</strong> and limit the availability of your release?</p>
+                    <div className="flex items-center gap-3">
+                      {[{ val: false, label: 'No' }, { val: true, label: 'Yes' }].map(({ val, label }) => (
+                        <button
+                          key={String(val)}
+                          onClick={() => setRf({ countryRestrictions: val })}
+                          className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+                          style={{
+                            backgroundColor: rf.countryRestrictions === val ? 'var(--text-primary)' : 'transparent',
+                            color: rf.countryRestrictions === val ? 'var(--bg-primary)' : 'var(--text-primary)',
+                            border: '1px solid var(--border-default)'
+                          }}
+                        >{label}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Released before */}
+                  <div className="space-y-4" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '2rem' }}>
+                    <p className="text-base" style={{ color: 'var(--text-primary)' }}>Has this been <strong>released before?</strong></p>
+                    <div className="flex items-start gap-8">
+                      <div className="flex items-center gap-3">
+                        {[{ val: false, label: 'No' }, { val: true, label: 'Yes' }].map(({ val, label }) => (
+                          <button
+                            key={String(val)}
+                            onClick={() => setRf({ releasedBefore: val })}
+                            className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+                            style={{
+                              backgroundColor: rf.releasedBefore === val ? 'var(--text-primary)' : 'transparent',
+                              color: rf.releasedBefore === val ? 'var(--bg-primary)' : 'var(--text-primary)',
+                              border: '1px solid var(--border-default)'
+                            }}
+                          >{label}</button>
+                        ))}
+                      </div>
+                      {rf.releasedBefore && (
+                        <div className="space-y-1.5 flex-1" style={{ maxWidth: '280px' }}>
+                          <p className="text-sm" style={{ color: '#CBD5E1' }}>Enter the <strong style={{ color: 'var(--text-primary)' }}>original release date</strong></p>
+                          <input
+                            type="date"
+                            value={rf.originalReleaseDate}
+                            onChange={e => setRf({ originalReleaseDate: e.target.value })}
+                            className={inputCls}
+                            style={{ ...inputStyle, colorScheme: 'dark' }}
+                            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -3895,7 +4449,7 @@ export function ArtistDashboard() {
                   </button>
                 ) : (
                   <button
-                    onClick={() => { setReleaseStep(1); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
+                    onClick={() => { setReleaseStep(1); setUploadingTracks([]); setEditingTrackIndex(null); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
                     className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
                     style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                   >
@@ -3906,50 +4460,6 @@ export function ArtistDashboard() {
                 </div>
             </div>
 
-            {/* Right-side summary panel */}
-            <div className="hidden lg:block w-72 flex-shrink-0 sticky top-8">
-              <div className="rounded-2xl p-6 space-y-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                <h3 className="text-base font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Release Summary</h3>
-
-                <div className="space-y-3">
-                  {[
-                    { label: 'Title', value: rf.title || '—' },
-                    { label: 'Artist', value: rf.releaseArtists || '—' },
-                    { label: 'Genre', value: rf.genre || '—' },
-                    { label: 'Label', value: rf.recordLabel },
-                    { label: 'Release Date', value: rf.releaseDate || '—' },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="flex items-start justify-between gap-3">
-                      <span className="text-sm flex-shrink-0" style={{ color: 'var(--text-primary)' }}>{label}</span>
-                      <span className="text-sm text-right font-medium" style={{ color: 'var(--text-primary)' }}>{value}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {rf.tracks.length > 0 && (
-                  <div>
-                    <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Tracks ({rf.tracks.length})</p>
-                    <div className="space-y-1">
-                      {rf.tracks.map((t, i) => (
-                        <p key={i} className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{i + 1}. {t.title || 'Untitled'}</p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {rf.stores.length > 0 && (
-                  <div>
-                    <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Stores ({rf.stores.length})</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {rf.stores.map(s => (
-                        <span key={s} className="text-sm px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
 
             </div>
           </div>
