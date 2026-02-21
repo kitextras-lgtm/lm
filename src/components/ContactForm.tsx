@@ -44,7 +44,7 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group"
-        style={{ backgroundColor: 'transparent', color: '#F8FAFC', border: '1px solid rgba(75, 85, 99, 0.5)' }}
+        style={{ backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid rgba(75, 85, 99, 0.5)' }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = 'transparent';
           e.currentTarget.style.transform = 'translateY(-1px)';
@@ -80,7 +80,7 @@ function SubjectDropdown({ value, onChange }: SubjectDropdownProps) {
                   className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-left text-sm transition-all duration-200 flex items-center gap-2 group/option relative"
                   style={{
                     backgroundColor: 'transparent',
-                    color: '#F8FAFC',
+                    color: 'var(--text-primary)',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';

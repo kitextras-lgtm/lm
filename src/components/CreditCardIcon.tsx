@@ -17,7 +17,7 @@ export function CreditCardIcon({ isHovered = false }: { isHovered?: boolean }) {
           width="36"
           height="24"
           rx="3"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
         />
         {/* Magnetic stripe */}
@@ -26,7 +26,7 @@ export function CreditCardIcon({ isHovered = false }: { isHovered?: boolean }) {
           y1="20"
           x2="42"
           y2="20"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
         />
         {/* Chip */}
@@ -36,7 +36,7 @@ export function CreditCardIcon({ isHovered = false }: { isHovered?: boolean }) {
           width="8"
           height="6"
           rx="1"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
         />
         {/* Card number line */}
@@ -45,7 +45,7 @@ export function CreditCardIcon({ isHovered = false }: { isHovered?: boolean }) {
           y1="29"
           x2="36"
           y2="29"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeDasharray="2 4"
@@ -69,7 +69,7 @@ export function CreditCardIcon({ isHovered = false }: { isHovered?: boolean }) {
           width="36"
           height="24"
           rx="3"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="3"
           fill="none"
           style={{

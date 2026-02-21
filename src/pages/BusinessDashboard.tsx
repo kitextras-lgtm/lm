@@ -37,7 +37,7 @@ import MoreView from '../components/MoreView';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGE_MAP, LOCALE_TO_NAME } from '../i18n';
 
-function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
+function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -71,7 +71,7 @@ function YouTubeIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'lig
   );
 }
 
-function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
+function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white' }) {
   const notePath = "M32 8V28C32 34.6 26.6 40 20 40C13.4 40 8 34.6 8 28C8 21.4 13.4 16 20 16V22C16.7 22 14 24.7 14 28C14 31.3 16.7 34 20 34C23.3 34 26 31.3 26 28V8H32Z";
   const wavePath = "M32 8C32 8 36 9 38 12C40 15 40 18 40 18";
 
@@ -134,7 +134,7 @@ function TikTokIcon({ isHovered }: { isHovered: boolean; backgroundTheme?: 'ligh
   );
 }
 
-function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
+function InstagramIconAnimated({ isHovered }: { isHovered: boolean; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white' }) {
   return (
     <div className="cursor-pointer flex items-center justify-center">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -319,7 +319,7 @@ const OPPORTUNITIES: CampaignData[] = [
   }
 ];
 
-function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' }) {
+function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white' }) {
   const [showFullRules, setShowFullRules] = useState(false);
 
   if (!campaign) return null;
@@ -359,7 +359,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
             </div>
             <div className="flex-1 min-w-0 pt-1">
               <div className="flex items-center gap-2 mb-1.5">
-                <h2 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{campaign.name}</h2>
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{campaign.name}</h2>
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                   <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
@@ -377,11 +377,11 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           <div className="flex items-start">
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Ends</p>
-              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.endsIn}</p>
+              <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.endsIn}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Language</p>
-              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.language}</p>
+              <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.language}</p>
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <p className="text-xs mb-2" style={{ color: '#94A3B8' }}>Platforms</p>
@@ -405,24 +405,24 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
             </div>
             <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
               <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Pay Type</p>
-              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payType}</p>
+              <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.payType}</p>
             </div>
             <div className="flex-1 text-center">
               <p className="text-xs mb-1.5" style={{ color: '#94A3B8' }}>Payout</p>
-              <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>{campaign.payout}</p>
+              <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{campaign.payout}</p>
             </div>
           </div>
         </div>
 
         {/* Details section */}
         <div className="px-7 pb-5">
-          <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Details</h3>
+          <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Details</h3>
           <p className="text-sm leading-relaxed" style={{ color: '#94A3B8' }}>{campaign.description}</p>
         </div>
 
         {/* Rules section */}
         <div className="px-7 pb-5">
-          <h3 className="text-lg font-bold mb-3" style={{ color: '#F8FAFC' }}>Rules</h3>
+          <h3 className="text-lg font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Rules</h3>
           <div className={`text-sm leading-relaxed ${!showFullRules ? 'line-clamp-2' : ''}`} style={{ color: '#94A3B8' }}>
             {campaign.rules.map((rule, index) => (
               <p key={index} className="mb-1.5">• {rule}</p>
@@ -432,7 +432,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
             <button
               onClick={() => setShowFullRules(!showFullRules)}
               className="text-sm font-semibold mt-3 hover:opacity-80 transition-opacity"
-              style={{ color: '#F8FAFC' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               {showFullRules ? 'Show less' : 'Show more'}
             </button>
@@ -442,11 +442,11 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         {/* What to include */}
         {campaign.requiredHashtags && campaign.requiredHashtags.length > 0 && (
           <div className="px-7 pb-6">
-            <h3 className="text-lg font-bold mb-4" style={{ color: '#F8FAFC' }}>What to include</h3>
+            <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>What to include</h3>
             <div className="flex items-start gap-4">
               <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: '#94A3B8' }} />
               <div>
-                <p className="text-base font-medium" style={{ color: '#F8FAFC' }}>Caption, tags, text</p>
+                <p className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>Caption, tags, text</p>
                 <p className="text-xs font-semibold mt-2" style={{ color: '#94A3B8' }}>REQUIRED HASHTAGS</p>
                 <p className="text-sm mt-1.5" style={{ color: '#94A3B8' }}>{campaign.requiredHashtags.join(' ')}</p>
               </div>
@@ -458,7 +458,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         <div className="px-7 pb-7">
           <button
             className="w-full py-4 rounded-xl text-black font-semibold text-base transition-all hover:opacity-90"
-            style={{ backgroundColor: '#F8FAFC' }}
+            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
           >
             Join campaign
           </button>
@@ -601,7 +601,7 @@ const SettingsNavButton = ({
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -634,7 +634,7 @@ const MobileSettingsButton = ({
   isActive: boolean; 
   icon: React.ReactElement; 
   label: string;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -660,7 +660,7 @@ const MobileSettingsButton = ({
         >
           {React.cloneElement(icon, { isHovered: isHovered || isActive })}
         </div>
-        <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
+        <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
       <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: '#64748B', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
     </button>
@@ -690,7 +690,7 @@ const MobileSettingsMenuItem = ({
     >
       <div className="flex items-center gap-3">
         <span style={{ color: '#94A3B8' }}>{React.cloneElement(icon, { isHovered })}</span>
-        <span className="text-base font-medium" style={{ color: '#F8FAFC' }}>{label}</span>
+        <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
       <svg className="w-5 h-5" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1527,7 +1527,7 @@ export function BusinessDashboard() {
               )}
             </div>
             <div>
-              <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: '#F8FAFC' }}>
+              <h3 className="text-sm lg:text-base font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
                 {formData.firstName} {formData.lastName}
               </h3>
               <p className="text-xs lg:text-sm" style={{ color: '#94A3B8' }}>
@@ -1560,7 +1560,7 @@ export function BusinessDashboard() {
                 disabled={!isEditing}
                 className="flex-1 min-w-0 h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
@@ -1580,7 +1580,7 @@ export function BusinessDashboard() {
                 disabled={!isEditing}
                 className="flex-1 min-w-0 h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   background: 'transparent',
                   border: '1px solid rgba(75, 85, 99, 0.5)',
                 }}
@@ -1601,7 +1601,7 @@ export function BusinessDashboard() {
                 value={formData.username}
                 disabled
                 className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1 opacity-50"
-                style={{ color: '#F8FAFC' }}
+                style={{ color: 'var(--text-primary)' }}
               />
             </div>
           </div>
@@ -1617,7 +1617,7 @@ export function BusinessDashboard() {
               placeholder={t('personalInfo.bioPlaceholder')}
               className="flex-1 min-w-0 h-20 lg:h-24 px-2 lg:px-3 py-2 rounded-lg text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
               style={{
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 background: 'transparent',
                 border: '1px solid rgba(75, 85, 99, 0.5)',
               }}
@@ -1642,7 +1642,7 @@ export function BusinessDashboard() {
                 }}
                 disabled={!isEditing}
                 className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
-                style={{ color: '#F8FAFC' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 {COUNTRIES.map(country => (
                   <option key={country} value={country} style={{ background: 'var(--bg-card)' }}>{country}</option>
@@ -1667,7 +1667,7 @@ export function BusinessDashboard() {
                 }}
                 disabled={!isEditing}
                 className="flex-1 min-w-0 bg-transparent text-xs lg:text-sm focus:outline-none"
-                style={{ color: '#F8FAFC' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 {LANGUAGES.map(language => (
                   <option key={language} value={language} style={{ background: 'var(--bg-card)' }}>{language}</option>
@@ -1685,7 +1685,7 @@ export function BusinessDashboard() {
             disabled
             className="w-full h-9 lg:h-10 px-2 lg:px-3 rounded-lg text-xs lg:text-sm focus:outline-none opacity-50"
             style={{
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
               background: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.5)',
             }}
@@ -1778,7 +1778,7 @@ export function BusinessDashboard() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-lg font-semibold" style={{ color: '#F8FAFC' }}>{t('payment.paymentMethod')}</h3>
+                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{t('payment.paymentMethod')}</h3>
                 <p className="text-sm mt-1" style={{ color: '#94A3B8' }}>{t('payment.addPaymentDesc')}</p>
               </div>
               <button 
@@ -1808,11 +1808,11 @@ export function BusinessDashboard() {
                     onChange={(e) => setPaymentFormData({ ...paymentFormData, paymentType: e.target.value as 'card' | 'paypal' | 'apple' })}
                     className="sr-only"
                   />
-                  <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="mb-3 h-6 w-6" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <rect x="2" y="5" width="20" height="14" rx="2" strokeWidth="2"/>
                     <path d="M2 10h20" strokeWidth="2"/>
                   </svg>
-                  <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('payment.card')}</span>
+                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('payment.card')}</span>
                 </label>
 
                 <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'paypal' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'paypal' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
@@ -1824,10 +1824,10 @@ export function BusinessDashboard() {
                     onChange={(e) => setPaymentFormData({ ...paymentFormData, paymentType: e.target.value as 'card' | 'paypal' | 'apple' })}
                     className="sr-only"
                   />
-                  <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="mb-3 h-6 w-6" style={{ color: 'var(--text-primary)' }} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
                   </svg>
-                  <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('payment.paypal')}</span>
+                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('payment.paypal')}</span>
                 </label>
 
                 <label className="flex flex-col items-center justify-between rounded-lg border p-4 cursor-pointer transition-all hover:bg-white/5" style={{ borderColor: paymentFormData.paymentType === 'apple' ? 'var(--text-primary)' : '#2f2f2f', backgroundColor: paymentFormData.paymentType === 'apple' ? 'rgba(255, 255, 255, 0.05)' : 'transparent' }}>
@@ -1839,10 +1839,10 @@ export function BusinessDashboard() {
                     onChange={(e) => setPaymentFormData({ ...paymentFormData, paymentType: e.target.value as 'card' | 'paypal' | 'apple' })}
                     className="sr-only"
                   />
-                  <svg className="mb-3 h-6 w-6" style={{ color: '#F8FAFC' }} viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="mb-3 h-6 w-6" style={{ color: 'var(--text-primary)' }} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
                   </svg>
-                  <span className="text-sm" style={{ color: '#F8FAFC' }}>{t('payment.apple')}</span>
+                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('payment.apple')}</span>
                 </label>
               </div>
 
@@ -1858,7 +1858,7 @@ export function BusinessDashboard() {
                       onChange={(e) => setPaymentFormData({ ...paymentFormData, nameOnCard: e.target.value })}
                       className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                       style={{
-                        color: '#F8FAFC',
+                        color: 'var(--text-primary)',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
@@ -1877,7 +1877,7 @@ export function BusinessDashboard() {
                       onChange={(e) => setPaymentFormData({ ...paymentFormData, city: e.target.value })}
                       className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                       style={{
-                        color: '#F8FAFC',
+                        color: 'var(--text-primary)',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
@@ -1896,7 +1896,7 @@ export function BusinessDashboard() {
                       onChange={(e) => setPaymentFormData({ ...paymentFormData, cardNumber: e.target.value })}
                       className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                       style={{
-                        color: '#F8FAFC',
+                        color: 'var(--text-primary)',
                         backgroundColor: 'transparent',
                         border: '1px solid rgba(75, 85, 99, 0.5)',
                       }}
@@ -1916,7 +1916,7 @@ export function BusinessDashboard() {
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryMonth: e.target.value })}
                         className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                         style={{
-                          color: '#F8FAFC',
+                          color: 'var(--text-primary)',
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
@@ -1947,7 +1947,7 @@ export function BusinessDashboard() {
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, expiryYear: e.target.value })}
                         className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                         style={{
-                          color: '#F8FAFC',
+                          color: 'var(--text-primary)',
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
@@ -1972,7 +1972,7 @@ export function BusinessDashboard() {
                         onChange={(e) => setPaymentFormData({ ...paymentFormData, cvc: e.target.value })}
                         className="w-full h-10 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                         style={{
-                          color: '#F8FAFC',
+                          color: 'var(--text-primary)',
                           backgroundColor: 'transparent',
                           border: '1px solid rgba(75, 85, 99, 0.5)',
                         }}
@@ -2110,11 +2110,11 @@ export function BusinessDashboard() {
 
       <div className="space-y-3 lg:space-y-8">
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>Interface</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Interface</h3>
           <div className="space-y-3 lg:space-y-6">
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>Message Notifications</h4>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Message Notifications</h4>
                 <p className="text-sm" style={{ color: '#CBD5E1' }}>Show notification dropdown for unread messages</p>
               </div>
               <ToggleSwitch
@@ -2126,12 +2126,12 @@ export function BusinessDashboard() {
           </div>
         </div>
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('notifications.email')}</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('notifications.email')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
             <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.newFeatures')}</h4>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('notifications.newFeatures')}</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.newFeaturesDesc')}</p>
               </div>
               <ToggleSwitch
@@ -2144,7 +2144,7 @@ export function BusinessDashboard() {
 
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('notifications.platformUpdates')}</h4>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('notifications.platformUpdates')}</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>{t('notifications.platformUpdatesDesc')}</p>
               </div>
               <ToggleSwitch
@@ -2165,7 +2165,7 @@ export function BusinessDashboard() {
       <div className="space-y-5">
         {/* Category Selection */}
         <div>
-          <label className="block text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
+          <label className="block text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
             {t('feedback.category')}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -2174,7 +2174,7 @@ export function BusinessDashboard() {
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
                 backgroundColor: feedbackCategory === 'suggestion' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: feedbackCategory === 'suggestion' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
               }}
             >
@@ -2187,7 +2187,7 @@ export function BusinessDashboard() {
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
                 backgroundColor: feedbackCategory === 'bug-report' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: feedbackCategory === 'bug-report' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
               }}
             >
@@ -2200,7 +2200,7 @@ export function BusinessDashboard() {
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
                 backgroundColor: feedbackCategory === 'feature-request' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: feedbackCategory === 'feature-request' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
               }}
             >
@@ -2213,7 +2213,7 @@ export function BusinessDashboard() {
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
                 backgroundColor: feedbackCategory === 'other' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: feedbackCategory === 'other' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
               }}
             >
@@ -2225,7 +2225,7 @@ export function BusinessDashboard() {
 
         {/* Feedback Textarea */}
         <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: '#F8FAFC' }}>
+          <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
             {t('feedback.yourFeedback')}
           </label>
           <textarea
@@ -2235,7 +2235,7 @@ export function BusinessDashboard() {
             style={{
               backgroundColor: 'transparent',
               border: '1px solid rgba(75, 85, 99, 0.5)',
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
             }}
           />
         </div>
@@ -2256,7 +2256,7 @@ export function BusinessDashboard() {
           <button
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
             style={{
-              backgroundColor: feedbackCategory ? '#F8FAFC' : 'transparent',
+              backgroundColor: feedbackCategory ? 'var(--text-primary)' : 'transparent',
               color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-secondary)',
               border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
             }}
@@ -2293,7 +2293,7 @@ export function BusinessDashboard() {
       </button>
       <button 
         className="px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200" 
-        style={{ borderColor: 'var(--border-subtle)', color: '#F8FAFC' }}
+        style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
         onClick={() => setActiveSection('home')}
       >
         {t('common.cancel')}
@@ -2302,46 +2302,17 @@ export function BusinessDashboard() {
   );
 
   const renderDisplay = () => {
-    const getPreviewBackground = () => {
-      switch (backgroundTheme) {
-        case 'light':
-          return '#0F172A';
-        case 'grey':
-          return '#1A1A1E';
-        case 'dark':
-        default:
-          return '#000000';
-      }
-    };
+    const getPreviewBackground = () => 'var(--bg-primary)';
 
-    const getPreviewTextColor = () => {
-      switch (backgroundTheme) {
-        case 'light':
-          return '#FFFFFF';
-        case 'grey':
-        case 'dark':
-        default:
-          return '#FFFFFF';
-      }
-    };
-
-    const getPreviewSecondaryTextColor = () => {
-      switch (backgroundTheme) {
-        case 'light':
-          return '#64748B';
-        case 'grey':
-        case 'dark':
-        default:
-          return '#94A3B8';
-      }
-    };
+    const getPreviewTextColor = () => 'var(--text-primary)';
+    const getPreviewSecondaryTextColor = () => 'var(--text-primary)';
 
     return (
       <div className="scroll-mt-6">
         <div className="space-y-6 lg:space-y-8">
           {/* Preview Section */}
           <div>
-            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.preview')}</h3>
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('display.preview')}</h3>
             <div 
               className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
               style={{ 
@@ -2377,9 +2348,9 @@ export function BusinessDashboard() {
 
           {/* Background Selector */}
           <div>
-            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('display.backgroundTheme')}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {/* Light Option */}
+            <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('display.backgroundTheme')}</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              {/* Navy Option */}
               <div 
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
@@ -2389,9 +2360,7 @@ export function BusinessDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'light' 
-                      ? 'bg-white border-white' 
-                      : 'bg-white border-gray-400'
+                    backgroundTheme === 'light' ? 'bg-white border-white' : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'light' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -2400,13 +2369,11 @@ export function BusinessDashboard() {
                     )}
                   </div>
                 </div>
-                
                 <div className="mb-4">
                   <div className="w-full h-20 rounded-lg bg-gray-700 mb-2"></div>
                   <div className="h-2 bg-gray-600 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
-                
                 <h4 className="font-semibold text-white mb-1">{t('display.navy')}</h4>
                 <p className="text-sm text-gray-300">{t('display.navyDesc')}</p>
               </div>
@@ -2421,9 +2388,7 @@ export function BusinessDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'grey' 
-                      ? 'bg-white border-white' 
-                      : 'bg-white border-gray-400'
+                    backgroundTheme === 'grey' ? 'bg-white border-white' : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'grey' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -2432,47 +2397,13 @@ export function BusinessDashboard() {
                     )}
                   </div>
                 </div>
-                
                 <div className="mb-4">
                   <div className="w-full h-20 rounded-lg bg-gray-800 mb-2"></div>
                   <div className="h-2 bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
-                
                 <h4 className="font-semibold text-white mb-1">{t('display.grey')}</h4>
                 <p className="text-sm text-gray-400">{t('display.greyDesc')}</p>
-              </div>
-
-              {/* Dark Option */}
-              <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                  backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
-                }`}
-                style={{ backgroundColor: '#000000' }}
-                onClick={() => setBackgroundTheme('dark')}
-              >
-                <div className="absolute top-4 right-4">
-                  <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'dark' 
-                      ? 'bg-white border-white' 
-                      : 'bg-white border-gray-400'
-                  }`}>
-                    {backgroundTheme === 'dark' && (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
-                  <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
-                  <div className="h-2 bg-gray-800 rounded w-1/2"></div>
-                </div>
-                
-                <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
-                <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
               </div>
 
               {/* Rose Option */}
@@ -2501,6 +2432,62 @@ export function BusinessDashboard() {
                 </div>
                 <h4 className="font-semibold text-white mb-1">Rose</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+              </div>
+
+              {/* Dark Option */}
+              <div 
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
+                }`}
+                style={{ backgroundColor: '#000000' }}
+                onClick={() => setBackgroundTheme('dark')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'dark' ? 'bg-white border-white' : 'bg-white border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'dark' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
+                  <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
+                  <div className="h-2 bg-gray-800 rounded w-1/2"></div>
+                </div>
+                <h4 className="font-semibold text-white mb-1">{t('display.dark')}</h4>
+                <p className="text-sm text-gray-400">{t('display.darkDesc')}</p>
+              </div>
+
+              {/* Light Option */}
+              <div
+                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                  backgroundTheme === 'white' ? 'border-gray-400' : 'border-gray-300'
+                }`}
+                style={{ backgroundColor: '#FFFFFF' }}
+                onClick={() => setBackgroundTheme('white')}
+              >
+                <div className="absolute top-4 right-4">
+                  <div className={`w-5 h-5 rounded-full border-2 ${
+                    backgroundTheme === 'white' ? 'bg-gray-800 border-gray-800' : 'bg-gray-200 border-gray-400'
+                  }`}>
+                    {backgroundTheme === 'white' && (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mb-4">
+                  <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#F1F5F9' }}></div>
+                  <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                  <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                </div>
+                <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
+                <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
               </div>
             </div>
           </div>
@@ -2537,12 +2524,12 @@ export function BusinessDashboard() {
 
       <div className="space-y-3 lg:space-y-8">
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('language.interfaceLanguage')}</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('language.interfaceLanguage')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="min-w-0 flex-1">
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('language.displayLanguage')}</h4>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('language.displayLanguage')}</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.chooseLanguage')}</p>
               </div>
               <div className="relative w-full sm:w-auto sm:min-w-[200px] lg:min-w-[250px]" ref={languageDropdownRef}>
@@ -2550,7 +2537,7 @@ export function BusinessDashboard() {
                   type="button"
                   onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
                   className="w-full px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg text-sm lg:text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
-                  style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: '#F8FAFC' }}
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
                     e.currentTarget.style.transform = 'translateY(-1px)';
@@ -2592,7 +2579,7 @@ export function BusinessDashboard() {
                             className="w-full px-3 lg:px-4 py-2 lg:py-2.5 text-left text-sm lg:text-base transition-all duration-200 flex items-center gap-2 group/option relative"
                             style={{
                               backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent',
-                              color: '#F8FAFC',
+                              color: 'var(--text-primary)',
                             }}
                             onMouseEnter={(e) => {
                               if (!isSelected) {
@@ -2624,12 +2611,12 @@ export function BusinessDashboard() {
         </div>
 
         <div>
-          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: '#F8FAFC' }}>{t('language.contentPreferences')}</h3>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('language.contentPreferences')}</h3>
 
           <div className="space-y-3 lg:space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: '#F8FAFC' }}>{t('language.autoTranslate')}</h4>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('language.autoTranslate')}</h4>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>{t('language.autoTranslateDesc')}</p>
               </div>
               <ToggleSwitch
@@ -2730,39 +2717,39 @@ export function BusinessDashboard() {
               {/* Available Balance Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.availableBalance')}</h3>
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.availableBalance')}</h3>
                   <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
                 <div className="mt-auto">
-                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
                 </div>
               </div>
 
               {/* Pending Balance Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Pending balance</h3>
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Pending balance</h3>
                   <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
 
               {/* Lifetime Earnings Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>Lifetime earnings</h3>
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Lifetime earnings</h3>
                   <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
 
               {/* Affiliate Earnings Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: '#F8FAFC' }}>{t('earnings.affiliateEarnings')}</h3>
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.affiliateEarnings')}</h3>
                   <Info className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: '#F8FAFC' }}>0.00</div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
             </div>
 
@@ -2773,21 +2760,21 @@ export function BusinessDashboard() {
                 <button 
                   onClick={() => setEarningsTab('available')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200" 
-                  style={{ backgroundColor: earningsTab === 'available' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'available' ? '#F8FAFC' : '#94A3B8', border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'available' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'available' ? 'var(--text-primary)' : '#CBD5E1', border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Available
                 </button>
                 <button 
                   onClick={() => setEarningsTab('pending')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'pending' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'pending' ? '#F8FAFC' : '#94A3B8', border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'pending' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'pending' ? 'var(--text-primary)' : '#CBD5E1', border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Pending
                 </button>
                 <button 
                   onClick={() => setEarningsTab('paidout')}
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105" 
-                  style={{ backgroundColor: earningsTab === 'paidout' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'paidout' ? '#F8FAFC' : '#94A3B8', border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                  style={{ backgroundColor: earningsTab === 'paidout' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'paidout' ? 'var(--text-primary)' : '#CBD5E1', border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
                   Paid out
                 </button>
@@ -2803,7 +2790,7 @@ export function BusinessDashboard() {
 
               {/* Empty State */}
               <div className="flex flex-col items-center justify-center py-12 sm:py-16">
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>
                   {earningsTab === 'available' && 'No available earnings'}
                   {earningsTab === 'pending' && 'No pending earnings'}
                   {earningsTab === 'paidout' && 'No paid out earnings'}
@@ -2861,7 +2848,7 @@ export function BusinessDashboard() {
             <AnnouncementBanner userId={currentUserId} userType="business" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.overview')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.overview')}</h2>
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Campaigns available for you</p>
           </div>
 
@@ -2876,7 +2863,7 @@ export function BusinessDashboard() {
 
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.myAccounts')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.myAccounts')}</h2>
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.myAccountsDesc')}</p>
           </div>
 
@@ -2885,7 +2872,7 @@ export function BusinessDashboard() {
 
         <section className="mb-8">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>{t('home.referralSection')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.referralSection')}</h2>
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>{t('home.referralSectionDesc')}</p>
           </div>
 
@@ -2898,7 +2885,7 @@ export function BusinessDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Discover Talent</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Discover Talent</h2>
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Find and connect with talented creators</p>
               </div>
 
@@ -2914,7 +2901,7 @@ export function BusinessDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: '#F8FAFC' }}>Opportunities</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Opportunities</h2>
                 <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover new opportunities and exclusive campaigns</p>
               </div>
 

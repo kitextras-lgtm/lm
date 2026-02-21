@@ -126,31 +126,31 @@ export default function FreelancerReviewProfile() {
           {profileData.professionalTitle && (
             <div>
               <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>TITLE</p>
-              <p className="text-sm" style={{ color: '#F8FAFC' }}>{profileData.professionalTitle}</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{profileData.professionalTitle}</p>
             </div>
           )}
           {profileData.selectedCategoryName && (
             <div>
               <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>CATEGORY</p>
-              <p className="text-sm" style={{ color: '#F8FAFC' }}>{profileData.selectedCategoryName}</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{profileData.selectedCategoryName}</p>
             </div>
           )}
           {profileData.selectedSkills && profileData.selectedSkills.length > 0 && (
             <div>
               <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>SKILLS</p>
-              <p className="text-sm" style={{ color: '#F8FAFC' }}>{profileData.selectedSkills.slice(0, 5).join(', ')}{profileData.selectedSkills.length > 5 ? ` +${profileData.selectedSkills.length - 5} more` : ''}</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{profileData.selectedSkills.slice(0, 5).join(', ')}{profileData.selectedSkills.length > 5 ? ` +${profileData.selectedSkills.length - 5} more` : ''}</p>
             </div>
           )}
           {profileData.hourlyRate ? (
             <div>
               <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>HOURLY RATE</p>
-              <p className="text-sm" style={{ color: '#F8FAFC' }}>${profileData.hourlyRate}/hr</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>${profileData.hourlyRate}/hr</p>
             </div>
           ) : null}
           {profileData.country && (
             <div>
               <p className="text-xs font-medium mb-1" style={{ color: '#64748B' }}>LOCATION</p>
-              <p className="text-sm" style={{ color: '#F8FAFC' }}>{[profileData.city, profileData.country].filter(Boolean).join(', ')}</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{[profileData.city, profileData.country].filter(Boolean).join(', ')}</p>
             </div>
           )}
         </div>

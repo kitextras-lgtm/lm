@@ -61,7 +61,7 @@ export function ContextMenu({
     <div
       ref={menuRef}
       className="fixed rounded-lg shadow-lg py-1 min-w-[200px] z-50"
-      style={{ left: x, top: y, backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.2)' }}
+      style={{ left: x, top: y, backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
     >
       <button
         onClick={() => {
@@ -69,7 +69,7 @@ export function ContextMenu({
           onClose();
         }}
         className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:brightness-110 transition-colors"
-        style={{ color: '#F8FAFC' }}
+        style={{ color: 'var(--text-primary)' }}
       >
         <Pin className="w-4 h-4" />
         <span className="text-sm">{isPinned ? 'Unpin' : 'Pin'}</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Bell, Mail, Send, Loader2 } from 'lucide-react';
 
 interface NotificationSenderProps {
@@ -72,10 +72,10 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#1a1a1e' }}>
-            <Bell className="w-5 h-5" style={{ color: '#F8FAFC' }} />
+            <Bell className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: '#F8FAFC' }}>Send Notifications</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Send Notifications</h2>
             <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>
               Send emails to users who have opted in for notifications
             </p>
@@ -97,7 +97,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
               }`}
               style={{
                 backgroundColor: notificationType === 'new_features' ? '#0f0f13' : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: notificationType === 'new_features' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
             >
@@ -110,7 +110,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
               }`}
               style={{
                 backgroundColor: notificationType === 'platform_updates' ? '#0f0f13' : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: notificationType === 'platform_updates' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
             >
@@ -134,7 +134,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
             placeholder="e.g., 🎉 New Feature: Enhanced Dashboard"
             className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
             style={{
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
               background: '#0f0f13',
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
@@ -154,7 +154,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
             rows={10}
             className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
             style={{
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
               background: '#0f0f13',
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
@@ -203,7 +203,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
               className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110"
               style={{
                 backgroundColor: '#1a1a1e',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: '1px solid rgba(75, 85, 99, 0.2)',
               }}
               disabled={isSending}
@@ -216,8 +216,8 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
             disabled={isSending || !subject.trim() || !content.trim()}
             className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
-              backgroundColor: '#F8FAFC',
-              color: '#000000',
+              backgroundColor: 'var(--text-primary)',
+              color: 'var(--bg-primary)',
             }}
           >
             {isSending ? (

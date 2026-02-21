@@ -27,7 +27,7 @@ export function SettingsIcon({ className, onClick }: AnimatedIconProps) {
             {/* Proper gear with rectangular teeth */}
             <path
               d="M22 4H26V8.5L28.5 9.5L32 6.5L35 9.5L32 13L33 15.5H38V19.5H33L32 22L35 25.5L32 28.5L28.5 25.5L26 26.5V31H22V26.5L19.5 25.5L16 28.5L13 25.5L16 22L15 19.5H10V15.5H15L16 13L13 9.5L16 6.5L19.5 9.5L22 8.5V4Z"
-              stroke="white"
+              stroke="currentColor"
               strokeWidth="2.5"
               strokeLinejoin="round"
               fill="none"
@@ -35,12 +35,12 @@ export function SettingsIcon({ className, onClick }: AnimatedIconProps) {
             />
           </g>
           {/* Center hole */}
-          <circle cx="24" cy="24" r="5" stroke="white" strokeWidth="2.5" fill="none" />
+          <circle cx="24" cy="24" r="5" stroke="currentColor" strokeWidth="2.5" fill="none" />
         </svg>
       </div>
       <span
         className="text-xs font-medium transition-colors duration-300"
-        style={{ color: isHovered ? "white" : "#F8FAFC" }}
+        style={{ color: 'var(--text-primary)' }}
       >
         Settings
       </span>

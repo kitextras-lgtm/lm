@@ -67,28 +67,28 @@ export function UserTypeSelectionPage() {
         return (
           <div className="music-icon group w-16 h-16 flex-shrink-0">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
-              <rect x="8" y="26" width="8" height="12" rx="2" stroke="white" strokeWidth="2" fill="none"/>
-              <rect x="32" y="26" width="8" height="12" rx="2" stroke="white" strokeWidth="2" fill="none"/>
-              <rect x="10" y="28" width="4" height="8" rx="1" fill="white" opacity="0.3"/>
-              <rect x="34" y="28" width="4" height="8" rx="1" fill="white" opacity="0.3"/>
+              <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+              <rect x="8" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect x="32" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect x="10" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+              <rect x="34" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
             </svg>
             <div className="note note-1">
               <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
-                <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="2" cy="12" r="2" fill="white"/>
+                <path d="M2 12V3L9 1V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="2" cy="12" r="2" fill="currentColor"/>
               </svg>
             </div>
             <div className="note note-2">
               <svg width="8" height="12" viewBox="0 0 10 14" fill="none">
-                <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="2" cy="12" r="2" fill="white"/>
+                <path d="M2 12V3L9 1V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="2" cy="12" r="2" fill="currentColor"/>
               </svg>
             </div>
             <div className="note note-3">
               <svg width="6" height="10" viewBox="0 0 10 14" fill="none">
-                <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="2" cy="12" r="2" fill="white"/>
+                <path d="M2 12V3L9 1V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="2" cy="12" r="2" fill="currentColor"/>
               </svg>
             </div>
           </div>
@@ -97,29 +97,29 @@ export function UserTypeSelectionPage() {
         return (
           <div className="creators-icon group w-16 h-16 flex-shrink-0">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <rect x="14" y="6" width="20" height="36" rx="3" stroke="white" strokeWidth="2" fill="none"/>
-              <rect x="20" y="9" width="8" height="2" rx="1" fill="white" opacity="0.4"/>
-              <rect x="21" y="38" width="6" height="2" rx="1" fill="white" opacity="0.4"/>
+              <rect x="14" y="6" width="20" height="36" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect x="20" y="9" width="8" height="2" rx="1" fill="currentColor" opacity="0.4"/>
+              <rect x="21" y="38" width="6" height="2" rx="1" fill="currentColor" opacity="0.4"/>
               <g className="app app-1">
-                <rect x="16" y="14" width="10" height="8" rx="2" fill="white" opacity="0.2"/>
-                <path d="M20 16L23 18L20 20V16Z" fill="white" opacity="0.8"/>
+                <rect x="16" y="14" width="10" height="8" rx="2" fill="currentColor" opacity="0.2"/>
+                <path d="M20 16L23 18L20 20V16Z" fill="currentColor" opacity="0.8"/>
               </g>
               <g className="app app-2">
-                <rect x="26" y="14" width="8" height="8" rx="2" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8"/>
-                <circle cx="30" cy="18" r="2" stroke="white" strokeWidth="1" fill="none" opacity="0.8"/>
-                <circle cx="32.5" cy="15.5" r="0.8" fill="white" opacity="0.6"/>
+                <rect x="26" y="14" width="8" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.8"/>
+                <circle cx="30" cy="18" r="2" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.8"/>
+                <circle cx="32.5" cy="15.5" r="0.8" fill="currentColor" opacity="0.6"/>
               </g>
               <g className="app app-3">
-                <rect x="16" y="26" width="10" height="8" rx="2" fill="white" opacity="0.2"/>
-                <path d="M19 32V28L23 27V31" stroke="white" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.8"/>
-                <circle cx="19" cy="32" r="1.2" fill="white" opacity="0.8"/>
+                <rect x="16" y="26" width="10" height="8" rx="2" fill="currentColor" opacity="0.2"/>
+                <path d="M19 32V28L23 27V31" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.8"/>
+                <circle cx="19" cy="32" r="1.2" fill="currentColor" opacity="0.8"/>
               </g>
               <g className="app app-4">
-                <rect x="26" y="26" width="8" height="8" rx="2" fill="white" opacity="0.2"/>
-                <rect x="27.5" y="27.5" width="2" height="2" rx="0.5" fill="white" opacity="0.8"/>
-                <rect x="30.5" y="27.5" width="2" height="2" rx="0.5" fill="white" opacity="0.8"/>
-                <rect x="27.5" y="30.5" width="2" height="2" rx="0.5" fill="white" opacity="0.8"/>
-                <rect x="30.5" y="30.5" width="2" height="2" rx="0.5" fill="white" opacity="0.8"/>
+                <rect x="26" y="26" width="8" height="8" rx="2" fill="currentColor" opacity="0.2"/>
+                <rect x="27.5" y="27.5" width="2" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+                <rect x="30.5" y="27.5" width="2" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+                <rect x="27.5" y="30.5" width="2" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
+                <rect x="30.5" y="30.5" width="2" height="2" rx="0.5" fill="currentColor" opacity="0.8"/>
               </g>
             </svg>
           </div>
@@ -129,10 +129,10 @@ export function UserTypeSelectionPage() {
           <div className="freelancer-icon w-16 h-16 flex-shrink-0">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
               <g className={`origin-center transition-all duration-500 ${selectedType === 'freelancer' ? 'rotate-[360deg] scale-110' : ''}`}>
-                <rect x="12" y="10" width="24" height="10" rx="1" stroke="white" strokeWidth="2" fill="none"/>
-                <rect x="21" y="20" width="6" height="24" rx="1" stroke="white" strokeWidth="2" fill="none"/>
-                <line x1="22" y1="32" x2="26" y2="32" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="22" y1="37" x2="26" y2="37" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <rect x="12" y="10" width="24" height="10" rx="1" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <rect x="21" y="20" width="6" height="24" rx="1" stroke="currentColor" strokeWidth="2" fill="none"/>
+                <line x1="22" y1="32" x2="26" y2="32" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="22" y1="37" x2="26" y2="37" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </g>
             </svg>
           </div>
@@ -141,17 +141,17 @@ export function UserTypeSelectionPage() {
         return (
           <div className="businesses-icon group w-16 h-16 flex-shrink-0">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <rect x="6" y="18" width="36" height="22" rx="3" stroke="white" strokeWidth="2" fill="none"/>
-              <path d="M18 18V14C18 12.8954 18.8954 12 20 12H28C29.1046 12 30 12.8954 30 14V18" stroke="white" strokeWidth="2" fill="none"/>
-              <rect className="lid" x="6" y="18" width="36" height="8" rx="3" stroke="white" strokeWidth="2" fill="black"/>
-              <rect className="clasp" x="21" y="24" width="6" height="4" rx="1" fill="white"/>
+              <rect x="6" y="18" width="36" height="22" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <path d="M18 18V14C18 12.8954 18.8954 12 20 12H28C29.1046 12 30 12.8954 30 14V18" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <rect className="lid" x="6" y="18" width="36" height="8" rx="3" stroke="currentColor" strokeWidth="2" fill="var(--bg-primary)"/>
+              <rect className="clasp" x="21" y="24" width="6" height="4" rx="1" fill="currentColor"/>
               <g className="documents">
-                <rect x="12" y="22" width="10" height="14" rx="1" fill="white" opacity="0.2"/>
-                <line x1="14" y1="25" x2="20" y2="25" stroke="white" strokeWidth="1" opacity="0.6"/>
-                <line x1="14" y1="28" x2="18" y2="28" stroke="white" strokeWidth="1" opacity="0.6"/>
-                <line x1="14" y1="31" x2="20" y2="31" stroke="white" strokeWidth="1" opacity="0.6"/>
-                <rect x="26" y="22" width="10" height="14" rx="1" fill="white" opacity="0.2"/>
-                <path d="M28 33L31 28L33 30L36 25" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
+                <rect x="12" y="22" width="10" height="14" rx="1" fill="currentColor" opacity="0.2"/>
+                <line x1="14" y1="25" x2="20" y2="25" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
+                <line x1="14" y1="28" x2="18" y2="28" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
+                <line x1="14" y1="31" x2="20" y2="31" stroke="currentColor" strokeWidth="1" opacity="0.6"/>
+                <rect x="26" y="22" width="10" height="14" rx="1" fill="currentColor" opacity="0.2"/>
+                <path d="M28 33L31 28L33 30L36 25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
               </g>
             </svg>
           </div>

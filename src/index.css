@@ -45,6 +45,73 @@
 .border-theme-subtle { border-color: var(--border-subtle); }
 .border-theme-default { border-color: var(--border-default); }
 
+/* ============================================
+   WHITE THEME OVERRIDES
+   Override Tailwind utility classes that use
+   hardcoded white/black and break on light bg
+   ============================================ */
+
+/* Focus rings: white in dark themes → dark in white theme */
+[data-theme="white"] .focus\:ring-white\/10:focus,
+[data-theme="white"] .focus\:ring-white\/20:focus {
+  --tw-ring-color: rgba(15, 23, 42, 0.4) !important;
+}
+[data-theme="white"] .focus\:ring-white:focus {
+  --tw-ring-color: rgba(15, 23, 42, 0.3) !important;
+}
+
+/* Hover backgrounds: white/5 tint → dark/5 tint */
+[data-theme="white"] .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+[data-theme="white"] .hover\:bg-white\/10:hover {
+  background-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* bg-white/5 static tints */
+[data-theme="white"] .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+[data-theme="white"] .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.07) !important;
+}
+
+/* Borders: white/10, white/20 → dark equivalents */
+[data-theme="white"] .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+[data-theme="white"] .border-white\/20 {
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+
+/* Outer glow / light beam effects: invert for white theme */
+[data-theme="white"] .home-icon .outer-glow {
+  background: rgba(0, 0, 0, 0) !important;
+}
+[data-theme="white"] .home-icon:hover .outer-glow {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+[data-theme="white"] .home-icon:active .outer-glow {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Sidebar logo visibility by theme */
+.sidebar-logo-dark {
+  display: none;
+}
+.sidebar-logo-black {
+  display: none;
+}
+[data-theme="white"] .sidebar-logo-white {
+  display: none !important;
+}
+[data-theme="white"] .sidebar-logo-dark {
+  display: none !important;
+}
+[data-theme="white"] .sidebar-logo-black {
+  display: block !important;
+}
+
 /* Hide scrollbars globally */
 * {
   scrollbar-width: none;
@@ -297,7 +364,7 @@ spline-viewer > * {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: #F8FAFC;
+  color: var(--text-primary);
   transition: color 0.3s ease;
   min-width: 64px;
 }
@@ -346,7 +413,7 @@ spline-viewer > * {
 .home-icon .label {
   font-size: 12px;
   font-weight: 500;
-  color: #F8FAFC;
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
@@ -363,7 +430,7 @@ spline-viewer > * {
 }
 
 .home-icon:hover .label {
-  color: white;
+  color: var(--text-primary);
 }
 
 .home-icon:active .light-beam {
@@ -379,7 +446,7 @@ spline-viewer > * {
 }
 
 .home-icon:active .label {
-  color: white;
+  color: var(--text-primary);
 }
 
 .messages-icon {
@@ -388,7 +455,7 @@ spline-viewer > * {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: #F8FAFC;
+  color: var(--text-primary);
   transition: color 0.3s ease;
   min-width: 64px;
   position: relative;
@@ -462,7 +529,7 @@ spline-viewer > * {
 .messages-icon .label {
   font-size: 12px;
   font-weight: 500;
-  color: #F8FAFC;
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
@@ -479,7 +546,7 @@ spline-viewer > * {
 }
 
 .messages-icon:hover .label {
-  color: white;
+  color: var(--text-primary);
 }
 
 .messages-icon:active .back-bubble {
@@ -495,7 +562,7 @@ spline-viewer > * {
 }
 
 .messages-icon:active .label {
-  color: white;
+  color: var(--text-primary);
 }
 
 .earnings-icon {
@@ -503,7 +570,7 @@ spline-viewer > * {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: #F8FAFC;
+  color: var(--text-primary);
   cursor: pointer;
   transition: color 0.3s ease;
   min-width: 64px;

@@ -25,7 +25,7 @@ interface SettingsViewProps {
   isMobile?: boolean;
   onBack?: () => void;
   userType?: string;
-  appliedTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  appliedTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }
 
 // Account Type Icon Component
@@ -88,19 +88,21 @@ function SettingsMenuItem({
   return (
     <div
       onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`group flex items-center gap-4 px-4 py-4 cursor-pointer transition-colors ${
-        isActive ? 'bg-white/5' : 'hover:bg-white/5'
-      } ${showBorder ? 'border-b border-[#2f2f2f]' : ''}`}
+      onMouseEnter={(e) => { setIsHovered(true); if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'; }}
+      onMouseLeave={(e) => { setIsHovered(false); if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = ''; }}
+      className={`group flex items-center gap-4 px-4 py-4 cursor-pointer transition-colors ${showBorder ? 'border-b' : ''}`}
+      style={{
+        backgroundColor: isActive ? 'var(--bg-elevated)' : undefined,
+        ...(showBorder ? { borderColor: 'var(--border-subtle)' } : {})
+      }}
     >
       <div className="w-6 h-6 flex items-center justify-center">
         <IconComponent isHovered={isHovered} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[15px]" style={{ color: '#F8FAFC' }}>{displayLabel}</div>
+        <div className="text-[15px]" style={{ color: 'var(--text-primary)' }}>{displayLabel}</div>
       </div>
-      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: '#CBD5E1' }} />
+      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }} />
     </div>
   );
 }
@@ -118,8 +120,7 @@ export function SettingsView({
   renderLogOut,
   isMobile = false,
   onBack,
-  userType,
-  appliedTheme
+  userType
 }: SettingsViewProps) {
   const [activeSection, setActiveSection] = useState<string | null>(userType === 'admin' ? 'display' : 'personal');
   const [searchQuery, setSearchQuery] = useState('');
@@ -280,8 +281,8 @@ export function SettingsView({
       case 'guides':
         return renderGuides ? renderGuides() : (
           <div className="px-4 py-8">
-            <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>{t('guides.title')}</h3>
-            <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('guides.comingSoon')}</p>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{t('guides.title')}</h3>
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('guides.comingSoon')}</p>
           </div>
         );
       case 'logout':
@@ -300,13 +301,13 @@ export function SettingsView({
           <div className="flex items-center gap-3 mb-6">
             <button 
               onClick={() => setMobileDetailView(null)}
-              className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
+              className="p-2 -ml-2 rounded-full hover:bg-black/10 transition-colors"
             >
-              <svg className="w-5 h-5" style={{ color: '#F8FAFC' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="text-xl font-bold" style={{ color: '#F8FAFC' }}>{getSectionTitle()}</h1>
+            <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{getSectionTitle()}</h1>
           </div>
           
           {/* Render original content */}
@@ -319,13 +320,13 @@ export function SettingsView({
       <div className="animate-fade-in pb-20">
         {/* Mobile Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>{t('settings.title')}</h1>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{t('settings.title')}</h1>
           {onBack && (
             <button 
               onClick={onBack}
-              className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              className="p-2 rounded-full hover:bg-black/10 transition-colors"
             >
-              <svg className="w-6 h-6" style={{ color: '#CBD5E1' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" style={{ color: 'var(--text-primary)', opacity: 0.6 }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -334,16 +335,16 @@ export function SettingsView({
 
         {/* Search Bar */}
         <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#CBD5E1' }} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-primary)', opacity: 0.5 }} />
           <input
             type="text"
             placeholder={t('settings.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full border rounded-full py-3 pl-12 pr-4 text-white focus:outline-none focus:border-[#3B82F6]"
-            style={{ backgroundColor: 'transparent', borderColor: '#2f2f2f', color: '#F8FAFC' }}
-            onFocus={(e) => e.target.style.borderColor = '#ffffff'}
-            onBlur={(e) => e.target.style.borderColor = '#2f2f2f'}
+            className="w-full border rounded-full py-3 pl-12 pr-4 focus:outline-none focus:border-[#3B82F6]"
+            style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
+            onBlur={(e) => { e.target.style.borderColor = 'var(--border-subtle)'; }}
           />
         </div>
 
@@ -370,23 +371,23 @@ export function SettingsView({
   return (
     <div className="flex h-[calc(100vh-2rem)] animate-fade-in">
       {/* Left Panel - Settings Menu */}
-      <div className="w-[380px] flex-shrink-0 border-r flex flex-col" style={{ borderColor: '#2f2f2f' }}>
+      <div className="w-[380px] flex-shrink-0 border-r flex flex-col" style={{ borderColor: 'var(--border-subtle)' }}>
         {/* Header */}
         <div className="p-4">
-          <h1 className="text-xl font-bold mb-4" style={{ color: '#F8FAFC' }}>{t('settings.title')}</h1>
+          <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{t('settings.title')}</h1>
           
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#CBD5E1' }} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-primary)', opacity: 0.5 }} />
             <input
               type="text"
               placeholder={t('settings.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent border rounded-full py-2.5 pl-10 pr-4 text-[15px] focus:outline-none focus:border-[#3B82F6]"
-              style={{ borderColor: '#2f2f2f', color: '#F8FAFC' }}
-              onFocus={(e) => e.target.style.borderColor = '#ffffff'}
-              onBlur={(e) => e.target.style.borderColor = '#2f2f2f'}
+              style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
+              onBlur={(e) => { e.target.style.borderColor = 'var(--border-subtle)'; }}
             />
           </div>
         </div>
@@ -411,12 +412,12 @@ export function SettingsView({
         {activeSection && (
           <>
             {/* Section Header */}
-            <div className="p-6 border-b" style={{ borderColor: '#2f2f2f' }}>
+            <div className="p-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-bold" style={{ color: '#F8FAFC' }}>{getSectionTitle()}</h2>
+                <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{getSectionTitle()}</h2>
                 <AccountTypeIndicator />
               </div>
-              <p className="text-[15px] leading-relaxed" style={{ color: '#CBD5E1' }}>{getSectionDescription()}</p>
+              <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{getSectionDescription()}</p>
             </div>
 
             {/* Original Content */}

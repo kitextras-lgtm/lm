@@ -1,4 +1,4 @@
-export type Theme = 'light' | 'grey' | 'dark' | 'rose';
+export type Theme = 'light' | 'grey' | 'dark' | 'rose' | 'white';
 
 export const themeTokens = {
   light: {
@@ -85,6 +85,27 @@ export const themeTokens = {
     border: {
       subtle: '#2E1A28',
       default: 'rgba(120, 60, 100, 0.25)',
+    },
+  },
+  white: {
+    bg: {
+      primary: '#FFFFFF',
+      secondary: '#F8FAFC',
+      elevated: '#EFF3F4',
+      active: '#E7ECF0',
+      sidebar: '#F8FAFC',
+      input: '#EFF3F4',
+      card: '#F8FAFC',
+      modal: '#FFFFFF',
+    },
+    text: {
+      primary: '#0F172A',
+      secondary: '#536471',
+      muted: '#8899A6',
+    },
+    border: {
+      subtle: '#E7ECF0',
+      default: '#CFD9DE',
     },
   },
 } as const;

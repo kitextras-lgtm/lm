@@ -45,7 +45,7 @@ export function MoreIcon({ className, onClick }: AnimatedIconProps) {
               cx={dot.cx}
               cy={dot.cy}
               r="3"
-              fill="white"
+              fill="currentColor"
               style={{
                 transform: isHovered ? "scale(1.15)" : "scale(1)",
                 transformOrigin: `${dot.cx}px ${dot.cy}px`,
@@ -57,7 +57,7 @@ export function MoreIcon({ className, onClick }: AnimatedIconProps) {
       </div>
       <span
         className="text-xs font-medium transition-colors duration-300"
-        style={{ color: isHovered ? "white" : "#F8FAFC" }}
+        style={{ color: 'var(--text-primary)' }}
       >
         More
       </span>

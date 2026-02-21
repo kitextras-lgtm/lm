@@ -77,11 +77,11 @@ function HomeIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: bo
   const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
-      <rect x="12" y="20" width="24" height="26" rx="2" stroke="white" strokeWidth="3.5" fill="none"/>
-      <path d="M4 22L24 4L44 22" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <rect x="12" y="20" width="24" height="26" rx="2" stroke="currentColor" strokeWidth="3.5" fill="none"/>
+      <path d="M4 22L24 4L44 22" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path 
         d="M18 46V30C18 29.4477 18.4477 29 19 29H29C29.5523 29 30 29.4477 30 30V46" 
-        fill="white"
+        fill="currentColor"
         style={{ opacity: shouldAnimate ? 1 : 0.3, transition: 'opacity 0.3s ease' }}
       />
       <ellipse 
@@ -89,7 +89,7 @@ function HomeIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: bo
         cy="38" 
         rx="7" 
         ry="9" 
-        fill="white"
+        fill="currentColor"
         style={{ opacity: shouldAnimate ? 0.4 : 0, transition: 'opacity 0.3s ease' }}
       />
     </svg>
@@ -100,25 +100,25 @@ function ExploreIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive:
   const shouldAnimate = isHovered || isActive;
   return (
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
-      <circle cx="24" cy="24" r="20" stroke="white" strokeWidth="3.5" fill="none" />
-      <circle cx="24" cy="24" r="16" stroke="white" strokeWidth="1" strokeOpacity="0.4" fill="none" />
-      <line x1="24" y1="4" x2="24" y2="8" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="24" y1="40" x2="24" y2="44" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="4" y1="24" x2="8" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="40" y1="24" x2="44" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      <line x1="38.1" y1="9.9" x2="36" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <line x1="38.1" y1="38.1" x2="36" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <line x1="9.9" y1="38.1" x2="12" y2="36" stroke="white" strokeWidth="2" strokeLinecap="round" />
-      <line x1="9.9" y1="9.9" x2="12" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3.5" fill="none" />
+      <circle cx="24" cy="24" r="16" stroke="currentColor" strokeWidth="1" strokeOpacity="0.4" fill="none" />
+      <line x1="24" y1="4" x2="24" y2="8" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="24" y1="40" x2="24" y2="44" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="4" y1="24" x2="8" y2="24" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="40" y1="24" x2="44" y2="24" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+      <line x1="38.1" y1="9.9" x2="36" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line x1="38.1" y1="38.1" x2="36" y2="36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line x1="9.9" y1="38.1" x2="12" y2="36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <line x1="9.9" y1="9.9" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <g style={{
         transform: shouldAnimate ? "rotate(180deg)" : "rotate(0deg)",
         transformOrigin: "24px 24px",
         transition: "transform 0.5s ease-in-out",
       }}>
-        <path d="M24 10L28 24H20L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="white" />
-        <path d="M24 38L28 24H20L24 38Z" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="none" />
+        <path d="M24 10L28 24H20L24 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="currentColor" />
+        <path d="M24 38L28 24H20L24 38Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none" />
       </g>
-      <circle cx="24" cy="24" r="2.5" fill="white" />
+      <circle cx="24" cy="24" r="2.5" fill="currentColor" />
     </svg>
   );
 }
@@ -133,7 +133,7 @@ function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: 
           <polygon
             key={i}
             points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
-            fill="white"
+            fill="currentColor"
             style={{
               opacity: shouldAnimate ? 1 : 0,
               transform: shouldAnimate ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
@@ -143,17 +143,17 @@ function TalentIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: 
           />
         );
       })}
-      <circle cx="12" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
+      <circle cx="12" cy="22" r="5" stroke="currentColor" strokeWidth="3.5" fill="none"
         style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <path d="M4 44C4 37 7 32 12 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
+      <path d="M4 44C4 37 7 32 12 32" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" fill="none"
         style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(-3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <circle cx="36" cy="22" r="5" stroke="white" strokeWidth="3.5" fill="none"
+      <circle cx="36" cy="22" r="5" stroke="currentColor" strokeWidth="3.5" fill="none"
         style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <path d="M44 44C44 37 41 32 36 32" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"
+      <path d="M44 44C44 37 41 32 36 32" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" fill="none"
         style={{ opacity: 0.5, transform: shouldAnimate ? "translateX(3px)" : "translateX(0)", transition: "all 0.3s ease" }} />
-      <circle cx="24" cy="20" r="6" stroke="white" strokeWidth="3.5" fill="none"
+      <circle cx="24" cy="20" r="6" stroke="currentColor" strokeWidth="3.5" fill="none"
         style={{ transform: shouldAnimate ? "scale(1.05)" : "scale(1)", transformOrigin: "24px 20px", transition: "transform 0.3s ease" }} />
-      <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+      <path d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" fill="none" />
     </svg>
   );
 }
@@ -165,7 +165,7 @@ function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: b
       {/* Left puzzle piece with tab */}
       <path
         d="M6 12 H20 V18 C20 20.2 18.2 22 16 22 C13.8 22 12 20.2 12 18 V12 H6 V36 H20 V30 C20 27.8 18.2 26 16 26 C13.8 26 12 27.8 12 30 V36 H6 Z"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="3"
         strokeLinejoin="round"
         fill="none"
@@ -178,7 +178,7 @@ function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: b
       {/* Right puzzle piece with slot */}
       <path
         d="M42 12 H28 V18 C28 20.2 29.8 22 32 22 C34.2 22 36 20.2 36 18 V12 H42 V36 H28 V30 C28 27.8 29.8 26 32 26 C34.2 26 36 27.8 36 30 V36 H42 Z"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="3"
         strokeLinejoin="round"
         fill="none"
@@ -194,7 +194,7 @@ function DealsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive: b
         y1="12"
         x2="24"
         y2="36"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         style={{
@@ -219,9 +219,9 @@ function ArtistDistributionIconSVG({ isHovered, isActive }: { isHovered: boolean
           width="20"
           height="20"
           rx="2"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="3.5"
-          fill="white"
+          fill="currentColor"
           fillOpacity="0.1"
           style={{
             transform: shouldAnimate ? "scale(1.05)" : "scale(1)",
@@ -231,40 +231,40 @@ function ArtistDistributionIconSVG({ isHovered, isActive }: { isHovered: boolean
         />
 
         {/* Internal circuit pattern - cross lines */}
-        <line x1="19" y1="24" x2="29" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="19" y1="24" x2="29" y2="24" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.3, transition: 'opacity 0.3s ease' }} />
-        <line x1="24" y1="19" x2="24" y2="29" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="24" y1="19" x2="24" y2="29" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.3, transition: 'opacity 0.3s ease' }} />
 
         {/* Connection pins - Top */}
-        <line x1="19" y1="14" x2="19" y2="7" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="19" y1="14" x2="19" y2="7" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
-        <line x1="29" y1="14" x2="29" y2="7" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="29" y1="14" x2="29" y2="7" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
 
         {/* Connection pins - Bottom */}
-        <line x1="19" y1="34" x2="19" y2="41" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="19" y1="34" x2="19" y2="41" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
-        <line x1="29" y1="34" x2="29" y2="41" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="29" y1="34" x2="29" y2="41" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
 
         {/* Connection pins - Left */}
-        <line x1="14" y1="19" x2="7" y2="19" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="14" y1="19" x2="7" y2="19" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
-        <line x1="14" y1="29" x2="7" y2="29" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="14" y1="29" x2="7" y2="29" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
 
         {/* Connection pins - Right */}
-        <line x1="34" y1="19" x2="41" y2="19" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="34" y1="19" x2="41" y2="19" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
-        <line x1="34" y1="29" x2="41" y2="29" stroke="white" strokeWidth="3.5" strokeLinecap="round" 
+        <line x1="34" y1="29" x2="41" y2="29" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 1 : 0.4, transition: 'opacity 0.3s ease' }} />
 
         {/* Data packets - refined animation */}
-        <circle cx="19" cy="4" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease' }} />
-        <circle cx="29" cy="44" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.1s' }} />
-        <circle cx="4" cy="19" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.2s' }} />
-        <circle cx="44" cy="29" r="2.5" fill="white" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.3s' }} />
+        <circle cx="19" cy="4" r="2.5" fill="currentColor" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease' }} />
+        <circle cx="29" cy="44" r="2.5" fill="currentColor" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.1s' }} />
+        <circle cx="4" cy="19" r="2.5" fill="currentColor" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.2s' }} />
+        <circle cx="44" cy="29" r="2.5" fill="currentColor" style={{ opacity: shouldAnimate ? 1 : 0, transition: 'opacity 0.3s ease', transitionDelay: '0.3s' }} />
       </svg>
     </div>
   );
@@ -281,12 +281,12 @@ function ArtistPublishingIconSVG({ isHovered, isActive }: { isHovered: boolean; 
           transformOrigin: '24px 24px',
           transition: 'transform 0.3s ease'
         }}>
-          <circle cx="20" cy="20" r="12" stroke="white" strokeWidth="3.5" fill="none" />
-          <line x1="30" y1="30" x2="42" y2="42" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="20" cy="20" r="12" stroke="currentColor" strokeWidth="3.5" fill="none" />
+          <line x1="30" y1="30" x2="42" y2="42" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
           {/* Shine on glass */}
           <path
             d="M14 15C16 12 19 11 22 12"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
             style={{ opacity: shouldAnimate ? 0.7 : 0.3, transition: 'opacity 0.3s ease' }}
@@ -298,7 +298,7 @@ function ArtistPublishingIconSVG({ isHovered, isActive }: { isHovered: boolean; 
           x="20"
           y="25"
           textAnchor="middle"
-          fill="white"
+          fill="currentColor"
           fontSize="16"
           fontWeight="bold"
           style={{
@@ -321,12 +321,12 @@ function ArtistSyncIconSVG({ isHovered, isActive }: { isHovered: boolean; isActi
     <div className={`relative ${ICON_SIZE}`}>
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
         {/* Bottom slate base */}
-        <rect x="8" y="24" width="32" height="16" rx="2" stroke="white" strokeWidth="3.5" fill="none" />
+        <rect x="8" y="24" width="32" height="16" rx="2" stroke="currentColor" strokeWidth="3.5" fill="none" />
 
         {/* Text lines on slate */}
-        <line x1="12" y1="30" x2="28" y2="30" stroke="white" strokeWidth="3" strokeLinecap="round" 
+        <line x1="12" y1="30" x2="28" y2="30" stroke="currentColor" strokeWidth="3" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 0.8 : 0.3, transition: 'opacity 0.3s ease' }} />
-        <line x1="12" y1="36" x2="22" y2="36" stroke="white" strokeWidth="3" strokeLinecap="round" 
+        <line x1="12" y1="36" x2="22" y2="36" stroke="currentColor" strokeWidth="3" strokeLinecap="round" 
               style={{ opacity: shouldAnimate ? 0.8 : 0.3, transition: 'opacity 0.3s ease' }} />
 
         {/* Top clapper - opens and closes on hover */}
@@ -338,15 +338,15 @@ function ArtistSyncIconSVG({ isHovered, isActive }: { isHovered: boolean; isActi
           {/* Clapper board */}
           <path
             d="M8 24V16C8 14.8954 8.89543 14 10 14H38C38.1046 14 40 14.8954 40 16V24"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="3.5"
             fill="none"
             strokeLinejoin="round"
           />
           {/* Diagonal stripes */}
-          <line x1="14" y1="14" x2="20" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-          <line x1="22" y1="14" x2="28" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-          <line x1="30" y1="14" x2="36" y2="24" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="14" y1="14" x2="20" y2="24" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="22" y1="14" x2="28" y2="24" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+          <line x1="30" y1="14" x2="36" y2="24" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
         </g>
       </svg>
     </div>
@@ -360,22 +360,22 @@ function MessagesIconSVG({ isHovered, isActive, unreadCount = 0 }: { isHovered: 
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={ICON_SIZE}>
         <path 
           d="M36 6H14C9.58172 6 6 9.58172 6 14V26C6 30.4183 9.58172 34 14 34H17L24 42L31 34H36C40.4183 34 44 30.4183 44 26V14C44 9.58172 40.4183 6 36 6Z" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none"
           style={{ transform: shouldAnimate ? 'scale(1.05) translate(-2px, -2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
         />
         <path 
           d="M34 16H12C8.68629 16 6 18.6863 6 22V32C6 35.3137 8.68629 38 12 38H15L21 46L27 38H34C37.3137 38 40 35.3137 40 32V22C40 18.6863 37.3137 16 34 16Z" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="rgba(0,0,0,0.8)"
           style={{ transform: shouldAnimate ? 'scale(1.08) translate(2px, 2px)' : 'scale(1)', transformOrigin: 'center', transition: 'transform 0.3s ease' }}
         />
         <g style={{ opacity: shouldAnimate ? 1 : 0.7, transition: 'opacity 0.3s ease' }}>
-          <circle cx="15" cy="28" r="2" fill="white"/>
-          <circle cx="23" cy="28" r="2" fill="white"/>
-          <circle cx="31" cy="28" r="2" fill="white"/>
+          <circle cx="15" cy="28" r="2" fill="currentColor"/>
+          <circle cx="23" cy="28" r="2" fill="currentColor"/>
+          <circle cx="31" cy="28" r="2" fill="currentColor"/>
         </g>
       </svg>
       {unreadCount > 0 && (
@@ -403,17 +403,17 @@ function EarningsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
           animation: shouldAnimate ? 'piggyWiggle 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97)' : 'none'
         }}
       >
-        <ellipse cx="24" cy="26" rx="18" ry="14" stroke="white" strokeWidth="3.5" fill="none"/>
-        <ellipse cx="40" cy="26" rx="5" ry="4" stroke="white" strokeWidth="3.5" fill="none"/>
-        <circle cx="39" cy="24" r="1" fill="white"/>
-        <circle cx="42" cy="24" r="1" fill="white"/>
-        <path d="M14 16C14 16 11 10 16 8C21 6 24 12 24 14" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
-        <path d="M14 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-        <path d="M22 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-        <path d="M28 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-        <path d="M36 38V46" stroke="white" strokeWidth="3.5" strokeLinecap="round"/>
-        <rect x="19" y="12" width="10" height="3" rx="1.5" fill="white"/>
-        <circle cx="16" cy="22" r="2" fill="white"/>
+        <ellipse cx="24" cy="26" rx="18" ry="14" stroke="currentColor" strokeWidth="3.5" fill="none"/>
+        <ellipse cx="40" cy="26" rx="5" ry="4" stroke="currentColor" strokeWidth="3.5" fill="none"/>
+        <circle cx="39" cy="24" r="1" fill="currentColor"/>
+        <circle cx="42" cy="24" r="1" fill="currentColor"/>
+        <path d="M14 16C14 16 11 10 16 8C21 6 24 12 24 14" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+        <path d="M14 38V46" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round"/>
+        <path d="M22 38V46" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round"/>
+        <path d="M28 38V46" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round"/>
+        <path d="M36 38V46" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round"/>
+        <rect x="19" y="12" width="10" height="3" rx="1.5" fill="currentColor"/>
+        <circle cx="16" cy="22" r="2" fill="currentColor"/>
       </svg>
       
       {/* Coin 1 - drops with spin and bounce */}
@@ -426,8 +426,8 @@ function EarningsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
         }}
       >
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.3))' }}>
-          <circle cx="5" cy="5" r="4" stroke="white" strokeWidth="1.2" fill="rgba(255,255,255,0.1)"/>
-          <text x="5" y="7" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">$</text>
+          <circle cx="5" cy="5" r="4" stroke="currentColor" strokeWidth="1.2" fill="rgba(255,255,255,0.1)"/>
+          <text x="5" y="7" textAnchor="middle" fill="currentColor" fontSize="5" fontWeight="bold">$</text>
         </svg>
       </div>
       
@@ -441,8 +441,8 @@ function EarningsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
         }}
       >
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.3))' }}>
-          <circle cx="5" cy="5" r="4" stroke="white" strokeWidth="1.2" fill="rgba(255,255,255,0.1)"/>
-          <text x="5" y="7" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">$</text>
+          <circle cx="5" cy="5" r="4" stroke="currentColor" strokeWidth="1.2" fill="rgba(255,255,255,0.1)"/>
+          <text x="5" y="7" textAnchor="middle" fill="currentColor" fontSize="5" fontWeight="bold">$</text>
         </svg>
       </div>
       
@@ -456,8 +456,8 @@ function EarningsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
         }}
       >
         <svg width="8" height="8" viewBox="0 0 8 8" fill="none" style={{ filter: 'drop-shadow(0 1px 2px rgba(255,255,255,0.2))' }}>
-          <circle cx="4" cy="4" r="3" stroke="white" strokeWidth="1" fill="rgba(255,255,255,0.1)"/>
-          <text x="4" y="5.5" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold">$</text>
+          <circle cx="4" cy="4" r="3" stroke="currentColor" strokeWidth="1" fill="rgba(255,255,255,0.1)"/>
+          <text x="4" y="5.5" textAnchor="middle" fill="currentColor" fontSize="4" fontWeight="bold">$</text>
         </svg>
       </div>
       
@@ -471,9 +471,9 @@ function EarningsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
         }}
       >
         <svg width="16" height="8" viewBox="0 0 16 8" fill="none">
-          <circle cx="8" cy="4" r="1" fill="white" opacity="0.8"/>
-          <circle cx="4" cy="4" r="0.5" fill="white" opacity="0.6"/>
-          <circle cx="12" cy="4" r="0.5" fill="white" opacity="0.6"/>
+          <circle cx="8" cy="4" r="1" fill="currentColor" opacity="0.8"/>
+          <circle cx="4" cy="4" r="0.5" fill="currentColor" opacity="0.6"/>
+          <circle cx="12" cy="4" r="0.5" fill="currentColor" opacity="0.6"/>
         </svg>
       </div>
       
@@ -575,13 +575,13 @@ function SettingsIconSVG({ isHovered, isActive }: { isHovered: boolean; isActive
       <g style={{ transform: shouldAnimate ? "rotate(45deg)" : "rotate(0deg)", transformOrigin: "24px 24px", transition: "transform 0.5s ease-in-out" }}>
         <path
           d="M21 4H27V10L30 11.5L35 6L42 13L37 18L38.5 21H44V27H38.5L37 30L42 35L35 42L30 37L27 38.5V44H21V38.5L18 37L13 42L6 35L11 30L9.5 27H4V21H9.5L11 18L6 13L13 6L18 11L21 10V4Z"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="3"
           strokeLinejoin="round"
           fill="none"
         />
       </g>
-      <circle cx="24" cy="24" r="7" stroke="white" strokeWidth="3" fill="none" />
+      <circle cx="24" cy="24" r="7" stroke="currentColor" strokeWidth="3" fill="none" />
     </svg>
   );
 }
@@ -730,7 +730,17 @@ export function CollapsibleSidebar({
               setActiveSection('home');
             }}
           >
-            <ElevateIcon className="w-12 h-12" />
+            <ElevateIcon className="w-12 h-12 sidebar-logo-white" />
+            <img
+              src="/elevate logo blck.png"
+              alt="ELEVATE"
+              className="sidebar-logo-black w-12 h-12 rounded-lg object-contain"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setActiveSection('home');
+              }}
+            />
           </div>
         </div>
 
@@ -746,7 +756,27 @@ export function CollapsibleSidebar({
           <img 
             src="/elevate_transparent_white_.png" 
             alt="ELEVATE" 
-            className="h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
+            className="sidebar-logo-white h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveSection('home');
+            }}
+          />
+          <img 
+            src="/elevate_transparent_dark_.png" 
+            alt="ELEVATE" 
+            className="sidebar-logo-dark h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveSection('home');
+            }}
+          />
+          <img 
+            src="/elevate black logo .png" 
+            alt="ELEVATE" 
+            className="sidebar-logo-black h-32 -my-4 cursor-pointer hover:opacity-80 transition-opacity" 
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -772,12 +802,12 @@ export function CollapsibleSidebar({
               onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleNavClick(item.id)}
               style={{ 
-                backgroundColor: isHovered && !isCollapsed ? 'rgba(255,255,255,0.1)' : 'transparent',
-                boxShadow: isHovered && !isCollapsed ? '0 0 0 1px rgba(255,255,255,0.15)' : 'none',
+                backgroundColor: isHovered && !isCollapsed ? 'var(--bg-elevated)' : 'transparent',
+                boxShadow: isHovered && !isCollapsed ? '0 0 0 1px var(--border-subtle)' : 'none',
               }}
             >
               {/* Icon container - fixed position */}
-              <div className="w-7 h-7 flex items-center justify-center overflow-visible flex-shrink-0">
+              <div className="w-7 h-7 flex items-center justify-center overflow-visible flex-shrink-0" style={{ color: 'var(--text-primary)' }}>
                 {item.id === 'messages' ? (
                   <IconComponent isHovered={isHovered} isActive={isActive} unreadCount={showBadge ? unreadCount : 0} />
                 ) : (
@@ -789,7 +819,7 @@ export function CollapsibleSidebar({
               <span
                 className="text-lg whitespace-nowrap overflow-hidden"
                 style={{ 
-                  color: isHovered || isActive ? "#ffffff" : "#F8FAFC",
+                  color: 'var(--text-primary)',
                   fontWeight: isActive ? 700 : 400,
                   opacity: isCollapsed ? 0 : 1,
                   width: isCollapsed ? 0 : 'auto',
@@ -806,9 +836,9 @@ export function CollapsibleSidebar({
       {/* Profile Section - Pinned to bottom (hidden for admin) */}
       {userType !== 'admin' && (
         <div 
-          className={`p-3 mb-4 mx-3 rounded-full cursor-pointer transition-all duration-200 ${
-            isCollapsed ? '' : 'hover:bg-white/10'
-          }`}
+          className={`p-3 mb-4 mx-3 rounded-full cursor-pointer transition-all duration-200`}
+          onMouseEnter={(e) => { if (!isCollapsed) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
           onClick={() => {
             setActiveSection('profile');
             if (!permanentlyCollapsed) {
@@ -835,10 +865,10 @@ export function CollapsibleSidebar({
                 transition: 'opacity 0.2s ease, width 0.3s ease'
               }}
             >
-              <div className="font-semibold text-[#F8FAFC] text-sm truncate">
+              <div className="font-semibold text-sm truncate" style={{ color: 'var(--text-primary)' }}>
                 {displayName}
               </div>
-              <div className="text-[#94A3B8] text-sm truncate">
+              <div className="text-sm truncate" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
                 @{username}
               </div>
             </div>

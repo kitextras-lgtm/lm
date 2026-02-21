@@ -1,7 +1,7 @@
 // Centralized theme colors for chat components
 // This eliminates hardcoded color values scattered across components
 
-export type BackgroundTheme = 'light' | 'grey' | 'dark' | 'rose';
+export type BackgroundTheme = 'light' | 'grey' | 'dark' | 'rose' | 'white';
 
 interface ThemeColors {
   // Main backgrounds
@@ -105,6 +105,24 @@ const themes: Record<BackgroundTheme, ThemeColors> = {
     skeletonPrimary: 'rgba(28, 16, 24, 0.8)',
     skeletonSecondary: 'rgba(28, 16, 24, 0.6)',
     skeletonLight: 'rgba(28, 16, 24, 0.4)',
+  },
+  white: {
+    background: '#FFFFFF',
+    backgroundSecondary: '#F1F5F9',
+    textPrimary: '#0F172A',
+    textSecondary: '#475569',
+    textMuted: '#94A3B8',
+    border: 'rgba(15, 23, 42, 0.12)',
+    borderLight: 'rgba(15, 23, 42, 0.06)',
+    messageBubbleOwn: '#0F172A',
+    messageBubbleOwnText: '#FFFFFF',
+    messageBubbleOther: '#E2E8F0',
+    messageBubbleOtherText: '#0F172A',
+    inputBackground: '#F1F5F9',
+    inputBorder: 'rgba(15, 23, 42, 0.12)',
+    skeletonPrimary: 'rgba(15, 23, 42, 0.08)',
+    skeletonSecondary: 'rgba(15, 23, 42, 0.05)',
+    skeletonLight: 'rgba(15, 23, 42, 0.03)',
   },
 };
 

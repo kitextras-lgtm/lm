@@ -2,7 +2,7 @@
 interface ToggleSwitchProps {
   isActive: boolean;
   onToggle: () => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
   disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
 }

@@ -14,7 +14,7 @@ interface MessageBubbleProps {
   onScrollToMessage?: (messageId: string) => void;
   senderName?: string;
   onImageLoad?: (messageId: string, loaded: boolean) => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }
 
 export const MessageBubble = memo(function MessageBubble({ message, isOwn, onReply, onScrollToMessage, senderName, onImageLoad, onDelete, backgroundTheme = 'dark' }: MessageBubbleProps) {
@@ -235,13 +235,14 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                 </button>
                 
                 {showDeleteMenu && (
-                  <div className="absolute bottom-full right-0 mb-1 bg-gray-900 rounded-lg shadow-lg py-1 min-w-[140px] z-50">
+                  <div className="absolute bottom-full right-0 mb-1 rounded-lg shadow-lg py-1 min-w-[140px] z-50" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                     <button
                       onClick={() => {
                         handleDeleteForMe();
                         setShowDeleteMenu(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-white hover:bg-gray-800"
+                      className="w-full px-3 py-2 text-left text-sm hover:brightness-110 transition-colors"
+                      style={{ color: 'var(--text-primary)' }}
                     >
                       Delete for me
                     </button>
@@ -250,7 +251,8 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                         handleDeleteForEveryone();
                         setShowDeleteMenu(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-gray-800"
+                      className="w-full px-3 py-2 text-left text-sm hover:brightness-110 transition-colors"
+                      style={{ color: '#F87171' }}
                     >
                       Delete for everyone
                     </button>

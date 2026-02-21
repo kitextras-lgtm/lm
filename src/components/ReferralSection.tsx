@@ -203,7 +203,7 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
       <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
         <div className="flex items-center gap-2 mb-5">
           <Gift className="w-5 h-5" style={{ color: '#64748B' }} />
-          <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('referral.yourCode')}</h3>
+          <h3 className="text-lg sm:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{t('referral.yourCode')}</h3>
         </div>
 
         <div className="rounded-lg p-4 mb-5" style={{ backgroundColor: 'transparent' }}>
@@ -212,7 +212,7 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
               {t('referral.yourReferralCode')}
             </div>
             <div className="h-[60px] flex items-center justify-center mb-3">
-              <div className="text-2xl sm:text-3xl font-bold tracking-wider" style={{ color: '#F8FAFC' }}>
+              <div className="text-2xl sm:text-3xl font-bold tracking-wider" style={{ color: 'var(--text-primary)' }}>
                 {referralData?.code || 'N/A'}
               </div>
             </div>
@@ -258,19 +258,19 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
         )}
 
         <div>
-          <div className="text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
+          <div className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
             {t('referral.yourStats')}
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <span className="text-sm" style={{ color: '#CBD5E1' }}>{t('referral.totalUses')}</span>
-              <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
+              <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
                 {referralData?.total_uses || 0}
               </span>
             </div>
             <div className="flex items-center justify-between py-3 px-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <span className="text-sm" style={{ color: '#CBD5E1' }}>{t('referral.totalEarned')}</span>
-              <span className="text-sm font-bold" style={{ color: '#F8FAFC' }}>
+              <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
                 ${referralData?.total_earnings?.toFixed(2) || '0.00'}
               </span>
             </div>
@@ -281,13 +281,13 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
       <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
         <div className="flex items-center gap-2 mb-5">
           <Gift className="w-5 h-5" style={{ color: '#64748B' }} />
-          <h3 className="text-lg sm:text-xl font-bold" style={{ color: '#F8FAFC' }}>{t('referral.enterACode')}</h3>
+          <h3 className="text-lg sm:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{t('referral.enterACode')}</h3>
         </div>
 
         {hasAppliedCode ? (
           <div className="rounded-lg p-6 text-center" style={{ backgroundColor: 'transparent' }}>
             <Check className="w-12 h-12 mx-auto mb-3" style={{ color: '#10B981' }} />
-            <p className="text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
+            <p className="text-base font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
               {t('referral.codeApplied')}
             </p>
             <p className="text-sm" style={{ color: '#64748B' }}>
@@ -309,7 +309,7 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
                     placeholder={t('referral.enterCode')}
                     maxLength={8}
                     className="w-full px-4 py-2.5 rounded-lg text-2xl sm:text-3xl font-bold tracking-wider text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20"
-                    style={{ backgroundColor: 'transparent', color: '#F8FAFC' }}
+                    style={{ backgroundColor: 'transparent', color: 'var(--text-primary)' }}
                   />
                 </div>
                 <button
@@ -336,7 +336,7 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
             )}
 
             <div>
-              <div className="text-sm font-semibold mb-3" style={{ color: '#F8FAFC' }}>
+              <div className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
                 {t('referral.benefits')}
               </div>
               <div className="space-y-2">

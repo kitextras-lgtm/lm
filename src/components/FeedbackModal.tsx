@@ -31,7 +31,7 @@ function CategoryButton({ isActive, onClick, icon, label }: CategoryButtonProps)
       }`}
       style={{
         backgroundColor: isActive ? '#0f0f13' : 'transparent',
-        color: '#F8FAFC',
+        color: 'var(--text-primary)',
         border: isActive ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
       }}
     >
@@ -117,7 +117,7 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b flex-shrink-0" style={{ borderColor: 'rgba(75, 85, 99, 0.25)', backgroundColor: '#111111' }}>
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: '#F8FAFC' }}>
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             Give Feedback
           </h2>
           <button
@@ -133,7 +133,7 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 flex-1 overflow-y-auto">
           {/* Category Selection */}
           <div>
-            <label className="block text-sm font-semibold mb-2 sm:mb-3" style={{ color: '#F8FAFC' }}>
+            <label className="block text-sm font-semibold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>
               Category
             </label>
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -169,7 +169,7 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
 
           {/* Feedback Textarea */}
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: '#F8FAFC' }}>
+            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               Your Feedback
             </label>
             <textarea
@@ -182,7 +182,7 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
               style={{
                 backgroundColor: '#0f0f13',
                 border: '1px solid rgba(75, 85, 99, 0.25)',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
               }}
               onFocus={(e) => e.target.style.borderColor = '#ffffff'}
               onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.25)'}

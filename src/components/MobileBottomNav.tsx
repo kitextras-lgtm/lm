@@ -12,7 +12,7 @@ interface MobileBottomNavProps {
   setActiveSection: (section: string) => void;
   unreadCount?: number;
   profilePicture?: string | null;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
   userType?: 'artist' | 'creator' | 'business' | 'admin';
 }
 
@@ -32,25 +32,11 @@ const triggerHaptic = (style: 'light' | 'medium' | 'heavy' = 'light') => {
   }
 };
 
-export function MobileBottomNav({ activeSection, setActiveSection, unreadCount = 0, profilePicture, backgroundTheme = 'dark', userType }: MobileBottomNavProps) {
+export function MobileBottomNav({ activeSection, setActiveSection, unreadCount = 0, profilePicture, userType }: MobileBottomNavProps) {
   const [pressedItem, setPressedItem] = useState<string | null>(null);
 
-  // Get theme-consistent colors
-  const getNavBackground = () => {
-    switch (backgroundTheme) {
-      case 'light': return '#0F172A'; // Navy
-      case 'grey': return '#1A1A1E'; // Grey
-      default: return '#000000'; // Dark - pure black for consistency
-    }
-  };
-
-  const getBorderColor = () => {
-    switch (backgroundTheme) {
-      case 'light': return 'rgba(148, 163, 184, 0.2)';
-      case 'grey': return 'rgba(255, 255, 255, 0.1)';
-      default: return 'rgba(255, 255, 255, 0.1)';
-    }
-  };
+  const getNavBackground = () => 'var(--bg-sidebar)';
+  const getBorderColor = () => 'var(--border-subtle)';
 
   // Admin-specific nav items - matching original admin nav order
   const adminNavItems = [
@@ -98,7 +84,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
   }, []);
 
   const renderIcon = (id: string, isActive: boolean) => {
-    const color = 'white';
+    const color = 'currentColor';
     const strokeWidth = "3";
     
     switch (id) {
@@ -157,7 +143,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                   <polygon
                     key={i}
                     points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
-                    fill="white"
+                    fill="currentColor"
                     style={{
                       opacity: isActive ? 1 : 0,
                       transform: isActive ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
@@ -172,7 +158,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                 cx="12"
                 cy="22"
                 r="5"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 fill="none"
                 style={{
@@ -183,7 +169,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               />
               <path
                 d="M4 44C4 37 7 32 12 32"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 fill="none"
@@ -198,7 +184,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                 cx="36"
                 cy="22"
                 r="5"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 fill="none"
                 style={{
@@ -209,7 +195,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               />
               <path
                 d="M44 44C44 37 41 32 36 32"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 fill="none"
@@ -224,7 +210,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                 cx="24"
                 cy="20"
                 r="6"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 fill="none"
                 style={{
@@ -235,7 +221,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               />
               <path
                 d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 fill="none"
@@ -259,7 +245,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                 d="M34 16H12C8.68629 16 6 18.6863 6 22V32C6 35.3137 8.68629 38 12 38H15L21 46L27 38H34C37.3137 38 40 35.3137 40 32V22C40 18.6863 37.3137 16 34 16Z" 
                 stroke={color} 
                 strokeWidth={strokeWidth} 
-                fill={getNavBackground()}
+                fill="var(--bg-sidebar)"
               />
               <g style={{ opacity: isActive ? 1 : 0.7, transition: 'opacity 0.3s ease' }}>
                 <circle cx="15" cy="28" r="2" fill={color}/>
@@ -281,7 +267,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
             <div 
               className="w-7 h-7 rounded-full overflow-hidden"
               style={{ 
-                border: isActive ? '2px solid white' : '2px solid rgba(255,255,255,0.4)',
+                border: isActive ? '2px solid var(--text-primary)' : '2px solid var(--border-subtle)',
                 transition: 'border-color 0.2s ease',
                 opacity: 1
               }}
@@ -295,8 +281,8 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                   <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                    <circle cx="12" cy="8" r="4" fill="white" />
-                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="white" />
+                    <circle cx="12" cy="8" r="4" fill="currentColor" />
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="currentColor" />
                   </svg>
                 </div>
               )}
@@ -389,7 +375,7 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                 isActive ? '' : 'hover:opacity-70 active:scale-[0.95]'
               }`}
               style={{ 
-                color: isActive ? '#ffffff' : '#64748B',
+                color: isActive ? 'var(--text-primary)' : 'var(--border-default)',
                 height: '52px',
                 transform: isPressed ? 'scale(0.9)' : 'scale(1)',
                 transition: 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',

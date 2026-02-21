@@ -297,7 +297,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               }`}
               style={{
                 backgroundColor: announcementType === 'normal' ? tokens.bg.active : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: announcementType === 'normal' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
             >
@@ -339,7 +339,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               }`}
               style={{
                 backgroundColor: sendToAll ? tokens.bg.active : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: sendToAll ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
             >
@@ -357,7 +357,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               }`}
               style={{
                 backgroundColor: !sendToAll ? tokens.bg.active : 'transparent',
-                color: '#F8FAFC',
+                color: 'var(--text-primary)',
                 border: !sendToAll ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
               }}
             >
@@ -381,7 +381,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 }`}
                 style={{
                   backgroundColor: targetAudience === 'all' ? tokens.bg.active : 'transparent',
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   border: targetAudience === 'all' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               >
@@ -395,7 +395,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 }`}
                 style={{
                   backgroundColor: targetAudience === 'creators' ? tokens.bg.active : 'transparent',
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   border: targetAudience === 'creators' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               >
@@ -409,7 +409,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 }`}
                 style={{
                   backgroundColor: targetAudience === 'artists' ? tokens.bg.active : 'transparent',
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   border: targetAudience === 'artists' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               >
@@ -423,7 +423,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 }`}
                 style={{
                   backgroundColor: targetAudience === 'businesses' ? tokens.bg.active : 'transparent',
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   border: targetAudience === 'businesses' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               >
@@ -437,7 +437,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 }`}
                 style={{
                   backgroundColor: targetAudience === 'freelancers' ? tokens.bg.active : 'transparent',
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   border: targetAudience === 'freelancers' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
                 }}
               >
@@ -549,7 +549,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             placeholder="Notification title"
             className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
             style={{
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
               background: tokens.bg.input,
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
@@ -569,7 +569,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             rows={8}
             className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
             style={{
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
               background: tokens.bg.input,
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
@@ -623,8 +623,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             disabled={isSending || !title.trim() || !content.trim() || (!sendToAll && !username.trim())}
             className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
-              backgroundColor: '#F8FAFC',
-              color: '#000000',
+              backgroundColor: 'var(--text-primary)',
+              color: 'var(--bg-primary)',
             }}
           >
             {isSending ? (

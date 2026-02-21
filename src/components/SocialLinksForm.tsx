@@ -84,7 +84,7 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
           {SelectedIcon && (
             <SelectedIcon 
               className="w-4 h-4 transition-all duration-200 group-hover:scale-110" 
-              style={{ color: '#F8FAFC' }} 
+              style={{ color: 'var(--text-primary)' }} 
             />
           )}
           <span className="transition-all duration-200">{selectedOption?.label || value}</span>
@@ -134,9 +134,9 @@ function CustomDropdown({ value, options, onChange, platformIcons }: CustomDropd
                     <div className="relative group/icon">
                       <Icon 
                         className="w-4 h-4 transition-all duration-300 group-hover/option:scale-125 group-hover/option:rotate-12 group-hover/icon:scale-150 group-hover/icon:rotate-180" 
-                        style={{ color: '#F8FAFC' }} 
+                        style={{ color: 'var(--text-primary)' }} 
                       />
-                      <div className="absolute inset-0 w-4 h-4 rounded-full opacity-0 group-hover/icon:opacity-20 group-hover/icon:scale-150 transition-all duration-300" style={{ backgroundColor: '#F8FAFC' }}></div>
+                      <div className="absolute inset-0 w-4 h-4 rounded-full opacity-0 group-hover/icon:opacity-20 group-hover/icon:scale-150 transition-all duration-300" style={{ backgroundColor: 'var(--text-primary)' }}></div>
                     </div>
                   )}
                   <span className="transition-all duration-200">{option.label}</span>
@@ -630,7 +630,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
         {links.length === 0 ? (
           <div className="text-center py-8 sm:py-12">
             <AnimatedLinkIcon />
-            <p className="text-sm sm:text-base font-medium mb-1" style={{ color: '#F8FAFC' }}>
+            <p className="text-sm sm:text-base font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
               {userType === 'artist' ? 'No Artists added yet' : t('socialLinks.noLinksYet')}
             </p>
             {userType === 'artist' ? (
@@ -663,15 +663,15 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
                       ? <img src={link.url} alt={link.display_name} className="w-full h-full object-cover" />
                       : link.platform === 'Artist'
                         ? <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#CBD5E1' }} />
-                        : <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#F8FAFC' }} />
+                        : <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-primary)' }} />
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm sm:text-base font-medium truncate" style={{ color: '#F8FAFC' }}>
+                    <div className="text-sm sm:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }}>
                       {link.display_name || link.platform}
                     </div>
                     {link.platform !== 'Artist' && (
-                      <div className="text-xs sm:text-sm truncate" style={{ color: '#F8FAFC' }}>
+                      <div className="text-xs sm:text-sm truncate" style={{ color: 'var(--text-primary)' }}>
                         {link.url.replace(/^https?:\/\//i, '')}
                       </div>
                     )}
@@ -722,7 +722,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
         <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-lg font-bold" style={{ color: '#F8FAFC' }}>Verify Ownership</h3>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Verify Ownership</h3>
             {verifyResult !== 'success' && (
               <button onClick={() => { setVerifyModal(null); setVerifyResult('idle'); }} className="p-1 rounded-lg" style={{ color: '#64748B' }}>
                 <X className="w-5 h-5" />
@@ -732,7 +732,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
 
           <div className="mb-5 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', border: '1px solid' }}>
             <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Link being verified</p>
-            <p className="text-sm font-medium truncate" style={{ color: '#F8FAFC' }}>{vm.link.url}</p>
+            <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{vm.link.url}</p>
           </div>
 
           <div className="mb-5">
@@ -740,7 +740,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
               Add this phrase to your bio to verify account ownership and prevent impersonation.
             </p>
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <span className="text-base font-bold tracking-wide" style={{ color: '#F8FAFC' }}>{vm.phrase}</span>
+              <span className="text-base font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{vm.phrase}</span>
               <button
                 onClick={() => {
                   navigator.clipboard?.writeText(vm.phrase);

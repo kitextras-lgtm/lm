@@ -16,13 +16,13 @@ export function BellIcon({ isHovered = false }: { isHovered?: boolean }) {
         >
           <path
             d="M24 6C24 6 24 8 24 10C18 10 14 15 14 22V30L10 34H38L34 30V22C34 15 30 10 24 10C24 8 24 6 24 6Z"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             strokeLinejoin="round"
           />
           <path
             d="M20 34C20 37 22 40 24 40C26 40 28 37 28 34"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             strokeLinecap="round"
           />
@@ -33,7 +33,7 @@ export function BellIcon({ isHovered = false }: { isHovered?: boolean }) {
           cx="24"
           cy="24"
           r="18"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2"
           style={{
             opacity: isHovered ? 0 : 0,
@@ -48,7 +48,7 @@ export function BellIcon({ isHovered = false }: { isHovered?: boolean }) {
           cx="24"
           cy="24"
           r="18"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2"
           style={{
             opacity: isHovered ? 0 : 0,
@@ -63,7 +63,7 @@ export function BellIcon({ isHovered = false }: { isHovered?: boolean }) {
           cx="24"
           cy="24"
           r="18"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="1.5"
           style={{
             opacity: isHovered ? 0 : 0,

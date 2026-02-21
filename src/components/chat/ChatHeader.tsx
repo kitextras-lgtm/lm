@@ -28,10 +28,10 @@ interface SocialLink {
 interface UserProfilePopupProps {
   user: Profile;
   onClose: () => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }
 
-function UserProfilePopup({ user, onClose }: UserProfilePopupProps) {
+function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: UserProfilePopupProps) {
   const modalBg = 'var(--bg-card)';
   const borderColor = 'var(--border-default)';
   const dividerColor = 'var(--border-subtle)';
@@ -80,7 +80,7 @@ function UserProfilePopup({ user, onClose }: UserProfilePopupProps) {
             className="w-20 h-20 rounded-full object-cover mb-3"
             style={{ border: '2px solid rgba(255,255,255,0.15)' }}
           />
-          <h3 className="text-lg font-semibold text-center" style={{ color: '#F8FAFC' }}>{user.name}</h3>
+          <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
           {user.username && (
             <p className="text-sm mt-0.5" style={{ color: '#94A3B8' }}>@{user.username}</p>
           )}
@@ -146,7 +146,7 @@ function UserProfilePopup({ user, onClose }: UserProfilePopupProps) {
 interface AnimatedIconProps {
   className?: string;
   style?: React.CSSProperties;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }
 
 // Video Camera Icon Component
@@ -164,7 +164,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         {/* Camera body */}
         <rect 
           x="4" y="14" width="28" height="20" rx="3" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none"
           style={{ 
@@ -177,7 +177,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         {/* Camera lens */}
         <circle 
           cx="18" cy="24" r="6" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none"
           style={{ 
@@ -190,7 +190,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         {/* Lens center */}
         <circle 
           cx="18" cy="24" r="3" 
-          fill="white" 
+          fill="currentColor" 
           style={{ 
             opacity: isHovered ? 0.8 : 0.4, 
             transition: "opacity 0.3s ease" 
@@ -200,7 +200,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         {/* Lens reflection */}
         <circle 
           cx="16" cy="22" r="1" 
-          fill="white" 
+          fill="currentColor" 
           style={{ 
             opacity: isHovered ? 0.6 : 0.2, 
             transition: "opacity 0.3s ease 0.1s" 
@@ -210,7 +210,7 @@ function VideoCameraIcon({ className, style }: AnimatedIconProps) {
         {/* Camera lens */}
         <path 
           d="M32 18L44 12V36L32 30V18Z" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           strokeLinejoin="round" 
           fill="none"
@@ -264,7 +264,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         {/* Calendar body */}
         <rect 
           x="6" y="10" width="36" height="32" rx="3" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none"
           style={{ 
@@ -277,7 +277,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         {/* Header line */}
         <line 
           x1="6" y1="18" x2="42" y2="18" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3"
           style={{ opacity: isHovered ? 0.8 : 0.6, transition: "opacity 0.3s ease" }}
         />
@@ -285,7 +285,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         {/* Ring bindings */}
         <line 
           x1="14" y1="6" x2="14" y2="14" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           strokeLinecap="round"
           style={{ 
@@ -295,7 +295,7 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         />
         <line 
           x1="34" y1="6" x2="34" y2="14" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           strokeLinecap="round"
           style={{ 
@@ -305,23 +305,23 @@ function CalendarIcon({ className, style }: AnimatedIconProps) {
         />
         
         {/* Date dots that appear on hover */}
-        <circle cx="12" cy="24" r="1.5" fill="white" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.1s" }} />
-        <circle cx="18" cy="24" r="1.5" fill="white" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.15s" }} />
-        <circle cx="24" cy="24" r="1.5" fill="white" style={{ opacity: isHovered ? 1 : 0.4, transition: "opacity 0.3s ease 0.2s" }} />
-        <circle cx="30" cy="24" r="1.5" fill="white" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.25s" }} />
-        <circle cx="36" cy="24" r="1.5" fill="white" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.3s" }} />
+        <circle cx="12" cy="24" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.1s" }} />
+        <circle cx="18" cy="24" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.15s" }} />
+        <circle cx="24" cy="24" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 1 : 0.4, transition: "opacity 0.3s ease 0.2s" }} />
+        <circle cx="30" cy="24" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.25s" }} />
+        <circle cx="36" cy="24" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.3s" }} />
         
-        <circle cx="12" cy="30" r="1.5" fill="white" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.35s" }} />
-        <circle cx="18" cy="30" r="1.5" fill="white" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.4s" }} />
-        <circle cx="24" cy="30" r="1.5" fill="white" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.45s" }} />
-        <circle cx="30" cy="30" r="1.5" fill="white" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.5s" }} />
-        <circle cx="36" cy="30" r="1.5" fill="white" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.55s" }} />
+        <circle cx="12" cy="30" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.35s" }} />
+        <circle cx="18" cy="30" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.4s" }} />
+        <circle cx="24" cy="30" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.8 : 0.3, transition: "opacity 0.3s ease 0.45s" }} />
+        <circle cx="30" cy="30" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.5s" }} />
+        <circle cx="36" cy="30" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.55s" }} />
         
-        <circle cx="12" cy="36" r="1.5" fill="white" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.6s" }} />
-        <circle cx="18" cy="36" r="1.5" fill="white" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.65s" }} />
-        <circle cx="24" cy="36" r="1.5" fill="white" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.7s" }} />
-        <circle cx="30" cy="36" r="1.5" fill="white" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.75s" }} />
-        <circle cx="36" cy="36" r="1.5" fill="white" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.8s" }} />
+        <circle cx="12" cy="36" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.6s" }} />
+        <circle cx="18" cy="36" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.65s" }} />
+        <circle cx="24" cy="36" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.6 : 0.2, transition: "opacity 0.3s ease 0.7s" }} />
+        <circle cx="30" cy="36" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.75s" }} />
+        <circle cx="36" cy="36" r="1.5" fill="currentColor" style={{ opacity: isHovered ? 0.4 : 0.1, transition: "opacity 0.3s ease 0.8s" }} />
         
         {/* Highlight effect on hover */}
         <rect 
@@ -349,7 +349,7 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
         {/* Main container */}
         <rect 
           x="6" y="6" width="36" height="36" rx="3" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none"
           style={{ 
@@ -362,14 +362,14 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
         {/* Top section - always visible */}
         <rect 
           x="10" y="10" width="28" height="8" rx="1" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none" 
           style={{ opacity: 0.6 }} 
         />
         <line 
           x1="20" y1="14" x2="28" y2="14" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           strokeLinecap="round" 
           style={{ opacity: 0.6 }} 
@@ -383,13 +383,13 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
         }}>
           <rect 
             x="10" y="20" width="28" height="8" rx="1" 
-            stroke="white" 
+            stroke="currentColor" 
             strokeWidth="3" 
-            fill='rgba(0,0,0,0.9)' 
+            fill='var(--bg-primary)' 
           />
           <line 
             x1="20" y1="24" x2="28" y2="24" 
-            stroke="white" 
+            stroke="currentColor" 
             strokeWidth="3" 
             strokeLinecap="round" 
           />
@@ -397,9 +397,9 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
           {/* Content items that appear on hover or when drawer is open */}
           <g style={{ opacity: (isHovered || isDrawerOpen) ? 1 : 0, transition: "opacity 0.3s ease 0.15s" }}>
             {/* Document icons */}
-            <rect x="12" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.7" />
-            <rect x="17" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.5" />
-            <rect x="22" y="22" width="4" height="4" rx="0.5" fill="white" opacity="0.6" />
+            <rect x="12" y="22" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.7" />
+            <rect x="17" y="22" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.5" />
+            <rect x="22" y="22" width="4" height="4" rx="0.5" fill="currentColor" opacity="0.6" />
             
             {/* Small details on documents */}
             <line x1="13" y1="23.5" x2="15" y2="23.5" stroke='rgba(0,0,0,0.5)' strokeWidth="0.5" />
@@ -411,14 +411,14 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
         {/* Bottom section - always visible */}
         <rect 
           x="10" y="30" width="28" height="8" rx="1" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           fill="none" 
           style={{ opacity: 0.6 }} 
         />
         <line 
           x1="20" y1="34" x2="28" y2="34" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3" 
           strokeLinecap="round" 
           style={{ opacity: 0.6 }} 
@@ -427,7 +427,7 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
         {/* Slide indicator/shadow */}
         <rect 
           x="10" y="28" width="28" height="4" 
-          fill="white" 
+          fill="currentColor" 
           style={{ 
             opacity: isHovered ? 0.2 : 0, 
             transition: "opacity 0.3s ease" 
@@ -437,7 +437,7 @@ function DrawerIcon({ className, style, isDrawerOpen, backgroundTheme }: Animate
         {/* Handle indicator */}
         <rect 
           x="20" y="8" width="8" height="2" rx="1" 
-          fill="white" 
+          fill="currentColor" 
           style={{ 
             opacity: isHovered ? 0.8 : 0.4, 
             transition: "opacity 0.3s ease" 
@@ -457,7 +457,7 @@ interface ChatHeaderProps {
   onScheduleMeeting?: () => void;
   onOpenDrawer?: () => void;
   isDrawerOpen?: boolean;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
 }
 
 export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall, onScheduleMeeting, onOpenDrawer, isDrawerOpen, backgroundTheme = 'dark' }: ChatHeaderProps) {
@@ -492,7 +492,7 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
             onClick={() => setShowProfilePopup(true)}
             className="text-left hover:underline transition-all"
           >
-            <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: '#F8FAFC' }} data-component-name="ChatHeader">{user.name}</h2>
+            <h2 className="text-sm lg:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }} data-component-name="ChatHeader">{user.name}</h2>
           </button>
           {isTyping && (
             <p className="text-[10px] lg:text-xs" style={{ color: '#94A3B8' }}>typing...</p>
@@ -508,21 +508,21 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
             className="p-2.5 rounded-lg transition-colors"
             aria-label="Video call"
           >
-            <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} backgroundTheme={backgroundTheme} />
+            <VideoCameraIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: 'var(--text-primary)' }} backgroundTheme={backgroundTheme} />
           </button>
           <button
             onClick={onScheduleMeeting}
             className="p-2.5 rounded-lg transition-colors"
             aria-label="Schedule meeting"
           >
-            <CalendarIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} />
+            <CalendarIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: 'var(--text-primary)' }} />
           </button>
           <button
             onClick={onOpenDrawer}
             className="p-2.5 rounded-lg transition-colors"
             aria-label="View details"
           >
-            <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: '#94A3B8' }} isDrawerOpen={isDrawerOpen} backgroundTheme={backgroundTheme} />
+            <DrawerIcon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color: 'var(--text-primary)' }} isDrawerOpen={isDrawerOpen} backgroundTheme={backgroundTheme} />
           </button>
         </div>
       )}

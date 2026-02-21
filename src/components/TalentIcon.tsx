@@ -24,7 +24,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
               <polygon
                 key={i}
                 points={`${cx},2 ${cx + 1.2},5 ${cx + 4},5.5 ${cx + 2},7.5 ${cx + 2.5},11 ${cx},9 ${cx - 2.5},11 ${cx - 2},7.5 ${cx - 4},5.5 ${cx - 1.2},5`}
-                fill="white"
+                fill="currentColor"
                 style={{
                   opacity: isHovered ? 1 : 0,
                   transform: isHovered ? "scale(1) translateY(0)" : "scale(0.5) translateY(4px)",
@@ -39,7 +39,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
             cx="12"
             cy="22"
             r="5"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             fill="none"
             style={{
@@ -50,7 +50,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
           />
           <path
             d="M4 44C4 37 7 32 12 32"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
@@ -65,7 +65,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
             cx="36"
             cy="22"
             r="5"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             fill="none"
             style={{
@@ -76,7 +76,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
           />
           <path
             d="M44 44C44 37 41 32 36 32"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
@@ -91,7 +91,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
             cx="24"
             cy="20"
             r="6"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             fill="none"
             style={{
@@ -102,7 +102,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
           />
           <path
             d="M12 44C12 35 17 30 24 30C31 30 36 35 36 44"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
@@ -111,7 +111,7 @@ export function TalentIcon({ className, onClick }: AnimatedIconProps) {
       </div>
       <span
         className="text-xs font-medium transition-colors duration-300"
-        style={{ color: isHovered ? "white" : "#F8FAFC" }}
+        style={{ color: 'var(--text-primary)' }}
       >
         Talent
       </span>

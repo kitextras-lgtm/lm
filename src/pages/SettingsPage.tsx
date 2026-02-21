@@ -141,7 +141,7 @@ export function SettingsPage() {
         
         if (usersByEmail?.id) {
           userId = usersByEmail.id;
-          localStorage.setItem('verifiedUserId', userId);
+          localStorage.setItem('verifiedUserId', userId!);
           console.log('Found user by email, userId:', userId);
         }
       }
@@ -396,7 +396,7 @@ export function SettingsPage() {
   const renderPersonalInfo = () => (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-2xl font-bold" style={{ color: '#F8FAFC' }}>Personal info</h2>
+        <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Personal info</h2>
         <button
           onClick={() => {
             console.log('Manual refresh triggered');
@@ -406,7 +406,7 @@ export function SettingsPage() {
           }}
           disabled={isLoading}
           className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: '#0f0f13', color: '#F8FAFC' }}
+          style={{ backgroundColor: '#0f0f13', color: 'var(--text-primary)' }}
         >
           {isLoading ? 'Loading...' : 'Refresh Data'}
         </button>
@@ -472,7 +472,7 @@ export function SettingsPage() {
               )}
             </div>
             <label className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm cursor-pointer"
-              style={{ backgroundColor: '#0f0f13', color: '#F8FAFC' }}>
+              style={{ backgroundColor: '#0f0f13', color: 'var(--text-primary)' }}>
               <Camera className="w-4 h-4" />
               Replace picture
               <input
@@ -508,7 +508,7 @@ export function SettingsPage() {
                 disabled={!isEditing}
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   background: '#0f0f13',
                   border: '1px solid rgba(75, 85, 99, 0.2)',
                 }}
@@ -542,7 +542,7 @@ export function SettingsPage() {
                 disabled={!isEditing}
                 className="flex-1 h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
                 style={{
-                  color: '#F8FAFC',
+                  color: 'var(--text-primary)',
                   background: '#0f0f13',
                   border: '1px solid rgba(75, 85, 99, 0.2)',
                 }}
@@ -563,7 +563,7 @@ export function SettingsPage() {
                 disabled={true}
                 readOnly
                 className="flex-1 bg-transparent text-sm focus:outline-none ml-1 cursor-not-allowed"
-                style={{ color: '#F8FAFC' }}
+                style={{ color: 'var(--text-primary)' }}
                 title="Username cannot be changed after onboarding"
               />
             </div>
@@ -589,7 +589,7 @@ export function SettingsPage() {
                 }}
                 disabled={!isEditing}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
-                style={{ color: '#F8FAFC' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 {COUNTRIES.map(country => (
                   <option key={country} value={country} style={{ background: '#0f0f13' }}>{country}</option>
@@ -625,7 +625,7 @@ export function SettingsPage() {
                 }}
                 disabled={!isEditing}
                 className="flex-1 bg-transparent text-sm focus:outline-none"
-                style={{ color: '#F8FAFC' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 {LANGUAGES.map(language => (
                   <option key={language} value={language} style={{ background: '#0f0f13' }}>{language}</option>
@@ -654,7 +654,7 @@ export function SettingsPage() {
             disabled
             className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none opacity-50"
             style={{
-              color: '#F8FAFC',
+              color: 'var(--text-primary)',
               background: '#0f0f13',
               border: '1px solid rgba(75, 85, 99, 0.2)',
             }}
@@ -696,7 +696,7 @@ export function SettingsPage() {
                 }
               }}
               className="px-7 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 shadow-sm"
-              style={{ backgroundColor: '#0f0f13', color: '#F8FAFC' }}
+              style={{ backgroundColor: '#0f0f13', color: 'var(--text-primary)' }}
             >
               Cancel
             </button>
@@ -718,7 +718,7 @@ export function SettingsPage() {
   const renderPlaceholder = (title: string, description: string) => (
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="text-center">
-        <h3 className="text-xl font-bold mb-2" style={{ color: '#F8FAFC' }}>{title}</h3>
+        <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h3>
         <p className="text-sm" style={{ color: '#94A3B8' }}>{description}</p>
       </div>
     </div>
@@ -766,7 +766,7 @@ export function SettingsPage() {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-bold mb-1" style={{ color: '#F8FAFC' }}>
+              <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                 {formData.firstName || formData.lastName 
                   ? `${formData.firstName} ${formData.lastName}`.trim() 
                   : 'Your Name'}
@@ -788,7 +788,7 @@ export function SettingsPage() {
                     }`}
                     style={{
                       backgroundColor: activeSection === 'personal' ? '#0f0f13' : 'transparent',
-                      color: '#F8FAFC'
+                      color: 'var(--text-primary)'
                     }}
                   >
                     Personal info
@@ -800,7 +800,7 @@ export function SettingsPage() {
                     }`}
                     style={{
                       backgroundColor: activeSection === 'accounts' ? '#0f0f13' : 'transparent',
-                      color: '#F8FAFC'
+                      color: 'var(--text-primary)'
                     }}
                   >
                     Connected accounts
@@ -812,7 +812,7 @@ export function SettingsPage() {
                     }`}
                     style={{
                       backgroundColor: activeSection === 'payout' ? '#0f0f13' : 'transparent',
-                      color: '#F8FAFC'
+                      color: 'var(--text-primary)'
                     }}
                   >
                     Payment Method
@@ -824,7 +824,7 @@ export function SettingsPage() {
                     }`}
                     style={{
                       backgroundColor: activeSection === 'notifications' ? '#0f0f13' : 'transparent',
-                      color: '#F8FAFC'
+                      color: 'var(--text-primary)'
                     }}
                   >
                     Notifications
@@ -836,7 +836,7 @@ export function SettingsPage() {
                     }`}
                     style={{
                       backgroundColor: activeSection === 'close' ? '#0f0f13' : 'transparent',
-                      color: '#F8FAFC'
+                      color: 'var(--text-primary)'
                     }}
                   >
                     Close account

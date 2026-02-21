@@ -223,7 +223,7 @@ export function ChatInput({
             borderRadius: 0,
             opacity: 0.7
           }}
-          onFocus={(e) => { e.target.style.borderColor = '#ffffff'; e.target.style.opacity = '1'; }}
+          onFocus={(e) => { e.target.style.borderColor = 'var(--text-primary)'; e.target.style.opacity = '1'; }}
           onBlur={(e) => { e.target.style.borderColor = 'var(--border-default)'; e.target.style.opacity = '0.7'; }}
         />
         <button
@@ -231,7 +231,7 @@ export function ChatInput({
           type="submit"
           disabled={!hasContent || disabled}
           className="shrink-0 h-8 w-8 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          style={hasContent ? { backgroundColor: '#F8FAFC', color: '#111111', borderRadius: 0, border: '1px solid var(--border-default)' } : { backgroundColor: 'rgba(148, 163, 184, 0.1)', color: 'var(--text-secondary)', borderRadius: 0, border: '1px solid var(--border-default)' }}
+          style={hasContent ? { backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)', borderRadius: 0, border: '1px solid var(--border-default)' } : { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', borderRadius: 0, border: '1px solid var(--border-default)', opacity: 0.4 }}
         >
           <Send className="w-4 h-4" />
         </button>

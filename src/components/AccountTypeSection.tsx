@@ -60,7 +60,7 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
     <div className="space-y-6">
       {/* Current Account Type */}
       <div>
-        <h3 className="text-lg font-semibold mb-4" style={{ color: '#F8FAFC' }}>{t('accountType.currentAccountType')}</h3>
+        <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{t('accountType.currentAccountType')}</h3>
         <div className="flex items-center gap-3 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
             {normalizedUserType === 'artist' && <ArtistIcon />}
@@ -69,10 +69,10 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
             {(normalizedUserType === 'brand' || normalizedUserType === 'business') && <BrandIcon />}
           </div>
           <div>
-            <p className="font-medium text-lg" style={{ color: '#F8FAFC' }}>
+            <p className="font-medium text-lg" style={{ color: 'var(--text-primary)' }}>
               {normalizedUserType === 'artist' ? t('accountTypes.artist') : normalizedUserType === 'creator' ? t('accountTypes.creator') : normalizedUserType === 'freelancer' ? t('accountTypes.freelancer') : normalizedUserType === 'brand' || normalizedUserType === 'business' ? t('accountTypes.brand') : t('accountType.unknown')}
             </p>
-            <p className="text-sm" style={{ color: '#F8FAFC' }}>
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
               {normalizedUserType === 'artist' && t('accountType.artistDesc')}
               {normalizedUserType === 'creator' && t('accountType.creatorDesc')}
               {normalizedUserType === 'freelancer' && t('accountType.freelancerDesc')}
@@ -94,7 +94,7 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
           </div>
           <div>
             <p className="text-sm font-medium mb-0.5" style={{ color: '#94A3B8' }}>Account Status</p>
-            <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>Healthy</p>
+            <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Healthy</p>
             <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>No policy violations</p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export function AccountTypeSection({ userType }: AccountTypeSectionProps) {
           </div>
           <div>
             <p className="text-sm font-medium mb-0.5" style={{ color: '#94A3B8' }}>Policy Warnings</p>
-            <p className="text-base font-semibold" style={{ color: '#F8FAFC' }}>0 warnings</p>
+            <p className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>0 warnings</p>
             <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>Compliant with Terms of Service</p>
           </div>
         </div>

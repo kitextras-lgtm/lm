@@ -12,7 +12,7 @@ export function AnimatedLinkIcon() {
               strokeWidth={2.5}
               style={{
                 clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
-                color: '#F8FAFC'
+                color: 'var(--text-primary)'
               }}
             />
           </div>
@@ -24,7 +24,7 @@ export function AnimatedLinkIcon() {
               strokeWidth={2.5}
               style={{
                 clipPath: "polygon(50% 0, 100% 0, 100% 100%, 50% 100%)",
-                color: '#F8FAFC'
+                color: 'var(--text-primary)'
               }}
             />
           </div>

@@ -26,7 +26,7 @@ interface ChatWindowProps {
   currentUserId: string;
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
   onBack?: () => void;
   showBackButton?: boolean;
   // Instagram/X pattern: Pending conversation props
@@ -175,7 +175,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   currentUserId: string;
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
-  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose';
+  backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
   onBack?: () => void;
   showBackButton?: boolean;
   isRequest?: boolean;
@@ -543,7 +543,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                      <svg className="w-10 h-10 lg:w-12 lg:h-12" style={{ color: '#64748B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-10 h-10 lg:w-12 lg:h-12" style={{ color: 'var(--text-primary)', opacity: 0.4 }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
@@ -595,7 +595,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
                     {shouldShowDate && (
                       <div className="flex items-center justify-center py-5">
                         <div className="px-3 py-1.5 rounded-lg" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-default)' }}>
-                          <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>
+                          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>
                             {formatDate(message.created_at)}
                           </span>
                         </div>
@@ -629,10 +629,10 @@ const ChatWindowContent = memo(function ChatWindowContent({
           style={{ borderColor: 'rgba(75,85,99,0.2)', backgroundColor: 'var(--bg-sidebar)' }}
         >
           <div className="flex-1 min-w-0 mr-4">
-            <p className="text-sm font-medium" style={{ color: '#F8FAFC' }}>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
               {otherUser?.name || 'Someone'} wants to message you
             </p>
-            <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)' }}>
               Accept to chat, or deny to delete this conversation.
             </p>
           </div>

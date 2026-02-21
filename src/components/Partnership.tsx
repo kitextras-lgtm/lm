@@ -475,28 +475,28 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
                   <div className="artist-button flex items-center gap-3">
                   <div className="music-icon group w-10 h-10 flex-shrink-0">
                     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                      <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
-                      <rect x="8" y="26" width="8" height="12" rx="2" stroke="white" strokeWidth="2" fill="none"/>
-                      <rect x="32" y="26" width="8" height="12" rx="2" stroke="white" strokeWidth="2" fill="none"/>
-                      <rect x="10" y="28" width="4" height="8" rx="1" fill="white" opacity="0.3"/>
-                      <rect x="34" y="28" width="4" height="8" rx="1" fill="white" opacity="0.3"/>
+                      <path d="M12 28C12 20.268 18.268 14 26 14H22C29.732 14 36 20.268 36 28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                      <rect x="8" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <rect x="32" y="26" width="8" height="12" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <rect x="10" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+                      <rect x="34" y="28" width="4" height="8" rx="1" fill="currentColor" opacity="0.3"/>
                     </svg>
                     <div className="note note-1">
                       <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
-                        <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <circle cx="2" cy="12" r="2" fill="white"/>
+                        <path d="M2 12V3L9 1V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="2" cy="12" r="2" fill="currentColor"/>
                       </svg>
                     </div>
                     <div className="note note-2">
                       <svg width="8" height="12" viewBox="0 0 10 14" fill="none">
-                        <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <circle cx="2" cy="12" r="2" fill="white"/>
+                        <path d="M2 12V3L9 1V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="2" cy="12" r="2" fill="currentColor"/>
                       </svg>
                     </div>
                     <div className="note note-3">
                       <svg width="6" height="10" viewBox="0 0 10 14" fill="none">
-                        <path d="M2 12V3L9 1V10" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <circle cx="2" cy="12" r="2" fill="white"/>
+                        <path d="M2 12V3L9 1V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="2" cy="12" r="2" fill="currentColor"/>
                       </svg>
                     </div>
                   </div>

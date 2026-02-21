@@ -29,7 +29,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           width="28" 
           height="28" 
           rx="3" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="3.5" 
           fill="none"
         />
@@ -37,7 +37,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
         {/* Corner fold (paper detail) */}
         <path
           d="M36 10 L36 16 L30 16"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="3.5"
           fill="none"
         />
@@ -53,7 +53,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           {/* Pencil body */}
           <path
             d="M40 8 L28 20 L22 14 L34 2 C34.8 1.2 36.2 1.2 37 2 L40 5 C40.8 5.8 40.8 7.2 40 8 Z"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth="3.5"
             fill="rgba(0,0,0,0.9)"
             strokeLinejoin="round"
@@ -62,7 +62,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           {/* Pencil tip highlight */}
           <path
             d="M28 20 L22 14 L20 16 L26 22 Z"
-            fill="white"
+            fill="currentColor"
             opacity="0.7"
           />
         </g>
@@ -73,7 +73,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           y1="20"
           x2="28"
           y2="20"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           style={{
@@ -89,7 +89,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           cx="36"
           cy="10"
           r="2"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 0.8 : 0,
             transform: isHovered ? "scale(1)" : "scale(0)",
@@ -105,7 +105,7 @@ export function EditIcon({ onClick, className }: EditIconProps) {
           width="28" 
           height="28" 
           rx="3" 
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 0.1 : 0,
             transition: "opacity 0.3s ease"

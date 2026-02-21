@@ -12,7 +12,7 @@ export function SuggestionIcon({ isHovered = false }: { isHovered?: boolean }) {
           cx="24"
           cy="20"
           r="14"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 0.15 : 0,
             transform: isHovered ? 'scale(1.3)' : 'scale(1)',
@@ -24,7 +24,7 @@ export function SuggestionIcon({ isHovered = false }: { isHovered?: boolean }) {
         {/* Bulb */}
         <path
           d="M24 6C17.4 6 12 11.4 12 18C12 22.4 14.4 26.2 18 28.4V34H30V28.4C33.6 26.2 36 22.4 36 18C36 11.4 30.6 6 24 6Z"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinejoin="round"
           fill="none"
@@ -34,12 +34,12 @@ export function SuggestionIcon({ isHovered = false }: { isHovered?: boolean }) {
           }}
         />
         {/* Base lines */}
-        <line x1="18" y1="38" x2="30" y2="38" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-        <line x1="20" y1="42" x2="28" y2="42" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+        <line x1="18" y1="38" x2="30" y2="38" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        <line x1="20" y1="42" x2="28" y2="42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
         {/* Star inside bulb */}
         <path
           d="M24 12L25.5 17H30.5L26.5 20L28 25L24 22L20 25L21.5 20L17.5 17H22.5L24 12Z"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinejoin="round"
           fill="none"
@@ -74,7 +74,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
           cy="28" 
           rx="10" 
           ry="12" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           fill="none"
           style={{
@@ -84,11 +84,11 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
           }}
         />
         {/* Bug head */}
-        <circle cx="24" cy="14" r="5" stroke="white" strokeWidth="2.5" fill="none" />
+        <circle cx="24" cy="14" r="5" stroke="currentColor" strokeWidth="2.5" fill="none" />
         {/* Antennae */}
         <path 
           d="M20 10L16 4" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -99,7 +99,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
         />
         <path 
           d="M28 10L32 4" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -109,12 +109,12 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
           }}
         />
         {/* Body segments */}
-        <line x1="14" y1="24" x2="34" y2="24" stroke="white" strokeWidth="2.5" />
-        <line x1="14" y1="32" x2="34" y2="32" stroke="white" strokeWidth="2.5" />
+        <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor" strokeWidth="2.5" />
+        <line x1="14" y1="32" x2="34" y2="32" stroke="currentColor" strokeWidth="2.5" />
         {/* Legs - left */}
         <path 
           d="M14 24L8 20" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -125,7 +125,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
         />
         <path 
           d="M14 28L6 28" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -135,7 +135,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
         />
         <path 
           d="M14 32L8 36" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -147,7 +147,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
         {/* Legs - right */}
         <path 
           d="M34 24L40 20" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -158,7 +158,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
         />
         <path 
           d="M34 28L42 28" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -168,7 +168,7 @@ export function BugReportIcon({ isHovered = false }: { isHovered?: boolean }) {
         />
         <path 
           d="M34 32L40 36" 
-          stroke="white" 
+          stroke="currentColor" 
           strokeWidth="2.5" 
           strokeLinecap="round"
           style={{
@@ -198,7 +198,7 @@ export function FeatureRequestIcon({ isHovered = false }: { isHovered?: boolean 
         {/* Wand */}
         <path
           d="M8 40L28 20"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           style={{
@@ -210,7 +210,7 @@ export function FeatureRequestIcon({ isHovered = false }: { isHovered?: boolean 
         {/* Wand tip */}
         <path
           d="M28 20L32 16L36 20L32 24L28 20Z"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinejoin="round"
           fill="none"
@@ -225,7 +225,7 @@ export function FeatureRequestIcon({ isHovered = false }: { isHovered?: boolean 
           cx="38"
           cy="10"
           r="2"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 1 : 0.5,
             transform: isHovered ? 'scale(1.3)' : 'scale(1)',
@@ -237,7 +237,7 @@ export function FeatureRequestIcon({ isHovered = false }: { isHovered?: boolean 
           cx="42"
           cy="18"
           r="1.5"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 1 : 0.3,
             transform: isHovered ? 'scale(1.5)' : 'scale(1)',
@@ -249,7 +249,7 @@ export function FeatureRequestIcon({ isHovered = false }: { isHovered?: boolean 
           cx="34"
           cy="6"
           r="1.5"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 1 : 0.3,
             transform: isHovered ? 'scale(1.5)' : 'scale(1)',
@@ -260,7 +260,7 @@ export function FeatureRequestIcon({ isHovered = false }: { isHovered?: boolean 
         {/* Star sparkle */}
         <path
           d="M18 8L19 11L22 12L19 13L18 16L17 13L14 12L17 11L18 8Z"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: isHovered ? 1 : 0,
             transform: isHovered ? 'scale(1.2) rotate(15deg)' : 'scale(0.8) rotate(0deg)',
@@ -289,7 +289,7 @@ export function OtherIcon({ isHovered = false }: { isHovered?: boolean }) {
         {/* Pencil body */}
         <path
           d="M12 36L8 40L12 44L36 20L32 16L12 36Z"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinejoin="round"
           fill="none"
@@ -297,20 +297,20 @@ export function OtherIcon({ isHovered = false }: { isHovered?: boolean }) {
         {/* Pencil tip */}
         <path
           d="M36 20L40 16L44 12L40 8L36 12L32 16L36 20Z"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinejoin="round"
           fill="none"
         />
         {/* Eraser band */}
-        <line x1="14" y1="34" x2="18" y2="38" stroke="white" strokeWidth="2.5" />
+        <line x1="14" y1="34" x2="18" y2="38" stroke="currentColor" strokeWidth="2.5" />
         {/* Writing lines - appear on hover */}
         <line
           x1="6"
           y1="28"
           x2="14"
           y2="28"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           style={{
@@ -324,7 +324,7 @@ export function OtherIcon({ isHovered = false }: { isHovered?: boolean }) {
           y1="22"
           x2="18"
           y2="22"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           style={{
@@ -338,7 +338,7 @@ export function OtherIcon({ isHovered = false }: { isHovered?: boolean }) {
           y1="16"
           x2="12"
           y2="16"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           style={{

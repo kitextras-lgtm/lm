@@ -12,7 +12,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
           cx="24"
           cy="16"
           r="6"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           fill="none"
           style={{
@@ -22,7 +22,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
         {/* Body/shoulders */}
         <path
           d="M12 40C12 32 17 28 24 28C31 28 36 32 36 40"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2.5"
           strokeLinecap="round"
           fill="none"
@@ -37,7 +37,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
           y1="8"
           x2="40"
           y2="8"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           style={{
@@ -52,7 +52,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
           y1="8"
           x2="40"
           y2="8"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           style={{
@@ -66,7 +66,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
           cx="24"
           cy="24"
           r="20"
-          stroke="white"
+          stroke="currentColor"
           strokeWidth="1.5"
           fill="none"
           style={{
@@ -80,7 +80,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
           cx="18"
           cy="16"
           r="2"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: 0,
             animation: isHovered ? 'pointPulse 0.6s ease-in-out 0.2s' : 'none'
@@ -92,7 +92,7 @@ export function UserSilhouetteIcon({ isHovered = false }: { isHovered?: boolean 
           cx="30"
           cy="16"
           r="2"
-          fill="white"
+          fill="currentColor"
           style={{
             opacity: 0,
             animation: isHovered ? 'pointPulse 0.6s ease-in-out 0.3s' : 'none'

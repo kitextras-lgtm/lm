@@ -1653,7 +1653,7 @@ export function AdminDashboard() {
                         {/* Background Selector */}
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -1718,38 +1718,6 @@ export function AdminDashboard() {
                               <p className="text-sm text-gray-400">Dim background</p>
                             </div>
 
-                            {/* Dark Option */}
-                            <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'dark' ? 'border-white' : 'border-gray-600'
-                              }`}
-                              style={{ backgroundColor: '#000000' }}
-                              onClick={() => setTheme('dark')}
-                            >
-                              <div className="absolute top-4 right-4">
-                                <div className={`w-5 h-5 rounded-full border-2 ${
-                                  theme === 'dark' 
-                                    ? 'bg-white border-white' 
-                                    : 'bg-white border-gray-400'
-                                }`}>
-                                  {theme === 'dark' && (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <span className="text-white text-xs">✓</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="mb-4">
-                                <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
-                                <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
-                                <div className="h-2 bg-gray-800 rounded w-1/2"></div>
-                              </div>
-                              
-                              <h4 className="font-semibold text-white mb-1">Dark</h4>
-                              <p className="text-sm text-gray-400">Pure black background (default)</p>
-                            </div>
-
                             {/* Rose Option */}
                             <div
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -1776,6 +1744,62 @@ export function AdminDashboard() {
                               </div>
                               <h4 className="font-semibold text-white mb-1">Rose</h4>
                               <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+                            </div>
+
+                            {/* Dark Option */}
+                            <div 
+                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                                theme === 'dark' ? 'border-white' : 'border-gray-600'
+                              }`}
+                              style={{ backgroundColor: '#000000' }}
+                              onClick={() => setTheme('dark')}
+                            >
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-5 h-5 rounded-full border-2 ${
+                                  theme === 'dark' ? 'bg-white border-white' : 'bg-white border-gray-400'
+                                }`}>
+                                  {theme === 'dark' && (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <span className="text-white text-xs">✓</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mb-4">
+                                <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
+                                <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
+                                <div className="h-2 bg-gray-800 rounded w-1/2"></div>
+                              </div>
+                              <h4 className="font-semibold text-white mb-1">Dark</h4>
+                              <p className="text-sm text-gray-400">Pure black background (default)</p>
+                            </div>
+
+                            {/* Light Option */}
+                            <div
+                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                                theme === 'white' ? 'border-gray-400' : 'border-gray-300'
+                              }`}
+                              style={{ backgroundColor: '#FFFFFF' }}
+                              onClick={() => setTheme('white')}
+                            >
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-5 h-5 rounded-full border-2 ${
+                                  theme === 'white' ? 'bg-gray-800 border-gray-800' : 'bg-gray-200 border-gray-400'
+                                }`}>
+                                  {theme === 'white' && (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <span className="text-white text-xs">✓</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mb-4">
+                                <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#F1F5F9' }}></div>
+                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                              </div>
+                              <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
+                              <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
                             </div>
                           </div>
                         </div>
@@ -1878,7 +1902,7 @@ export function AdminDashboard() {
                         {/* Background Selector */}
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -1943,38 +1967,6 @@ export function AdminDashboard() {
                               <p className="text-sm text-gray-400">Dim background</p>
                             </div>
 
-                            {/* Dark Option */}
-                            <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
-                                theme === 'dark' ? 'border-white' : 'border-gray-600'
-                              }`}
-                              style={{ backgroundColor: '#000000' }}
-                              onClick={() => setTheme('dark')}
-                            >
-                              <div className="absolute top-4 right-4">
-                                <div className={`w-5 h-5 rounded-full border-2 ${
-                                  theme === 'dark' 
-                                    ? 'bg-white border-white' 
-                                    : 'bg-white border-gray-400'
-                                }`}>
-                                  {theme === 'dark' && (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <span className="text-white text-xs">✓</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="mb-4">
-                                <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
-                                <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
-                                <div className="h-2 bg-gray-800 rounded w-1/2"></div>
-                              </div>
-                              
-                              <h4 className="font-semibold text-white mb-1">Dark</h4>
-                              <p className="text-sm text-gray-400">Pure black background (default)</p>
-                            </div>
-
                             {/* Rose Option */}
                             <div
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -2001,6 +1993,62 @@ export function AdminDashboard() {
                               </div>
                               <h4 className="font-semibold text-white mb-1">Rose</h4>
                               <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+                            </div>
+
+                            {/* Dark Option */}
+                            <div 
+                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                                theme === 'dark' ? 'border-white' : 'border-gray-600'
+                              }`}
+                              style={{ backgroundColor: '#000000' }}
+                              onClick={() => setTheme('dark')}
+                            >
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-5 h-5 rounded-full border-2 ${
+                                  theme === 'dark' ? 'bg-white border-white' : 'bg-white border-gray-400'
+                                }`}>
+                                  {theme === 'dark' && (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <span className="text-white text-xs">✓</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mb-4">
+                                <div className="w-full h-20 rounded-lg bg-gray-900 mb-2"></div>
+                                <div className="h-2 bg-gray-800 rounded w-3/4 mb-2"></div>
+                                <div className="h-2 bg-gray-800 rounded w-1/2"></div>
+                              </div>
+                              <h4 className="font-semibold text-white mb-1">Dark</h4>
+                              <p className="text-sm text-gray-400">Pure black background (default)</p>
+                            </div>
+
+                            {/* Light Option */}
+                            <div
+                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                                theme === 'white' ? 'border-gray-400' : 'border-gray-300'
+                              }`}
+                              style={{ backgroundColor: '#FFFFFF' }}
+                              onClick={() => setTheme('white')}
+                            >
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-5 h-5 rounded-full border-2 ${
+                                  theme === 'white' ? 'bg-gray-800 border-gray-800' : 'bg-gray-200 border-gray-400'
+                                }`}>
+                                  {theme === 'white' && (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                      <span className="text-white text-xs">✓</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mb-4">
+                                <div className="w-full h-20 rounded-lg mb-2" style={{ backgroundColor: '#F1F5F9' }}></div>
+                                <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                                <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
+                              </div>
+                              <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
+                              <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
                             </div>
                           </div>
                         </div>

@@ -251,7 +251,7 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
                         }}
                       >
                         {isSelected && (
-                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="white">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         )}
