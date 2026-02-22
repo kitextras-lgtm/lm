@@ -133,6 +133,116 @@ function useCountUp(target: number, duration = 1400, start = false) {
 
 // --- Visual Mockup Components ---
 
+function NetworkingRoom({ entered }: { entered: boolean }) {
+  const [bubble, setBubble] = useState(0);
+  const msgs = ['Love your portfolio!', "Let's collaborate", 'Open to projects?'];
+  useEffect(() => {
+    if (!entered) return;
+    const t = setInterval(() => setBubble(b => (b + 1) % msgs.length), 1900);
+    return () => clearInterval(t);
+  }, [entered]);
+
+  const bw = [msgs[0].length * 5.2 + 12, msgs[1].length * 5.2 + 12, msgs[2].length * 5.2 + 12];
+
+  return (
+    <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.55s ease 0.35s, transform 0.55s ease 0.35s' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(160deg,#1a1a1a 0%,#111 100%)', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" width="100%" style={{ display: 'block' }}>
+          {/* Floor */}
+          <ellipse cx="140" cy="148" rx="125" ry="14" fill="rgba(255,255,255,0.04)" />
+          {/* Ambient glow */}
+          <ellipse cx="140" cy="80" rx="100" ry="60" fill="rgba(255,255,255,0.02)" />
+
+          {/* ── Person A — left ── */}
+          <ellipse cx="58" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.4)" />
+          <rect x="49" y="108" width="18" height="30" rx="6" fill="#c8a882" />
+          <circle cx="58" cy="100" r="9" fill="#f5d5a8" />
+          <path d="M50 97 Q58 88 66 97" fill="#3d2b1f" />
+          <path d="M49 118 Q40 124 42 132" stroke="#c8a882" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <path d="M67 118 Q75 122 73 130" stroke="#c8a882" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <rect x="51" y="136" width="6" height="15" rx="3" fill="#2d3748" />
+          <rect x="59" y="136" width="6" height="15" rx="3" fill="#2d3748" />
+
+          {/* ── Person B — center-left ── */}
+          <ellipse cx="105" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.38)" />
+          <rect x="96" y="106" width="18" height="32" rx="6" fill="#4a6fa5" />
+          <circle cx="105" cy="97" r="9.5" fill="#deb887" />
+          <path d="M97 95 Q105 86 113 95" fill="#1a0a00" />
+          <path d="M96 116 Q87 112 89 106" stroke="#4a6fa5" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <path d="M114 116 Q121 120 119 128" stroke="#4a6fa5" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <rect x="113" y="120" width="16" height="11" rx="2" fill="#e8f0fe" />
+          <rect x="115" y="122" width="12" height="7" rx="1" fill="#4285f4" opacity="0.8" />
+          <rect x="98" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+          <rect x="106" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+
+          {/* ── Person C — center ── */}
+          <ellipse cx="150" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.36)" />
+          <rect x="141" y="104" width="18" height="34" rx="6" fill="#2d6a4f" />
+          <circle cx="150" cy="95" r="9.5" fill="#c68642" />
+          <path d="M142 93 Q150 84 158 93" fill="#0d0d0d" />
+          <path d="M141 114 Q132 108 134 102" stroke="#2d6a4f" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <circle cx="133" cy="101" r="4" fill="#c68642" />
+          <path d="M159 114 Q166 120 164 128" stroke="#2d6a4f" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <rect x="143" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+          <rect x="151" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+
+          {/* ── Person D — right ── */}
+          <ellipse cx="210" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.34)" />
+          <rect x="201" y="106" width="18" height="32" rx="6" fill="#9b2335" />
+          <circle cx="210" cy="97" r="9" fill="#f5cba7" />
+          <path d="M202 95 Q210 86 218 95" fill="#5c3317" />
+          <path d="M201 116 Q192 112 194 106" stroke="#9b2335" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <path d="M219 116 Q226 110 224 104" stroke="#9b2335" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <circle cx="224" cy="103" r="4" fill="#f5cba7" />
+          <rect x="203" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+          <rect x="211" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+
+          {/* ── Dashed connection lines ── */}
+          <line x1="73" y1="116" x2="96" y2="116" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="114" y1="116" x2="141" y2="116" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="159" y1="116" x2="201" y2="116" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
+
+          {/* ── Speech bubble 0 — above person A ── */}
+          <g style={{ opacity: bubble === 0 ? 1 : 0, transition: 'opacity 0.4s ease' }}>
+            <rect x="18" y="68" width={bw[0]} height="17" rx="8" fill="rgba(255,255,255,0.93)" />
+            <polygon points={`${28},${85} ${34},${85} ${30},${91}`} fill="rgba(255,255,255,0.93)" />
+            <text x="24" y="80" fontSize="7" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[0]}</text>
+          </g>
+
+          {/* ── Speech bubble 1 — above person B ── */}
+          <g style={{ opacity: bubble === 1 ? 1 : 0, transition: 'opacity 0.4s ease' }}>
+            <rect x="68" y="62" width={bw[1]} height="17" rx="8" fill="rgba(255,255,255,0.93)" />
+            <polygon points={`${100},${79} ${106},${79} ${102},${85}`} fill="rgba(255,255,255,0.93)" />
+            <text x="74" y="74" fontSize="7" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[1]}</text>
+          </g>
+
+          {/* ── Speech bubble 2 — above person D ── */}
+          <g style={{ opacity: bubble === 2 ? 1 : 0, transition: 'opacity 0.4s ease' }}>
+            <rect x="168" y="62" width={bw[2]} height="17" rx="8" fill="rgba(255,255,255,0.93)" />
+            <polygon points={`${200},${79} ${206},${79} ${202},${85}`} fill="rgba(255,255,255,0.93)" />
+            <text x="174" y="74" fontSize="7" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[2]}</text>
+          </g>
+
+          {/* Floating dots — ambient activity */}
+          {[[48,72],[130,55],[220,68],[170,48]].map(([cx,cy],i) => (
+            <circle key={i} cx={cx} cy={cy} r="2" fill="rgba(255,255,255,0.15)"
+              style={{ animation: `pulse ${1.4 + i * 0.3}s ease-in-out infinite alternate` }} />
+          ))}
+        </svg>
+
+        {/* Caption bar */}
+        <div className="flex items-center justify-between px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontFamily: 'system-ui' }}>Live networking room</span>
+          <div className="flex items-center gap-1.5">
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80' }} />
+            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontFamily: 'system-ui' }}>247 online</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MarketplaceVisual() {
   const { ref, inView } = useInView();
   const entered = useEnteredDelay(inView);
@@ -165,6 +275,150 @@ function MarketplaceVisual() {
         style={{ background: '#f0f0f0', color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
         47 new projects this week
       </div>
+      <div className="mt-3">
+        <NetworkingRoom entered={entered} />
+      </div>
+    </div>
+  );
+}
+
+const CALENDAR_PAGES = [
+  { month: 'January',  day: '01', year: '2025', earnings: '$6,200' },
+  { month: 'February', day: '15', year: '2025', earnings: '$8,400' },
+  { month: 'March',    day: '22', year: '2025', earnings: '$5,900' },
+  { month: 'April',    day: '08', year: '2025', earnings: '$11,200' },
+  { month: 'May',      day: '30', year: '2025', earnings: '$9,750' },
+  { month: 'June',     day: '14', year: '2025', earnings: '$13,100' },
+];
+
+function FlipCalendar({ entered }: { entered: boolean }) {
+  const [pageIndex, setPageIndex] = useState(0);
+  const [flipping, setFlipping] = useState(false);
+
+  useEffect(() => {
+    if (!entered) return;
+    const interval = setInterval(() => {
+      setFlipping(true);
+      setTimeout(() => {
+        setPageIndex(i => (i + 1) % CALENDAR_PAGES.length);
+        setFlipping(false);
+      }, 380);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, [entered]);
+
+  const cur  = CALENDAR_PAGES[pageIndex];
+  const next = CALENDAR_PAGES[(pageIndex + 1) % CALENDAR_PAGES.length];
+
+  return (
+    <div style={{ perspective: '800px', width: '100%' }}>
+      <style>{`
+        @keyframes flipTopLeave {
+          0%   { transform: rotateX(0deg);    opacity: 1; }
+          100% { transform: rotateX(-90deg);  opacity: 0; }
+        }
+        @keyframes flipBottomEnter {
+          0%   { transform: rotateX(90deg);   opacity: 0; }
+          100% { transform: rotateX(0deg);    opacity: 1; }
+        }
+      `}</style>
+
+      {/* Calendar body */}
+      <div className="relative rounded-2xl overflow-hidden select-none"
+        style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.10)', transformStyle: 'preserve-3d' }}>
+
+        {/* Binding rings */}
+        <div className="absolute top-0 left-0 right-0 flex justify-around px-6 z-20" style={{ height: '0px' }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} className="relative" style={{ top: '-6px' }}>
+              <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2.5px solid #bbb', background: '#f5f5f5', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)' }} />
+            </div>
+          ))}
+        </div>
+
+        {/* Month header strip */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3"
+          style={{ background: '#111', borderRadius: '16px 16px 0 0' }}>
+          <div>
+            <div style={{ fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
+              {flipping ? next.year : cur.year}
+            </div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'system-ui', letterSpacing: '-0.01em' }}>
+              {flipping ? next.month : cur.month}
+            </div>
+          </div>
+          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.45)', fontFamily: 'system-ui' }}>Payout month</div>
+        </div>
+
+        {/* Flip area — top half (leaves) */}
+        <div style={{ position: 'relative', overflow: 'hidden', transformStyle: 'preserve-3d' }}>
+          {/* Static bottom half (next page showing through) */}
+          <div className="flex flex-col items-center justify-center"
+            style={{ padding: '12px 20px 8px', background: '#f7f7f7', borderBottom: '1px solid #e8e8e8' }}>
+            <div style={{ fontSize: '52px', fontWeight: 800, color: '#111', lineHeight: 1, fontFamily: 'system-ui', letterSpacing: '-0.03em' }}>
+              {next.day}
+            </div>
+          </div>
+
+          {/* Flipping top half */}
+          <div className="flex flex-col items-center justify-center absolute inset-0"
+            style={{
+              padding: '12px 20px 8px',
+              background: '#fff',
+              transformOrigin: 'bottom center',
+              animation: flipping ? `flipTopLeave 0.38s cubic-bezier(0.4,0,0.6,1) forwards` : 'none',
+              zIndex: 10,
+            }}>
+            <div style={{ fontSize: '52px', fontWeight: 800, color: '#111', lineHeight: 1, fontFamily: 'system-ui', letterSpacing: '-0.03em' }}>
+              {cur.day}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom section — earnings */}
+        <div className="flex items-center justify-between px-5 py-3"
+          style={{ background: '#fff' }}>
+          <div>
+            <div style={{ fontSize: '9px', color: '#aaa', fontFamily: 'system-ui' }}>Monthly payout</div>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: '#111', fontFamily: 'system-ui', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              {flipping ? next.earnings : cur.earnings}
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f0f0f0', borderRadius: '20px', padding: '4px 10px' }}>
+            <svg width="8" height="8" viewBox="0 0 10 10" fill="none">
+              <path d="M5 8V2M2 5l3-3 3 3" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span style={{ fontSize: '10px', fontWeight: 600, color: '#111', fontFamily: 'system-ui' }}>On time</span>
+          </div>
+        </div>
+
+        {/* Mini calendar grid */}
+        <div className="px-5 pb-4">
+          <div className="grid grid-cols-7 gap-0.5 mb-1">
+            {['S','M','T','W','T','F','S'].map((d, i) => (
+              <div key={i} className="text-center" style={{ fontSize: '8px', color: '#bbb', fontFamily: 'system-ui', fontWeight: 600 }}>{d}</div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-0.5">
+            {Array.from({ length: 35 }, (_, i) => {
+              const dayNum = i - 3;
+              const isValid = dayNum >= 1 && dayNum <= 28;
+              const isToday = dayNum === parseInt(cur.day);
+              const isPaid  = isValid && dayNum % 7 === 1;
+              return (
+                <div key={i} className="flex items-center justify-center"
+                  style={{ height: '16px', borderRadius: '4px', background: isToday ? '#111' : isPaid ? '#f0f0f0' : 'transparent' }}>
+                  {isValid && (
+                    <span style={{ fontSize: '7px', fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : '#888', fontFamily: 'system-ui' }}>
+                      {dayNum}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -194,7 +448,7 @@ function PaymentsVisual() {
           </div>
         ))}
       </div>
-      <div className="space-y-2">
+      <div className="space-y-2 mb-4">
         {txns.map((t) => (
           <div key={t.date} className="flex items-center justify-between p-2.5 rounded-lg"
             style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${t.delay + 0.2}s, transform 0.4s ease ${t.delay + 0.2}s` }}>
@@ -205,6 +459,10 @@ function PaymentsVisual() {
             <span className="text-xs font-bold" style={{ color: '#111' }}>{t.amount}</span>
           </div>
         ))}
+      </div>
+      {/* Flipping calendar */}
+      <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s' }}>
+        <FlipCalendar entered={entered} />
       </div>
     </div>
   );

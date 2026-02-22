@@ -80,7 +80,7 @@ export function MobileAppSection() {
                       ].map((r, i) => (
                         <div key={r.label} className="flex items-center gap-2.5 py-2" style={{ borderBottom: i < 2 ? '0.5px solid rgba(0,0,0,0.1)' : 'none' }}>
                           <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: r.icon ? '#000' : '#d1d5db', boxShadow: r.icon ? '0 2px 8px rgba(0,0,0,0.25)' : 'none' }}>
-                            {r.icon && <span style={{ color: '#fff', fontSize: '13px', fontFamily: 'Fraunces, serif', fontWeight: 700 }}>E</span>}
+                            {r.icon && <img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '28px', height: '28px', objectFit: 'cover', borderRadius: '4px' }} />}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div style={{ fontSize: '10px', fontWeight: r.icon ? 600 : 500, color: '#1a1a1a', fontFamily: 'system-ui' }}>{r.label}</div>
