@@ -315,9 +315,9 @@ function MonetizationVisual() {
     return () => clearInterval(t);
   }, [entered]);
   const campaigns = [
-    { brand: 'NovaTech', type: 'Sponsored Post', payout: '$12,000', delay: 0 },
-    { brand: 'Luminary', type: 'Brand Deal', payout: '$18,500', delay: 0.1 },
-    { brand: 'Apex Co.', type: 'Ambassador', payout: '$6,500', delay: 0.2 },
+    { brand: "Helen's Show", type: 'TV Show',       payout: '$12,000', delay: 0 },
+    { brand: 'Eight Dreams', type: 'Youtube Videos', payout: '$18,500', delay: 0.1 },
+    { brand: 'Alabaster',    type: 'Music',          payout: '$6,500',  delay: 0.2 },
   ];
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
@@ -672,100 +672,126 @@ function MarketplaceVisual() {
 
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>1-on-1 Consultation</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Matched with a dedicated strategist</div>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Vetted Experts</div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>Find the exact talent you need to scale.</div>
 
       {/* Illustration */}
       <div
         className="flex items-center justify-center mb-4"
         style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.6s ease 0.05s, transform 0.6s ease 0.05s' }}
       >
-        <svg width="220" height="148" viewBox="0 0 220 148" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Floor shadow */}
-          <ellipse cx="110" cy="138" rx="80" ry="8" fill="#e5e7eb" opacity="0.5" />
+        <svg width="220" height="152" viewBox="0 0 220 152" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="tableGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#f8fafc" />
+              <stop offset="100%" stopColor="#e2e8f0" />
+            </linearGradient>
+            <linearGradient id="tableSide" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#e2e8f0" />
+              <stop offset="100%" stopColor="#cbd5e1" />
+            </linearGradient>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#000" floodOpacity="0.08" />
+            </filter>
+          </defs>
 
-          {/* Table top (isometric) */}
-          <path d="M60 72 L110 58 L160 72 L110 86 Z" fill="#d1fae5" stroke="#a7f3d0" strokeWidth="1" />
+          {/* Ambient floor shadow */}
+          <ellipse cx="110" cy="144" rx="72" ry="6" fill="#000" opacity="0.06" />
+
+          {/* Table top — clean diamond */}
+          <path d="M62 76 L110 62 L158 76 L110 90 Z" fill="url(#tableGrad)" stroke="#e2e8f0" strokeWidth="1" filter="url(#shadow)" />
           {/* Table left face */}
-          <path d="M60 72 L60 90 L110 104 L110 86 Z" fill="#a7f3d0" stroke="#6ee7b7" strokeWidth="0.8" />
+          <path d="M62 76 L62 92 L110 106 L110 90 Z" fill="url(#tableSide)" stroke="#d1d5db" strokeWidth="0.6" />
           {/* Table right face */}
-          <path d="M160 72 L160 90 L110 104 L110 86 Z" fill="#6ee7b7" stroke="#34d399" strokeWidth="0.8" />
+          <path d="M158 76 L158 92 L110 106 L110 90 Z" fill="#d1d5db" stroke="#c4cdd6" strokeWidth="0.6" />
 
-          {/* Table legs */}
-          <line x1="65" y1="88" x2="65" y2="108" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
-          <line x1="155" y1="88" x2="155" y2="108" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
-          <line x1="110" y1="102" x2="110" y2="122" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
+          {/* Table legs — thin, elegant */}
+          <line x1="68" y1="90" x2="68" y2="116" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="152" y1="90" x2="152" y2="116" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="110" y1="104" x2="110" y2="130" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Cross brace */}
+          <line x1="68" y1="108" x2="152" y2="108" stroke="#cbd5e1" strokeWidth="1" strokeLinecap="round" />
 
-          {/* Notebook on table */}
-          <rect x="97" y="74" width="14" height="10" rx="1" fill="#60a5fa" opacity="0.9" />
-          <rect x="97" y="74" width="14" height="1.5" rx="0.5" fill="#3b82f6" />
+          {/* Laptop on table (left side) */}
+          <rect x="74" y="72" width="18" height="12" rx="1.5" fill="#1e293b" />
+          <rect x="75" y="73" width="16" height="9" rx="1" fill="#334155" />
+          {/* Screen glow lines */}
+          <line x1="77" y1="75.5" x2="89" y2="75.5" stroke="#60a5fa" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
+          <line x1="77" y1="77.5" x2="86" y2="77.5" stroke="#60a5fa" strokeWidth="0.8" strokeLinecap="round" opacity="0.4" />
+          <line x1="77" y1="79.5" x2="88" y2="79.5" stroke="#60a5fa" strokeWidth="0.8" strokeLinecap="round" opacity="0.5" />
+          {/* Laptop base */}
+          <rect x="72" y="84" width="22" height="1.5" rx="0.75" fill="#1e293b" />
 
-          {/* Left coffee cup */}
-          <rect x="72" y="77" width="8" height="6" rx="1.5" fill="#fff" stroke="#d1d5db" strokeWidth="0.8" />
-          <path d="M80 79.5 Q83 79.5 83 81.5 Q83 83.5 80 83.5" stroke="#d1d5db" strokeWidth="0.8" fill="none" />
-          <ellipse cx="76" cy="77.5" rx="3.5" ry="1" fill="#92400e" opacity="0.3" />
-          {/* Steam left */}
-          <path d="M74 76 Q74.5 74.5 74 73" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.6" />
-          <path d="M77 76 Q77.5 74 77 72.5" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.4" />
+          {/* Notebook on table (right side) */}
+          <rect x="124" y="73" width="12" height="15" rx="1" fill="#fff" stroke="#e2e8f0" strokeWidth="0.8" />
+          <rect x="124" y="73" width="2.5" height="15" rx="0.5" fill="#3b82f6" opacity="0.8" />
+          <line x1="128" y1="77" x2="134" y2="77" stroke="#e2e8f0" strokeWidth="0.8" />
+          <line x1="128" y1="79.5" x2="134" y2="79.5" stroke="#e2e8f0" strokeWidth="0.8" />
+          <line x1="128" y1="82" x2="132" y2="82" stroke="#e2e8f0" strokeWidth="0.8" />
 
-          {/* Right coffee cup */}
-          <rect x="140" y="77" width="8" height="6" rx="1.5" fill="#fff" stroke="#d1d5db" strokeWidth="0.8" />
-          <path d="M148 79.5 Q151 79.5 151 81.5 Q151 83.5 148 83.5" stroke="#d1d5db" strokeWidth="0.8" fill="none" />
-          <ellipse cx="144" cy="77.5" rx="3.5" ry="1" fill="#92400e" opacity="0.3" />
-          {/* Steam right */}
-          <path d="M142 76 Q142.5 74.5 142 73" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.6" />
-          <path d="M145 76 Q145.5 74 145 72.5" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.4" />
+          {/* Left person — seated, facing right */}
+          {/* Chair back */}
+          <rect x="38" y="82" width="22" height="3" rx="1.5" fill="#e2e8f0" />
+          <line x1="42" y1="85" x2="42" y2="108" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="56" y1="85" x2="56" y2="108" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Chair seat */}
+          <rect x="38" y="100" width="22" height="3" rx="1.5" fill="#e2e8f0" />
+          {/* Body */}
+          <rect x="43" y="84" width="12" height="16" rx="5" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="0.5" />
+          {/* Head */}
+          <circle cx="49" cy="76" r="8" fill="#fcd34d" />
+          {/* Hair — short dark */}
+          <path d="M41 73 Q42 66 49 66 Q56 66 57 73" fill="#1e293b" />
+          {/* Eyes */}
+          <circle cx="47" cy="76" r="1" fill="#1e293b" />
+          <circle cx="51" cy="76" r="1" fill="#1e293b" />
+          {/* Smile */}
+          <path d="M47 79 Q49 80.5 51 79" stroke="#1e293b" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+          {/* Arms reaching to table */}
+          <path d="M43 92 Q46 94 52 92 Q58 90 62 88" stroke="#fcd34d" strokeWidth="3" fill="none" strokeLinecap="round" />
 
-          {/* Left person — chair */}
-          <path d="M52 108 L52 90 Q52 88 54 88 L72 88 Q74 88 74 90 L74 108" stroke="#9ca3af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          <line x1="52" y1="96" x2="74" y2="96" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
-          {/* Left person — body */}
-          <rect x="57" y="72" width="12" height="16" rx="4" fill="#e5e7eb" />
-          {/* Left person — head */}
-          <circle cx="63" cy="66" r="7" fill="#fde68a" />
-          {/* Left person — hair */}
-          <path d="M56 64 Q57 58 63 58 Q69 58 70 64" fill="#374151" />
-          {/* Left person — face details */}
-          <circle cx="61" cy="66" r="0.8" fill="#374151" />
-          <circle cx="65" cy="66" r="0.8" fill="#374151" />
-          <path d="M61 69 Q63 70.5 65 69" stroke="#374151" strokeWidth="0.8" strokeLinecap="round" fill="none" />
-          {/* Left person — arms (hands folded on table) */}
-          <path d="M57 80 Q54 82 54 84 Q54 86 58 86 L68 86 Q72 86 72 84 Q72 82 69 80" stroke="#fde68a" strokeWidth="2" fill="none" strokeLinecap="round" />
+          {/* Right person — seated, facing left */}
+          {/* Chair back */}
+          <rect x="160" y="82" width="22" height="3" rx="1.5" fill="#e2e8f0" />
+          <line x1="164" y1="85" x2="164" y2="108" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="178" y1="85" x2="178" y2="108" stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Chair seat */}
+          <rect x="160" y="100" width="22" height="3" rx="1.5" fill="#e2e8f0" />
+          {/* Body */}
+          <rect x="165" y="84" width="12" height="16" rx="5" fill="#e0f2fe" stroke="#bae6fd" strokeWidth="0.5" />
+          {/* Head */}
+          <circle cx="171" cy="76" r="8" fill="#c4a882" />
+          {/* Hair — dark */}
+          <path d="M163 72 Q164 65 171 65 Q178 65 179 72" fill="#1e293b" />
+          {/* Glasses */}
+          <rect x="166.5" y="73.5" width="4.5" height="3.5" rx="1.5" fill="none" stroke="#374151" strokeWidth="0.9" />
+          <rect x="172.5" y="73.5" width="4.5" height="3.5" rx="1.5" fill="none" stroke="#374151" strokeWidth="0.9" />
+          <line x1="171" y1="75.2" x2="172.5" y2="75.2" stroke="#374151" strokeWidth="0.9" />
+          {/* Eyes behind glasses */}
+          <circle cx="168.8" cy="75.5" r="0.9" fill="#1e293b" />
+          <circle cx="174.8" cy="75.5" r="0.9" fill="#1e293b" />
+          {/* Thoughtful expression */}
+          <path d="M169 79 Q171 79.8 173 79" stroke="#1e293b" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+          {/* Hand on chin */}
+          <path d="M177 84 Q180 86 181 90 Q181 94 178 95" stroke="#c4a882" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <circle cx="178" cy="96" r="2.5" fill="#c4a882" />
+          {/* Arms reaching to table */}
+          <path d="M177 92 Q173 90 168 90 Q162 90 158 88" stroke="#c4a882" strokeWidth="3" fill="none" strokeLinecap="round" />
 
-          {/* Right person — chair */}
-          <path d="M148 108 L148 90 Q148 88 150 88 L168 88 Q170 88 170 90 L170 108" stroke="#9ca3af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          <line x1="148" y1="96" x2="170" y2="96" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
-          {/* Right person — body */}
-          <rect x="151" y="72" width="12" height="16" rx="4" fill="#d1d5db" />
-          {/* Right person — head */}
-          <circle cx="157" cy="66" r="7" fill="#d97706" opacity="0.7" />
-          {/* Right person — glasses */}
-          <rect x="152.5" y="63.5" width="4" height="3" rx="1.5" fill="none" stroke="#374151" strokeWidth="0.8" />
-          <rect x="158" y="63.5" width="4" height="3" rx="1.5" fill="none" stroke="#374151" strokeWidth="0.8" />
-          <line x1="156.5" y1="65" x2="158" y2="65" stroke="#374151" strokeWidth="0.8" />
-          {/* Right person — hair */}
-          <path d="M150 63 Q151 57 157 57 Q163 57 164 63" fill="#1f2937" />
-          {/* Right person — face */}
-          <circle cx="155" cy="66" r="0.8" fill="#1f2937" />
-          <circle cx="159" cy="66" r="0.8" fill="#1f2937" />
-          {/* Right person — thinking hand */}
-          <path d="M163 72 Q167 74 168 78 Q168 82 165 83" stroke="#d97706" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.7" />
-          <circle cx="165" cy="84" r="2" fill="#d97706" opacity="0.5" />
-
-          {/* Speech bubble */}
-          <circle cx="110" cy="44" r="14" fill="#fff" stroke="#d1d5db" strokeWidth="1" />
-          <path d="M106 52 L110 58 L114 52" fill="#fff" stroke="#d1d5db" strokeWidth="1" strokeLinejoin="round" />
-          {/* Animated dots */}
-          <circle cx="103" cy="44" r="2" fill="#60a5fa" opacity={dotFrame === 0 ? 1 : 0.3} />
-          <circle cx="110" cy="44" r="2" fill="#60a5fa" opacity={dotFrame === 1 ? 1 : 0.3} />
-          <circle cx="117" cy="44" r="2" fill="#60a5fa" opacity={dotFrame === 2 ? 1 : 0.3} />
+          {/* Speech bubble — centered above table */}
+          <rect x="90" y="20" width="40" height="26" rx="8" fill="#fff" stroke="#e2e8f0" strokeWidth="1.2" filter="url(#shadow)" />
+          <path d="M107 46 L110 52 L113 46" fill="#fff" stroke="#e2e8f0" strokeWidth="1.2" strokeLinejoin="round" />
+          {/* Animated typing dots */}
+          <circle cx="102" cy="33" r="2.5" fill="#94a3b8" opacity={dotFrame === 0 ? 1 : 0.25} />
+          <circle cx="110" cy="33" r="2.5" fill="#94a3b8" opacity={dotFrame === 1 ? 1 : 0.25} />
+          <circle cx="118" cy="33" r="2.5" fill="#94a3b8" opacity={dotFrame === 2 ? 1 : 0.25} />
         </svg>
       </div>
 
       {/* Info row */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'Avg. Session', value: '45 min', delay: 0.2 },
+          { label: 'Categories',  value: '50+',    delay: 0.2 },
           { label: 'Match Rate',   value: '98%',    delay: 0.28 },
           { label: 'Satisfaction', value: '4.9★',   delay: 0.36 },
         ].map((s) => (
