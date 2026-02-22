@@ -418,7 +418,7 @@ function BrandPartnershipsVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Brand Network</div>
-      <div className="text-xs mb-3" style={{ color: '#888' }}>200+ matched partners</div>
+      <div className="text-xs mb-3" style={{ color: '#888' }}>200+ matched sponsors</div>
 
       {/* Horizontal card spread */}
       <div className="relative mb-3" style={{ height: '120px' }}>
@@ -662,84 +662,120 @@ function ConsultingVisual() {
 function MarketplaceVisual() {
   const { ref, inView } = useInView();
   const entered = useEnteredDelay(inView);
-  const score = useCountUp(72, 98, entered);
+  const [dotFrame, setDotFrame] = useState(0);
 
-  const judges = [
-    { role: 'UGC Creator',          score: 97, delay: 0.05 },
-    { role: 'Video Editor',          score: 94, delay: 0.12 },
-    { role: 'Short-Form Specialist', score: 98, delay: 0.19 },
-    { role: 'Brand Strategist',      score: 91, delay: 0.26 },
-  ];
-
-  const criteria = [
-    { label: 'Audience Fit',   pct: 96, delay: 0.3 },
-    { label: 'Engagement',     pct: 91, delay: 0.38 },
-    { label: 'Content Quality',pct: 94, delay: 0.46 },
-  ];
+  useEffect(() => {
+    if (!entered) return;
+    const id = setInterval(() => setDotFrame(f => (f + 1) % 3), 500);
+    return () => clearInterval(id);
+  }, [entered]);
 
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-1">
-        <div className="text-sm font-semibold" style={{ color: '#111' }}>Creator Scorecard</div>
-        <div
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-          style={{ background: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.1s' }}
-        >
-          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80' }} />
-          <span className="text-[10px] font-semibold" style={{ color: '#fff' }}>Live Review</span>
-        </div>
-      </div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Panel of {judges.length} industry judges</div>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>1-on-1 Consultation</div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>Matched with a dedicated strategist</div>
 
-      {/* Overall score */}
+      {/* Illustration */}
       <div
-        className="flex items-center justify-between px-3 py-3 rounded-xl mb-3"
-        style={{ background: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}
+        className="flex items-center justify-center mb-4"
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.6s ease 0.05s, transform 0.6s ease 0.05s' }}
       >
-        <div>
-          <div className="text-[10px] font-medium mb-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>Overall Score</div>
-          <div className="text-2xl font-bold" style={{ color: '#fff' }}>{score}<span className="text-sm font-normal" style={{ color: 'rgba(255,255,255,0.4)' }}>/100</span></div>
-        </div>
-        <div className="text-right">
-          <div className="text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Verdict</div>
-          <div className="text-xs font-bold mt-0.5" style={{ color: '#4ade80' }}>Approved</div>
-        </div>
+        <svg width="220" height="148" viewBox="0 0 220 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Floor shadow */}
+          <ellipse cx="110" cy="138" rx="80" ry="8" fill="#e5e7eb" opacity="0.5" />
+
+          {/* Table top (isometric) */}
+          <path d="M60 72 L110 58 L160 72 L110 86 Z" fill="#d1fae5" stroke="#a7f3d0" strokeWidth="1" />
+          {/* Table left face */}
+          <path d="M60 72 L60 90 L110 104 L110 86 Z" fill="#a7f3d0" stroke="#6ee7b7" strokeWidth="0.8" />
+          {/* Table right face */}
+          <path d="M160 72 L160 90 L110 104 L110 86 Z" fill="#6ee7b7" stroke="#34d399" strokeWidth="0.8" />
+
+          {/* Table legs */}
+          <line x1="65" y1="88" x2="65" y2="108" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
+          <line x1="155" y1="88" x2="155" y2="108" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
+          <line x1="110" y1="102" x2="110" y2="122" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
+
+          {/* Notebook on table */}
+          <rect x="97" y="74" width="14" height="10" rx="1" fill="#60a5fa" opacity="0.9" />
+          <rect x="97" y="74" width="14" height="1.5" rx="0.5" fill="#3b82f6" />
+
+          {/* Left coffee cup */}
+          <rect x="72" y="77" width="8" height="6" rx="1.5" fill="#fff" stroke="#d1d5db" strokeWidth="0.8" />
+          <path d="M80 79.5 Q83 79.5 83 81.5 Q83 83.5 80 83.5" stroke="#d1d5db" strokeWidth="0.8" fill="none" />
+          <ellipse cx="76" cy="77.5" rx="3.5" ry="1" fill="#92400e" opacity="0.3" />
+          {/* Steam left */}
+          <path d="M74 76 Q74.5 74.5 74 73" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.6" />
+          <path d="M77 76 Q77.5 74 77 72.5" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.4" />
+
+          {/* Right coffee cup */}
+          <rect x="140" y="77" width="8" height="6" rx="1.5" fill="#fff" stroke="#d1d5db" strokeWidth="0.8" />
+          <path d="M148 79.5 Q151 79.5 151 81.5 Q151 83.5 148 83.5" stroke="#d1d5db" strokeWidth="0.8" fill="none" />
+          <ellipse cx="144" cy="77.5" rx="3.5" ry="1" fill="#92400e" opacity="0.3" />
+          {/* Steam right */}
+          <path d="M142 76 Q142.5 74.5 142 73" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.6" />
+          <path d="M145 76 Q145.5 74 145 72.5" stroke="#d1d5db" strokeWidth="0.8" strokeLinecap="round" fill="none" opacity="0.4" />
+
+          {/* Left person — chair */}
+          <path d="M52 108 L52 90 Q52 88 54 88 L72 88 Q74 88 74 90 L74 108" stroke="#9ca3af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          <line x1="52" y1="96" x2="74" y2="96" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Left person — body */}
+          <rect x="57" y="72" width="12" height="16" rx="4" fill="#e5e7eb" />
+          {/* Left person — head */}
+          <circle cx="63" cy="66" r="7" fill="#fde68a" />
+          {/* Left person — hair */}
+          <path d="M56 64 Q57 58 63 58 Q69 58 70 64" fill="#374151" />
+          {/* Left person — face details */}
+          <circle cx="61" cy="66" r="0.8" fill="#374151" />
+          <circle cx="65" cy="66" r="0.8" fill="#374151" />
+          <path d="M61 69 Q63 70.5 65 69" stroke="#374151" strokeWidth="0.8" strokeLinecap="round" fill="none" />
+          {/* Left person — arms (hands folded on table) */}
+          <path d="M57 80 Q54 82 54 84 Q54 86 58 86 L68 86 Q72 86 72 84 Q72 82 69 80" stroke="#fde68a" strokeWidth="2" fill="none" strokeLinecap="round" />
+
+          {/* Right person — chair */}
+          <path d="M148 108 L148 90 Q148 88 150 88 L168 88 Q170 88 170 90 L170 108" stroke="#9ca3af" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          <line x1="148" y1="96" x2="170" y2="96" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Right person — body */}
+          <rect x="151" y="72" width="12" height="16" rx="4" fill="#d1d5db" />
+          {/* Right person — head */}
+          <circle cx="157" cy="66" r="7" fill="#d97706" opacity="0.7" />
+          {/* Right person — glasses */}
+          <rect x="152.5" y="63.5" width="4" height="3" rx="1.5" fill="none" stroke="#374151" strokeWidth="0.8" />
+          <rect x="158" y="63.5" width="4" height="3" rx="1.5" fill="none" stroke="#374151" strokeWidth="0.8" />
+          <line x1="156.5" y1="65" x2="158" y2="65" stroke="#374151" strokeWidth="0.8" />
+          {/* Right person — hair */}
+          <path d="M150 63 Q151 57 157 57 Q163 57 164 63" fill="#1f2937" />
+          {/* Right person — face */}
+          <circle cx="155" cy="66" r="0.8" fill="#1f2937" />
+          <circle cx="159" cy="66" r="0.8" fill="#1f2937" />
+          {/* Right person — thinking hand */}
+          <path d="M163 72 Q167 74 168 78 Q168 82 165 83" stroke="#d97706" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.7" />
+          <circle cx="165" cy="84" r="2" fill="#d97706" opacity="0.5" />
+
+          {/* Speech bubble */}
+          <circle cx="110" cy="44" r="14" fill="#fff" stroke="#d1d5db" strokeWidth="1" />
+          <path d="M106 52 L110 58 L114 52" fill="#fff" stroke="#d1d5db" strokeWidth="1" strokeLinejoin="round" />
+          {/* Animated dots */}
+          <circle cx="103" cy="44" r="2" fill="#60a5fa" opacity={dotFrame === 0 ? 1 : 0.3} />
+          <circle cx="110" cy="44" r="2" fill="#60a5fa" opacity={dotFrame === 1 ? 1 : 0.3} />
+          <circle cx="117" cy="44" r="2" fill="#60a5fa" opacity={dotFrame === 2 ? 1 : 0.3} />
+        </svg>
       </div>
 
-      {/* Judge panel */}
-      <div className="space-y-1.5 mb-3">
-        {judges.map((j) => (
+      {/* Info row */}
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { label: 'Avg. Session', value: '45 min', delay: 0.2 },
+          { label: 'Match Rate',   value: '98%',    delay: 0.28 },
+          { label: 'Satisfaction', value: '4.9★',   delay: 0.36 },
+        ].map((s) => (
           <div
-            key={j.role}
-            className="flex items-center justify-between px-3 py-2 rounded-lg"
-            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateX(-6px)', transition: `opacity 0.35s ease ${j.delay}s, transform 0.35s ease ${j.delay}s` }}
+            key={s.label}
+            className="p-2.5 rounded-xl text-center"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${s.delay}s, transform 0.4s ease ${s.delay}s` }}
           >
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#e5e7eb' }}>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                  <circle cx="5" cy="3.5" r="2" fill="#555" />
-                  <path d="M1 9c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="#555" strokeWidth="1" strokeLinecap="round" fill="none" />
-                </svg>
-              </div>
-              <span className="text-[10px] font-medium" style={{ color: '#333' }}>{j.role}</span>
-            </div>
-            <span className="text-[11px] font-bold" style={{ color: '#111' }}>{j.score}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Criteria bars */}
-      <div className="space-y-1.5">
-        {criteria.map((c) => (
-          <div key={c.label} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${c.delay}s` }}>
-            <div className="flex justify-between mb-1">
-              <span className="text-[9px]" style={{ color: '#888' }}>{c.label}</span>
-              <span className="text-[9px] font-semibold" style={{ color: '#111' }}>{c.pct}%</span>
-            </div>
-            <div className="w-full h-1 rounded-full" style={{ background: '#e5e7eb' }}>
-              <div className="h-full rounded-full" style={{ width: entered ? `${c.pct}%` : '0%', background: '#111', transition: `width 0.8s cubic-bezier(0.4,0,0.2,1) ${c.delay + 0.1}s` }} />
-            </div>
+            <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
+            <div className="text-[9px]" style={{ color: '#888' }}>{s.label}</div>
           </div>
         ))}
       </div>

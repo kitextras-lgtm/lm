@@ -31,10 +31,7 @@ export const useScrollAnimation = (threshold = 0.1) => {
           observer.disconnect();
         }
       },
-      {
-        threshold,
-        rootMargin: '200px 0px',
-      }
+      { threshold }
     );
 
     observer.observe(currentRef);
