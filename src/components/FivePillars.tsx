@@ -62,9 +62,8 @@ export function FivePillars() {
     >
       <div
         ref={sectionRef}
-        className={`max-w-5xl mx-auto relative z-10 transition-all duration-1000 ease-out ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className="max-w-5xl mx-auto relative z-10"
+        style={isVisible ? { animation: 'blurEmerge 0.9s cubic-bezier(0.22,1,0.36,1) forwards' } : { opacity: 0 }}
       >
         {/* Header */}
         <h2
@@ -88,7 +87,7 @@ export function FivePillars() {
               return (
                 <div
                   key={pillar.key}
-                  className="relative transition-all duration-500 ease-out"
+                  className="relative"
                   style={{
                     height: barHeight,
                     width: 'clamp(36px, 8vw, 64px)',
@@ -128,7 +127,7 @@ export function FivePillars() {
         </div>
 
         {/* Active Pillar Info */}
-        <div className="text-center transition-all duration-500 ease-in-out" style={{ minHeight: '100px' }}>
+        <div className="text-center" style={{ minHeight: '100px' }}>
           <h3
             className="text-2xl md:text-3xl font-medium mb-3 transition-all duration-300"
             style={{

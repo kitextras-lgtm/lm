@@ -225,7 +225,7 @@ export function MakeProfilePage() {
       if (userType === 'artist' || location.state?.userType === 'artist') {
         navigate('/tell-us-about-yourself', { state: { userType: 'artist' } });
       } else if (userType === 'freelancer' || location.state?.userType === 'freelancer') {
-        navigate('/tell-us-about-yourself', { state: { userType: 'freelancer' } });
+        navigate('/freelancer-onboarding');
       } else {
         navigate('/tell-us-about-yourself');
       }

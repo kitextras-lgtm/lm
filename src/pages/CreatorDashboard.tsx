@@ -2391,10 +2391,6 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     );
     return (
       <div className="scroll-mt-6">
-        <div className="px-1 pb-6">
-          <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>How can we help?</h3>
-          <p className="text-sm" style={{ color: '#CBD5E1' }}>Browse guides and tutorials to get the most out of Elevate.</p>
-        </div>
         <div className="relative mb-6">
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'var(--text-primary)', opacity: 0.5 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" placeholder="Search for articles..." value={guideSearch} onChange={e => setGuideSearch(e.target.value)}
@@ -3450,6 +3446,45 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="text-center py-12">
                     <p className="text-sm sm:text-base font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('opportunities.noEnrolledCampaigns')}</p>
                     <p className="text-xs sm:text-sm" style={{ color: 'var(--text-primary)' }}>{t('opportunities.browseOpportunities')}</p>
+                  </div>
+                </section>
+
+                <section className="mb-10 sm:mb-20">
+                  <div className="mb-5 sm:mb-7">
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Content Detection</h2>
+                    <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Convert unauthorized re uploads into measurable revenue.</p>
+                  </div>
+
+                  <div className="rounded-2xl p-6" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                      <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>1,247</p>
+                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Detected</p>
+                      </div>
+                      <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>1,180</p>
+                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Monetized</p>
+                      </div>
+                      <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>$48.2K</p>
+                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Revenue</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl px-4 py-4 flex items-center gap-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>
+                          <path d="M12 9v4" />
+                          <path d="M12 17h.01" />
+                          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Unauthorized reupload detected</p>
+                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Claimed & monetized automatically</p>
+                      </div>
+                      <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>+$420</p>
+                    </div>
                   </div>
                 </section>
               </>

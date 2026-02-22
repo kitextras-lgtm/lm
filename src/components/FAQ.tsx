@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { useState } from 'react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface FAQItem {
@@ -40,9 +39,7 @@ export function FAQ() {
       <div className="max-w-4xl mx-auto">
         <div
           ref={titleRef}
-          className={`text-center mb-10 md:mb-16 transition-all duration-1000 ease-out ${
-            titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-10 md:mb-16 scroll-hidden${titleVisible ? ' scroll-blur-emerge' : ''}`}
         >
           <h2
             className="text-5xl md:text-6xl lg:text-7xl font-normal mb-6 leading-snug"
@@ -58,14 +55,12 @@ export function FAQ() {
 
         <div
           ref={faqRef}
-          className={`space-y-3 md:space-y-4 transition-all duration-1000 ease-out ${
-            faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`space-y-3 md:space-y-4 scroll-hidden${faqVisible ? ' scroll-reveal-up' : ''}`}
         >
           {faqData.map((item, index) => (
             <div
               key={index}
-              className="overflow-hidden transition-all duration-300"
+              className="overflow-hidden"
               style={{
                 borderRadius: '16px',
                 background: 'rgba(255, 255, 255, 0.02)',
@@ -74,7 +69,7 @@ export function FAQ() {
             >
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full px-5 md:px-6 py-5 md:py-6 text-left flex items-center justify-between transition-all duration-300"
+                className="w-full px-5 md:px-6 py-5 md:py-6 text-left flex items-center justify-between"
                 style={{
                   background: openItems.includes(index) ? 'rgba(255, 255, 255, 0.02)' : 'transparent',
                 }}
@@ -89,32 +84,37 @@ export function FAQ() {
                 >
                   {item.question}
                 </h3>
-                {openItems.includes(index) ? (
-                  <Minus className="w-5 h-5 md:w-5 md:h-5 flex-shrink-0 transition-transform duration-300" style={{ color: '#999999' }} />
-                ) : (
-                  <Plus className="w-5 h-5 md:w-5 md:h-5 flex-shrink-0 transition-transform duration-300" style={{ color: '#999999' }} />
-                )}
+                <svg
+                  className="flex-shrink-0"
+                  width="20" height="20" viewBox="0 0 20 20" fill="none"
+                  style={{ color: '#999', transition: 'transform 0.3s ease', transform: openItems.includes(index) ? 'rotate(45deg)' : 'rotate(0deg)' }}
+                >
+                  <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
               </button>
 
               <div
-                className={`transition-all duration-500 ease-in-out ${
-                  openItems.includes(index)
-                    ? 'max-h-96 opacity-100'
-                    : 'max-h-0 opacity-0'
-                }`}
+                style={{
+                  display: 'grid',
+                  gridTemplateRows: openItems.includes(index) ? '1fr' : '0fr',
+                  opacity: openItems.includes(index) ? 1 : 0,
+                  transition: 'grid-template-rows 0.4s ease, opacity 0.3s ease',
+                }}
               >
-                <div className="px-5 md:px-6 pb-5 md:pb-6">
-                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '20px' }}>
-                    <p 
-                      className="text-base leading-relaxed"
-                      style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                        color: 'rgb(204, 204, 204)',
-                        fontWeight: 400
-                      }}
-                    >
-                      {item.answer}
-                    </p>
+                <div style={{ overflow: 'hidden' }}>
+                  <div className="px-5 md:px-6 pb-5 md:pb-6">
+                    <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '20px' }}>
+                      <p 
+                        className="text-base leading-relaxed"
+                        style={{
+                          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                          color: 'rgb(204, 204, 204)',
+                          fontWeight: 400
+                        }}
+                      >
+                        {item.answer}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

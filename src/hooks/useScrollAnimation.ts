@@ -26,18 +26,14 @@ export const useScrollAnimation = (threshold = 0.1) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
-          // Use requestAnimationFrame to batch the state update
-          requestAnimationFrame(() => {
-            setIsVisible(true);
-            hasAnimated.current = true;
-            // Add a small delay before disconnecting to ensure smooth animation
-            setTimeout(() => observer.disconnect(), 1100);
-          });
+          hasAnimated.current = true;
+          setIsVisible(true);
+          observer.disconnect();
         }
       },
       {
         threshold,
-        rootMargin: '100px',
+        rootMargin: '200px 0px',
       }
     );
 

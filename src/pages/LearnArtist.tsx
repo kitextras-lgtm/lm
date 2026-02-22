@@ -262,11 +262,9 @@ function FeatureSection({ feature, index }: { feature: ArtistFeature; index: num
   return (
     <div
       ref={ref}
-      className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-10 md:gap-16 transition-all duration-700 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-      }`}
+      className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-10 md:gap-16`}
     >
-      <div className="flex-1 w-full">
+      <div className={`flex-1 w-full scroll-hidden${isVisible ? ` ${isReversed ? 'scroll-reveal-right' : 'scroll-reveal-left'}` : ''}`}>
         <div
           className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5"
           style={{
@@ -295,10 +293,10 @@ function FeatureSection({ feature, index }: { feature: ArtistFeature; index: num
         </p>
       </div>
 
-      <div className="flex-1 w-full max-w-md md:max-w-none">
+      <div className={`flex-1 w-full max-w-md md:max-w-none scroll-hidden${isVisible ? ` ${isReversed ? 'scroll-reveal-left' : 'scroll-reveal-right'}` : ''}`} style={{ isolation: 'isolate' }}>
         <div
           className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', padding: '16px' }}
+          style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)', padding: '16px', backgroundColor: '#000000' }}
         >
           <ArtistFeatureVisual type={feature.visual} />
         </div>
@@ -337,9 +335,7 @@ export default function LearnArtist() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div
             ref={heroRef}
-            className={`text-center mb-20 md:mb-28 transition-all duration-1000 ease-out ${
-              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
+            className={`text-center mb-20 md:mb-28 scroll-hidden${heroVisible ? ' scroll-blur-emerge' : ''}`}
           >
             <h1 
               className="text-4xl md:text-5xl lg:text-6xl font-normal leading-snug"
@@ -370,9 +366,7 @@ export default function LearnArtist() {
         <div className="max-w-4xl mx-auto">
           <div
             ref={faqHeaderRef}
-            className={`text-center mb-12 md:mb-20 transition-all duration-1000 ease-out ${
-              faqHeaderVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
+            className={`text-center mb-12 md:mb-20 scroll-hidden${faqHeaderVisible ? ' scroll-blur-emerge' : ''}`}
           >
             <h2 
               className="text-3xl md:text-4xl lg:text-5xl font-normal mb-4"
@@ -399,9 +393,7 @@ export default function LearnArtist() {
       {/* CTA */}
       <div
         ref={ctaRef}
-        className={`max-w-7xl mx-auto px-4 md:px-6 pb-24 transition-all duration-1000 ease-out ${
-          ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className={`max-w-7xl mx-auto px-4 md:px-6 pb-24 scroll-hidden${ctaVisible ? ' scroll-reveal-up' : ''}`}
       >
         <div className="text-center">
           <button
@@ -427,8 +419,8 @@ function FAQItem({ item, index, isOpen, onToggle }: { item: { question: string; 
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
-      style={{ transitionDelay: `${index * 50}ms` }}
+      className={`scroll-hidden${isVisible ? ' scroll-reveal-up' : ''}`}
+      style={{ animationDelay: `${index * 50}ms` }}
     >
       <div
         className="py-1"

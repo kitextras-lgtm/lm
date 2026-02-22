@@ -247,11 +247,9 @@ function FeatureSection({ feature, index }: { feature: BrandFeature; index: numb
   return (
     <div
       ref={ref}
-      className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-20 md:mb-32 transition-all duration-1000 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+      className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-20 md:mb-32`}
     >
-      <div className={`${isReversed ? 'lg:order-2' : ''}`}>
+      <div className={`${isReversed ? 'lg:order-2' : ''} scroll-hidden${isVisible ? ` ${isReversed ? 'scroll-reveal-right' : 'scroll-reveal-left'}` : ''}`}>
         <div className="mb-4">
           <span
             className="inline-block px-4 py-1.5 rounded-full text-xs font-medium tracking-wide"
@@ -285,8 +283,10 @@ function FeatureSection({ feature, index }: { feature: BrandFeature; index: numb
           {feature.description}
         </p>
       </div>
-      <div className={`${isReversed ? 'lg:order-1' : ''}`}>
-        {getVisualComponent(feature.visual)}
+      <div className={`${isReversed ? 'lg:order-1' : ''} scroll-hidden${isVisible ? ` ${isReversed ? 'scroll-reveal-left' : 'scroll-reveal-right'}` : ''}`} style={{ isolation: 'isolate' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#000000' }}>
+          {getVisualComponent(feature.visual)}
+        </div>
       </div>
     </div>
   );
@@ -360,9 +360,7 @@ export function LearnBrands() {
         {/* Hero Section */}
         <div
           ref={heroRef}
-          className={`text-center mb-20 md:mb-28 transition-all duration-1000 ease-out ${
-            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-20 md:mb-28 scroll-hidden${heroVisible ? ' scroll-blur-emerge' : ''}`}
         >
           <h1 
             className="text-4xl md:text-5xl lg:text-6xl font-normal leading-snug"
@@ -390,9 +388,7 @@ export function LearnBrands() {
         {/* FAQ Section */}
         <div
           ref={faqRef}
-          className={`max-w-3xl mx-auto text-center transition-all duration-1000 ease-out ${
-            faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`max-w-3xl mx-auto text-center scroll-hidden${faqVisible ? ' scroll-blur-emerge' : ''}`}
         >
           <h2 
               className="text-3xl md:text-4xl lg:text-5xl font-normal mb-4"
@@ -417,9 +413,7 @@ export function LearnBrands() {
       {/* CTA */}
       <div
         ref={ctaRef}
-        className={`max-w-7xl mx-auto px-4 md:px-6 pb-24 transition-all duration-1000 ease-out ${
-          ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+        className={`max-w-7xl mx-auto px-4 md:px-6 pb-24 scroll-hidden${ctaVisible ? ' scroll-reveal-up' : ''}`}
       >
         <div className="text-center">
           <button

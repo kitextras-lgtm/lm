@@ -9,10 +9,9 @@ export function MobileAppSection() {
       className="relative py-16 md:py-24 px-4 md:px-6 overflow-hidden"
       style={{ background: '#000000' }}
     >
-      <div 
-        className={`max-w-4xl mx-auto transition-all duration-1000 ease-out ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}
+      <div
+        className="max-w-4xl mx-auto"
+        style={isVisible ? { animation: 'liftIn 0.75s cubic-bezier(0.22,1,0.36,1) forwards' } : { opacity: 0 }}
       >
         {/* Premium White Card */}
         <div 

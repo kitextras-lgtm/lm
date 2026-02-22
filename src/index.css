@@ -431,24 +431,24 @@
 @keyframes wordScroll {
   0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
-  20% {
+  12% {
     opacity: 1;
     transform: translateY(0);
   }
-  80% {
+  88% {
     opacity: 1;
     transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-24px);
   }
 }
 
 .animate-word-scroll {
-  animation: wordScroll 1s ease-in-out;
+  animation: wordScroll 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fadeInUp {
@@ -463,65 +463,92 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes popOut {
-  from {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
+/* ── Premium scroll-reveal animations ── */
+
+/* Blur-emerge: content materialises out of a soft blur — used for section headers */
+@keyframes blurEmerge {
+  0%   { opacity: 0; filter: blur(12px); transform: translateY(16px) scale(0.98); }
+  60%  { opacity: 1; filter: blur(0px);  transform: translateY(-2px) scale(1.002); }
+  100% { opacity: 1; filter: blur(0px);  transform: translateY(0)    scale(1); }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+/* Reveal-up: crisp lift with a micro-overshoot — used for feature rows */
+@keyframes revealUp {
+  0%   { opacity: 0; transform: translateY(32px) scale(0.985); }
+  65%  { opacity: 1; transform: translateY(-3px) scale(1.003); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
 }
 
-.animate-scale-in {
-  animation: scaleIn 0.6s ease-out forwards;
+/* Reveal-left: slides in from the right — used for even-indexed feature visuals */
+@keyframes revealLeft {
+  0%   { opacity: 0; transform: translateX(28px) scale(0.98); }
+  65%  { opacity: 1; transform: translateX(-2px) scale(1.002); }
+  100% { opacity: 1; transform: translateX(0)    scale(1); }
 }
 
-.animate-fade-in-down {
-  animation: fadeInDown 0.3s ease-out forwards;
+/* Reveal-right: slides in from the left — used for odd-indexed feature visuals */
+@keyframes revealRight {
+  0%   { opacity: 0; transform: translateX(-28px) scale(0.98); }
+  65%  { opacity: 1; transform: translateX(2px)  scale(1.002); }
+  100% { opacity: 1; transform: translateX(0)    scale(1); }
 }
+
+/* Lift-in: used for cards and stat blocks — scale up from slightly below */
+@keyframes liftIn {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.96); }
+  70%  { opacity: 1; transform: translateY(-2px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.animate-blur-emerge  { animation: blurEmerge  0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-reveal-up    { animation: revealUp    0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-reveal-left  { animation: revealLeft  0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-reveal-right { animation: revealRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-lift-in      { animation: liftIn      0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* CSS-first hidden state — elements start invisible before JS runs, preventing 1-frame flash */
+.scroll-hidden {
+  opacity: 0;
+}
+.scroll-hidden.scroll-reveal-left {
+  animation: revealLeft 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.scroll-hidden.scroll-reveal-right {
+  animation: revealRight 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+.scroll-hidden.scroll-reveal-up {
+  animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+.scroll-hidden.scroll-blur-emerge {
+  animation: blurEmerge 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-fade-in-up   { animation: fadeInUp  0.6s ease-out forwards; }
+.animate-fade-in      { animation: fadeIn    0.3s ease-out forwards; }
+.animate-scale-in     { animation: scaleIn   0.6s ease-out forwards; }
+.animate-fade-in-down { animation: fadeInDown 0.3s ease-out forwards; }
 
 html, body {
-  background-color: #111111;
+  background-color: var(--bg-primary);
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   font-variant-ligatures: common-ligatures;
@@ -562,16 +589,19 @@ html, body {
 }
 
 .hero-content {
-  animation: heroContentFadeIn 0.5s ease-out forwards;
+  animation: blurEmerge 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes heroContentFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.hero-heading {
+  animation: revealUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.hero-sub {
+  animation: revealUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+
+.hero-cta {
+  animation: liftIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
 }
 
 spline-viewer::part(logo),

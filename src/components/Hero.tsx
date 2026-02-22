@@ -74,13 +74,13 @@ export const Hero = memo(() => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentWordIndex((prev) => (prev + 1) % words.length);
-    }, 1000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <main className="min-h-screen bg-black flex items-center justify-center relative isolate">
+    <main className="min-h-screen bg-black flex items-center justify-center relative isolate" style={{ contain: 'layout style' }}>
       <style>
         {`
           spline-viewer canvas {
@@ -143,11 +143,11 @@ export const Hero = memo(() => {
             </span>
           </h1>
 
-          <p className="text-base md:text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-sm sm:max-w-md md:max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ willChange: 'transform, opacity', marginBottom: '3rem', lineHeight: '1.8' }}>
+          <p className="hero-sub text-base md:text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-sm sm:max-w-md md:max-w-3xl mx-auto md:mx-0 font-light drop-shadow-lg text-center md:text-left" style={{ marginBottom: '3rem', lineHeight: '1.8' }}>
             Access exclusive opportunities and a curated ecosystem built to scale.
           </p>
 
-          <div className="flex justify-center md:justify-start">
+          <div className="hero-cta flex justify-center md:justify-start">
             <button
               onClick={() => navigate('/signup')}
               className="text-black px-10 py-3.5 md:px-14 md:py-5 rounded-lg text-base md:text-lg font-semibold transition-all duration-200 pointer-events-auto"

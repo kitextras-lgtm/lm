@@ -1,5 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+
+function useCountUp(target: number, duration = 1400, start = false) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime: number | null = null;
+    const step = (ts: number) => {
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [start, target, duration]);
+  return value;
+}
+
+function useEnteredDelay(inView: boolean, delay = 900) {
+  const [entered, setEntered] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firedRef = useRef(false);
+  useEffect(() => {
+    if (inView && !firedRef.current) {
+      firedRef.current = true;
+      timerRef.current = setTimeout(() => setEntered(true), delay);
+    }
+    return () => {
+      if (timerRef.current) { clearTimeout(timerRef.current); }
+    };
+  }, [inView, delay]);
+  return entered;
+}
+
+function useInView(threshold = 0.25) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const fired = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || fired.current) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !fired.current) {
+          fired.current = true;
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
 
 interface FeatureItem {
   tag: string;
@@ -7,15 +63,18 @@ interface FeatureItem {
   description: string;
   visual: 'distribution' | 'growth' | 'royalty' | 'sync' | 'strategy' | 'support' |
           'copyright' | 'monetization' | 'licensing' | 'brand-partnerships' | 'content-strategy' | 'creator-support' |
-          'viral' | 'sponsorships' | 'consulting';
+          'viral' | 'sponsorships' | 'consulting' | 'marketplace';
 }
 
 // --- Visual Mockup Components ---
 
 function DistributionVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const platforms = ['Spotify', 'Apple', 'TikTok', 'YouTube'];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="flex items-center gap-3 mb-4">
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center gap-3 mb-4" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
         <div className="w-10 h-10 rounded-full" style={{ background: '#e5e7eb' }} />
         <div>
           <div className="text-sm font-semibold" style={{ color: '#111' }}>Your Release</div>
@@ -23,8 +82,8 @@ function DistributionVisual() {
         </div>
       </div>
       <div className="grid grid-cols-4 gap-3 mb-4">
-        {['Spotify', 'Apple', 'TikTok', 'YouTube'].map((p) => (
-          <div key={p} className="text-center">
+        {platforms.map((p, i) => (
+          <div key={p} className="text-center" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: `opacity 0.5s ease ${0.1 + i * 0.08}s, transform 0.5s ease ${0.1 + i * 0.08}s` }}>
             <div className="w-full aspect-square rounded-xl mb-1.5 flex items-center justify-center" style={{ background: '#f0f0f0' }}>
               <span className="text-xs font-medium" style={{ color: '#555' }}>{p[0]}</span>
             </div>
@@ -32,7 +91,7 @@ function DistributionVisual() {
           </div>
         ))}
       </div>
-      <div className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: '#f0f0f0' }}>
+      <div className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.45s' }}>
         <span className="text-xs font-medium" style={{ color: '#555' }}>Revenue Split</span>
         <span className="text-sm font-bold" style={{ color: '#111' }}>Industry Leading</span>
       </div>
@@ -41,21 +100,25 @@ function DistributionVisual() {
 }
 
 function GrowthVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const bars = [35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95];
+  const count = useCountUp(247, 1600, entered);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Growth Analytics</div>
       <div className="text-xs mb-4" style={{ color: '#888' }}>Last 30 days</div>
       <div className="flex items-end gap-1.5 mb-4" style={{ height: '80px' }}>
-        {[35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95].map((h, i) => (
-          <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i >= 10 ? '#111' : '#d1d5db' }} />
+        {bars.map((h, i) => (
+          <div key={i} className="flex-1 rounded-t-sm" style={{ height: entered ? `${h}%` : '0%', background: i >= 10 ? '#111' : '#d1d5db', transition: `height 0.7s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.05}s` }} />
         ))}
       </div>
       <div className="flex items-center justify-between">
         <div>
           <div className="text-xs" style={{ color: '#888' }}>Monthly Listeners</div>
-          <div className="text-lg font-bold" style={{ color: '#111' }}>+247%</div>
+          <div className="text-lg font-bold" style={{ color: '#111' }}>+{count}%</div>
         </div>
-        <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: '#dcfce7', color: '#166534' }}>
+        <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: '#f0f0f0', color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.6s ease 0.8s' }}>
           Trending Up
         </div>
       </div>
@@ -64,45 +127,52 @@ function GrowthVisual() {
 }
 
 function RoyaltyVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const total = useCountUp(9330, 1800, entered);
+  const rows = [
+    { label: 'Streaming', amount: '$4,280', pct: 85 },
+    { label: 'Publishing', amount: '$1,950', pct: 65 },
+    { label: 'Sync', amount: '$3,100', pct: 75 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Royalty Dashboard</div>
       <div className="space-y-3">
-        {[
-          { label: 'Streaming', amount: '$4,280', pct: '85%' },
-          { label: 'Publishing', amount: '$1,950', pct: '65%' },
-          { label: 'Sync', amount: '$3,100', pct: '75%' },
-        ].map((item) => (
-          <div key={item.label}>
+        {rows.map((item, i) => (
+          <div key={item.label} style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateX(-8px)', transition: `opacity 0.5s ease ${i * 0.12}s, transform 0.5s ease ${i * 0.12}s` }}>
             <div className="flex justify-between text-xs mb-1">
               <span style={{ color: '#555' }}>{item.label}</span>
               <span className="font-semibold" style={{ color: '#111' }}>{item.amount}</span>
             </div>
             <div className="w-full h-2 rounded-full" style={{ background: '#e5e7eb' }}>
-              <div className="h-full rounded-full" style={{ width: item.pct, background: '#111' }} />
+              <div className="h-full rounded-full" style={{ width: entered ? `${item.pct}%` : '0%', background: '#111', transition: `width 1s cubic-bezier(0.4,0,0.2,1) ${0.2 + i * 0.15}s` }} />
             </div>
           </div>
         ))}
       </div>
-      <div className="mt-4 pt-3 flex justify-between items-center" style={{ borderTop: '1px solid #e5e7eb' }}>
+      <div className="mt-4 pt-3 flex justify-between items-center" style={{ borderTop: '1px solid #e5e7eb', opacity: entered ? 1 : 0, transition: 'opacity 0.6s ease 0.7s' }}>
         <span className="text-xs" style={{ color: '#888' }}>Total Collected</span>
-        <span className="text-lg font-bold" style={{ color: '#111' }}>$9,330</span>
+        <span className="text-lg font-bold" style={{ color: '#111' }}>${total.toLocaleString()}</span>
       </div>
     </div>
   );
 }
 
 function SyncVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const items = [
+    { type: 'Film', title: 'Netflix Original Series', status: 'Placed', fee: '$5,000' },
+    { type: 'Ad', title: 'Nike Campaign', status: 'In Review', fee: '$8,500' },
+    { type: 'Game', title: 'EA Sports Title', status: 'Matched', fee: '$3,200' },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Sync Opportunities</div>
       <div className="space-y-3">
-        {[
-          { type: 'Film', title: 'Netflix Original Series', status: 'Placed', fee: '$5,000' },
-          { type: 'Ad', title: 'Nike Campaign', status: 'In Review', fee: '$8,500' },
-          { type: 'Game', title: 'EA Sports Title', status: 'Matched', fee: '$3,200' },
-        ].map((item) => (
-          <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
+        {items.map((item, i) => (
+          <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: `opacity 0.5s ease ${i * 0.13}s, transform 0.5s ease ${i * 0.13}s` }}>
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: '#e5e7eb', color: '#555' }}>
               {item.type[0]}
             </div>
@@ -119,27 +189,28 @@ function SyncVisual() {
 }
 
 function StrategyVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const milestones = [
+    { date: 'Mar 15', title: 'Single Drop', desc: 'Pre-save campaign live', done: true },
+    { date: 'Apr 2', title: 'Music Video', desc: 'YouTube premiere scheduled', done: true },
+    { date: 'May 10', title: 'EP Release', desc: 'Full rollout strategy', done: false },
+    { date: 'Jun 20', title: 'Tour Announce', desc: 'Venue partnerships locked', done: false },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Release Calendar</div>
       <div className="space-y-3">
-        {[
-          { date: 'Mar 15', title: 'Single Drop', desc: 'Pre-save campaign live', done: true },
-          { date: 'Apr 2', title: 'Music Video', desc: 'YouTube premiere scheduled', done: true },
-          { date: 'May 10', title: 'EP Release', desc: 'Full rollout strategy', done: false },
-          { date: 'Jun 20', title: 'Tour Announce', desc: 'Venue partnerships locked', done: false },
-        ].map((item) => (
-          <div key={item.date} className="flex items-start gap-3">
+        {milestones.map((item, i) => (
+          <div key={item.date} className="flex items-start gap-3" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateX(-10px)', transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s` }}>
             <div className="flex flex-col items-center">
-              <div className="w-3 h-3 rounded-full" style={{ background: item.done ? '#111' : '#d1d5db', border: '2px solid ' + (item.done ? '#111' : '#d1d5db') }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: item.done ? '#111' : '#d1d5db', border: '2px solid ' + (item.done ? '#111' : '#d1d5db'), transform: entered ? 'scale(1)' : 'scale(0)', transition: `transform 0.4s cubic-bezier(0.34,1.56,0.64,1) ${0.1 + i * 0.1}s` }} />
               <div className="w-0.5 h-6" style={{ background: '#e5e7eb' }} />
             </div>
             <div className="flex-1 -mt-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold" style={{ color: '#111' }}>{item.title}</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: item.done ? '#dcfce7' : '#f3f4f6', color: item.done ? '#166534' : '#888' }}>
-                  {item.date}
-                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: '#f3f4f6', color: '#555' }}>{item.date}</span>
               </div>
               <div className="text-[11px]" style={{ color: '#888' }}>{item.desc}</div>
             </div>
@@ -151,24 +222,42 @@ function StrategyVisual() {
 }
 
 function SupportVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [showTyping, setShowTyping] = useState(false);
+  const [showReply, setShowReply] = useState(false);
+  useEffect(() => {
+    if (!entered) return;
+    const t1 = setTimeout(() => setShowTyping(true), 200);
+    const t2 = setTimeout(() => { setShowTyping(false); setShowReply(true); }, 1600);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [entered]);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Priority Support</div>
       <div className="space-y-3">
-        <div className="flex gap-2">
+        <div className="flex gap-2" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s' }}>
           <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#111', color: '#fff' }}>E</div>
-          <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>
-            Hey! I need help with my upcoming release strategy.
-          </div>
+          <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>Hey! I need help with my upcoming release strategy.</div>
         </div>
-        <div className="flex gap-2 justify-end">
-          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs" style={{ background: '#111', color: '#fff' }}>
-            Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.
+        {showTyping && (
+          <div className="flex gap-2 justify-end items-end" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
+            <div className="px-4 py-3 rounded-2xl rounded-tr-sm flex items-center gap-1" style={{ background: '#111' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#fff', display: 'inline-block', animation: 'bounce 1s infinite 0ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#fff', display: 'inline-block', animation: 'bounce 1s infinite 150ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#fff', display: 'inline-block', animation: 'bounce 1s infinite 300ms' }} />
+            </div>
+            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
           </div>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
-        </div>
-        <div className="flex items-center gap-2 pt-1">
-          <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e' }} />
+        )}
+        {showReply && (
+          <div className="flex gap-2 justify-end" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
+            <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs" style={{ background: '#111', color: '#fff' }}>Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.</div>
+            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
+          </div>
+        )}
+        <div className="flex items-center gap-2 pt-1" style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
+          <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e', boxShadow: '0 0 5px #22c55e55' }} />
           <span className="text-[10px]" style={{ color: '#888' }}>Avg. response time: &lt;5 min</span>
         </div>
       </div>
@@ -177,134 +266,267 @@ function SupportVisual() {
 }
 
 function CopyrightVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [showAlert, setShowAlert] = useState(false);
+  useEffect(() => {
+    if (!entered) return;
+    const t = setTimeout(() => setShowAlert(true), 400);
+    return () => clearTimeout(t);
+  }, [entered]);
+  const detected = useCountUp(1247, 1400, entered);
+  const monetized = useCountUp(1180, 1400, entered);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Content Detection</div>
       <div className="text-xs mb-4" style={{ color: '#888' }}>This month</div>
       <div className="grid grid-cols-3 gap-3 mb-4">
         {[
-          { label: 'Detected', value: '1,247' },
-          { label: 'Monetized', value: '1,180' },
-          { label: 'Revenue', value: '$48.2K' },
-        ].map((s) => (
-          <div key={s.label} className="text-center p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
+          { label: 'Detected', display: detected.toLocaleString() },
+          { label: 'Monetized', display: monetized.toLocaleString() },
+          { label: 'Revenue', display: '$48.2K' },
+        ].map((s, i) => (
+          <div key={s.label} className="text-center p-3 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s` }}>
+            <div className="text-sm font-bold" style={{ color: '#111' }}>{s.display}</div>
             <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
           </div>
         ))}
       </div>
-      <div className="p-3 rounded-xl flex items-center gap-3" style={{ background: '#f0f0f0' }}>
+      <div className="p-3 rounded-xl flex items-center gap-3" style={{ background: '#f0f0f0', opacity: showAlert ? 1 : 0, transform: showAlert ? 'none' : 'translateY(6px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
         <div className="w-8 h-8 rounded-lg" style={{ background: '#e5e7eb' }} />
         <div className="flex-1">
           <div className="text-xs font-medium" style={{ color: '#111' }}>Unauthorized reupload detected</div>
           <div className="text-[10px]" style={{ color: '#888' }}>Claimed &amp; monetized automatically</div>
         </div>
-        <span className="text-xs font-bold" style={{ color: '#166534' }}>+$420</span>
+        <span className="text-xs font-bold" style={{ color: '#111' }}>+$420</span>
       </div>
     </div>
   );
 }
 
 function MonetizationVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const total = useCountUp(37000, 1800, entered);
+  const [pulse, setPulse] = useState(0);
+  useEffect(() => {
+    if (!entered) return;
+    const t = setInterval(() => setPulse(p => (p + 1) % 3), 1800);
+    return () => clearInterval(t);
+  }, [entered]);
+  const campaigns = [
+    { brand: 'NovaTech', type: 'Sponsored Post', payout: '$12,000', delay: 0 },
+    { brand: 'Luminary', type: 'Brand Deal', payout: '$18,500', delay: 0.1 },
+    { brand: 'Apex Co.', type: 'Ambassador', payout: '$6,500', delay: 0.2 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Exclusive Campaigns</div>
-      <div className="space-y-3">
-        {[
-          { brand: 'Premium Brand', type: 'Sponsored', payout: '$12,000', status: 'Active' },
-          { brand: 'Tech Startup', type: 'Investment', payout: '$25,000', status: 'Pending' },
-        ].map((c) => (
-          <div key={c.brand} className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg" style={{ background: '#e5e7eb' }} />
-                <div>
-                  <div className="text-xs font-medium" style={{ color: '#111' }}>{c.brand}</div>
-                  <div className="text-[10px]" style={{ color: '#888' }}>{c.type}</div>
-                </div>
-              </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: c.status === 'Active' ? '#dcfce7' : '#fef9c3', color: c.status === 'Active' ? '#166534' : '#854d0e' }}>
-                {c.status}
-              </span>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-sm font-semibold" style={{ color: '#111' }}>Exclusive Campaigns</div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', opacity: inView ? 1 : 0, animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span className="text-[10px] font-medium" style={{ color: '#555' }}>Live</span>
+        </div>
+      </div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>Matched to your profile</div>
+      <div className="space-y-2.5 mb-4">
+        {campaigns.map((c, i) => (
+          <div key={c.brand} className="flex items-center gap-3 p-3 rounded-xl"
+            style={{ background: pulse === i ? '#111' : '#f0f0f0', transition: 'background 0.4s ease', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transitionDelay: `${c.delay}s` }}>
+            <div className="w-8 h-8 rounded-lg flex-shrink-0" style={{ background: pulse === i ? 'rgba(255,255,255,0.15)' : '#e5e7eb', transition: 'background 0.4s ease' }} />
+            <div className="flex-1">
+              <div className="text-xs font-semibold" style={{ color: pulse === i ? '#fff' : '#111', transition: 'color 0.4s ease' }}>{c.brand}</div>
+              <div className="text-[10px]" style={{ color: pulse === i ? 'rgba(255,255,255,0.6)' : '#888', transition: 'color 0.4s ease' }}>{c.type}</div>
             </div>
-            <div className="text-right text-sm font-bold" style={{ color: '#111' }}>{c.payout}</div>
+            <span className="text-xs font-bold" style={{ color: pulse === i ? '#fff' : '#111', transition: 'color 0.4s ease' }}>{c.payout}</span>
           </div>
         ))}
+      </div>
+      <div className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transition: 'opacity 0.6s ease 0.5s' }}>
+        <span className="text-xs" style={{ color: '#555' }}>Total available</span>
+        <span className="text-sm font-bold" style={{ color: '#111' }}>${total.toLocaleString()}</span>
       </div>
     </div>
   );
 }
 
 function LicensingVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const earned = useCountUp(13700, 1600, entered);
+  const deals = [
+    { platform: 'Viral Page', reach: '2.4M views', fee: '$3,500', pct: 72, delay: 0 },
+    { platform: 'TV Network', reach: 'Prime time', fee: '$8,000', pct: 100, delay: 0.12 },
+    { platform: 'News Outlet', reach: 'National', fee: '$2,200', pct: 48, delay: 0.24 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Licensing Deals</div>
-      <div className="space-y-3">
-        {[
-          { platform: 'Viral Page', reach: '2.4M views', fee: '$3,500', icon: 'V' },
-          { platform: 'TV Network', reach: 'Prime time slot', fee: '$8,000', icon: 'T' },
-          { platform: 'News Outlet', reach: 'National broadcast', fee: '$2,200', icon: 'N' },
-        ].map((d) => (
-          <div key={d.platform} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: '#e5e7eb', color: '#555' }}>
-              {d.icon}
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Licensing Deals</div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>Your content, paying you</div>
+      <div className="space-y-3 mb-4">
+        {deals.map((d) => (
+          <div key={d.platform} style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateX(-8px)', transition: `opacity 0.5s ease ${d.delay}s, transform 0.5s ease ${d.delay}s` }}>
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>{d.platform[0]}</div>
+                <div>
+                  <div className="text-xs font-medium" style={{ color: '#111' }}>{d.platform}</div>
+                  <div className="text-[9px]" style={{ color: '#888' }}>{d.reach}</div>
+                </div>
+              </div>
+              <span className="text-xs font-bold" style={{ color: '#111' }}>{d.fee}</span>
             </div>
-            <div className="flex-1">
-              <div className="text-xs font-medium" style={{ color: '#111' }}>{d.platform}</div>
-              <div className="text-[10px]" style={{ color: '#888' }}>{d.reach}</div>
+            <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${d.pct}%` : '0%', background: '#111', transition: `width 1s cubic-bezier(0.4,0,0.2,1) ${0.3 + d.delay}s` }} />
             </div>
-            <span className="text-xs font-bold" style={{ color: '#111' }}>{d.fee}</span>
           </div>
         ))}
+      </div>
+      <div className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transition: 'opacity 0.6s ease 0.6s' }}>
+        <span className="text-xs" style={{ color: '#555' }}>Total earned</span>
+        <span className="text-sm font-bold" style={{ color: '#111' }}>${earned.toLocaleString()}</span>
       </div>
     </div>
   );
 }
 
 function BrandPartnershipsVisual() {
-  const brands = [
-    { name: 'Pulse', color: '#6366F1', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h3l2-6 4 12 4-9 2 3h3"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/></svg>' },
-    { name: 'Vertex', color: '#8B5CF6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
-    { name: 'Nexus', color: '#EC4899', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4l6 6-6 6-6-6 6-6z"/></svg>' },
-    { name: 'Quantum', color: '#10B981', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M6.34 6.34l2.83 2.83m5.66 5.66l2.83 2.83M6.34 17.66l2.83-2.83m5.66-5.66l2.83-2.83"/></svg>' },
-    { name: 'Zenith', color: '#F59E0B', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 8v8l8 6 8-6V8l-8-6zm0 4l4 3v6l-4 3-4-3V9l4-3z"/></svg>' },
-    { name: 'Prism', color: '#06B6D4', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 8l10 6 10-6-10-6zM2 16l10 6 10-6"/><path d="M12 8v14" stroke="currentColor" stroke-width="2"/></svg>' }
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  const cards = [
+    { name: 'Pulse',   category: 'Health Tech',   deal: '$8,400' },
+    { name: 'Vertex',  category: 'SaaS Platform',  deal: '$12,000' },
+    { name: 'Nexus',   category: 'Fashion Brand',  deal: '$6,200' },
+    { name: 'Quantum', category: 'Consumer App',   deal: '$9,800' },
+    { name: 'Zenith',  category: 'Media Network',  deal: '$15,500' },
   ];
 
+  const n = cards.length;
+  const CARD_W = 72;
+  const CARD_H = 108;
+  // Horizontal offsets: spread cards evenly across the container width
+  // Center card at 0, others step out left/right
+  const step = 52; // px between card centers
+  const centerIdx = Math.floor(n / 2); // index 2
+  // Slight vertical arc: outer cards sit a bit lower
+  const arcY = [10, 4, 0, 4, 10];
+  // z-index: center card on top, outer cards behind
+  const zOrder = [1, 2, 5, 2, 1];
+
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Brand Network</div>
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {brands.map((brand, i) => (
-          <div key={i} className="aspect-square rounded-xl flex items-center justify-center transition-transform hover:scale-105" style={{ background: '#f0f0f0' }}>
-            <div className="w-10 h-10 flex items-center justify-center" style={{ color: brand.color }} dangerouslySetInnerHTML={{ __html: brand.svg }} />
-          </div>
-        ))}
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Brand Network</div>
+      <div className="text-xs mb-3" style={{ color: '#888' }}>200+ matched partners</div>
+
+      {/* Horizontal card spread */}
+      <div className="relative mb-3" style={{ height: '136px' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: '50%' }}>
+          {cards.map((card, i) => {
+            const isHov = hovered === i;
+            const isDark = isHov;
+            const offsetX = (i - centerIdx) * step;
+            const offsetY = isHov ? -14 : arcY[i];
+            // Entry: cards slide in from center
+            const entryX = entered ? offsetX : 0;
+            const entryY = entered ? offsetY : 20;
+            const entryOpacity = entered ? 1 : 0;
+
+            return (
+              <div
+                key={card.name}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: `-${CARD_W / 2}px`,
+                  width: `${CARD_W}px`,
+                  height: `${CARD_H}px`,
+                  borderRadius: '10px',
+                  background: isDark ? '#111' : '#ffffff',
+                  border: isDark ? '1px solid #111' : '1px solid rgba(17,17,17,0.13)',
+                  boxShadow: isHov
+                    ? '0 16px 36px rgba(0,0,0,0.22)'
+                    : '0 3px 12px rgba(0,0,0,0.09)',
+                  transform: `translateX(${entryX}px) translateY(${-entryY}px)`,
+                  transition: `transform 0.55s cubic-bezier(0.34,1.1,0.64,1) ${i * 0.055}s, opacity 0.45s ease ${i * 0.055}s, background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease`,
+                  opacity: entryOpacity,
+                  zIndex: isHov ? 10 : zOrder[i],
+                  cursor: 'pointer',
+                  padding: '10px 9px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  userSelect: 'none',
+                }}
+              >
+                <div>
+                  <div style={{ width: '22px', height: '22px', borderRadius: '6px', background: isDark ? 'rgba(255,255,255,0.14)' : '#f0f0f0', marginBottom: '6px', transition: 'background 0.18s ease' }} />
+                  <div style={{ fontSize: '9px', fontWeight: 700, color: isDark ? '#fff' : '#111', lineHeight: 1.2, transition: 'color 0.18s ease' }}>{card.name}</div>
+                  <div style={{ fontSize: '8px', color: isDark ? 'rgba(255,255,255,0.5)' : '#999', marginTop: '2px', transition: 'color 0.18s ease' }}>{card.category}</div>
+                </div>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: isDark ? '#fff' : '#111', transition: 'color 0.18s ease' }}>{card.deal}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div className="p-3 rounded-xl text-center" style={{ background: '#f0f0f0' }}>
-        <div className="text-sm font-bold" style={{ color: '#111' }}>200+ Brand Partners</div>
-        <div className="text-[10px]" style={{ color: '#888' }}>Matched to your audience &amp; niche</div>
+
+      {/* Bottom label */}
+      <div
+        className="flex items-center justify-between px-3 py-2.5 rounded-xl"
+        style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.4s' }}
+      >
+        <div>
+          <div className="text-xs font-semibold" style={{ color: '#111' }}>
+            {hovered !== null ? cards[hovered].name : 'Brand Network'}
+          </div>
+          <div className="text-[10px]" style={{ color: '#888' }}>
+            {hovered !== null ? cards[hovered].category : 'Hover a card'}
+          </div>
+        </div>
+        <div className="text-sm font-bold" style={{ color: '#111' }}>
+          {hovered !== null ? cards[hovered].deal : '200+'}
+        </div>
       </div>
     </div>
   );
 }
 
 function ContentStrategyVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const views = useCountUp(21, 1400, entered);
+  const weeks = [18, 24, 20, 32, 28, 45, 38, 56, 50, 68, 62, 85];
+  const metrics = [
+    { label: 'Hook Rate', val: 78, delay: 0 },
+    { label: 'Retention', val: 64, delay: 0.1 },
+    { label: 'Share Rate', val: 91, delay: 0.2 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Content Performance</div>
-      <div className="space-y-3">
-        {[
-          { title: 'Viral Hook Strategy', views: '2.1M views', growth: '+340%' },
-          { title: 'Posting Schedule', views: 'Optimized', growth: '+85%' },
-          { title: 'Audience Targeting', views: '18-34 demo', growth: '+120%' },
-        ].map((item) => (
-          <div key={item.title} className="flex items-center justify-between p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div>
-              <div className="text-xs font-medium" style={{ color: '#111' }}>{item.title}</div>
-              <div className="text-[10px]" style={{ color: '#888' }}>{item.views}</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-sm font-semibold" style={{ color: '#111' }}>Content Performance</div>
+        <span className="text-xs font-bold" style={{ color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.8s' }}>{views}M views</span>
+      </div>
+      <div className="text-xs mb-3" style={{ color: '#888' }}>Last 12 weeks</div>
+      <div className="flex items-end gap-1 mb-4" style={{ height: '56px' }}>
+        {weeks.map((h, i) => (
+          <div key={i} className="flex-1 rounded-t-sm" style={{ height: entered ? `${h}%` : '0%', background: i >= 10 ? '#111' : i >= 8 ? '#555' : '#d1d5db', transition: `height 0.6s cubic-bezier(0.34,1.2,0.64,1) ${i * 0.04}s` }} />
+        ))}
+      </div>
+      <div className="space-y-2">
+        {metrics.map((m) => (
+          <div key={m.label} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${0.4 + m.delay}s` }}>
+            <div className="flex justify-between text-[10px] mb-1">
+              <span style={{ color: '#555' }}>{m.label}</span>
+              <span className="font-semibold" style={{ color: '#111' }}>{m.val}%</span>
             </div>
-            <span className="text-xs font-bold" style={{ color: '#166534' }}>{item.growth}</span>
+            <div className="w-full h-1 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${m.val}%` : '0%', background: '#111', transition: `width 0.9s cubic-bezier(0.4,0,0.2,1) ${0.5 + m.delay}s` }} />
+            </div>
           </div>
         ))}
       </div>
@@ -313,47 +535,81 @@ function ContentStrategyVisual() {
 }
 
 function ViralDistributionVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const views = useCountUp(142, 1600, entered);
+  const creators = useCountUp(48, 1200, entered);
+  const nodeAngles = [0, 60, 120, 180, 240, 300];
+  const nodeRadii  = [52, 48, 54, 50, 46, 52];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Campaign Performance</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Organic clip distribution</div>
-      <div className="grid grid-cols-2 gap-3 mb-4">
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Viral Distribution</div>
+      <div className="text-xs mb-3" style={{ color: '#888' }}>Organic clip network</div>
+      <div className="flex items-center justify-center mb-3" style={{ height: '120px' }}>
+        <div className="relative" style={{ width: '120px', height: '120px' }}>
+          {[1, 2].map((ring) => (
+            <div key={ring} className="absolute rounded-full" style={{ inset: `${ring * 18}px`, border: '1px solid rgba(17,17,17,0.1)', opacity: entered ? 1 : 0, animation: entered ? `pulse ${1.4 + ring * 0.4}s ease-in-out infinite` : 'none', transition: 'opacity 0.5s ease' }} />
+          ))}
+          <div className="absolute" style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '28px', height: '28px', borderRadius: '50%', background: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.1s' }} />
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+            {nodeAngles.map((ang, i) => {
+              const rad = (ang * Math.PI) / 180;
+              const x2 = 60 + Math.cos(rad) * nodeRadii[i];
+              const y2 = 60 + Math.sin(rad) * nodeRadii[i];
+              return <line key={i} x1="60" y1="60" x2={x2} y2={y2} stroke="rgba(17,17,17,0.12)" strokeWidth="1" strokeDasharray="3 3" style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${0.2 + i * 0.06}s` }} />;
+            })}
+          </svg>
+          {nodeAngles.map((ang, i) => {
+            const rad = (ang * Math.PI) / 180;
+            const x = 60 + Math.cos(rad) * nodeRadii[i] - 8;
+            const y = 60 + Math.sin(rad) * nodeRadii[i] - 8;
+            return <div key={i} style={{ position: 'absolute', left: x, top: y, width: '16px', height: '16px', borderRadius: '50%', background: '#e5e7eb', border: '1.5px solid #d1d5db', opacity: entered ? 1 : 0, transform: entered ? 'scale(1)' : 'scale(0)', transition: `opacity 0.4s ease ${0.15 + i * 0.07}s, transform 0.5s cubic-bezier(0.34,1.4,0.64,1) ${0.15 + i * 0.07}s` }} />;
+          })}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         {[
-          { label: 'Total Views', value: '14.2M' },
-          { label: 'Creators', value: '48' },
+          { label: 'Total Views', value: `${views}M` },
+          { label: 'Creators', value: `${creators}` },
           { label: 'Engagement', value: '8.4%' },
-          { label: 'Cost/View', value: '$0.002' },
-        ].map((s) => (
-          <div key={s.label} className="p-3 rounded-xl text-center" style={{ background: '#f0f0f0' }}>
+          { label: 'ROI vs Paid', value: '12x' },
+        ].map((s, i) => (
+          <div key={s.label} className="p-2.5 rounded-xl text-center" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${0.3 + i * 0.07}s, transform 0.4s ease ${0.3 + i * 0.07}s` }}>
             <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
-            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-[9px]" style={{ color: '#888' }}>{s.label}</div>
           </div>
         ))}
-      </div>
-      <div className="px-3 py-2.5 rounded-xl text-center text-xs font-medium" style={{ background: '#dcfce7', color: '#166534' }}>
-        12x better ROI than paid ads
       </div>
     </div>
   );
 }
 
 function SponsorshipsVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const creators = [
+    { name: 'Alex M.', niche: 'Lifestyle', followers: '1.2M', match: 98, delay: 0 },
+    { name: 'Jordan K.', niche: 'Tech', followers: '850K', match: 94, delay: 0.1 },
+    { name: 'Sam R.', niche: 'Fitness', followers: '2.1M', match: 91, delay: 0.2 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Creator Matching</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Creator Matching</div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>AI-powered alignment score</div>
       <div className="space-y-3">
-        {[
-          { name: 'Creator A', audience: '1.2M followers', match: '98%' },
-          { name: 'Creator B', audience: '850K followers', match: '94%' },
-          { name: 'Creator C', audience: '2.1M followers', match: '91%' },
-        ].map((c) => (
-          <div key={c.name} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="w-8 h-8 rounded-full" style={{ background: '#e5e7eb' }} />
-            <div className="flex-1">
-              <div className="text-xs font-medium" style={{ color: '#111' }}>{c.name}</div>
-              <div className="text-[10px]" style={{ color: '#888' }}>{c.audience}</div>
+        {creators.map((c) => (
+          <div key={c.name} style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: `opacity 0.5s ease ${c.delay}s, transform 0.5s ease ${c.delay}s` }}>
+            <div className="flex items-center gap-3 mb-1.5">
+              <div className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: '#e5e7eb' }} />
+              <div className="flex-1">
+                <div className="text-xs font-semibold" style={{ color: '#111' }}>{c.name}</div>
+                <div className="text-[10px]" style={{ color: '#888' }}>{c.niche} · {c.followers}</div>
+              </div>
+              <span className="text-xs font-bold" style={{ color: '#111' }}>{c.match}%</span>
             </div>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: '#dcfce7', color: '#166534' }}>{c.match}</span>
+            <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${c.match}%` : '0%', background: 'linear-gradient(90deg, #555 0%, #111 100%)', transition: `width 1s cubic-bezier(0.4,0,0.2,1) ${0.3 + c.delay}s` }} />
+            </div>
           </div>
         ))}
       </div>
@@ -362,21 +618,144 @@ function SponsorshipsVisual() {
 }
 
 function ConsultingVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const trends = [
+    { label: 'Short-form', value: 92, delay: 0 },
+    { label: 'Live Commerce', value: 74, delay: 0.08 },
+    { label: 'Gen Z Reach', value: 88, delay: 0.16 },
+    { label: 'Community', value: 65, delay: 0.24 },
+    { label: 'AI Content', value: 81, delay: 0.32 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Cultural Insights</div>
-      <div className="space-y-3">
-        {[
-          { trend: 'Short-form content', status: 'Rising', action: 'Invest now' },
-          { trend: 'Gen Z engagement', status: 'Critical', action: 'Adapt strategy' },
-          { trend: 'Community building', status: 'Emerging', action: 'Start early' },
-        ].map((t) => (
-          <div key={t.trend} className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium" style={{ color: '#111' }}>{t.trend}</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: '#fef9c3', color: '#854d0e' }}>{t.status}</span>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Cultural Pulse</div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>Real-time trend signals</div>
+      <div className="space-y-2.5 mb-4">
+        {trends.map((t) => (
+          <div key={t.label} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${t.delay}s` }}>
+            <div className="flex justify-between text-[10px] mb-1">
+              <span style={{ color: '#555' }}>{t.label}</span>
+              <span className="font-semibold" style={{ color: '#111' }}>{t.value}</span>
             </div>
-            <div className="text-[10px]" style={{ color: '#888' }}>{t.action}</div>
+            <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${t.value}%` : '0%', background: '#111', transition: `width 0.9s cubic-bezier(0.4,0,0.2,1) ${0.25 + t.delay}s` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2">
+        {[
+          { text: 'Short-form is dominating — pivot now', delay: 0.4 },
+          { text: 'Gen Z prefers authentic over polished', delay: 0.5 },
+        ].map((ins) => (
+          <div key={ins.text} className="flex items-start gap-2 p-2.5 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${ins.delay}s, transform 0.4s ease ${ins.delay}s` }}>
+            <div className="w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0" style={{ background: '#111' }} />
+            <span className="text-[10px]" style={{ color: '#555' }}>{ins.text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MarketplaceVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const clients = useCountUp(340, 1400, entered);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    if (!entered) return;
+    let frame: number;
+    let start: number | null = null;
+    const animate = (ts: number) => {
+      if (!start) start = ts;
+      setTick((ts - start) / 1000);
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [entered]);
+
+  const CX = 70, CY = 52, ORX = 42, ORY = 13;
+  const figureOffsets = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
+
+  const rings = [
+    { ry: 8,  y: 38 },
+    { ry: 14, y: 52 },
+    { ry: 10, y: 66 },
+  ];
+  const cities = [
+    { cx: 52, cy: 42 }, { cx: 82, cy: 38 }, { cx: 62, cy: 58 },
+    { cx: 88, cy: 56 }, { cx: 46, cy: 62 }, { cx: 76, cy: 66 },
+    { cx: 68, cy: 34 }, { cx: 58, cy: 70 },
+  ];
+
+  return (
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-sm font-semibold" style={{ color: '#111' }}>Global Clients</div>
+        <span className="text-xs font-bold" style={{ color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.8s' }}>{clients}+ active</span>
+      </div>
+      <div className="text-xs mb-3" style={{ color: '#888' }}>Clients from around the world</div>
+
+      <div className="flex items-center justify-center mb-3" style={{ height: '130px' }}>
+        <svg width="140" height="110" viewBox="0 0 140 110" fill="none">
+          {/* Globe sphere */}
+          <ellipse cx={CX} cy={CY} rx="38" ry="38"
+            fill="#f0f0f0" stroke="#d1d5db" strokeWidth="1"
+            style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease' }}
+          />
+          {/* Latitude rings */}
+          {rings.map((r, i) => (
+            <ellipse key={i} cx={CX} cy={r.y} rx="38" ry={r.ry}
+              fill="none" stroke="#bbb" strokeWidth="0.8"
+              style={{ opacity: entered ? 0.5 : 0, transition: `opacity 0.5s ease ${0.1 + i * 0.08}s` }}
+            />
+          ))}
+          {/* Meridian */}
+          <ellipse cx={CX} cy={CY} rx="1" ry="38"
+            fill="none" stroke="#bbb" strokeWidth="0.8"
+            style={{ opacity: entered ? 0.4 : 0, transition: 'opacity 0.5s ease 0.2s' }}
+          />
+          {/* City dots */}
+          {cities.map((c, i) => (
+            <circle key={i} cx={c.cx} cy={c.cy} r="2" fill="#999"
+              style={{ opacity: entered ? 1 : 0, transition: `opacity 0.3s ease ${0.3 + i * 0.06}s` }}
+            />
+          ))}
+          {/* Orbiting stick figures driven by rAF tick */}
+          {figureOffsets.map((offset, fi) => {
+            const angle = tick * (Math.PI / 4) + offset;
+            const fx = CX + Math.cos(angle) * ORX;
+            const fy = CY + Math.sin(angle) * ORY;
+            return (
+              <g key={fi} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.5s ease ${0.5 + fi * 0.12}s` }}>
+                {/* head */}
+                <circle cx={fx} cy={fy - 5} r="3" fill="#111" />
+                {/* body */}
+                <line x1={fx} y1={fy - 2} x2={fx} y2={fy + 5} stroke="#111" strokeWidth="1.4" strokeLinecap="round" />
+                {/* arms */}
+                <line x1={fx - 3.5} y1={fy + 1} x2={fx + 3.5} y2={fy + 1} stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
+                {/* legs */}
+                <line x1={fx} y1={fy + 5} x2={fx - 2.5} y2={fy + 9} stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
+                <line x1={fx} y1={fy + 5} x2={fx + 2.5} y2={fy + 9} stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { label: 'Countries', value: '48' },
+          { label: 'Avg. Deal', value: '$4.8K' },
+          { label: 'Repeat Rate', value: '76%' },
+        ].map((s, i) => (
+          <div key={s.label} className="p-2.5 rounded-xl text-center" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${0.5 + i * 0.07}s, transform 0.4s ease ${0.5 + i * 0.07}s` }}>
+            <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
+            <div className="text-[9px]" style={{ color: '#888' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -401,6 +780,7 @@ function FeatureVisual({ type }: { type: FeatureItem['visual'] }) {
     case 'viral': return <ViralDistributionVisual />;
     case 'sponsorships': return <SponsorshipsVisual />;
     case 'consulting': return <ConsultingVisual />;
+    case 'marketplace': return <MarketplaceVisual />;
     default: return null;
   }
 }
@@ -440,7 +820,7 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
     { tag: 'Monetization', title: 'Exclusive\ncampaigns', description: 'Get access to exclusive campaigns and opportunities. Earning extra income has never been easier.', visual: 'monetization' },
     { tag: 'Licensing', title: 'Your content\npays you', description: 'When your content reaches viral pages or television, it should pay you. We handle licensing, negotiations, and compliance.', visual: 'licensing' },
     { tag: 'Partnerships', title: 'Brands that\nfit you', description: 'Find sponsorships that align perfectly with your goals and boost your chances of landing high quality, relevant partnerships.', visual: 'brand-partnerships' },
-    { tag: 'Strategy', title: 'Scale with\nexperts', description: 'Find and match up with experienced experts to assist you with your growth.', visual: 'content-strategy' },
+    { tag: 'Strategy', title: 'Scale with\nexperts', description: 'Find and match up with experienced experts to assist you with your growth.', visual: 'marketplace' },
     { tag: 'Support', title: 'Real Support,\nReal People', description: 'Priority, human first support built specifically for creators. Fast responses, real solutions.', visual: 'creator-support' },
   ];
 
@@ -462,11 +842,9 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
       style={{ background: '#000000' }}
     >
       <div className="max-w-7xl mx-auto relative z-10">
-        <div 
+        <div
           ref={headerRef}
-          className={`mb-12 md:mb-20 transition-all duration-1000 ease-out ${
-            headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`mb-12 md:mb-20 scroll-hidden${headerVisible ? ' scroll-blur-emerge' : ''}`}
         >
           <div className="flex flex-col items-center mb-8 md:mb-16">
             <div className="max-w-3xl text-center">
@@ -530,8 +908,11 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
 
         {/* Feature Sections - Alternating Split Layout */}
         <div
-          className={`space-y-24 md:space-y-32 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
-          style={{ transition: isTransitioning ? 'opacity 150ms ease-in-out' : 'opacity 500ms ease-out' }}
+          className="space-y-24 md:space-y-32"
+          style={{
+            opacity: isTransitioning ? 0 : 1,
+            transition: 'opacity 150ms ease-in-out',
+          }}
         >
           {features.map((feature, index) => (
             <FeatureSection key={`${activeTab}-${index}`} feature={feature} index={index} />
@@ -563,12 +944,12 @@ function FeatureSection({ feature, index }: { feature: FeatureItem; index: numbe
   return (
     <div
       ref={ref}
-      className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-10 md:gap-16 transition-all duration-700 ease-out ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-      }`}
+      className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-10 md:gap-16`}
     >
       {/* Text Side */}
-      <div className="flex-1 w-full">
+      <div
+        className={`flex-1 w-full scroll-hidden${isVisible ? ` ${isReversed ? 'scroll-reveal-right' : 'scroll-reveal-left'}` : ''}`}
+      >
         <div
           className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5"
           style={{
@@ -612,13 +993,17 @@ function FeatureSection({ feature, index }: { feature: FeatureItem; index: numbe
       </div>
 
       {/* Visual Side */}
-      <div className="flex-1 w-full max-w-md md:max-w-none">
+      <div
+        className={`flex-1 w-full max-w-md md:max-w-none scroll-hidden${isVisible ? ` ${isReversed ? 'scroll-reveal-left' : 'scroll-reveal-right'}` : ''}`}
+        style={{ isolation: 'isolate' }}
+      >
         <div
           className="rounded-2xl overflow-hidden"
           style={{
             background: 'rgba(255, 255, 255, 0.03)',
             border: '1px solid rgba(255, 255, 255, 0.06)',
             padding: '16px',
+            backgroundColor: '#000000',
           }}
         >
           <FeatureVisual type={feature.visual} />
