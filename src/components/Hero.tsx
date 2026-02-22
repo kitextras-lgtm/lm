@@ -70,6 +70,7 @@ export const Hero = memo(() => {
   const navigate = useNavigate();
   const words = ['Presence', 'Marketing', 'Management', 'Distribution', 'Solutions', 'Development', 'Revenue'];
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -77,6 +78,11 @@ export const Hero = memo(() => {
     }, 2000);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setRevealed(true), 600);
+    return () => clearTimeout(t);
   }, []);
 
   return (
@@ -92,7 +98,8 @@ export const Hero = memo(() => {
         <SplineViewer />
       </Suspense>
 
-      <div className="relative z-10 px-6 max-w-6xl mx-auto -mt-80 md:mt-12 pointer-events-none hero-content md:mr-auto md:ml-32 lg:ml-40 xl:ml-48">
+      <div className="relative z-10 px-6 max-w-6xl mx-auto -mt-80 md:mt-12 pointer-events-none hero-content md:mr-auto md:ml-32 lg:ml-40 xl:ml-48"
+        style={{ opacity: revealed ? 1 : 0, transform: revealed ? 'none' : 'translateY(12px)', transition: 'opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1)' }}>
         <div className="relative md:text-left">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-transparent blur-3xl -z-10"></div>
 

@@ -252,30 +252,38 @@ function MarketplaceVisual() {
     { client: 'SaaS Platform',  project: 'UI/UX Redesign',        budget: '$7,200', flag: 'DE', delay: 0.16 },
   ];
   return (
-    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="flex items-center justify-between mb-1">
-        <div className="text-sm font-semibold" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Active Projects</div>
-        <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', opacity: inView ? 1 : 0, animation: inView ? 'pulse 2s infinite' : 'none' }} />
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Active Projects</div>
+          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Matched to your skills</div>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>47 new this week</span>
+        </div>
       </div>
-      <div className="text-xs mb-4" style={{ color: '#888', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>Matched to your skills</div>
-      <div className="space-y-2.5 mb-3">
-        {projects.map((p) => (
-          <div key={p.project} className="flex items-center gap-3 p-3 rounded-xl"
-            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${p.delay}s, transform 0.45s ease ${p.delay}s` }}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: '#e5e7eb', color: '#555' }}>{p.flag}</div>
-            <div className="flex-1">
-              <div className="text-xs font-medium" style={{ color: '#111' }}>{p.project}</div>
-              <div className="text-[10px]" style={{ color: '#888' }}>{p.client}</div>
+      {/* Project rows */}
+      <div className="px-5 py-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div className="space-y-2">
+          {projects.map((p) => (
+            <div key={p.project} className="flex items-center gap-3"
+              style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.45s ease ${p.delay}s, transform 0.45s ease ${p.delay}s` }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-bold flex-shrink-0" style={{ background: '#f5f5f5', color: '#555', border: '1px solid #ebebeb' }}>{p.flag}</div>
+              <div className="flex-1 min-w-0">
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#111' }}>{p.project}</div>
+                <div style={{ fontSize: '9px', color: '#bbb' }}>{p.client}</div>
+              </div>
+              <div className="flex-shrink-0 px-2 py-1 rounded-lg" style={{ background: '#f5f5f5' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#111' }}>{p.budget}</span>
+              </div>
             </div>
-            <span className="text-xs font-bold" style={{ color: '#111' }}>{p.budget}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <div className="px-3 py-2.5 rounded-xl text-center text-xs font-medium"
-        style={{ background: '#f0f0f0', color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
-        47 new projects this week
-      </div>
-      <div className="mt-3">
+      {/* Networking room */}
+      <div className="p-4">
         <NetworkingRoom entered={entered} />
       </div>
     </div>
@@ -434,34 +442,51 @@ function PaymentsVisual() {
     { date: 'Feb 1',  desc: 'Logo Design Package',    amount: '+$2,800', delay: 0.16 },
   ];
   return (
-    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Earnings Overview</div>
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        {[
-          { label: 'Available balance', value: `$${balance.toLocaleString()}`,  delay: 0.05 },
-          { label: 'Lifetime earnings', value: `$${lifetime.toLocaleString()}`, delay: 0.12 },
-        ].map((s) => (
-          <div key={s.label} className="p-3 rounded-xl"
-            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
-            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
-            <div className="text-lg font-bold" style={{ color: '#111' }}>{s.value}</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      {/* Header bar */}
+      <div className="px-5 pt-5 pb-4" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div className="flex items-center justify-between mb-4"
+          style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#aaa', letterSpacing: '0.1em' }}>Earnings</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5' }}>
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
+            <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>Live</span>
           </div>
-        ))}
+        </div>
+        {/* Big balance */}
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease 0.05s, transform 0.45s ease 0.05s' }}>
+          <div style={{ fontSize: '9px', color: '#aaa', fontFamily: 'system-ui', marginBottom: '2px' }}>Available balance</div>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, fontFamily: 'system-ui' }}>${balance.toLocaleString()}</div>
+        </div>
       </div>
-      <div className="space-y-2 mb-4">
-        {txns.map((t) => (
-          <div key={t.date} className="flex items-center justify-between p-2.5 rounded-lg"
-            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${t.delay + 0.2}s, transform 0.4s ease ${t.delay + 0.2}s` }}>
-            <div className="flex items-center gap-2">
-              <div className="text-[10px]" style={{ color: '#888' }}>{t.date}</div>
-              <div className="text-xs font-medium" style={{ color: '#111' }}>{t.desc}</div>
+      {/* Lifetime stat */}
+      <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid #f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.12s, transform 0.45s ease 0.12s' }}>
+        <span style={{ fontSize: '10px', color: '#aaa' }}>Lifetime earnings</span>
+        <span style={{ fontSize: '13px', fontWeight: 700, color: '#111' }}>${lifetime.toLocaleString()}</span>
+      </div>
+      {/* Transactions */}
+      <div className="px-5 py-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ fontSize: '9px', fontWeight: 600, color: '#bbb', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '10px', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.18s' }}>Recent</div>
+        <div className="space-y-2.5">
+          {txns.map((t) => (
+            <div key={t.date} className="flex items-center justify-between"
+              style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(5px)', transition: `opacity 0.4s ease ${t.delay + 0.22}s, transform 0.4s ease ${t.delay + 0.22}s` }}>
+              <div className="flex items-center gap-2.5">
+                <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#111" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: 600, color: '#111' }}>{t.desc}</div>
+                  <div style={{ fontSize: '9px', color: '#bbb' }}>{t.date}</div>
+                </div>
+              </div>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#111' }}>{t.amount}</span>
             </div>
-            <span className="text-xs font-bold" style={{ color: '#111' }}>{t.amount}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       {/* Flipping calendar */}
-      <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s' }}>
+      <div className="p-4" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s' }}>
         <FlipCalendar entered={entered} />
       </div>
     </div>
@@ -613,7 +638,9 @@ function FreelancerSupportVisual() {
           <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
             I've reached out to the client directly. They'll respond within 24 hours or we'll release your payment from escrow.
           </div>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>E</div>
+          <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}>
+            <img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
         </div>
         {/* Status */}
         <div className="flex items-center gap-2 pt-1"
