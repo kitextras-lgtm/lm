@@ -135,98 +135,167 @@ function useCountUp(target: number, duration = 1400, start = false) {
 
 function NetworkingRoom({ entered }: { entered: boolean }) {
   const [bubble, setBubble] = useState(0);
-  const msgs = ['Love your portfolio!', "Let's collaborate", 'Open to projects?'];
+  const msgs = ['Love your portfolio!', "Let's collaborate", 'Open to projects?', 'Great work!'];
   useEffect(() => {
     if (!entered) return;
-    const t = setInterval(() => setBubble(b => (b + 1) % msgs.length), 1900);
+    const t = setInterval(() => setBubble(b => (b + 1) % msgs.length), 2000);
     return () => clearInterval(t);
   }, [entered]);
 
-  const bw = [msgs[0].length * 5.2 + 12, msgs[1].length * 5.2 + 12, msgs[2].length * 5.2 + 12];
+  // Tight bubble widths: measure text at ~6px per char + padding
+  const pad = 16;
+  const bw = msgs.map(m => m.length * 5.6 + pad);
 
   return (
     <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.55s ease 0.35s, transform 0.55s ease 0.35s' }}>
       <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(160deg,#1a1a1a 0%,#111 100%)', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" width="100%" style={{ display: 'block' }}>
-          {/* Floor */}
-          <ellipse cx="140" cy="148" rx="125" ry="14" fill="rgba(255,255,255,0.04)" />
-          {/* Ambient glow */}
-          <ellipse cx="140" cy="80" rx="100" ry="60" fill="rgba(255,255,255,0.02)" />
+        <svg viewBox="0 0 280 175" xmlns="http://www.w3.org/2000/svg" width="100%" style={{ display: 'block' }}>
 
-          {/* ── Person A — left ── */}
-          <ellipse cx="58" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.4)" />
-          <rect x="49" y="108" width="18" height="30" rx="6" fill="#c8a882" />
-          <circle cx="58" cy="100" r="9" fill="#f5d5a8" />
-          <path d="M50 97 Q58 88 66 97" fill="#3d2b1f" />
-          <path d="M49 118 Q40 124 42 132" stroke="#c8a882" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M67 118 Q75 122 73 130" stroke="#c8a882" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <rect x="51" y="136" width="6" height="15" rx="3" fill="#2d3748" />
-          <rect x="59" y="136" width="6" height="15" rx="3" fill="#2d3748" />
+          {/* Floor shadow */}
+          <ellipse cx="140" cy="163" rx="128" ry="10" fill="rgba(255,255,255,0.03)" />
 
-          {/* ── Person B — center-left ── */}
-          <ellipse cx="105" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.38)" />
-          <rect x="96" y="106" width="18" height="32" rx="6" fill="#4a6fa5" />
-          <circle cx="105" cy="97" r="9.5" fill="#deb887" />
-          <path d="M97 95 Q105 86 113 95" fill="#1a0a00" />
-          <path d="M96 116 Q87 112 89 106" stroke="#4a6fa5" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M114 116 Q121 120 119 128" stroke="#4a6fa5" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <rect x="113" y="120" width="16" height="11" rx="2" fill="#e8f0fe" />
-          <rect x="115" y="122" width="12" height="7" rx="1" fill="#4285f4" opacity="0.8" />
-          <rect x="98" y="136" width="6" height="15" rx="3" fill="#1a202c" />
-          <rect x="106" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+          {/* ── Person A — far left — Male, dark skin, short hair ── */}
+          {/* Shadow */}
+          <ellipse cx="42" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.35)" />
+          {/* Legs */}
+          <rect x="36" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
+          <rect x="43" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
+          {/* Body */}
+          <rect x="33" y="112" width="18" height="30" rx="5" fill="#2563eb" />
+          {/* Left arm — relaxed down */}
+          <path d="M33 118 Q26 126 27 136" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" fill="none" />
+          {/* Right arm — relaxed down */}
+          <path d="M51 118 Q58 126 57 136" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" fill="none" />
+          {/* Neck */}
+          <rect x="39" y="106" width="6" height="8" rx="3" fill="#6b3a2a" />
+          {/* Head */}
+          <circle cx="42" cy="99" r="10" fill="#6b3a2a" />
+          {/* Eyes */}
+          <circle cx="39" cy="98" r="1.2" fill="#1a0a00" />
+          <circle cx="45" cy="98" r="1.2" fill="#1a0a00" />
+          {/* Smile */}
+          <path d="M39 102 Q42 105 45 102" stroke="#1a0a00" strokeWidth="1" strokeLinecap="round" fill="none" />
+          {/* Short hair — close crop */}
+          <path d="M32 97 Q33 88 42 87 Q51 88 52 97 Q50 90 42 89 Q34 90 32 97Z" fill="#1a0a00" />
 
-          {/* ── Person C — center ── */}
-          <ellipse cx="150" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.36)" />
-          <rect x="141" y="104" width="18" height="34" rx="6" fill="#2d6a4f" />
-          <circle cx="150" cy="95" r="9.5" fill="#c68642" />
-          <path d="M142 93 Q150 84 158 93" fill="#0d0d0d" />
-          <path d="M141 114 Q132 108 134 102" stroke="#2d6a4f" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <circle cx="133" cy="101" r="4" fill="#c68642" />
-          <path d="M159 114 Q166 120 164 128" stroke="#2d6a4f" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <rect x="143" y="136" width="6" height="15" rx="3" fill="#1a202c" />
-          <rect x="151" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+          {/* ── Person B — center-left — Female, light skin, long hair ── */}
+          <ellipse cx="90" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.33)" />
+          <rect x="84" y="140" width="5" height="22" rx="2.5" fill="#374151" />
+          <rect x="91" y="140" width="5" height="22" rx="2.5" fill="#374151" />
+          {/* Dress/skirt body */}
+          <path d="M80 112 Q80 138 85 142 L95 142 Q100 138 100 112Z" fill="#9333ea" />
+          <rect x="80" y="110" width="20" height="16" rx="5" fill="#9333ea" />
+          {/* Left arm — relaxed */}
+          <path d="M80 116 Q73 124 74 134" stroke="#9333ea" strokeWidth="5" strokeLinecap="round" fill="none" />
+          {/* Right arm — relaxed */}
+          <path d="M100 116 Q107 124 106 134" stroke="#9333ea" strokeWidth="5" strokeLinecap="round" fill="none" />
+          {/* Neck */}
+          <rect x="87" y="104" width="6" height="8" rx="3" fill="#f5d5b8" />
+          {/* Head */}
+          <circle cx="90" cy="97" r="10" fill="#f5d5b8" />
+          {/* Eyes */}
+          <circle cx="87" cy="96" r="1.2" fill="#2d1b00" />
+          <circle cx="93" cy="96" r="1.2" fill="#2d1b00" />
+          {/* Smile */}
+          <path d="M87 100 Q90 103 93 100" stroke="#2d1b00" strokeWidth="1" strokeLinecap="round" fill="none" />
+          {/* Long hair — flows past shoulders */}
+          <path d="M80 95 Q80 87 90 86 Q100 87 100 95 Q99 88 90 87 Q81 88 80 95Z" fill="#7c3f00" />
+          <path d="M80 95 Q78 108 80 118" stroke="#7c3f00" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <path d="M100 95 Q102 108 100 118" stroke="#7c3f00" strokeWidth="5" strokeLinecap="round" fill="none" />
 
-          {/* ── Person D — right ── */}
-          <ellipse cx="210" cy="148" rx="13" ry="4" fill="rgba(0,0,0,0.34)" />
-          <rect x="201" y="106" width="18" height="32" rx="6" fill="#9b2335" />
-          <circle cx="210" cy="97" r="9" fill="#f5cba7" />
-          <path d="M202 95 Q210 86 218 95" fill="#5c3317" />
-          <path d="M201 116 Q192 112 194 106" stroke="#9b2335" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M219 116 Q226 110 224 104" stroke="#9b2335" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <circle cx="224" cy="103" r="4" fill="#f5cba7" />
-          <rect x="203" y="136" width="6" height="15" rx="3" fill="#1a202c" />
-          <rect x="211" y="136" width="6" height="15" rx="3" fill="#1a202c" />
+          {/* ── Person C — center — Male, medium skin, curly hair ── */}
+          <ellipse cx="140" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.31)" />
+          <rect x="134" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
+          <rect x="141" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
+          <rect x="131" y="110" width="18" height="32" rx="5" fill="#16a34a" />
+          {/* Left arm — slightly raised, conversational */}
+          <path d="M131 116 Q122 120 124 130" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none" />
+          {/* Right arm — slightly raised */}
+          <path d="M149 116 Q157 120 155 130" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <rect x="137" y="104" width="6" height="8" rx="3" fill="#c68642" />
+          <circle cx="140" cy="97" r="10" fill="#c68642" />
+          <circle cx="137" cy="96" r="1.2" fill="#1a0a00" />
+          <circle cx="143" cy="96" r="1.2" fill="#1a0a00" />
+          <path d="M137 100 Q140 103 143 100" stroke="#1a0a00" strokeWidth="1" strokeLinecap="round" fill="none" />
+          {/* Curly hair */}
+          <circle cx="133" cy="93" r="4.5" fill="#1a0a00" />
+          <circle cx="140" cy="90" r="5" fill="#1a0a00" />
+          <circle cx="147" cy="93" r="4.5" fill="#1a0a00" />
+          <circle cx="136" cy="97" r="3.5" fill="#1a0a00" />
+          <circle cx="144" cy="97" r="3.5" fill="#1a0a00" />
+
+          {/* ── Person D — center-right — Female, tan skin, ponytail ── */}
+          <ellipse cx="190" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.29)" />
+          <rect x="184" y="140" width="5" height="22" rx="2.5" fill="#374151" />
+          <rect x="191" y="140" width="5" height="22" rx="2.5" fill="#374151" />
+          {/* Dress body */}
+          <path d="M180 112 Q180 138 185 142 L195 142 Q200 138 200 112Z" fill="#e11d48" />
+          <rect x="180" y="110" width="20" height="16" rx="5" fill="#e11d48" />
+          <path d="M180 116 Q173 124 174 134" stroke="#e11d48" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <path d="M200 116 Q207 124 206 134" stroke="#e11d48" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <rect x="187" y="104" width="6" height="8" rx="3" fill="#d4956a" />
+          <circle cx="190" cy="97" r="10" fill="#d4956a" />
+          <circle cx="187" cy="96" r="1.2" fill="#2d1b00" />
+          <circle cx="193" cy="96" r="1.2" fill="#2d1b00" />
+          <path d="M187 100 Q190 103 193 100" stroke="#2d1b00" strokeWidth="1" strokeLinecap="round" fill="none" />
+          {/* Ponytail */}
+          <path d="M180 93 Q181 86 190 85 Q199 86 200 93 Q198 87 190 86 Q182 87 180 93Z" fill="#5c3317" />
+          <path d="M190 85 Q193 80 191 75" stroke="#5c3317" strokeWidth="4" strokeLinecap="round" fill="none" />
+
+          {/* ── Person E — far right — Male, light skin, side-part hair ── */}
+          <ellipse cx="238" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.27)" />
+          <rect x="232" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
+          <rect x="239" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
+          <rect x="229" y="112" width="18" height="30" rx="5" fill="#92400e" />
+          <path d="M229 118 Q222 126 223 136" stroke="#92400e" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <path d="M247 118 Q254 126 253 136" stroke="#92400e" strokeWidth="5" strokeLinecap="round" fill="none" />
+          <rect x="235" y="106" width="6" height="8" rx="3" fill="#f5cba7" />
+          <circle cx="238" cy="99" r="10" fill="#f5cba7" />
+          <circle cx="235" cy="98" r="1.2" fill="#2d1b00" />
+          <circle cx="241" cy="98" r="1.2" fill="#2d1b00" />
+          <path d="M235 102 Q238 105 241 102" stroke="#2d1b00" strokeWidth="1" strokeLinecap="round" fill="none" />
+          {/* Side-part hair */}
+          <path d="M228 96 Q229 88 238 87 Q247 88 248 96 Q245 89 238 88 Q231 89 228 96Z" fill="#5c3317" />
+          <path d="M228 96 Q229 91 235 90" stroke="#5c3317" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
           {/* ── Dashed connection lines ── */}
-          <line x1="73" y1="116" x2="96" y2="116" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="114" y1="116" x2="141" y2="116" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="159" y1="116" x2="201" y2="116" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="53" y1="128" x2="80" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="100" y1="128" x2="131" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="149" y1="128" x2="180" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="200" y1="128" x2="229" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
 
-          {/* ── Speech bubble 0 — above person A ── */}
-          <g style={{ opacity: bubble === 0 ? 1 : 0, transition: 'opacity 0.4s ease' }}>
-            <rect x="18" y="68" width={bw[0]} height="17" rx="8" fill="rgba(255,255,255,0.93)" />
-            <polygon points={`${28},${85} ${34},${85} ${30},${91}`} fill="rgba(255,255,255,0.93)" />
-            <text x="24" y="80" fontSize="7" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[0]}</text>
+          {/* ── Speech bubble 0 — above Person A ── */}
+          <g style={{ opacity: bubble === 0 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+            <rect x="8" y="72" width={bw[0]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
+            <polygon points={`${26},${88} ${32},${88} ${28},${93}`} fill="rgba(255,255,255,0.95)" />
+            <text x="16" y="83.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[0]}</text>
           </g>
 
-          {/* ── Speech bubble 1 — above person B ── */}
-          <g style={{ opacity: bubble === 1 ? 1 : 0, transition: 'opacity 0.4s ease' }}>
-            <rect x="68" y="62" width={bw[1]} height="17" rx="8" fill="rgba(255,255,255,0.93)" />
-            <polygon points={`${100},${79} ${106},${79} ${102},${85}`} fill="rgba(255,255,255,0.93)" />
-            <text x="74" y="74" fontSize="7" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[1]}</text>
+          {/* ── Speech bubble 1 — above Person B ── */}
+          <g style={{ opacity: bubble === 1 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+            <rect x="58" y="68" width={bw[1]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
+            <polygon points={`${76},${84} ${82},${84} ${78},${89}`} fill="rgba(255,255,255,0.95)" />
+            <text x="66" y="79.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[1]}</text>
           </g>
 
-          {/* ── Speech bubble 2 — above person D ── */}
-          <g style={{ opacity: bubble === 2 ? 1 : 0, transition: 'opacity 0.4s ease' }}>
-            <rect x="168" y="62" width={bw[2]} height="17" rx="8" fill="rgba(255,255,255,0.93)" />
-            <polygon points={`${200},${79} ${206},${79} ${202},${85}`} fill="rgba(255,255,255,0.93)" />
-            <text x="174" y="74" fontSize="7" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[2]}</text>
+          {/* ── Speech bubble 2 — above Person D ── */}
+          <g style={{ opacity: bubble === 2 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+            <rect x="158" y="68" width={bw[2]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
+            <polygon points={`${176},${84} ${182},${84} ${178},${89}`} fill="rgba(255,255,255,0.95)" />
+            <text x="166" y="79.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[2]}</text>
           </g>
 
-          {/* Floating dots — ambient activity */}
-          {[[48,72],[130,55],[220,68],[170,48]].map(([cx,cy],i) => (
-            <circle key={i} cx={cx} cy={cy} r="2" fill="rgba(255,255,255,0.15)"
-              style={{ animation: `pulse ${1.4 + i * 0.3}s ease-in-out infinite alternate` }} />
+          {/* ── Speech bubble 3 — above Person E ── */}
+          <g style={{ opacity: bubble === 3 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+            <rect x="206" y="72" width={bw[3]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
+            <polygon points={`${224},${88} ${230},${88} ${226},${93}`} fill="rgba(255,255,255,0.95)" />
+            <text x="214" y="83.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[3]}</text>
+          </g>
+
+          {/* Ambient dots */}
+          {[[30,58],[110,48],[200,52],[255,60]].map(([cx,cy],i) => (
+            <circle key={i} cx={cx} cy={cy} r="1.8" fill="rgba(255,255,255,0.12)"
+              style={{ animation: `pulse ${1.5 + i * 0.35}s ease-in-out infinite alternate` }} />
           ))}
         </svg>
 
@@ -256,7 +325,7 @@ function MarketplaceVisual() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
         <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
-          <div className="text-sm font-semibold" style={{ color: '#111' }}>Active Projects</div>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Active Requests</div>
           <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Matched to your skills</div>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>

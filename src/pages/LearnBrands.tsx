@@ -1,7 +1,61 @@
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+
+// --- Local animation hooks ---
+function useInView(threshold = 0.25) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const fired = useRef(false);
+  useEffect(() => {
+    if (fired.current) return;
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !fired.current) {
+          fired.current = true;
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
+function useEnteredDelay(inView: boolean, delay = 900) {
+  const [entered, setEntered] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firedRef = useRef(false);
+  useEffect(() => {
+    if (!inView || firedRef.current) return;
+    firedRef.current = true;
+    timerRef.current = setTimeout(() => setEntered(true), delay);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [inView, delay]);
+  return entered;
+}
+
+function useCountUp(target: number, duration = 1400, start = false) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime: number | null = null;
+    const step = (ts: number) => {
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      setValue(Math.floor(progress * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [start, target, duration]);
+  return value;
+}
 
 interface BrandFeature {
   tag: string;
@@ -75,49 +129,78 @@ const brandFAQ = [
 // --- Visual Mockup Components ---
 
 function SponsorshipsVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const creators = [
+    { creator: 'Sarah Chen',  platform: 'Instagram', reach: '2.4M', status: 'Live',      delay: 0 },
+    { creator: 'Mike Torres', platform: 'TikTok',    reach: '1.8M', status: 'Live',      delay: 0.08 },
+    { creator: 'Emma Wilson', platform: 'YouTube',   reach: '890K', status: 'Scheduled', delay: 0.16 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Active Campaigns</div>
-      <div className="space-y-3">
-        {[
-          { creator: 'Sarah Chen', platform: 'Instagram', reach: '2.4M', status: 'Live' },
-          { creator: 'Mike Torres', platform: 'TikTok', reach: '1.8M', status: 'Live' },
-          { creator: 'Emma Wilson', platform: 'YouTube', reach: '890K', status: 'Scheduled' }
-        ].map((c, i) => (
-          <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full" style={{ background: '#e5e7eb' }} />
-              <div>
-                <div className="text-sm font-semibold" style={{ color: '#111' }}>{c.creator}</div>
-                <div className="text-xs" style={{ color: '#888' }}>{c.platform} • {c.reach}</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Active Campaigns</div>
+          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Matched to your brand</div>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>3 active</span>
+        </div>
+      </div>
+      <div className="px-5 py-3">
+        <div className="space-y-2.5">
+          {creators.map((c) => (
+            <div key={c.creator} className="flex items-center gap-3"
+              style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.45s ease ${c.delay}s, transform 0.45s ease ${c.delay}s` }}>
+              <div className="w-9 h-9 rounded-full flex-shrink-0" style={{ background: '#f0f0f0', border: '1px solid #ebebeb' }} />
+              <div className="flex-1 min-w-0">
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#111' }}>{c.creator}</div>
+                <div style={{ fontSize: '9px', color: '#bbb' }}>{c.platform} · {c.reach}</div>
+              </div>
+              <div className="flex-shrink-0 px-2 py-1 rounded-lg" style={{ background: '#f5f5f5' }}>
+                <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>{c.status}</span>
               </div>
             </div>
-            <span className="text-xs font-bold px-2 py-1 rounded" style={{ 
-              background: c.status === 'Live' ? '#10b981' : '#f59e0b',
-              color: '#fff'
-            }}>{c.status}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 function AnalyticsVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const impressions = useCountUp(124, 1400, entered);
+  const engagement  = useCountUp(890, 1400, entered);
+  const conversions = useCountUp(452, 1400, entered);
+  const roi         = useCountUp(42,  1200, entered);
+  const stats = [
+    { label: 'Impressions', value: `${impressions / 10}M`,  change: '+24%', delay: 0 },
+    { label: 'Engagement',  value: `${engagement}K`,        change: '+18%', delay: 0.06 },
+    { label: 'Conversions', value: `${conversions / 10}K`,  change: '+32%', delay: 0.12 },
+    { label: 'ROI',         value: `${roi / 10}x`,          change: '+15%', delay: 0.18 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Campaign Performance</div>
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        {[
-          { label: 'Impressions', value: '12.4M', change: '+24%' },
-          { label: 'Engagement', value: '890K', change: '+18%' },
-          { label: 'Conversions', value: '45.2K', change: '+32%' },
-          { label: 'ROI', value: '4.2x', change: '+15%' }
-        ].map((m, i) => (
-          <div key={i} className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="text-xs mb-1" style={{ color: '#888' }}>{m.label}</div>
-            <div className="text-lg font-bold" style={{ color: '#111' }}>{m.value}</div>
-            <div className="text-xs" style={{ color: '#10b981' }}>{m.change}</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Campaign Performance</div>
+          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Last 30 days</div>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>Live</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-px px-5 py-3" style={{ gap: '8px' }}>
+        {stats.map((m) => (
+          <div key={m.label} className="p-3 rounded-xl"
+            style={{ background: '#f8f8f8', border: '1px solid #f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${m.delay}s, transform 0.45s ease ${m.delay}s` }}>
+            <div style={{ fontSize: '9px', color: '#bbb', marginBottom: '2px' }}>{m.label}</div>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em', lineHeight: 1 }}>{m.value}</div>
+            <div style={{ fontSize: '9px', fontWeight: 600, color: '#111', marginTop: '3px', opacity: 0.5 }}>{m.change}</div>
           </div>
         ))}
       </div>
@@ -145,82 +228,135 @@ function CreatorNetworkVisual() {
 }
 
 function BrandPartnershipsVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const count = useCountUp(500, 1400, entered);
   const brands = [
-    { name: 'Pulse', color: '#6366F1', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h3l2-6 4 12 4-9 2 3h3"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/></svg>' },
-    { name: 'Vertex', color: '#8B5CF6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
-    { name: 'Nexus', color: '#EC4899', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4l6 6-6 6-6-6 6-6z"/></svg>' },
-    { name: 'Quantum', color: '#10B981', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M6.34 6.34l2.83 2.83m5.66 5.66l2.83 2.83M6.34 17.66l2.83-2.83m5.66-5.66l2.83-2.83"/></svg>' },
-    { name: 'Zenith', color: '#F59E0B', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 8v8l8 6 8-6V8l-8-6zm0 4l4 3v6l-4 3-4-3V9l4-3z"/></svg>' },
-    { name: 'Prism', color: '#06B6D4', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 8l10 6 10-6-10-6zM2 16l10 6 10-6"/><path d="M12 8v14" stroke="currentColor" stroke-width="2"/></svg>' }
+    { name: 'Pulse',   initials: 'PL' },
+    { name: 'Vertex',  initials: 'VX' },
+    { name: 'Nexus',   initials: 'NX' },
+    { name: 'Quantum', initials: 'QM' },
+    { name: 'Zenith',  initials: 'ZN' },
+    { name: 'Prism',   initials: 'PR' },
   ];
-
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Trusted By</div>
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {brands.map((brand, i) => (
-          <div key={i} className="aspect-square rounded-xl flex items-center justify-center transition-transform hover:scale-105" style={{ background: '#f0f0f0' }}>
-            <div className="w-10 h-10 flex items-center justify-center" style={{ color: brand.color }} dangerouslySetInnerHTML={{ __html: brand.svg }} />
-          </div>
-        ))}
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Trusted By</div>
+          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>From startups to Fortune 500</div>
+        </div>
       </div>
-      <div className="p-3 rounded-xl text-center" style={{ background: '#f0f0f0' }}>
-        <div className="text-sm font-bold" style={{ color: '#111' }}>500+ Brand Partners</div>
-        <div className="text-[10px]" style={{ color: '#888' }}>From startups to Fortune 500</div>
+      <div className="px-5 py-3">
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          {brands.map((brand, i) => (
+            <div key={i} className="rounded-xl flex items-center justify-center"
+              style={{ background: '#f8f8f8', border: '1px solid #f0f0f0', height: '52px', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${i * 0.06}s, transform 0.45s ease ${i * 0.06}s` }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, color: '#555', letterSpacing: '0.05em' }}>{brand.initials}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-between px-3 py-2.5 rounded-xl"
+          style={{ background: '#f8f8f8', border: '1px solid #f0f0f0', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.4s' }}>
+          <span style={{ fontSize: '10px', color: '#aaa' }}>Brand partners</span>
+          <span style={{ fontSize: '14px', fontWeight: 800, color: '#111', letterSpacing: '-0.02em' }}>{count}+</span>
+        </div>
       </div>
     </div>
   );
 }
 
 function ConsultingVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [showReply, setShowReply] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  useEffect(() => {
+    if (!entered) return;
+    const t1 = setTimeout(() => setShowReply(true), 600);
+    const t2 = setTimeout(() => setShowStatus(true), 1100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [entered]);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Expert Support</div>
-      <div className="space-y-3">
-        {[
-          { service: 'Strategy Consultation', status: 'Available' },
-          { service: 'Campaign Planning', status: 'Available' },
-          { service: 'Performance Review', status: 'Scheduled' }
-        ].map((s, i) => (
-          <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: '#e5e7eb' }}>
-                <span className="text-xs">✓</span>
-              </div>
-              <span className="text-sm font-medium" style={{ color: '#111' }}>{s.service}</span>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Expert Support</div>
+          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Dedicated brand team</div>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>&lt;5 min response</span>
+        </div>
+      </div>
+      <div className="px-5 py-4">
+        <div className="space-y-3">
+          {/* Brand message */}
+          <div className="flex gap-2"
+            style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}>
+            <div className="w-7 h-7 rounded-full flex-shrink-0" style={{ background: '#f0f0f0', border: '1px solid #ebebeb' }} />
+            <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f5f5f5', color: '#333' }}>
+              We need a creator strategy for Q2 launch.
             </div>
-            <span className="text-xs" style={{ color: '#10b981' }}>{s.status}</span>
           </div>
-        ))}
+          {/* Support reply */}
+          <div className="flex gap-2 justify-end"
+            style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+            <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
+              I'll put together a tailored creator brief and shortlist by tomorrow.
+            </div>
+            <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}>
+              <img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          </div>
+          {/* Status */}
+          <div className="flex items-center gap-2 pt-1"
+            style={{ opacity: showStatus ? 1 : 0, transition: 'opacity 0.4s ease' }}>
+            <div className="w-2 h-2 rounded-full" style={{ background: '#111' }} />
+            <span className="text-[10px]" style={{ color: '#888' }}>Avg. response time: &lt;5 min</span>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 function ViralDistributionVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const platforms = [
+    { platform: 'TikTok',    reach: '50M+', pct: 82, delay: 0 },
+    { platform: 'Instagram', reach: '35M+', pct: 68, delay: 0.08 },
+    { platform: 'YouTube',   reach: '28M+', pct: 55, delay: 0.16 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Reach Potential</div>
-      <div className="space-y-3">
-        {[
-          { platform: 'TikTok', reach: '50M+', growth: '+45%' },
-          { platform: 'Instagram', reach: '35M+', growth: '+32%' },
-          { platform: 'YouTube', reach: '28M+', growth: '+28%' }
-        ].map((p, i) => (
-          <div key={i} className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-semibold" style={{ color: '#111' }}>{p.platform}</span>
-              <span className="text-xs" style={{ color: '#10b981' }}>{p.growth}</span>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
+      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
+        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="text-sm font-semibold" style={{ color: '#111' }}>Reach Potential</div>
+          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Across platforms</div>
+        </div>
+      </div>
+      <div className="px-5 py-3">
+        <div className="space-y-3">
+          {platforms.map((p) => (
+            <div key={p.platform}
+              style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.45s ease ${p.delay}s, transform 0.45s ease ${p.delay}s` }}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#111' }}>{p.platform}</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#111' }}>{p.reach}</span>
+              </div>
+              <div className="w-full rounded-full" style={{ height: '5px', background: '#f0f0f0' }}>
+                <div className="rounded-full" style={{
+                  height: '5px',
+                  background: '#111',
+                  width: entered ? `${p.pct}%` : '0%',
+                  transition: `width 0.9s cubic-bezier(0.22,1,0.36,1) ${p.delay + 0.2}s`,
+                }} />
+              </div>
             </div>
-            <div className="text-lg font-bold" style={{ color: '#111' }}>{p.reach}</div>
-            <div className="w-full h-2 rounded-full mt-2" style={{ background: '#e5e7eb' }}>
-              <div className="h-full rounded-full" style={{ 
-                background: '#10b981',
-                width: `${70 + i * 10}%`
-              }} />
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
