@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Video, Instagram, Music2, LogOut, MapPin, Globe, Plus, Info, ArrowLeft, ChevronRight, ChevronDown, Loader2, X, MessageSquare, User, ImageIcon } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
 import { BetaBadge } from '../components/BetaBadge';
 import { SocialLinksForm } from '../components/SocialLinksForm';
@@ -348,14 +347,14 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)'}
         >
-          <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
 
         {/* Header */}
         <div className="p-7 pb-5">
           <div className="flex items-start gap-5">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-              <Video className="w-9 h-9 text-white" />
+              <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
             </div>
             <div className="flex-1 min-w-0 pt-1">
               <div className="flex items-center gap-2 mb-1.5">
@@ -444,7 +443,7 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
           <div className="px-7 pb-6">
             <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>What to include</h3>
             <div className="flex items-start gap-4">
-              <MessageSquare className="w-6 h-6 mt-0.5" style={{ color: 'var(--text-primary)' }} />
+              <svg className="w-6 h-6 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               <div>
                 <p className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>Caption, tags, text</p>
                 <p className="text-xs font-semibold mt-2" style={{ color: 'var(--text-primary)' }}>REQUIRED HASHTAGS</p>
@@ -468,18 +467,18 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
   );
 }
 
-function RevenueAnalyticsCard() {
+function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
   const { t } = useTranslation();
   return (
     <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full" 
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.monthlyRecurringRevenue')}</h3>
       </div>
 
-      <div className="space-y-6 sm:space-y-8">
+      <div className="space-y-6 sm:space-y-8 flex-grow">
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.totalRevenue')}</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>$0.00</span>
@@ -489,6 +488,17 @@ function RevenueAnalyticsCard() {
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.change')}</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>—</span>
         </div>
+      </div>
+
+      <div className="mt-6 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
+        <button
+          onClick={(e) => { e.stopPropagation(); if (onViewMore) onViewMore(); }}
+          className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          <span>{t('home.viewMore')}</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        </button>
       </div>
     </div>
   );
@@ -616,7 +626,7 @@ function PowerWidgetDischarged({ }: PowerWidgetDischargedProps) {
             <path d="M 36 30 L 30 32 L 26 28" fill="none" stroke="rgba(70,70,70,0.5)" strokeWidth="1" strokeLinecap="round" />
             <path d="M 44 8 L 38 16 L 42 22 L 36 30 L 40 36 L 32 48" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeLinecap="round" transform="translate(-0.5, -0.5)" />
           </svg>
-          <User className="w-6 h-6 relative z-10" style={{ color: "#525252", filter: "none" }} />
+          <svg className="w-6 h-6 relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: "#525252" }}><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
       </div>
 
@@ -861,7 +871,7 @@ const MobileSettingsButton = ({
         </div>
         <span className="text-base font-medium" style={{ color: 'var(--text-primary)' }}>{label}</span>
       </div>
-      <ChevronRight className="w-5 h-5 transition-transform duration-200" style={{ color: 'var(--text-primary)', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }} />
+      <svg className="w-5 h-5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', transform: isHovered ? 'translateX(2px)' : 'translateX(0)' }}><path d="M9 18l6-6-6-6"/></svg>
     </button>
   );
 };
@@ -1209,6 +1219,9 @@ export function ArtistDashboard() {
   const [feedbackText, setFeedbackText] = useState('');
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [feedbackMedia, setFeedbackMedia] = useState<File | null>(null);
+  const [feedbackMediaPreview, setFeedbackMediaPreview] = useState<string | null>(null);
+  const feedbackMediaInputRef = useRef<HTMLInputElement>(null);
   const [guideSearch, setGuideSearch] = useState('');
   const { t, i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(() => LOCALE_TO_NAME[i18n.language] || 'English');
@@ -2023,7 +2036,7 @@ export function ArtistDashboard() {
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.location')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <MapPin className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
+              <svg className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
               <select
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -2048,7 +2061,7 @@ export function ArtistDashboard() {
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.languagesPostIn')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
             <div className="flex-1 min-w-0 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg focus-within:ring-2 focus-within:ring-white/10 transition-all" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
-              <Globe className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
+              <svg className="w-3 h-3 lg:w-4 lg:h-4 mr-1 lg:mr-1.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
               <select
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
@@ -2157,7 +2170,7 @@ export function ArtistDashboard() {
             borderColor: 'var(--border-subtle)', 
             color: 'var(--text-primary)' 
           }}>
-          <Plus className="w-5 h-5" />
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
           {t('payment.connectPayment')}
         </button>
       </div>
@@ -2176,7 +2189,7 @@ export function ArtistDashboard() {
                 onClick={() => setShowPaymentForm(false)}
                 className="p-2 rounded-full hover:bg-white/10 transition-colors"
               >
-                <X className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
             </div>
 
@@ -2562,11 +2575,22 @@ export function ArtistDashboard() {
       if (!feedbackCategory || !feedbackText.trim()) return;
       setFeedbackSubmitting(true);
       try {
+        let mediaUrl: string | null = null;
+        if (feedbackMedia) {
+          const ext = feedbackMedia.name.split('.').pop();
+          const path = `feedback/${currentUserId}/${Date.now()}.${ext}`;
+          const { error: uploadErr } = await supabase.storage.from('feedback-media').upload(path, feedbackMedia, { upsert: true });
+          if (!uploadErr) {
+            const { data: urlData } = supabase.storage.from('feedback-media').getPublicUrl(path);
+            mediaUrl = urlData?.publicUrl ?? null;
+          }
+        }
         const { error } = await supabase.from('feedback').insert({
           user_id: currentUserId,
           category: categoryMap[feedbackCategory],
           content: feedbackText.trim(),
           status: 'pending',
+          ...(mediaUrl ? { media_url: mediaUrl } : {}),
         });
         if (error) {
           console.error('❌ Feedback insert error:', error);
@@ -2574,6 +2598,8 @@ export function ArtistDashboard() {
           setFeedbackSubmitted(true);
           setFeedbackCategory(null);
           setFeedbackText('');
+          setFeedbackMedia(null);
+          setFeedbackMediaPreview(null);
           setTimeout(() => setFeedbackSubmitted(false), 4000);
         }
       } finally {
@@ -2599,9 +2625,9 @@ export function ArtistDashboard() {
               onClick={() => setFeedbackCategory('suggestion')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'suggestion' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'suggestion' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'suggestion' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'suggestion' ? '1px solid var(--text-primary)' : `1px solid var(--border-subtle)`,
               }}
             >
               <SuggestionIcon isHovered={feedbackCategory === 'suggestion'} />
@@ -2612,9 +2638,9 @@ export function ArtistDashboard() {
               onClick={() => setFeedbackCategory('bug-report')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'bug-report' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'bug-report' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'bug-report' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'bug-report' ? '1px solid var(--text-primary)' : `1px solid var(--border-subtle)`,
               }}
             >
               <BugReportIcon isHovered={feedbackCategory === 'bug-report'} />
@@ -2625,9 +2651,9 @@ export function ArtistDashboard() {
               onClick={() => setFeedbackCategory('feature-request')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'feature-request' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'feature-request' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'feature-request' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'feature-request' ? '1px solid var(--text-primary)' : `1px solid var(--border-subtle)`,
               }}
             >
               <FeatureRequestIcon isHovered={feedbackCategory === 'feature-request'} />
@@ -2638,9 +2664,9 @@ export function ArtistDashboard() {
               onClick={() => setFeedbackCategory('other')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'other' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'other' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'other' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'other' ? '1px solid var(--text-primary)' : `1px solid var(--border-subtle)`,
               }}
             >
               <OtherIcon isHovered={feedbackCategory === 'other'} />
@@ -2659,25 +2685,67 @@ export function ArtistDashboard() {
             rows={5}
             value={feedbackText}
             onChange={(e) => setFeedbackText(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
+            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none"
             style={{
               backgroundColor: 'transparent',
-              border: '1px solid rgba(75, 85, 99, 0.5)',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
             onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-            onBlur={(e) => e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
           />
+        </div>
+
+        {/* Media Attachment */}
+        <div>
+          <input
+            ref={feedbackMediaInputRef}
+            type="file"
+            accept="image/*,video/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setFeedbackMedia(file);
+                setFeedbackMediaPreview(URL.createObjectURL(file));
+              }
+            }}
+          />
+          {feedbackMediaPreview ? (
+            <div className="relative inline-block">
+              {feedbackMedia?.type.startsWith('video/') ? (
+                <video src={feedbackMediaPreview} className="max-h-40 rounded-xl object-cover" controls />
+              ) : (
+                <img src={feedbackMediaPreview} alt="Attachment" className="max-h-40 rounded-xl object-cover" />
+              )}
+              <button
+                onClick={() => { setFeedbackMedia(null); setFeedbackMediaPreview(null); }}
+                className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+              >
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => feedbackMediaInputRef.current?.click()}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all hover:brightness-110"
+              style={{ backgroundColor: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Attach image or video
+            </button>
+          )}
         </div>
 
         {/* Submit Button */}
         <div className="flex items-center gap-3 pt-2">
           <button
-            onClick={() => { setFeedbackCategory(null); setFeedbackText(''); }}
+            onClick={() => { setFeedbackCategory(null); setFeedbackText(''); setFeedbackMedia(null); setFeedbackMediaPreview(null); }}
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: 'transparent',
-              border: '1px solid rgba(75, 85, 99, 0.25)',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
           >
@@ -2689,7 +2757,7 @@ export function ArtistDashboard() {
             style={{
               backgroundColor: feedbackCategory && feedbackText.trim() ? 'var(--text-primary)' : 'transparent',
               color: feedbackCategory && feedbackText.trim() ? 'var(--bg-primary)' : 'var(--text-primary)',
-              border: feedbackCategory && feedbackText.trim() ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
+              border: feedbackCategory && feedbackText.trim() ? 'none' : '1px solid var(--border-subtle)',
               opacity: feedbackSubmitting ? 0.7 : 1,
             }}
             disabled={!feedbackCategory || !feedbackText.trim() || feedbackSubmitting}
@@ -2705,70 +2773,40 @@ export function ArtistDashboard() {
   const renderGuides = () => {
     const guideCategories = [
       {
-        icon: (
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
-        ),
+        icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
         title: 'Frequently Asked Questions',
         desc: 'Answers to questions we\'re asked the most often.',
         count: '27 articles',
-        accent: 'rgba(99,102,241,0.15)',
-        accentBorder: 'rgba(99,102,241,0.35)',
-        accentColor: '#818CF8',
       },
       {
-        icon: (
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        ),
+        icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>),
         title: 'The Basics',
         desc: 'How to get started releasing music.',
         count: '18 articles',
-        accent: 'rgba(34,197,94,0.12)',
-        accentBorder: 'rgba(34,197,94,0.3)',
-        accentColor: '#4ADE80',
       },
       {
-        icon: (
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
-        ),
+        icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>),
         title: 'Uploading Music',
         desc: 'Advice on using our Release Builder.',
         count: '23 articles',
-        accent: 'rgba(59,130,246,0.12)',
-        accentBorder: 'rgba(59,130,246,0.3)',
-        accentColor: '#60A5FA',
       },
       {
-        icon: (
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l5.654-4.654m5.654-4.654l3.029-2.498a1.875 1.875 0 012.652 2.652l-3.029 2.497m-5.654 4.654l-3.029 2.497" /></svg>
-        ),
+        icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>),
         title: 'Making Edits',
         desc: 'How to make changes to your releases.',
         count: '5 articles',
-        accent: 'rgba(234,179,8,0.12)',
-        accentBorder: 'rgba(234,179,8,0.3)',
-        accentColor: '#FACC15',
       },
       {
-        icon: (
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>
-        ),
+        icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>),
         title: 'Getting Paid',
         desc: 'How royalties and payouts work on Elevate.',
         count: '12 articles',
-        accent: 'rgba(16,185,129,0.12)',
-        accentBorder: 'rgba(16,185,129,0.3)',
-        accentColor: '#34D399',
       },
       {
-        icon: (
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" /></svg>
-        ),
+        icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 11l19-9-9 19-2-8-8-2z" /></svg>),
         title: 'Campaigns & Earnings',
         desc: 'Submit clips and earn from brand campaigns.',
         count: '9 articles',
-        accent: 'rgba(239,68,68,0.12)',
-        accentBorder: 'rgba(239,68,68,0.3)',
-        accentColor: '#F87171',
       },
     ];
     const filtered = guideCategories.filter(c =>
@@ -2806,20 +2844,24 @@ export function ArtistDashboard() {
           ) : filtered.map((cat, idx) => (
             <button
               key={idx}
-              className="w-full flex items-center gap-5 p-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
+              className="w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
               style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
+              onMouseDown={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseUp={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: cat.accent, border: `1px solid ${cat.accentBorder}`, color: cat.accentColor }}>
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                 {cat.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-base mb-0.5" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
-                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>{cat.desc}</p>
-                <p className="text-xs mt-1" style={{ color: cat.accentColor, opacity: 0.85 }}>{cat.count}</p>
+                <p className="font-semibold text-base mb-1" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{cat.desc}</p>
               </div>
-              <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <span className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{cat.count}</span>
+                <svg className="w-4 h-4" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </div>
             </button>
           ))}
         </div>
@@ -3053,8 +3095,8 @@ export function ArtistDashboard() {
                   <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
-                <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                <p className="text-sm" style={{ color: '#475569' }}>Clean white</p>
+                <h4 className="font-semibold mb-1 text-white">Light</h4>
+                <p className="text-sm text-white">Clean white</p>
               </div>
             </div>
           </div>
@@ -3141,10 +3183,7 @@ export function ArtistDashboard() {
                     <span className="text-base lg:text-lg transition-all duration-200 group-hover:scale-110">{getLanguageIcon(selectedLanguage)}</span>
                     <span className="transition-all duration-200">{selectedLanguage}</span>
                   </div>
-                  <ChevronDown 
-                    className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
-                    style={{ color: 'var(--text-primary)' }} 
-                  />
+                  <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
                 </button>
 
                 {isLanguageDropdownOpen && (
@@ -3309,7 +3348,7 @@ export function ArtistDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.availableBalance')}</h3>
-                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div className="mt-auto">
                   <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
@@ -3320,7 +3359,7 @@ export function ArtistDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Pending balance</h3>
-                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
@@ -3329,7 +3368,7 @@ export function ArtistDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Lifetime earnings</h3>
-                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
@@ -3338,7 +3377,7 @@ export function ArtistDashboard() {
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.affiliateEarnings')}</h3>
-                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
@@ -3508,7 +3547,7 @@ export function ArtistDashboard() {
                   onClick={() => { setShowReleaseForm(true); setReleaseStep(1); }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                    <Music2 className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                   </div>
                   <div className="flex-1">
                     <p className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Standard Release</p>
@@ -3519,7 +3558,7 @@ export function ArtistDashboard() {
                     className="self-start flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110"
                     style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
                     Create New
                   </button>
                 </div>
@@ -3542,7 +3581,7 @@ export function ArtistDashboard() {
                       onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
                     >
                       {releasesFilter}
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${releasesFilterOpen ? 'rotate-180' : ''}`} />
+                      <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${releasesFilterOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     {releasesFilterOpen && (
                       <div className="absolute right-0 z-50 mt-1 rounded-xl overflow-hidden shadow-xl animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', minWidth: '160px' }}>
@@ -3581,7 +3620,7 @@ export function ArtistDashboard() {
               {/* Empty state */}
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                  <Music2 className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                 </div>
                 <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
                   {myReleasesTab === 'in-progress' ? 'No releases in progress' : myReleasesTab === 'complete' ? 'No completed releases' : 'No inactive releases'}
@@ -3639,7 +3678,7 @@ export function ArtistDashboard() {
                   onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
                 >
                   <span className="transition-all duration-200">{value || options[0]}</span>
-                  <ChevronDown className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${open ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} />
+                  <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
                 </button>
                 {open && (
                   <div className="absolute z-50 w-full mt-1 rounded-xl shadow-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
@@ -3679,7 +3718,7 @@ export function ArtistDashboard() {
                 className="flex items-center gap-2 mb-6 text-sm font-medium transition-all hover:opacity-70"
                 style={{ color: 'var(--text-primary)' }}
               >
-                <ChevronDown className="w-4 h-4 rotate-90" />
+                <svg className="w-4 h-4 rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                 Back to My Music
               </button>
 
@@ -3782,14 +3821,14 @@ export function ArtistDashboard() {
                     {/* Info boxes */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex items-start gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
-                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--text-primary)' }} />
+                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
                           Not all genres are available on every store. When a genre you have selected does not exist on a specific store, we will select the closest alternative. The stores we distribute to will use this info when they categorize your release.<br /><br />
                           You must select a primary genre, but a secondary genre is optional.
                         </p>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
-                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--text-primary)' }} />
+                        <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
                           If your tracks have no lyrics, this can be used to target a language-specific audience.
                         </p>
@@ -3811,14 +3850,14 @@ export function ArtistDashboard() {
                           <img src={rf.artworkPreview} alt="Cover art preview" className="w-full h-full object-cover" />
                         ) : (
                           <div className="flex flex-col items-center gap-2">
-                            <ImageIcon className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
+                            <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                             <span className="text-xs" style={{ color: 'var(--text-primary)' }}>No artwork</span>
                           </div>
                         )}
                       </div>
 
                       {/* Requirements */}
-                      <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)' }}>
+                      <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                         <div className="text-sm leading-relaxed space-y-2" style={{ color: 'var(--text-primary)' }}>
                           <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Artwork requirements:</p>
                           <p>Cover art must be a square .jpg or .jpeg file, at least 1400x1400 pixels, not blurry or pixelated and no more than 10MB in size.</p>
@@ -3848,13 +3887,12 @@ export function ArtistDashboard() {
                       />
                       <div
                         ref={artworkDropElRef}
-                        className="aspect-square rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200"
+                        className="flex flex-col items-center justify-center gap-3 p-6 rounded-xl transition-all duration-200 cursor-pointer"
                         style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
                         onClick={() => artworkInputRef.current?.click()}
-                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border-subtle)')}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-primary)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
                       >
-                        <ImageIcon className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
                         <div className="text-center">
                           <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Drag files here</p>
                           <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)' }}>or</p>
@@ -3891,9 +3929,9 @@ export function ArtistDashboard() {
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
                       >
                         {isUploading ? (
-                          <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--text-primary)' }} />
+                          <svg className="w-8 h-8 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--text-primary)' }}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
                         ) : (
-                          <Music2 className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
+                          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                         )}
                         <div className="text-center">
                           <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{isUploading ? 'Uploading...' : 'Drag files here'}</p>
@@ -3907,12 +3945,12 @@ export function ArtistDashboard() {
 
                       {/* Audio requirements */}
                       <div className="flex items-start gap-3 p-4 rounded-xl flex-1" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--text-primary)' }} />
+                        <svg className="w-4 h-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <div className="space-y-1">
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Audio file requirements</p>
                           <div className="space-y-0.5 text-sm" style={{ color: 'var(--text-primary)' }}>
-                            <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file format must be .wav or .mp3 (.wav is preferred)</p>
-                            <p className="flex items-start gap-1"><ChevronRight className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />file size no larger than 200Mb</p>
+                            <p className="flex items-start gap-1"><svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>file format must be .wav or .mp3 (.wav is preferred)</p>
+                            <p className="flex items-start gap-1"><svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>file size no larger than 200Mb</p>
                           </div>
                         </div>
                       </div>
@@ -3939,7 +3977,7 @@ export function ArtistDashboard() {
                       {uploadingTracks.filter(t => !t.done).map((ut, i) => (
                         <div key={i} className="px-5 py-4 space-y-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                           <div className="flex items-center gap-2">
-                            <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
+                            <svg className="w-4 h-4 animate-spin flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--text-primary)' }}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
                             <span className="text-sm truncate flex-1" style={{ color: 'var(--text-primary)' }}>{ut.name}</span>
                           </div>
                           <div className="flex items-center gap-3">
@@ -4017,7 +4055,7 @@ export function ArtistDashboard() {
                             </div>
                             {/* Status */}
                             <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)' }}>
-                              <X className="w-3.5 h-3.5" />
+                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                             </div>
                             {/* Actions */}
                             <div className="flex items-center gap-2">
@@ -4050,7 +4088,7 @@ export function ArtistDashboard() {
                               <div className="flex items-center justify-between pt-5">
                                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Track Editing</p>
                                 <button onClick={() => setEditingTrackIndex(null)} className="flex items-center gap-1.5 text-xs font-semibold transition-all hover:opacity-70" style={{ color: 'var(--text-primary)' }}>
-                                  Close <X className="w-4 h-4" />
+                                  Close <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                 </button>
                               </div>
 
@@ -4182,7 +4220,7 @@ export function ArtistDashboard() {
                                 </div>
                                 <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Do you want to add primary, featuring or remix artists?</p>
                                 <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
-                                  <Plus className="w-4 h-4" /> Add another track artist
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> Add another track artist
                                 </button>
                               </div>
 
@@ -4295,7 +4333,7 @@ export function ArtistDashboard() {
                                 {/* Add more / Copy to all tracks */}
                                 <div className="flex items-center gap-3">
                                   <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
-                                    <Plus className="w-4 h-4" /> Add more
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> Add more
                                   </button>
                                   <button className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-70" style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
                                     Copy to all tracks
@@ -4335,7 +4373,7 @@ export function ArtistDashboard() {
                   {/* Checklist */}
                   <div className="space-y-4">
                     <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                      <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--text-primary)' }} />
+                      <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                       <div>
                         <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Please complete the following checklist before proceeding</p>
                         <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)' }}>Please note that answering incorrectly to any of the following questions may result in delays to your music being sent to retailers.</p>
@@ -4443,7 +4481,7 @@ export function ArtistDashboard() {
                                 <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                                   <span className="text-sm truncate" style={{ color: 'var(--text-primary)' }}>{f.name}</span>
                                   <button onClick={() => setCopyrightDocs(prev => prev.filter((_, j) => j !== i))} style={{ color: 'var(--text-primary)' }}>
-                                    <X className="w-4 h-4" />
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                   </button>
                                 </div>
                               ))}
@@ -4797,7 +4835,7 @@ export function ArtistDashboard() {
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
                   style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                 >
-                  <ArrowLeft className="w-4 h-4" />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
                   {releaseStep > 1 ? 'Back' : 'Cancel'}
                 </button>
 
@@ -4807,7 +4845,7 @@ export function ArtistDashboard() {
                     className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
                     style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                   >
-                    Continue <ChevronRight className="w-4 h-4" />
+                    Continue <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                   </button>
                 ) : (
                   <button

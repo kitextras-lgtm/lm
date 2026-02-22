@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ChevronRight, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { UserSilhouetteIcon } from './UserSilhouetteIcon';
 import { PuzzlePiecesIcon } from './PuzzlePiecesIcon';
@@ -102,7 +101,7 @@ function SettingsMenuItem({
       <div className="flex-1 min-w-0">
         <div className="text-[15px]" style={{ color: 'var(--text-primary)' }}>{displayLabel}</div>
       </div>
-      <ChevronRight className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }} />
+      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M9 18l6-6-6-6"/></svg>
     </div>
   );
 }
@@ -335,7 +334,7 @@ export function SettingsView({
 
         {/* Search Bar */}
         <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-primary)', opacity: 0.5 }} />
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
           <input
             type="text"
             placeholder={t('settings.searchPlaceholder')}
@@ -378,7 +377,7 @@ export function SettingsView({
           
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-primary)', opacity: 0.5 }} />
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             <input
               type="text"
               placeholder={t('settings.searchPlaceholder')}

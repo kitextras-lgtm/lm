@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Search, MessageSquare } from 'lucide-react';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton } from '../components/chat';
 import { useAdminConversations, usePresence, useProfile } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
@@ -229,39 +228,33 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
           <div className="flex gap-1 mb-3 p-1 rounded-lg" style={{ backgroundColor: tokens.bg.input }}>
             <button
               onClick={() => setActiveTab('primary')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${
-                activeTab === 'primary' 
-                  ? 'text-white border border-white/20' 
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
+              className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all"
               style={{ 
-                backgroundColor: activeTab === 'primary' ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                backgroundColor: activeTab === 'primary' ? 'var(--bg-elevated)' : 'transparent',
+                color: 'var(--text-primary)',
+                border: activeTab === 'primary' ? '1px solid var(--text-primary)' : '1px solid transparent'
               }}
             >
               Primary
             </button>
             <button
               onClick={() => setActiveTab('general')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${
-                activeTab === 'general' 
-                  ? 'text-white border border-white/20' 
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
+              className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all"
               style={{ 
-                backgroundColor: activeTab === 'general' ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                backgroundColor: activeTab === 'general' ? 'var(--bg-elevated)' : 'transparent',
+                color: 'var(--text-primary)',
+                border: activeTab === 'general' ? '1px solid var(--text-primary)' : '1px solid transparent'
               }}
             >
               General
             </button>
             <button
               onClick={() => setActiveTab('requests')}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${
-                activeTab === 'requests' 
-                  ? 'text-white border border-white/20' 
-                  : 'text-gray-400 hover:text-gray-300'
-              }`}
+              className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all"
               style={{ 
-                backgroundColor: activeTab === 'requests' ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
+                backgroundColor: activeTab === 'requests' ? 'var(--bg-elevated)' : 'transparent',
+                color: 'var(--text-primary)',
+                border: activeTab === 'requests' ? '1px solid var(--text-primary)' : '1px solid transparent'
               }}
             >
               Requests
@@ -279,9 +272,9 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
                   onClick={() => setActiveTypeFilter(type)}
                   className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all"
                   style={{
-                    backgroundColor: isActive ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)',
-                    border: isActive ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                    color: isActive ? '#ffffff' : 'rgba(255,255,255,0.45)',
+                    backgroundColor: isActive ? 'var(--bg-elevated)' : 'transparent',
+                    border: isActive ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                    color: 'var(--text-primary)',
                   }}
                 >
                   {type !== 'all' && <AccountTypeIcon userType={type} size={10} />}
@@ -292,21 +285,21 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
           </div>
 
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: tokens.text.muted }} />
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search customers..."
               aria-label="Search customers"
-              className="w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
               style={{ 
                 backgroundColor: tokens.bg.input, 
                 border: `1px solid ${tokens.border.default}`,
                 color: tokens.text.primary,
-                outlineColor: 'rgba(148, 163, 184, 0.3)',
-                boxShadow: '0 0 0 1px rgba(148, 163, 184, 0.3)'
               }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
+              onBlur={(e) => e.target.style.borderColor = tokens.border.default}
             />
           </div>
         </div>
@@ -317,7 +310,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
           ) : filteredConversations.length === 0 ? (
             <div className="p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                <MessageSquare className="w-8 h-8" style={{ color: tokens.text.muted }} />
+                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               </div>
               <p className="text-sm font-medium" style={{ color: tokens.text.secondary }}>No conversations found</p>
               <p className="text-xs mt-1" style={{ color: tokens.text.muted }}>Customer conversations will appear here</p>
@@ -357,7 +350,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}>
-                <MessageSquare className="w-10 h-10" style={{ color: tokens.text.muted }} />
+                <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               </div>
               <h2 className="text-xl font-semibold mb-2" style={{ color: tokens.text.primary }}>Select a conversation</h2>
               <p className="text-sm" style={{ color: tokens.text.secondary }}>Choose a customer from the list to start chatting</p>

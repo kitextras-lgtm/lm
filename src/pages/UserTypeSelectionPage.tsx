@@ -34,18 +34,17 @@ export function UserTypeSelectionPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Check if this is an artist, freelancer, or brand signup flow and skip directly to make-profile
+  // Check if this is an artist or freelancer signup flow and skip directly to make-profile
   useEffect(() => {
     const signupSource = localStorage.getItem('signupSource');
     if (signupSource === 'artist') {
+      // Clear the flag and navigate directly to make-profile with artist type
       localStorage.removeItem('signupSource');
       navigate('/make-profile', { state: { userType: 'artist' } });
     } else if (signupSource === 'freelancer') {
+      // Clear the flag and navigate directly to make-profile with freelancer type
       localStorage.removeItem('signupSource');
       navigate('/make-profile', { state: { userType: 'freelancer' } });
-    } else if (signupSource === 'brand') {
-      localStorage.removeItem('signupSource');
-      navigate('/make-profile', { state: { userType: 'business' } });
     }
   }, [navigate]);
 

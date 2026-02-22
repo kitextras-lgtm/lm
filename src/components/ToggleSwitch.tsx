@@ -48,7 +48,7 @@ export function ToggleSwitch({
 
   const thumbTranslateClasses = {
     sm: isActive ? 'translate-x-4' : 'translate-x-0.5',
-    md: isActive ? 'translate-x-6' : 'translate-x-1',
+    md: isActive ? 'translate-x-[26px]' : 'translate-x-1',
     lg: isActive ? 'translate-x-7' : 'translate-x-1'
   };
 

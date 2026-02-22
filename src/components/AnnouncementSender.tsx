@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, AlertTriangle, Users, User, Loader2, X, Search, Palette, Music, AlertCircle, Bell, Trash2, Briefcase } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { debounce } from '../utils/debounce';
 import { useTheme } from '../contexts/ThemeContext';
@@ -268,40 +267,26 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
   };
 
   return (
-    <div className="animate-fade-in">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-            <AlertTriangle className="w-5 h-5" style={{ color: tokens.text.primary }} />
-          </div>
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: tokens.text.primary }}>Send Announcement</h2>
-            <p className="text-sm sm:text-base" style={{ color: tokens.text.secondary }}>
-              Send announcements to all users or specific users
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-6">
+    <div>
+      <div className="space-y-4">
         {/* Announcement Type */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
-          <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Announcement Type
           </label>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <button
               onClick={() => setAnnouncementType('normal')}
               className={`flex-1 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                 announcementType === 'normal' ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: announcementType === 'normal' ? tokens.bg.active : 'transparent',
+                backgroundColor: announcementType === 'normal' ? tokens.bg.elevated : 'transparent',
                 color: 'var(--text-primary)',
-                border: announcementType === 'normal' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                border: announcementType === 'normal' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
               }}
             >
-              <Bell className="w-4 h-4" />
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
               Normal
             </button>
             <button
@@ -310,23 +295,23 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 announcementType === 'serious' ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: announcementType === 'serious' ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
-                color: announcementType === 'serious' ? '#ef4444' : '#F8FAFC',
-                border: announcementType === 'serious' ? '1px solid rgba(239, 68, 68, 0.5)' : '1px solid rgba(75, 85, 99, 0.2)',
+                backgroundColor: announcementType === 'serious' ? tokens.bg.elevated : 'transparent',
+                color: 'var(--text-primary)',
+                border: announcementType === 'serious' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
               }}
             >
-              <AlertCircle className="w-4 h-4" />
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               Serious
             </button>
           </div>
         </div>
 
         {/* Send To Toggle */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
-          <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Recipients
           </label>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             <button
               onClick={() => {
                 setSendToAll(true);
@@ -338,12 +323,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 sendToAll ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: sendToAll ? tokens.bg.active : 'transparent',
+                backgroundColor: sendToAll ? tokens.bg.elevated : 'transparent',
                 color: 'var(--text-primary)',
-                border: sendToAll ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                border: sendToAll ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
               }}
             >
-              <Users className="w-4 h-4" />
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
               Broadcast
             </button>
             <button
@@ -356,12 +341,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 !sendToAll ? '' : 'hover:brightness-110'
               }`}
               style={{
-                backgroundColor: !sendToAll ? tokens.bg.active : 'transparent',
+                backgroundColor: !sendToAll ? tokens.bg.elevated : 'transparent',
                 color: 'var(--text-primary)',
-                border: !sendToAll ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                border: !sendToAll ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
               }}
             >
-              <User className="w-4 h-4" />
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Specific User
             </button>
           </div>
@@ -369,8 +354,8 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
         {/* Target Audience (only shown when broadcasting) */}
         {sendToAll && (
-          <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
-            <label className="block text-sm font-medium mb-4" style={{ color: tokens.text.secondary }}>
+          <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+            <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
               Target Audience
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -380,12 +365,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'all' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'all' ? tokens.bg.active : 'transparent',
+                  backgroundColor: targetAudience === 'all' ? tokens.bg.elevated : 'transparent',
                   color: 'var(--text-primary)',
-                  border: targetAudience === 'all' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                  border: targetAudience === 'all' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
                 }}
               >
-                <Users className="w-4 h-4" />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                 All Users
               </button>
               <button
@@ -394,12 +379,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'creators' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'creators' ? tokens.bg.active : 'transparent',
+                  backgroundColor: targetAudience === 'creators' ? tokens.bg.elevated : 'transparent',
                   color: 'var(--text-primary)',
-                  border: targetAudience === 'creators' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                  border: targetAudience === 'creators' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
                 }}
               >
-                <Palette className="w-4 h-4" />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="14" y="6" width="8" height="12" rx="2"/><path d="M10 6H6a2 2 0 00-2 2v8a2 2 0 002 2h4"/><path d="M14 12H10"/></svg>
                 Creators
               </button>
               <button
@@ -408,12 +393,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'artists' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'artists' ? tokens.bg.active : 'transparent',
+                  backgroundColor: targetAudience === 'artists' ? tokens.bg.elevated : 'transparent',
                   color: 'var(--text-primary)',
-                  border: targetAudience === 'artists' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                  border: targetAudience === 'artists' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
                 }}
               >
-                <Music className="w-4 h-4" />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                 Artists
               </button>
               <button
@@ -422,12 +407,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'businesses' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'businesses' ? tokens.bg.active : 'transparent',
+                  backgroundColor: targetAudience === 'businesses' ? tokens.bg.elevated : 'transparent',
                   color: 'var(--text-primary)',
-                  border: targetAudience === 'businesses' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                  border: targetAudience === 'businesses' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
                 }}
               >
-                <User className="w-4 h-4" />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
                 Business
               </button>
               <button
@@ -436,12 +421,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   targetAudience === 'freelancers' ? '' : 'hover:brightness-110'
                 }`}
                 style={{
-                  backgroundColor: targetAudience === 'freelancers' ? tokens.bg.active : 'transparent',
+                  backgroundColor: targetAudience === 'freelancers' ? tokens.bg.elevated : 'transparent',
                   color: 'var(--text-primary)',
-                  border: targetAudience === 'freelancers' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.2)',
+                  border: targetAudience === 'freelancers' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
                 }}
               >
-                <Briefcase className="w-4 h-4" />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
                 Freelancers
               </button>
             </div>
@@ -451,25 +436,25 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         {/* Username Field (only shown when not sending to all) */}
         {!sendToAll && (
           <div className="rounded-2xl p-6 shadow-xl relative" style={{ backgroundColor: tokens.bg.elevated }}>
-            <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.secondary }}>
+            <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
               Username
             </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <Search className="w-4 h-4" style={{ color: tokens.text.muted }} />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
               </div>
               <input
                 ref={inputRef}
                 type="text"
                 value={username}
                 onChange={(e) => handleUsernameChange(e.target.value)}
-                onFocus={() => {
-                  if (userSuggestions.length > 0) {
-                    setShowSuggestions(true);
-                  }
+                onFocus={e => {
+                  if (userSuggestions.length > 0) setShowSuggestions(true);
+                  e.currentTarget.style.borderColor = 'var(--text-primary)';
                 }}
+                onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
                 placeholder="Type username to search..."
-                className="w-full h-12 pl-10 pr-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+                className="w-full h-12 pl-10 pr-4 rounded-xl text-sm focus:outline-none transition-all"
                 style={{
                   color: tokens.text.primary,
                   background: tokens.bg.input,
@@ -479,7 +464,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <Loader2 className="w-4 h-4 animate-spin" style={{ color: tokens.text.muted }} />
+                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
                 </div>
               )}
             </div>
@@ -510,11 +495,11 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                         @{user.username}
                       </div>
                       {user.full_name && (
-                        <div className="text-xs truncate mt-0.5" style={{ color: tokens.text.secondary }}>
+                        <div className="text-xs truncate mt-0.5" style={{ color: tokens.text.primary, opacity: 0.6 }}>
                           {user.full_name}
                         </div>
                       )}
-                      <div className="text-xs truncate mt-0.5" style={{ color: tokens.text.muted }}>
+                      <div className="text-xs truncate mt-0.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>
                         {user.email}
                       </div>
                     </div>
@@ -531,15 +516,15 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                   borderColor: tokens.border.default,
                 }}
               >
-                <p className="text-sm" style={{ color: tokens.text.secondary }}>No users found</p>
+                <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>No users found</p>
               </div>
             )}
           </div>
         )}
 
         {/* Title Input */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
-          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.secondary }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Title
           </label>
           <input
@@ -547,19 +532,21 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Notification title"
-            className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all"
+            className="w-full h-12 px-4 rounded-xl text-sm focus:outline-none transition-all"
             style={{
               color: 'var(--text-primary)',
               background: tokens.bg.input,
-              border: '1px solid rgba(75, 85, 99, 0.2)',
+              border: `1px solid ${tokens.border.default}`,
             }}
+            onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+            onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
             disabled={isSending}
           />
         </div>
 
         {/* Content Textarea */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: tokens.bg.elevated }}>
-          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.secondary }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+          <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Content
           </label>
           <textarea
@@ -567,12 +554,14 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
             onChange={(e) => setContent(e.target.value)}
             placeholder="Notification content"
             rows={8}
-            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/10 transition-all resize-none"
+            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all resize-none"
             style={{
               color: 'var(--text-primary)',
               background: tokens.bg.input,
-              border: '1px solid rgba(75, 85, 99, 0.2)',
+              border: `1px solid ${tokens.border.default}`,
             }}
+            onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+            onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
             disabled={isSending}
           />
         </div>
@@ -580,21 +569,20 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         {/* Send Result */}
         {sendResult && (
           <div
-            className={`rounded-2xl p-4 border ${
-              sendResult.success ? 'border-green-500/30' : 'border-red-500/30'
-            }`}
+            className="rounded-2xl p-4 border"
             style={{
-              backgroundColor: sendResult.success ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              backgroundColor: tokens.bg.elevated,
+              borderColor: tokens.border.default,
             }}
           >
             <div className="flex items-start gap-3">
               {sendResult.success ? (
-                <Send className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#10b981' }} />
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M20 6L9 17l-5-5"/></svg>
               ) : (
-                <X className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#ef4444' }} />
+                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: tokens.text.primary }}><path d="M18 6L6 18M6 6l12 12"/></svg>
               )}
               <div className="flex-1">
-                <p className="text-sm font-medium" style={{ color: sendResult.success ? '#10b981' : '#ef4444' }}>
+                <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>
                   {sendResult.message}
                 </p>
               </div>
@@ -603,7 +591,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         )}
 
         {/* Send Button */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           {onClose && (
             <button
               onClick={onClose}
@@ -629,12 +617,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
           >
             {isSending ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
                 {isLookingUp ? 'Looking up user...' : 'Sending...'}
               </>
             ) : (
               <>
-                <Send className="w-4 h-4" />
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
                 Send Announcement
               </>
             )}
@@ -645,17 +633,17 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         <div className="mt-10">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold" style={{ color: tokens.text.primary }}>Sent Announcements</h3>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}>
               {sentAnnouncements.length}
             </span>
           </div>
           <div className="h-px mb-6" style={{ backgroundColor: tokens.border.subtle }} />
           {loadingAnnouncements ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-5 h-5 animate-spin" style={{ color: tokens.text.muted }} />
+              <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
             </div>
           ) : sentAnnouncements.length === 0 ? (
-            <p className="text-sm text-center py-8" style={{ color: tokens.text.muted }}>No announcements sent yet</p>
+            <p className="text-sm text-center py-8" style={{ color: tokens.text.primary, opacity: 0.4 }}>No announcements sent yet</p>
           ) : (
             <div className="space-y-3">
               {sentAnnouncements.map((ann) => {
@@ -669,24 +657,24 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                     key={ann.id}
                     className="rounded-xl p-4 border flex items-start gap-4"
                     style={{
-                      backgroundColor: isSerious ? 'rgba(239,68,68,0.07)' : tokens.bg.elevated,
-                      borderColor: isSerious ? 'rgba(239,68,68,0.25)' : tokens.border.default,
+                      backgroundColor: tokens.bg.elevated,
+                      borderColor: tokens.border.default,
                     }}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        {isSerious && <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#ef4444' }} />}
-                        <span className="text-sm font-semibold truncate" style={{ color: isSerious ? '#ef4444' : tokens.text.primary }}>
+                        {isSerious && <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>}
+                        <span className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>
                           {ann.title}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.bg.active, color: tokens.text.muted }}>
+                        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}>
                           {audienceLabel[ann.target_audience] || ann.target_audience}
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed line-clamp-2" style={{ color: tokens.text.secondary }}>
+                      <p className="text-xs leading-relaxed line-clamp-2" style={{ color: tokens.text.primary, opacity: 0.6 }}>
                         {ann.message}
                       </p>
-                      <p className="text-xs mt-1.5" style={{ color: tokens.text.muted }}>
+                      <p className="text-xs mt-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>
                         {new Date(ann.sent_at || ann.created_at).toLocaleString()}
                       </p>
                     </div>
@@ -694,12 +682,12 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                       onClick={() => handleDeleteAnnouncement(ann.id)}
                       disabled={deletingId === ann.id}
                       className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-40"
-                      style={{ backgroundColor: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+                      style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
                       title="Delete announcement"
                     >
                       {deletingId === ann.id
-                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        : <Trash2 className="w-3.5 h-3.5" />}
+                        ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
+                        : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>}
                     </button>
                   </div>
                 );

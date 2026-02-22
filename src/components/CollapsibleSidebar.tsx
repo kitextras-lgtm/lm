@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   AdminApplicationsIconSVG, 
-  AdminAlertsIconSVG, 
   AdminMessagesIconSVG, 
   AdminUsersIconSVG, 
   AdminDataIconSVG,
@@ -601,7 +600,6 @@ const getNavItems = (userType?: 'artist' | 'creator' | 'freelancer' | 'business'
     return [
       { id: 'home', label: tr('nav.home', 'Home'), Icon: HomeIconSVG },
       { id: 'applications', label: 'Applications', Icon: AdminApplicationsIconSVG },
-      { id: 'alerts', label: 'Alerts', Icon: AdminAlertsIconSVG },
       { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: AdminMessagesIconSVG },
       { id: 'users', label: 'Users', Icon: AdminUsersIconSVG },
       { id: 'feedback', label: 'Feedback', Icon: AdminFeedbackIconSVG },

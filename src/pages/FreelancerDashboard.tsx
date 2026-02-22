@@ -2164,31 +2164,11 @@ export function FreelancerDashboard() {
 
   const renderGuides = () => {
     const guideCategories = [
-      {
-        icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>),
-        title: 'Frequently Asked Questions', desc: 'Answers to questions we\'re asked the most often.', count: '27 articles',
-        accent: 'rgba(99,102,241,0.15)', accentBorder: 'rgba(99,102,241,0.35)', accentColor: '#818CF8',
-      },
-      {
-        icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
-        title: 'The Basics', desc: 'How to get started on Elevate.', count: '18 articles',
-        accent: 'rgba(34,197,94,0.12)', accentBorder: 'rgba(34,197,94,0.3)', accentColor: '#4ADE80',
-      },
-      {
-        icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>),
-        title: 'Building Your Portfolio', desc: 'Tips for showcasing your work effectively.', count: '15 articles',
-        accent: 'rgba(59,130,246,0.12)', accentBorder: 'rgba(59,130,246,0.3)', accentColor: '#60A5FA',
-      },
-      {
-        icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>),
-        title: 'Getting Paid', desc: 'How royalties and payouts work on Elevate.', count: '12 articles',
-        accent: 'rgba(16,185,129,0.12)', accentBorder: 'rgba(16,185,129,0.3)', accentColor: '#34D399',
-      },
-      {
-        icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" /></svg>),
-        title: 'Campaigns & Earnings', desc: 'Submit clips and earn from brand campaigns.', count: '9 articles',
-        accent: 'rgba(239,68,68,0.12)', accentBorder: 'rgba(239,68,68,0.3)', accentColor: '#F87171',
-      },
+      { icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>), title: 'Frequently Asked Questions', desc: 'Answers to questions we\'re asked the most often.', count: '27 articles' },
+      { icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>), title: 'The Basics', desc: 'How to get started on Elevate.', count: '18 articles' },
+      { icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>), title: 'Building Your Portfolio', desc: 'Tips for showcasing your work effectively.', count: '15 articles' },
+      { icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>), title: 'Getting Paid', desc: 'How royalties and payouts work on Elevate.', count: '12 articles' },
+      { icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 11l19-9-9 19-2-8-8-2z" /></svg>), title: 'Campaigns & Earnings', desc: 'Submit clips and earn from brand campaigns.', count: '9 articles' },
     ];
     const filtered = guideCategories.filter(c =>
       !guideSearch.trim() ||
@@ -2214,20 +2194,24 @@ export function FreelancerDashboard() {
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-sm" style={{ color: '#CBD5E1' }}>No articles found for "{guideSearch}"</div>
           ) : filtered.map((cat, idx) => (
-            <button key={idx} className="w-full flex items-center gap-5 p-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
+            <button key={idx} className="w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
               style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
+              onMouseDown={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseUp={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: cat.accent, border: `1px solid ${cat.accentBorder}`, color: cat.accentColor }}>
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                 {cat.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-base mb-0.5" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>{cat.desc}</p>
-                <p className="text-xs mt-1" style={{ color: cat.accentColor }}>{cat.count}</p>
+                <p className="font-semibold text-base mb-1" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{cat.desc}</p>
               </div>
-              <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <span className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{cat.count}</span>
+                <svg className="w-4 h-4" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </div>
             </button>
           ))}
         </div>
@@ -2248,9 +2232,9 @@ export function FreelancerDashboard() {
               onClick={() => setFeedbackCategory('suggestion')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'suggestion' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'suggestion' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'suggestion' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'suggestion' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <SuggestionIcon isHovered={feedbackCategory === 'suggestion'} />
@@ -2261,9 +2245,9 @@ export function FreelancerDashboard() {
               onClick={() => setFeedbackCategory('bug-report')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'bug-report' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'bug-report' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'bug-report' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'bug-report' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <BugReportIcon isHovered={feedbackCategory === 'bug-report'} />
@@ -2274,9 +2258,9 @@ export function FreelancerDashboard() {
               onClick={() => setFeedbackCategory('feature-request')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'feature-request' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'feature-request' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'feature-request' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'feature-request' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <FeatureRequestIcon isHovered={feedbackCategory === 'feature-request'} />
@@ -2287,9 +2271,9 @@ export function FreelancerDashboard() {
               onClick={() => setFeedbackCategory('other')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'other' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'other' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'other' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'other' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <OtherIcon isHovered={feedbackCategory === 'other'} />
@@ -2306,12 +2290,14 @@ export function FreelancerDashboard() {
           <textarea
             placeholder={t('feedback.feedbackPlaceholder')}
             rows={5}
-            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
+            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none"
             style={{
               backgroundColor: 'transparent',
-              border: '1px solid rgba(75, 85, 99, 0.5)',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
           />
         </div>
 
@@ -2322,7 +2308,7 @@ export function FreelancerDashboard() {
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: 'transparent',
-              border: '1px solid rgba(75, 85, 99, 0.25)',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
           >
@@ -2332,8 +2318,8 @@ export function FreelancerDashboard() {
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
             style={{
               backgroundColor: feedbackCategory ? 'var(--text-primary)' : 'transparent',
-              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-secondary)',
-              border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
+              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-primary)',
+              border: feedbackCategory ? 'none' : '1px solid var(--border-subtle)',
             }}
             disabled={!feedbackCategory}
           >
@@ -2560,8 +2546,8 @@ export function FreelancerDashboard() {
                   <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
-                <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                <p className="text-sm" style={{ color: '#64748B' }}>Clean white</p>
+                <h4 className="font-semibold mb-1 text-white">Light</h4>
+                <p className="text-sm text-white">Clean white</p>
               </div>
             </div>
           </div>

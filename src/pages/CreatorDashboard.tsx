@@ -2406,22 +2406,24 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         </div>
         <div className="space-y-3">
           {filtered.length === 0 ? (
-            <div className="py-12 text-center text-sm" style={{ color: '#CBD5E1' }}>No articles found for "{guideSearch}"</div>
+            <div className="py-12 text-center text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>No articles found for "{guideSearch}"</div>
           ) : filtered.map((cat, idx) => (
-            <button key={idx} className="w-full flex items-center gap-5 p-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
+            <button key={idx} className="w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
               style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
+              onMouseDown={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onMouseUp={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: cat.accent, border: `1px solid ${cat.accentBorder}`, color: cat.accentColor }}>
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                 {cat.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-base mb-0.5" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
-                <p className="text-sm" style={{ color: '#CBD5E1' }}>{cat.desc}</p>
-                <p className="text-xs mt-1" style={{ color: cat.accentColor }}>{cat.count}</p>
+                <p className="font-semibold text-base mb-1" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{cat.desc}</p>
+                <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{cat.count}</p>
               </div>
-              <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+              <svg className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
           ))}
         </div>
@@ -2442,9 +2444,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               onClick={() => setFeedbackCategory('suggestion')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'suggestion' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'suggestion' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'suggestion' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'suggestion' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <SuggestionIcon isHovered={feedbackCategory === 'suggestion'} />
@@ -2455,9 +2457,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               onClick={() => setFeedbackCategory('bug-report')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'bug-report' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'bug-report' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'bug-report' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'bug-report' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <BugReportIcon isHovered={feedbackCategory === 'bug-report'} />
@@ -2468,9 +2470,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               onClick={() => setFeedbackCategory('feature-request')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'feature-request' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'feature-request' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'feature-request' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'feature-request' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <FeatureRequestIcon isHovered={feedbackCategory === 'feature-request'} />
@@ -2481,9 +2483,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               onClick={() => setFeedbackCategory('other')}
               className="w-full text-left px-3 py-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-3 hover:brightness-105"
               style={{
-                backgroundColor: feedbackCategory === 'other' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                backgroundColor: feedbackCategory === 'other' ? 'var(--bg-elevated)' : 'transparent',
                 color: 'var(--text-primary)',
-                border: feedbackCategory === 'other' ? '1px solid rgba(148, 163, 184, 0.3)' : '1px solid rgba(75, 85, 99, 0.25)',
+                border: feedbackCategory === 'other' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
               }}
             >
               <OtherIcon isHovered={feedbackCategory === 'other'} />
@@ -2500,12 +2502,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           <textarea
             placeholder={t('feedback.feedbackPlaceholder')}
             rows={5}
-            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-slate-400 hover:border-slate-500/40"
+            className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none"
             style={{
               backgroundColor: 'transparent',
-              border: '1px solid rgba(75, 85, 99, 0.5)',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
           />
         </div>
 
@@ -2516,7 +2520,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: 'transparent',
-              border: '1px solid rgba(75, 85, 99, 0.25)',
+              border: '1px solid var(--border-subtle)',
               color: 'var(--text-primary)',
             }}
           >
@@ -2526,8 +2530,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:brightness-105"
             style={{
               backgroundColor: feedbackCategory ? 'var(--text-primary)' : 'transparent',
-              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-secondary)',
-              border: feedbackCategory ? 'none' : '1px solid rgba(75, 85, 99, 0.25)',
+              color: feedbackCategory ? 'var(--bg-primary)' : 'var(--text-primary)',
+              border: feedbackCategory ? 'none' : '1px solid var(--border-subtle)',
             }}
             disabled={!feedbackCategory}
           >
@@ -2754,8 +2758,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
-                <h4 className="font-semibold mb-1" style={{ color: '#0F172A' }}>Light</h4>
-                <p className="text-sm" style={{ color: '#64748B' }}>Clean white</p>
+                <h4 className="font-semibold mb-1 text-white">Light</h4>
+                <p className="text-sm text-white">Clean white</p>
               </div>
             </div>
           </div>
