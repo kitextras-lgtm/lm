@@ -396,11 +396,11 @@ function BrandPartnershipsVisual() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   const cards = [
-    { name: 'Pulse',   category: 'Health Tech',   deal: '$8,400' },
-    { name: 'Vertex',  category: 'SaaS Platform',  deal: '$12,000' },
-    { name: 'Nexus',   category: 'Fashion Brand',  deal: '$6,200' },
-    { name: 'Quantum', category: 'Consumer App',   deal: '$9,800' },
-    { name: 'Zenith',  category: 'Media Network',  deal: '$15,500' },
+    { name: 'Pulse',   category: 'Newsletter',         deal: '$8,400' },
+    { name: 'Vertex',  category: 'Education Platform', deal: '$12,000' },
+    { name: 'Nexus',   category: 'VPN Provider',       deal: '$6,200' },
+    { name: 'Quantum', category: 'Consumer App',       deal: '$9,800' },
+    { name: 'Zenith',  category: 'E-Commerce',         deal: '$15,500' },
   ];
 
   const n = cards.length;
@@ -421,7 +421,7 @@ function BrandPartnershipsVisual() {
       <div className="text-xs mb-3" style={{ color: '#888' }}>200+ matched partners</div>
 
       {/* Horizontal card spread */}
-      <div className="relative mb-3" style={{ height: '136px' }}>
+      <div className="relative mb-3" style={{ height: '120px' }}>
         <div style={{ position: 'absolute', bottom: 0, left: '50%' }}>
           {cards.map((card, i) => {
             const isHov = hovered === i;
@@ -662,100 +662,84 @@ function ConsultingVisual() {
 function MarketplaceVisual() {
   const { ref, inView } = useInView();
   const entered = useEnteredDelay(inView);
-  const clients = useCountUp(340, 1400, entered);
-  const [tick, setTick] = useState(0);
+  const score = useCountUp(72, 98, entered);
 
-  useEffect(() => {
-    if (!entered) return;
-    let frame: number;
-    let start: number | null = null;
-    const animate = (ts: number) => {
-      if (!start) start = ts;
-      setTick((ts - start) / 1000);
-      frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [entered]);
-
-  const CX = 70, CY = 52, ORX = 42, ORY = 13;
-  const figureOffsets = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
-
-  const rings = [
-    { ry: 8,  y: 38 },
-    { ry: 14, y: 52 },
-    { ry: 10, y: 66 },
+  const judges = [
+    { role: 'UGC Creator',          score: 97, delay: 0.05 },
+    { role: 'Video Editor',          score: 94, delay: 0.12 },
+    { role: 'Short-Form Specialist', score: 98, delay: 0.19 },
+    { role: 'Brand Strategist',      score: 91, delay: 0.26 },
   ];
-  const cities = [
-    { cx: 52, cy: 42 }, { cx: 82, cy: 38 }, { cx: 62, cy: 58 },
-    { cx: 88, cy: 56 }, { cx: 46, cy: 62 }, { cx: 76, cy: 66 },
-    { cx: 68, cy: 34 }, { cx: 58, cy: 70 },
+
+  const criteria = [
+    { label: 'Audience Fit',   pct: 96, delay: 0.3 },
+    { label: 'Engagement',     pct: 91, delay: 0.38 },
+    { label: 'Content Quality',pct: 94, delay: 0.46 },
   ];
 
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      {/* Header */}
       <div className="flex items-center justify-between mb-1">
-        <div className="text-sm font-semibold" style={{ color: '#111' }}>Global Clients</div>
-        <span className="text-xs font-bold" style={{ color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.8s' }}>{clients}+ active</span>
+        <div className="text-sm font-semibold" style={{ color: '#111' }}>Creator Scorecard</div>
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+          style={{ background: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.1s' }}
+        >
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#4ade80' }} />
+          <span className="text-[10px] font-semibold" style={{ color: '#fff' }}>Live Review</span>
+        </div>
       </div>
-      <div className="text-xs mb-3" style={{ color: '#888' }}>Clients from around the world</div>
+      <div className="text-xs mb-4" style={{ color: '#888' }}>Panel of {judges.length} industry judges</div>
 
-      <div className="flex items-center justify-center mb-3" style={{ height: '130px' }}>
-        <svg width="140" height="110" viewBox="0 0 140 110" fill="none">
-          {/* Globe sphere */}
-          <ellipse cx={CX} cy={CY} rx="38" ry="38"
-            fill="#f0f0f0" stroke="#d1d5db" strokeWidth="1"
-            style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease' }}
-          />
-          {/* Latitude rings */}
-          {rings.map((r, i) => (
-            <ellipse key={i} cx={CX} cy={r.y} rx="38" ry={r.ry}
-              fill="none" stroke="#bbb" strokeWidth="0.8"
-              style={{ opacity: entered ? 0.5 : 0, transition: `opacity 0.5s ease ${0.1 + i * 0.08}s` }}
-            />
-          ))}
-          {/* Meridian */}
-          <ellipse cx={CX} cy={CY} rx="1" ry="38"
-            fill="none" stroke="#bbb" strokeWidth="0.8"
-            style={{ opacity: entered ? 0.4 : 0, transition: 'opacity 0.5s ease 0.2s' }}
-          />
-          {/* City dots */}
-          {cities.map((c, i) => (
-            <circle key={i} cx={c.cx} cy={c.cy} r="2" fill="#999"
-              style={{ opacity: entered ? 1 : 0, transition: `opacity 0.3s ease ${0.3 + i * 0.06}s` }}
-            />
-          ))}
-          {/* Orbiting stick figures driven by rAF tick */}
-          {figureOffsets.map((offset, fi) => {
-            const angle = tick * (Math.PI / 4) + offset;
-            const fx = CX + Math.cos(angle) * ORX;
-            const fy = CY + Math.sin(angle) * ORY;
-            return (
-              <g key={fi} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.5s ease ${0.5 + fi * 0.12}s` }}>
-                {/* head */}
-                <circle cx={fx} cy={fy - 5} r="3" fill="#111" />
-                {/* body */}
-                <line x1={fx} y1={fy - 2} x2={fx} y2={fy + 5} stroke="#111" strokeWidth="1.4" strokeLinecap="round" />
-                {/* arms */}
-                <line x1={fx - 3.5} y1={fy + 1} x2={fx + 3.5} y2={fy + 1} stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
-                {/* legs */}
-                <line x1={fx} y1={fy + 5} x2={fx - 2.5} y2={fy + 9} stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
-                <line x1={fx} y1={fy + 5} x2={fx + 2.5} y2={fy + 9} stroke="#111" strokeWidth="1.2" strokeLinecap="round" />
-              </g>
-            );
-          })}
-        </svg>
+      {/* Overall score */}
+      <div
+        className="flex items-center justify-between px-3 py-3 rounded-xl mb-3"
+        style={{ background: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}
+      >
+        <div>
+          <div className="text-[10px] font-medium mb-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>Overall Score</div>
+          <div className="text-2xl font-bold" style={{ color: '#fff' }}>{score}<span className="text-sm font-normal" style={{ color: 'rgba(255,255,255,0.4)' }}>/100</span></div>
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Verdict</div>
+          <div className="text-xs font-bold mt-0.5" style={{ color: '#4ade80' }}>Approved</div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { label: 'Countries', value: '48' },
-          { label: 'Avg. Deal', value: '$4.8K' },
-          { label: 'Repeat Rate', value: '76%' },
-        ].map((s, i) => (
-          <div key={s.label} className="p-2.5 rounded-xl text-center" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${0.5 + i * 0.07}s, transform 0.4s ease ${0.5 + i * 0.07}s` }}>
-            <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
-            <div className="text-[9px]" style={{ color: '#888' }}>{s.label}</div>
+      {/* Judge panel */}
+      <div className="space-y-1.5 mb-3">
+        {judges.map((j) => (
+          <div
+            key={j.role}
+            className="flex items-center justify-between px-3 py-2 rounded-lg"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateX(-6px)', transition: `opacity 0.35s ease ${j.delay}s, transform 0.35s ease ${j.delay}s` }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#e5e7eb' }}>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <circle cx="5" cy="3.5" r="2" fill="#555" />
+                  <path d="M1 9c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="#555" strokeWidth="1" strokeLinecap="round" fill="none" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-medium" style={{ color: '#333' }}>{j.role}</span>
+            </div>
+            <span className="text-[11px] font-bold" style={{ color: '#111' }}>{j.score}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Criteria bars */}
+      <div className="space-y-1.5">
+        {criteria.map((c) => (
+          <div key={c.label} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${c.delay}s` }}>
+            <div className="flex justify-between mb-1">
+              <span className="text-[9px]" style={{ color: '#888' }}>{c.label}</span>
+              <span className="text-[9px] font-semibold" style={{ color: '#111' }}>{c.pct}%</span>
+            </div>
+            <div className="w-full h-1 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${c.pct}%` : '0%', background: '#111', transition: `width 0.8s cubic-bezier(0.4,0,0.2,1) ${c.delay + 0.1}s` }} />
+            </div>
           </div>
         ))}
       </div>

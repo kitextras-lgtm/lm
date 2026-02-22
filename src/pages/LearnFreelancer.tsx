@@ -475,16 +475,22 @@ function FAQItem({ item, index, isOpen, onToggle }: { item: { question: string; 
         </button>
         
         <div
-          className="overflow-hidden transition-all duration-300 ease-out"
-          style={{ maxHeight: isOpen ? '500px' : '0px', opacity: isOpen ? 1 : 0 }}
+          style={{
+            display: 'grid',
+            gridTemplateRows: isOpen ? '1fr' : '0fr',
+            opacity: isOpen ? 1 : 0,
+            transition: 'grid-template-rows 0.4s ease, opacity 0.3s ease',
+          }}
         >
-          <div className="pb-5">
-            <p 
-              className="text-base leading-relaxed max-w-3xl"
-              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
-            >
-              {item.answer}
-            </p>
+          <div style={{ overflow: 'hidden' }}>
+            <div className="pb-5">
+              <p 
+                className="text-base leading-relaxed max-w-3xl"
+                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+              >
+                {item.answer}
+              </p>
+            </div>
           </div>
         </div>
       </div>

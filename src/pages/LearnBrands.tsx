@@ -1,7 +1,6 @@
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface BrandFeature {
@@ -299,38 +298,54 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
   return (
     <div
-      className="border-b pb-6"
-      style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
+      className="overflow-hidden"
+      style={{
+        borderRadius: '16px',
+        background: 'rgba(255, 255, 255, 0.02)',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        marginBottom: '12px',
+      }}
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex justify-between items-start text-left group"
+        className="w-full px-5 py-5 text-left flex items-center justify-between"
+        style={{ background: isOpen ? 'rgba(255, 255, 255, 0.02)' : 'transparent' }}
       >
         <span
-          className="text-lg font-medium pr-8 transition-colors"
-          style={{ color: '#ffffff' }}
+          className="text-base md:text-lg font-medium pr-4 leading-tight"
+          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff', fontWeight: 500 }}
         >
           {question}
         </span>
-        <span className="flex-shrink-0 mt-1">
-          {isOpen ? (
-            <Minus className="w-5 h-5" style={{ color: '#ffffff' }} />
-          ) : (
-            <Plus className="w-5 h-5" style={{ color: '#ffffff' }} />
-          )}
-        </span>
-      </button>
-      {isOpen && (
-        <p
-          className="mt-4 leading-relaxed"
-          style={{
-            color: '#cccccc',
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
-          }}
+        <svg
+          className="flex-shrink-0"
+          width="20" height="20" viewBox="0 0 20 20" fill="none"
+          style={{ color: '#999', transition: 'transform 0.3s ease', transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}
         >
-          {answer}
-        </p>
-      )}
+          <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      </button>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateRows: isOpen ? '1fr' : '0fr',
+          opacity: isOpen ? 1 : 0,
+          transition: 'grid-template-rows 0.4s ease, opacity 0.3s ease',
+        }}
+      >
+        <div style={{ overflow: 'hidden' }}>
+          <div className="px-5 pb-5">
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '16px' }}>
+              <p
+                className="text-base leading-relaxed"
+                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+              >
+                {answer}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -132,7 +132,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
             )}
 
             <div
-              className={`relative rounded-2xl overflow-hidden transition-all duration-200 min-w-0 ${
+              className={`relative rounded-2xl overflow-hidden transition-all duration-200 min-w-[2.5rem] ${
                 message.type === 'image' && !message.content ? 'p-0' : ''
               }`}
               style={isOwn ? { backgroundColor: theme.messageBubbleOwn, color: theme.messageBubbleOwnText } : { backgroundColor: theme.messageBubbleOther, color: theme.messageBubbleOtherText }}
