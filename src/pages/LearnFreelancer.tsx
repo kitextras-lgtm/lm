@@ -1,7 +1,6 @@
 import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 interface FreelancerFeature {
@@ -77,23 +76,83 @@ const freelancerFAQ = [
   }
 ];
 
+// --- Local animation hooks ---
+
+function useInView(threshold = 0.25) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const fired = useRef(false);
+  useEffect(() => {
+    if (fired.current) return;
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !fired.current) {
+          fired.current = true;
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
+function useEnteredDelay(inView: boolean, delay = 900) {
+  const [entered, setEntered] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firedRef = useRef(false);
+  useEffect(() => {
+    if (!inView || firedRef.current) return;
+    firedRef.current = true;
+    timerRef.current = setTimeout(() => setEntered(true), delay);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [inView, delay]);
+  return entered;
+}
+
+function useCountUp(target: number, duration = 1400, start = false) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime: number | null = null;
+    const step = (ts: number) => {
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      setValue(Math.floor(progress * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [start, target, duration]);
+  return value;
+}
+
 // --- Visual Mockup Components ---
 
 function MarketplaceVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const projects = [
+    { client: 'Tech Startup',   project: 'Brand Identity Design', budget: '$4,500', flag: 'US', delay: 0 },
+    { client: 'E-commerce Co.', project: 'Product Photography',   budget: '$2,800', flag: 'UK', delay: 0.08 },
+    { client: 'SaaS Platform',  project: 'UI/UX Redesign',        budget: '$7,200', flag: 'DE', delay: 0.16 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Active Projects</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Matched to your skills</div>
-      <div className="space-y-3">
-        {[
-          { client: 'Tech Startup', project: 'Brand Identity Design', budget: '$4,500', flag: 'US' },
-          { client: 'E-commerce Co.', project: 'Product Photography', budget: '$2,800', flag: 'UK' },
-          { client: 'SaaS Platform', project: 'UI/UX Redesign', budget: '$7,200', flag: 'DE' },
-        ].map((p) => (
-          <div key={p.project} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: '#e5e7eb', color: '#555' }}>
-              {p.flag}
-            </div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-sm font-semibold" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Active Projects</div>
+        <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', opacity: inView ? 1 : 0, animation: inView ? 'pulse 2s infinite' : 'none' }} />
+      </div>
+      <div className="text-xs mb-4" style={{ color: '#888', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>Matched to your skills</div>
+      <div className="space-y-2.5 mb-3">
+        {projects.map((p) => (
+          <div key={p.project} className="flex items-center gap-3 p-3 rounded-xl"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${p.delay}s, transform 0.45s ease ${p.delay}s` }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: '#e5e7eb', color: '#555' }}>{p.flag}</div>
             <div className="flex-1">
               <div className="text-xs font-medium" style={{ color: '#111' }}>{p.project}</div>
               <div className="text-[10px]" style={{ color: '#888' }}>{p.client}</div>
@@ -102,7 +161,8 @@ function MarketplaceVisual() {
           </div>
         ))}
       </div>
-      <div className="mt-3 px-3 py-2.5 rounded-xl text-center text-xs font-medium" style={{ background: '#dcfce7', color: '#166534' }}>
+      <div className="px-3 py-2.5 rounded-xl text-center text-xs font-medium"
+        style={{ background: '#f0f0f0', color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
         47 new projects this week
       </div>
     </div>
@@ -110,31 +170,39 @@ function MarketplaceVisual() {
 }
 
 function PaymentsVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const balance  = useCountUp(3240,  1400, entered);
+  const lifetime = useCountUp(28450, 1800, entered);
+  const txns = [
+    { date: 'Feb 15', desc: 'Brand Identity Project', amount: '+$4,500', delay: 0 },
+    { date: 'Feb 8',  desc: 'UI/UX Consultation',     amount: '+$1,200', delay: 0.08 },
+    { date: 'Feb 1',  desc: 'Logo Design Package',    amount: '+$2,800', delay: 0.16 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Earnings Overview</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-4" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Earnings Overview</div>
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-          <div className="text-[10px]" style={{ color: '#888' }}>Available balance</div>
-          <div className="text-lg font-bold" style={{ color: '#111' }}>$3,240</div>
-        </div>
-        <div className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-          <div className="text-[10px]" style={{ color: '#888' }}>Lifetime earnings</div>
-          <div className="text-lg font-bold" style={{ color: '#111' }}>$28,450</div>
-        </div>
+        {[
+          { label: 'Available balance', value: `$${balance.toLocaleString()}`,  delay: 0.05 },
+          { label: 'Lifetime earnings', value: `$${lifetime.toLocaleString()}`, delay: 0.12 },
+        ].map((s) => (
+          <div key={s.label} className="p-3 rounded-xl"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
+            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-lg font-bold" style={{ color: '#111' }}>{s.value}</div>
+          </div>
+        ))}
       </div>
       <div className="space-y-2">
-        {[
-          { date: 'Feb 15', desc: 'Brand Identity Project', amount: '+$4,500', status: 'Paid' },
-          { date: 'Feb 8', desc: 'UI/UX Consultation', amount: '+$1,200', status: 'Paid' },
-          { date: 'Feb 1', desc: 'Logo Design Package', amount: '+$2,800', status: 'Paid' },
-        ].map((t) => (
-          <div key={t.date} className="flex items-center justify-between p-2.5 rounded-lg" style={{ background: '#f0f0f0' }}>
+        {txns.map((t) => (
+          <div key={t.date} className="flex items-center justify-between p-2.5 rounded-lg"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${t.delay + 0.2}s, transform 0.4s ease ${t.delay + 0.2}s` }}>
             <div className="flex items-center gap-2">
               <div className="text-[10px]" style={{ color: '#888' }}>{t.date}</div>
               <div className="text-xs font-medium" style={{ color: '#111' }}>{t.desc}</div>
             </div>
-            <span className="text-xs font-bold" style={{ color: '#166534' }}>{t.amount}</span>
+            <span className="text-xs font-bold" style={{ color: '#111' }}>{t.amount}</span>
           </div>
         ))}
       </div>
@@ -143,17 +211,22 @@ function PaymentsVisual() {
 }
 
 function CareerVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const projects = useCountUp(47, 1200, entered);
+  const reviews  = useCountUp(43, 1200, entered);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="flex items-center gap-3 mb-4">
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center gap-3 mb-4"
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease, transform 0.45s ease' }}>
         <div className="w-12 h-12 rounded-full" style={{ background: '#e5e7eb' }} />
         <div>
           <div className="text-sm font-semibold" style={{ color: '#111' }}>Your Profile</div>
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <div key={s} className="w-3 h-3" style={{ color: '#111' }}>
-                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-              </div>
+          <div className="flex items-center gap-0.5 mt-0.5">
+            {[1,2,3,4,5].map((s) => (
+              <svg key={s} width="11" height="11" viewBox="0 0 20 20" fill="#111">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
             ))}
             <span className="text-xs font-medium ml-1" style={{ color: '#111' }}>5.0</span>
           </div>
@@ -161,17 +234,19 @@ function CareerVisual() {
       </div>
       <div className="grid grid-cols-3 gap-3 mb-4">
         {[
-          { label: 'Projects', value: '47' },
-          { label: 'Reviews', value: '43' },
-          { label: 'Repeat', value: '89%' },
+          { label: 'Projects', value: projects, delay: 0.05 },
+          { label: 'Reviews',  value: reviews,  delay: 0.12 },
+          { label: 'Repeat',   value: '89%',    delay: 0.19 },
         ].map((s) => (
-          <div key={s.label} className="text-center p-2.5 rounded-xl" style={{ background: '#f0f0f0' }}>
+          <div key={s.label} className="text-center p-2.5 rounded-xl"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
             <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
             <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
           </div>
         ))}
       </div>
-      <div className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
+      <div className="p-3 rounded-xl"
+        style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.3s, transform 0.45s ease 0.3s' }}>
         <div className="text-xs font-medium mb-1" style={{ color: '#111' }}>"Exceptional work and communication"</div>
         <div className="text-[10px]" style={{ color: '#888' }}>— Recent client review</div>
       </div>
@@ -180,27 +255,29 @@ function CareerVisual() {
 }
 
 function MatchingVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const skills = [
+    { skill: 'UI/UX Design',    pct: 98, projects: '12 available', delay: 0 },
+    { skill: 'Brand Identity',  pct: 95, projects: '8 available',  delay: 0.08 },
+    { skill: 'Motion Graphics', pct: 87, projects: '5 available',  delay: 0.16 },
+    { skill: 'Web Development', pct: 82, projects: '15 available', delay: 0.24 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Skill Match</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-4" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Skill Match</div>
       <div className="space-y-3">
-        {[
-          { skill: 'UI/UX Design', match: '98%', projects: '12 available' },
-          { skill: 'Brand Identity', match: '95%', projects: '8 available' },
-          { skill: 'Motion Graphics', match: '87%', projects: '5 available' },
-          { skill: 'Web Development', match: '82%', projects: '15 available' },
-        ].map((s) => (
-          <div key={s.skill} className="flex items-center gap-3">
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium" style={{ color: '#111' }}>{s.skill}</span>
-                <span className="text-xs font-bold" style={{ color: '#166534' }}>{s.match}</span>
-              </div>
-              <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
-                <div className="h-full rounded-full" style={{ width: s.match, background: '#111' }} />
-              </div>
-              <div className="text-[10px] mt-0.5" style={{ color: '#888' }}>{s.projects}</div>
+        {skills.map((s) => (
+          <div key={s.skill}
+            style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium" style={{ color: '#111' }}>{s.skill}</span>
+              <span className="text-xs font-bold" style={{ color: '#111' }}>{s.pct}%</span>
             </div>
+            <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${s.pct}%` : '0%', background: '#111', transition: `width 0.7s cubic-bezier(0.34,1,0.64,1) ${s.delay + 0.1}s` }} />
+            </div>
+            <div className="text-[10px] mt-0.5" style={{ color: '#888' }}>{s.projects}</div>
           </div>
         ))}
       </div>
@@ -209,31 +286,40 @@ function MatchingVisual() {
 }
 
 function FlexibleVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const days   = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  const widths = [75, 100, 50, 100, 25];
+  const hours  = [6, 8, 4, 8, 2];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Your Schedule</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-4" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Your Schedule</div>
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-          <div className="text-[10px]" style={{ color: '#888' }}>Hourly Rate</div>
-          <div className="text-lg font-bold" style={{ color: '#111' }}>$85/hr</div>
-        </div>
-        <div className="p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-          <div className="text-[10px]" style={{ color: '#888' }}>This Week</div>
-          <div className="text-lg font-bold" style={{ color: '#111' }}>24 hrs</div>
-        </div>
-      </div>
-      <div className="space-y-2">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, i) => (
-          <div key={day} className="flex items-center gap-3">
-            <span className="text-[10px] w-8" style={{ color: '#888' }}>{day}</span>
-            <div className="flex-1 h-3 rounded-full" style={{ background: '#e5e7eb' }}>
-              <div className="h-full rounded-full" style={{ width: `${[75, 100, 50, 100, 25][i]}%`, background: '#111' }} />
-            </div>
-            <span className="text-[10px] w-8 text-right" style={{ color: '#555' }}>{[6, 8, 4, 8, 2][i]}h</span>
+        {[
+          { label: 'Hourly Rate', value: '$85/hr', delay: 0.05 },
+          { label: 'This Week',   value: '24 hrs', delay: 0.12 },
+        ].map((s) => (
+          <div key={s.label} className="p-3 rounded-xl"
+            style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
+            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-lg font-bold" style={{ color: '#111' }}>{s.value}</div>
           </div>
         ))}
       </div>
-      <div className="mt-3 px-3 py-2 rounded-xl text-center text-[10px]" style={{ background: '#dcfce7', color: '#166534' }}>
+      <div className="space-y-2 mb-3">
+        {days.map((day, i) => (
+          <div key={day} className="flex items-center gap-3"
+            style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${0.2 + i * 0.06}s` }}>
+            <span className="text-[10px] w-8" style={{ color: '#888' }}>{day}</span>
+            <div className="flex-1 h-2.5 rounded-full" style={{ background: '#e5e7eb' }}>
+              <div className="h-full rounded-full" style={{ width: entered ? `${widths[i]}%` : '0%', background: '#111', transition: `width 0.65s cubic-bezier(0.34,1,0.64,1) ${0.25 + i * 0.06}s` }} />
+            </div>
+            <span className="text-[10px] w-8 text-right" style={{ color: '#555' }}>{hours[i]}h</span>
+          </div>
+        ))}
+      </div>
+      <div className="px-3 py-2 rounded-xl text-center text-[10px]"
+        style={{ background: '#f0f0f0', color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.55s' }}>
         You set the hours — we find the work
       </div>
     </div>
@@ -241,24 +327,40 @@ function FlexibleVisual() {
 }
 
 function FreelancerSupportVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [showReply, setShowReply] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  useEffect(() => {
+    if (!entered) return;
+    const t1 = setTimeout(() => setShowReply(true), 600);
+    const t2 = setTimeout(() => setShowStatus(true), 1100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [entered]);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Priority Support</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-4" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Priority Support</div>
       <div className="space-y-3">
-        <div className="flex gap-2">
+        {/* User message */}
+        <div className="flex gap-2"
+          style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}>
           <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#111', color: '#fff' }}>Y</div>
           <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>
             A client hasn't responded in 3 days. Can you help?
           </div>
         </div>
-        <div className="flex gap-2 justify-end">
-          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs" style={{ background: '#111', color: '#fff' }}>
+        {/* Support reply */}
+        <div className="flex gap-2 justify-end"
+          style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
             I've reached out to the client directly. They'll respond within 24 hours or we'll release your payment from escrow.
           </div>
           <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>E</div>
         </div>
-        <div className="flex items-center gap-2 pt-1">
-          <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e' }} />
+        {/* Status */}
+        <div className="flex items-center gap-2 pt-1"
+          style={{ opacity: showStatus ? 1 : 0, transition: 'opacity 0.4s ease' }}>
+          <div className="w-2 h-2 rounded-full" style={{ background: '#111' }} />
           <span className="text-[10px]" style={{ color: '#888' }}>Avg. response time: &lt;5 min</span>
         </div>
       </div>
@@ -467,9 +569,9 @@ function FAQItem({ item, index, isOpen, onToggle }: { item: { question: string; 
             }}
           >
             {isOpen ? (
-              <Minus className="w-4 h-4 text-gray-300" />
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round"/></svg>
             ) : (
-              <Plus className="w-4 h-4 text-gray-500" />
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"/></svg>
             )}
           </div>
         </button>
