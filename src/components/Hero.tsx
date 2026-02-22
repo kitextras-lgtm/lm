@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, memo } from 'react';
+import { useState, useEffect, Suspense, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SplineViewer = memo(() => {
@@ -69,21 +69,39 @@ SplineViewer.displayName = 'SplineViewer';
 export const Hero = memo(() => {
   const navigate = useNavigate();
   const words = ['Presence', 'Marketing', 'Management', 'Distribution', 'Solutions', 'Development', 'Revenue'];
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWordIndex((prev) => (prev + 1) % words.length);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const [displayText, setDisplayText] = useState('');
+  const [wordIdx, setWordIdx] = useState(0);
+  const [phase, setPhase] = useState<'typing' | 'pausing' | 'deleting'>('typing');
 
   useEffect(() => {
     const t = setTimeout(() => setRevealed(true), 600);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    const word = words[wordIdx];
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (phase === 'typing') {
+      if (displayText.length < word.length) {
+        timeout = setTimeout(() => setDisplayText(word.slice(0, displayText.length + 1)), 60);
+      } else {
+        timeout = setTimeout(() => setPhase('pausing'), 1800);
+      }
+    } else if (phase === 'pausing') {
+      setPhase('deleting');
+    } else {
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => setDisplayText(displayText.slice(0, -1)), 35);
+      } else {
+        setWordIdx((i) => (i + 1) % words.length);
+        setPhase('typing');
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayText, phase, wordIdx]);
 
   return (
     <main className="min-h-screen bg-black flex items-center justify-center relative isolate" style={{ contain: 'layout style' }}>
@@ -135,18 +153,29 @@ export const Hero = memo(() => {
               </span>
             </span>
             <br />
-            <span
-              key={currentWordIndex}
-              className="inline-block animate-word-scroll pb-2"
-              style={{
-                background: 'linear-gradient(180deg, #ffffff 0%, #d0d0d0 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                display: 'inline-block'
-              }}
-            >
-              {words[currentWordIndex]}
+            <span className="inline-block pb-2" style={{ display: 'inline-block' }}>
+              <style>{`
+                @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+              `}</style>
+              <span
+                style={{
+                  background: 'linear-gradient(180deg, #ffffff 0%, #d0d0d0 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >{displayText}</span><span
+                style={{
+                  display: 'inline-block',
+                  width: '3px',
+                  height: '0.85em',
+                  background: '#fff',
+                  marginLeft: '4px',
+                  verticalAlign: 'middle',
+                  borderRadius: '1px',
+                  animation: 'blink 500ms step-end infinite',
+                }}
+              />            
             </span>
           </h1>
 

@@ -291,12 +291,12 @@ function MarketplaceVisual() {
 }
 
 const CALENDAR_PAGES = [
-  { month: 'January',  day: '01', year: '2025', earnings: '$6,200' },
-  { month: 'February', day: '15', year: '2025', earnings: '$8,400' },
-  { month: 'March',    day: '22', year: '2025', earnings: '$5,900' },
-  { month: 'April',    day: '08', year: '2025', earnings: '$11,200' },
-  { month: 'May',      day: '30', year: '2025', earnings: '$9,750' },
-  { month: 'June',     day: '14', year: '2025', earnings: '$13,100' },
+  { month: 'January',  day: '01', year: '2025', earnings: '$6,200',  daysInMonth: 31, startDay: 3 },
+  { month: 'February', day: '15', year: '2025', earnings: '$8,400',  daysInMonth: 28, startDay: 6 },
+  { month: 'March',    day: '22', year: '2025', earnings: '$5,900',  daysInMonth: 31, startDay: 6 },
+  { month: 'April',    day: '08', year: '2025', earnings: '$11,200', daysInMonth: 30, startDay: 2 },
+  { month: 'May',      day: '30', year: '2025', earnings: '$9,750',  daysInMonth: 31, startDay: 4 },
+  { month: 'June',     day: '14', year: '2025', earnings: '$13,100', daysInMonth: 30, startDay: 0 },
 ];
 
 function FlipCalendar({ entered }: { entered: boolean }) {
@@ -408,14 +408,13 @@ function FlipCalendar({ entered }: { entered: boolean }) {
             ))}
           </div>
           <div className="grid grid-cols-7 gap-0.5">
-            {Array.from({ length: 35 }, (_, i) => {
-              const dayNum = i - 3;
-              const isValid = dayNum >= 1 && dayNum <= 28;
+            {Array.from({ length: 42 }, (_, i) => {
+              const dayNum = i - cur.startDay + 1;
+              const isValid = dayNum >= 1 && dayNum <= cur.daysInMonth;
               const isToday = dayNum === parseInt(cur.day);
-              const isPaid  = isValid && dayNum % 7 === 1;
               return (
                 <div key={i} className="flex items-center justify-center"
-                  style={{ height: '16px', borderRadius: '4px', background: isToday ? '#111' : isPaid ? '#f0f0f0' : 'transparent' }}>
+                  style={{ height: '16px', borderRadius: '4px', background: isToday ? '#111' : 'transparent' }}>
                   {isValid && (
                     <span style={{ fontSize: '7px', fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : '#888', fontFamily: 'system-ui' }}>
                       {dayNum}
