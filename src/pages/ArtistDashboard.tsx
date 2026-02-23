@@ -2352,9 +2352,15 @@ export function ArtistDashboard() {
       </div>
   );
 
+  const handleOpenArticle = (articleId: string) => {
+    setActiveSection('settings');
+    setGuideSubpage('basics');
+    setGuideArticle(articleId);
+  };
+
   const renderConnectedAccounts = () => (
     <div ref={accountsRef} className="scroll-mt-6">
-      <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} />
+      <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} onOpenArticle={handleOpenArticle} />
     </div>
   );
 
@@ -3945,7 +3951,7 @@ export function ArtistDashboard() {
             <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Add New Artist</p>
           </div>
 
-          <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} />
+          <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} onOpenArticle={handleOpenArticle} />
         </section>
 
         <section className="mb-8">

@@ -192,7 +192,7 @@ function ArtistRow({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (name: string, imagePreview: string) => void }) {
+function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imagePreview: string) => void; onOpenArticle?: (articleId: string) => void }) {
   const [af, setAfState] = useState({ name: '', imageFile: null as File | null, imagePreview: '', appleMusicId: '', spotifyId: '', soundcloudId: '', deezerId: '', audiomackId: '', amazonId: '', type: 'Solo Artist', role: 'Artist role', genre: 'Select a main genre', bio: '', country: 'United States', websiteUrl: '', facebookUrl: '', xHandle: '', instagramHandle: '', youtubeChannel: '', tiktokUsername: '' });
   const setAf = (p: Partial<typeof af>) => setAfState(f => ({ ...f, ...p }));
   return (
@@ -222,11 +222,22 @@ function AddArtistForm({ onClose, onSubmit }: { onClose: () => void; onSubmit: (
 
       {(['appleMusicId', 'spotifyId', 'soundcloudId', 'deezerId', 'audiomackId', 'amazonId'] as const).map((key) => {
         const labels: Record<string, string> = { appleMusicId: 'Apple Music ID:', spotifyId: 'Spotify ID:', soundcloudId: 'Soundcloud ID:', deezerId: 'Deezer ID:', audiomackId: 'Audiomack ID:', amazonId: 'Amazon ID:' };
+        const articleIds: Record<string, string> = { appleMusicId: 'apple-music-id', spotifyId: 'spotify-id', soundcloudId: 'soundcloud-id', deezerId: 'deezer-id', audiomackId: 'audiomack-id', amazonId: 'amazon-artist-id' };
         return (
           <ArtistRow key={key} label={labels[key]}>
             <div className="flex items-center gap-2">
               <input type="text" placeholder="Enter ID if you already have one" value={af[key]} onChange={e => setAf({ [key]: e.target.value } as any)} className={fCls} style={fStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-              <Info className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
+              {onOpenArticle && (
+                <button
+                  type="button"
+                  onClick={() => onOpenArticle(articleIds[key])}
+                  className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all hover:opacity-70"
+                  style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: 'var(--bg-elevated)' }}
+                  title={`How to find your ${labels[key].replace(':', '')}`}
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </button>
+              )}
             </div>
           </ArtistRow>
         );
@@ -265,9 +276,10 @@ interface SocialLinksFormProps {
   appliedTheme?: string;
   userType?: 'artist' | 'creator' | 'freelancer' | 'business';
   userId?: string;
+  onOpenArticle?: (articleId: string) => void;
 }
 
-export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksFormProps) {
+export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle }: SocialLinksFormProps) {
   const { t } = useTranslation();
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -610,6 +622,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId }: SocialLinksF
       {isAdding && userType === 'artist' && (
         <AddArtistForm
           onClose={() => setIsAdding(false)}
+          onOpenArticle={onOpenArticle}
           onSubmit={(name, imagePreview) => {
             const newArtist: SocialLink = {
               id: `local-${Date.now()}`,
