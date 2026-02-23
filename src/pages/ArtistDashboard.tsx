@@ -3094,7 +3094,7 @@ export function ArtistDashboard() {
           { type: 'step', n: 2, text: 'Choose Share, then select Copy Link.' },
           { type: 'img', src: '/ww.png', alt: 'Apple Music share menu' },
           { type: 'step', n: 3, text: 'Paste the copied link into your browser. The series of numbers at the end of the URL is your Apple Music Artist ID.' },
-          { type: 'img', src: '/Screenshot 2026-02-23 at 1.20.05 PM.png', alt: 'Apple Music URL showing Artist ID' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.20.05%20PM.png', alt: 'Apple Music URL showing Artist ID' },
           { type: 'note', text: 'Important: Always include your Apple Music Artist ID when uploading new releases to ensure your music is delivered to the correct profile.' },
           { type: 'note', text: 'You can add an Apple Music ID for any artist on your account by going to their Artist Dashboard and entering the ID into the Apple Music ID field.' },
           { type: 'note', text: 'If you experience any issues adding your Apple Music ID, please contact our support team and we\'ll be happy to help.' },
@@ -3104,9 +3104,9 @@ export function ArtistDashboard() {
           { type: 'p', text: 'Here\'s how to find it:' },
           { type: 'step', n: 1, text: 'Head to your Artist Page on Spotify and click on the 3 dots below your artist name.' },
           { type: 'step', n: 2, text: 'Select Share from the menu and click Copy link to artist.' },
-          { type: 'img', src: '/Screenshot 2026-02-23 at 1.21.05 PM.png', alt: 'Spotify share menu' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.21.05%20PM.png', alt: 'Spotify share menu' },
           { type: 'step', n: 3, text: 'Paste this link into a browser. Your Spotify ID is the string of characters located between /artist/ and ?' },
-          { type: 'img', src: '/Screenshot 2026-02-23 at 1.22.29 PM.png', alt: 'Spotify URL showing Artist ID' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.22.29%20PM.png', alt: 'Spotify URL showing Artist ID' },
           { type: 'note', text: 'Note: Make sure you provide your Spotify ID whenever you upload new releases to Spotify. This will make sure your music is always mapped to the correct artist profile.' },
           { type: 'note', text: 'You can enter your Spotify ID for any artists on your account by heading to their Artist Dashboard and pasting it into the Spotify ID field.' },
           { type: 'note', text: 'If you\'re having trouble with your Spotify ID, please reach out to our support team.' },
@@ -3115,14 +3115,14 @@ export function ArtistDashboard() {
           { type: 'p', text: 'Your SoundCloud ID helps identify your artist profile on SoundCloud.' },
           { type: 'p', text: 'To find your ID, just head to your SoundCloud Artist Page and copy the name after the \'/\' as shown below.' },
           { type: 'p', text: 'This is your SoundCloud ID.' },
-          { type: 'img', src: '/Screenshot 2026-02-23 at 1.30.09 PM.png', alt: 'SoundCloud URL showing artist ID' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.30.09%20PM.png', alt: 'SoundCloud URL showing artist ID' },
           { type: 'note', text: 'Don\'t forget to provide your SoundCloud ID before you upload new releases to SoundCloud. This will make sure your music is always mapped to the correct artist profile.' },
           { type: 'note', text: 'You can enter your SoundCloud ID for any artists on your account by heading to their Artist Dashboard and pasting it into the SoundCloud ID field.' },
         ],
         'deezer-id': [
           { type: 'p', text: 'Your Deezer Artist ID helps us to map your music to the right profile on Deezer.' },
           { type: 'p', text: 'You\'ll find your Deezer ID at the end of your Deezer Artist Profile URL.' },
-          { type: 'img', src: '/Screenshot 2026-02-23 at 1.31.06 PM.png', alt: 'Deezer artist profile URL showing ID' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.31.06%20PM.png', alt: 'Deezer artist profile URL showing ID' },
           { type: 'note', text: 'Make sure to add your Deezer ID on your Artist Dashboard before you upload new releases to Deezer.' },
           { type: 'note', text: 'You can submit the Deezer ID of any artists on your account by heading to their Artist Dashboard. Hit the Edit artist profile button and paste it into the Deezer ID field.' },
         ],
@@ -3130,7 +3130,7 @@ export function ArtistDashboard() {
           { type: 'p', text: 'Your Audiomack Artist ID helps us link your music to the correct artist profile on Audiomack. Here\'s how to find it.' },
           { type: 'p', text: 'Log into your Audiomack account or create a new one and select Creator Dashboard from the dropdown arrow at the top right next to your profile picture.' },
           { type: 'p', text: 'You\'ll find your Audiomack Artist ID in the top left corner below your name and profile picture. You can click it and select Copy Artist ID.' },
-          { type: 'img', src: '/Screenshot 2026-02-23 at 1.32.47 PM.png', alt: 'Audiomack Creator Dashboard showing Artist ID' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.32.47%20PM.png', alt: 'Audiomack Creator Dashboard showing Artist ID' },
           { type: 'note', text: 'Make sure to add your Audiomack ID on your Artist Dashboard.' },
           { type: 'note', text: 'You can submit it for any artists on your account by heading to your Artist Dashboard. Hit the Edit artist profile button and paste it into the Audiomack ID field.' },
         ],
@@ -3158,7 +3158,8 @@ export function ArtistDashboard() {
                   alt={block.alt}
                   className="w-full block"
                   style={{ display: 'block' }}
-                  onError={e => { (e.currentTarget as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                  onError={e => { console.warn('Image failed to load:', block.src); (e.currentTarget as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                  onLoad={() => console.log('Image loaded:', block.src)}
                 />
               </div>
             );
