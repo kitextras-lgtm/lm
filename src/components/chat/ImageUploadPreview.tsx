@@ -29,7 +29,7 @@ export function ImageUploadPreview({ file, onRemove }: ImageUploadPreviewProps) 
       <button
         onClick={onRemove}
         className="absolute -top-2 -right-2 p-1 rounded-full transition-colors"
-        style={{ backgroundColor: '#1a1a1e', border: '1px solid rgba(75, 85, 99, 0.2)' }}
+        style={{ backgroundColor: 'var(--bg-card)', border: '1px solid rgba(75, 85, 99, 0.2)' }}
       >
         <X className="w-3.5 h-3.5" style={{ color: 'var(--text-primary)' }} />
       </button>

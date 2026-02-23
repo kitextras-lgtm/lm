@@ -2415,7 +2415,7 @@ export function FreelancerDashboard() {
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
                 }`}
-                style={{ backgroundColor: '#0F172A' }}
+                style={{ backgroundColor: '#192231' }}
                 onClick={() => setBackgroundTheme('light')}
               >
                 <div className="absolute top-4 right-4">
@@ -2443,7 +2443,7 @@ export function FreelancerDashboard() {
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'grey' ? 'border-white' : 'border-gray-600'
                 }`}
-                style={{ backgroundColor: '#1A1A1E' }}
+                style={{ backgroundColor: '#222226' }}
                 onClick={() => setBackgroundTheme('grey')}
               >
                 <div className="absolute top-4 right-4">
@@ -2471,7 +2471,7 @@ export function FreelancerDashboard() {
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'rose' ? 'border-white' : 'border-gray-600'
                 }`}
-                style={{ backgroundColor: '#120810' }}
+                style={{ backgroundColor: '#140a12' }}
                 onClick={() => setBackgroundTheme('rose')}
               >
                 <div className="absolute top-4 right-4">
@@ -2499,7 +2499,7 @@ export function FreelancerDashboard() {
                 className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
                 }`}
-                style={{ backgroundColor: '#000000' }}
+                style={{ backgroundColor: '#0a0a0a' }}
                 onClick={() => setBackgroundTheme('dark')}
               >
                 <div className="absolute top-4 right-4">

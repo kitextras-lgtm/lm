@@ -9,11 +9,11 @@
    ============================================ */
 :root {
   /* Background colors */
-  --bg-primary: #000000;
-  --bg-secondary: #000000;
-  --bg-elevated: #000000;
-  --bg-active: #0f0f13;
-  --bg-sidebar: #000000;
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #0a0a0a;
+  --bg-elevated: #0a0a0a;
+  --bg-active: #141414;
+  --bg-sidebar: #0a0a0a;
   --bg-input: #000000;
   --bg-card: #000000;
   --bg-modal: #000000;
@@ -651,18 +651,18 @@ spline-viewer div[style*="position: fixed"],
 
 /* Prevent white flash on Spline canvas initialization - critical for instant display */
 spline-viewer {
-  background-color: #000000 !important;
-  background: #000000 !important;
+  background-color: #0a0a0a !important;
+  background: #0a0a0a !important;
 }
 
 spline-viewer canvas {
-  background-color: #000000 !important;
-  background: #000000 !important;
+  background-color: #0a0a0a !important;
+  background: #0a0a0a !important;
 }
 
 /* Ensure any wrapper or container elements also have black background */
 spline-viewer > * {
-  background-color: #000000 !important;
+  background-color: #0a0a0a !important;
 }
 
 .home-icon {

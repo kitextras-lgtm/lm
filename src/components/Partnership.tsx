@@ -63,7 +63,7 @@ interface FeatureItem {
   description: string;
   visual: 'distribution' | 'growth' | 'royalty' | 'sync' | 'strategy' | 'support' |
           'copyright' | 'monetization' | 'licensing' | 'brand-partnerships' | 'content-strategy' | 'creator-support' |
-          'viral' | 'sponsorships' | 'consulting' | 'marketplace';
+          'viral' | 'sponsorships' | 'consulting' | 'marketplace' | 'middleman';
 }
 
 // --- Visual Mockup Components ---
@@ -78,7 +78,7 @@ function DistributionVisual() {
         <div className="w-10 h-10 rounded-full" style={{ background: '#e5e7eb' }} />
         <div>
           <div className="text-sm font-semibold" style={{ color: '#111' }}>Your Release</div>
-          <div className="text-xs" style={{ color: '#888' }}>Distributed globally</div>
+          <div className="text-xs" style={{ color: '#555' }}>Distributed globally</div>
         </div>
       </div>
       <div className="grid grid-cols-4 gap-3 mb-4">
@@ -87,7 +87,7 @@ function DistributionVisual() {
             <div className="w-full aspect-square rounded-xl mb-1.5 flex items-center justify-center" style={{ background: '#f0f0f0' }}>
               <span className="text-xs font-medium" style={{ color: '#555' }}>{p[0]}</span>
             </div>
-            <span className="text-[10px]" style={{ color: '#888' }}>{p}</span>
+            <span className="text-[10px]" style={{ color: '#555' }}>{p}</span>
           </div>
         ))}
       </div>
@@ -107,7 +107,7 @@ function GrowthVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Growth Analytics</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Last 30 days</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Last 30 days</div>
       <div className="flex items-end gap-1.5 mb-4" style={{ height: '80px' }}>
         {bars.map((h, i) => (
           <div key={i} className="flex-1 rounded-t-sm" style={{ height: entered ? `${h}%` : '0%', background: i >= 10 ? '#111' : '#d1d5db', transition: `height 0.7s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.05}s` }} />
@@ -115,7 +115,7 @@ function GrowthVisual() {
       </div>
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-xs" style={{ color: '#888' }}>Monthly Listeners</div>
+          <div className="text-xs" style={{ color: '#555' }}>Monthly Listeners</div>
           <div className="text-lg font-bold" style={{ color: '#111' }}>+{count}%</div>
         </div>
         <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: '#f0f0f0', color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.6s ease 0.8s' }}>
@@ -152,7 +152,7 @@ function RoyaltyVisual() {
         ))}
       </div>
       <div className="mt-4 pt-3 flex justify-between items-center" style={{ borderTop: '1px solid #e5e7eb', opacity: entered ? 1 : 0, transition: 'opacity 0.6s ease 0.7s' }}>
-        <span className="text-xs" style={{ color: '#888' }}>Total Collected</span>
+        <span className="text-xs" style={{ color: '#555' }}>Total Collected</span>
         <span className="text-lg font-bold" style={{ color: '#111' }}>${total.toLocaleString()}</span>
       </div>
     </div>
@@ -178,7 +178,7 @@ function SyncVisual() {
             </div>
             <div className="flex-1">
               <div className="text-xs font-medium" style={{ color: '#111' }}>{item.title}</div>
-              <div className="text-[10px]" style={{ color: '#888' }}>{item.status}</div>
+              <div className="text-[10px]" style={{ color: '#555' }}>{item.status}</div>
             </div>
             <span className="text-xs font-bold" style={{ color: '#111' }}>{item.fee}</span>
           </div>
@@ -212,7 +212,7 @@ function StrategyVisual() {
                 <span className="text-xs font-bold" style={{ color: '#111' }}>{item.title}</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: '#f3f4f6', color: '#555' }}>{item.date}</span>
               </div>
-              <div className="text-[11px]" style={{ color: '#888' }}>{item.desc}</div>
+              <div className="text-[11px]" style={{ color: '#555' }}>{item.desc}</div>
             </div>
           </div>
         ))}
@@ -236,29 +236,29 @@ function SupportVisual() {
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Priority Support</div>
       <div className="space-y-3">
-        <div className="flex gap-2" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s' }}>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#111', color: '#fff' }}>E</div>
-          <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>Hey! I need help with my upcoming release strategy.</div>
+        <div className="flex gap-2 justify-end" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s' }}>
+          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>Hey! I need help with my upcoming release strategy.</div>
+          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
         </div>
         {showTyping && (
-          <div className="flex gap-2 justify-end items-end" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
-            <div className="px-4 py-3 rounded-2xl rounded-tr-sm flex items-center gap-1" style={{ background: '#111' }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#fff', display: 'inline-block', animation: 'bounce 1s infinite 0ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#fff', display: 'inline-block', animation: 'bounce 1s infinite 150ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#fff', display: 'inline-block', animation: 'bounce 1s infinite 300ms' }} />
+          <div className="flex gap-2 items-end" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
+            <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+            <div className="px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1" style={{ background: '#f0f0f0' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#555', display: 'inline-block', animation: 'bounce 1s infinite 0ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#555', display: 'inline-block', animation: 'bounce 1s infinite 150ms' }} />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#555', display: 'inline-block', animation: 'bounce 1s infinite 300ms' }} />
             </div>
-            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
           </div>
         )}
         {showReply && (
-          <div className="flex gap-2 justify-end" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
-            <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs" style={{ background: '#111', color: '#fff' }}>Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.</div>
-            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
+          <div className="flex gap-2" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
+            <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+            <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.</div>
           </div>
         )}
         <div className="flex items-center gap-2 pt-1" style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
           <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e', boxShadow: '0 0 5px #22c55e55' }} />
-          <span className="text-[10px]" style={{ color: '#888' }}>Avg. response time: &lt;5 min</span>
+          <span className="text-[10px]" style={{ color: '#555' }}>Avg. response time: &lt;5 min</span>
         </div>
       </div>
     </div>
@@ -279,7 +279,7 @@ function CopyrightVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Content Detection</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>This month</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>This month</div>
       <div className="grid grid-cols-3 gap-3 mb-4">
         {[
           { label: 'Detected', display: detected.toLocaleString() },
@@ -288,7 +288,7 @@ function CopyrightVisual() {
         ].map((s, i) => (
           <div key={s.label} className="text-center p-3 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s` }}>
             <div className="text-sm font-bold" style={{ color: '#111' }}>{s.display}</div>
-            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-[10px]" style={{ color: '#555' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -296,7 +296,7 @@ function CopyrightVisual() {
         <div className="w-8 h-8 rounded-lg" style={{ background: '#e5e7eb' }} />
         <div className="flex-1">
           <div className="text-xs font-medium" style={{ color: '#111' }}>Unauthorized reupload detected</div>
-          <div className="text-[10px]" style={{ color: '#888' }}>Claimed &amp; monetized automatically</div>
+          <div className="text-[10px]" style={{ color: '#555' }}>Claimed &amp; monetized automatically</div>
         </div>
         <span className="text-xs font-bold" style={{ color: '#111' }}>+$420</span>
       </div>
@@ -328,7 +328,7 @@ function MonetizationVisual() {
           <span className="text-[10px] font-medium" style={{ color: '#555' }}>Live</span>
         </div>
       </div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Matched to your profile</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Matched to your profile</div>
       <div className="space-y-2.5 mb-4">
         {campaigns.map((c, i) => (
           <div key={c.brand} className="flex items-center gap-3 p-3 rounded-xl"
@@ -367,7 +367,7 @@ function LicensingVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Licensing Deals</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Your content, paying you</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Your content, paying you</div>
       <div className="space-y-3 mb-4">
         {deals.map((d) => (
           <div key={d.platform} style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateX(-8px)', transition: `opacity 0.5s ease ${d.delay}s, transform 0.5s ease ${d.delay}s` }}>
@@ -376,7 +376,7 @@ function LicensingVisual() {
                 <div className="w-6 h-6 rounded-md flex items-center justify-center text-[9px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>{d.platform[0]}</div>
                 <div>
                   <div className="text-xs font-medium" style={{ color: '#111' }}>{d.platform}</div>
-                  <div className="text-[9px]" style={{ color: '#888' }}>{d.reach}</div>
+                  <div className="text-[9px]" style={{ color: '#555' }}>{d.reach}</div>
                 </div>
               </div>
               <span className="text-xs font-bold" style={{ color: '#111' }}>{d.fee}</span>
@@ -423,7 +423,7 @@ function BrandPartnershipsVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Brand Network</div>
-      <div className="text-xs mb-3" style={{ color: '#888' }}>200+ matched sponsors</div>
+      <div className="text-xs mb-3" style={{ color: '#555' }}>200+ matched sponsors</div>
 
       {/* Horizontal card spread */}
       <div className="relative mb-3" style={{ height: '120px' }}>
@@ -488,7 +488,7 @@ function BrandPartnershipsVisual() {
           <div className="text-xs font-semibold" style={{ color: '#111' }}>
             {hovered !== null ? cards[hovered].name : 'Brand Network'}
           </div>
-          <div className="text-[10px]" style={{ color: '#888' }}>
+          <div className="text-[10px]" style={{ color: '#555' }}>
             {hovered !== null ? cards[hovered].category : 'Hover a card'}
           </div>
         </div>
@@ -516,7 +516,7 @@ function ContentStrategyVisual() {
         <div className="text-sm font-semibold" style={{ color: '#111' }}>Content Performance</div>
         <span className="text-xs font-bold" style={{ color: '#111', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.8s' }}>{views}M views</span>
       </div>
-      <div className="text-xs mb-3" style={{ color: '#888' }}>Last 12 weeks</div>
+      <div className="text-xs mb-3" style={{ color: '#555' }}>Last 12 weeks</div>
       <div className="flex items-end gap-1 mb-4" style={{ height: '56px' }}>
         {weeks.map((h, i) => (
           <div key={i} className="flex-1 rounded-t-sm" style={{ height: entered ? `${h}%` : '0%', background: i >= 10 ? '#111' : i >= 8 ? '#555' : '#d1d5db', transition: `height 0.6s cubic-bezier(0.34,1.2,0.64,1) ${i * 0.04}s` }} />
@@ -549,7 +549,7 @@ function ViralDistributionVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Viral Distribution</div>
-      <div className="text-xs mb-3" style={{ color: '#888' }}>Organic clip network</div>
+      <div className="text-xs mb-3" style={{ color: '#555' }}>Organic clip network</div>
       <div className="flex items-center justify-center mb-3" style={{ height: '120px' }}>
         <div className="relative" style={{ width: '120px', height: '120px' }}>
           {[1, 2].map((ring) => (
@@ -581,7 +581,7 @@ function ViralDistributionVisual() {
         ].map((s, i) => (
           <div key={s.label} className="p-2.5 rounded-xl text-center" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${0.3 + i * 0.07}s, transform 0.4s ease ${0.3 + i * 0.07}s` }}>
             <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
-            <div className="text-[9px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-[9px]" style={{ color: '#555' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -600,7 +600,7 @@ function SponsorshipsVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Creator Matching</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>AI-powered alignment score</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>AI-powered alignment score</div>
       <div className="space-y-3">
         {creators.map((c) => (
           <div key={c.name} style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: `opacity 0.5s ease ${c.delay}s, transform 0.5s ease ${c.delay}s` }}>
@@ -608,7 +608,7 @@ function SponsorshipsVisual() {
               <div className="w-8 h-8 rounded-full flex-shrink-0" style={{ background: '#e5e7eb' }} />
               <div className="flex-1">
                 <div className="text-xs font-semibold" style={{ color: '#111' }}>{c.name}</div>
-                <div className="text-[10px]" style={{ color: '#888' }}>{c.niche} · {c.followers}</div>
+                <div className="text-[10px]" style={{ color: '#555' }}>{c.niche} · {c.followers}</div>
               </div>
               <span className="text-xs font-bold" style={{ color: '#111' }}>{c.match}%</span>
             </div>
@@ -635,7 +635,7 @@ function ConsultingVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Cultural Pulse</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Real-time trend signals</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Real-time trend signals</div>
       <div className="space-y-2.5 mb-4">
         {trends.map((t) => (
           <div key={t.label} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${t.delay}s` }}>
@@ -678,7 +678,7 @@ function MarketplaceVisual() {
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Vetted Experts</div>
-      <div className="text-xs mb-4" style={{ color: '#888' }}>Find the exact talent you need to scale.</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Find the exact talent you need to scale.</div>
 
       {/* Illustration */}
       <div
@@ -837,7 +837,71 @@ function MarketplaceVisual() {
             style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.4s ease ${s.delay}s, transform 0.4s ease ${s.delay}s` }}
           >
             <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
-            <div className="text-[9px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-[9px]" style={{ color: '#555' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MiddlemanVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [step, setStep] = useState(0);
+  const steps = [
+    { label: 'Funds deposited',  icon: '↓' },
+    { label: 'Terms locked',     icon: '⚿' },
+    { label: 'Work delivered',   icon: '✓' },
+    { label: 'Payment released', icon: '→' },
+  ];
+  useEffect(() => {
+    if (!entered) return;
+    const t = setInterval(() => setStep(s => (s + 1) % steps.length), 1800);
+    return () => clearInterval(t);
+  }, [entered]);
+  return (
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Deal Protection</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Secure & transparent</div>
+      {/* Three-party diagram */}
+      <div className="flex items-center justify-between gap-2 mb-4" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s' }}>
+        <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f0f0f0', border: '1px solid #e5e7eb' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="6" width="12" height="8" rx="1.5" stroke="#111" strokeWidth="1.2"/><path d="M5 6V4.5a3 3 0 016 0V6" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/></svg>
+          </div>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#555' }}>Brand</span>
+        </div>
+        <div style={{ flex: 0.6, display: 'flex', alignItems: 'center' }}>
+          <div style={{ height: '1px', flex: 1, background: step === 0 || step === 3 ? '#111' : '#d1d5db', transition: 'background 0.4s ease' }}/>
+          <div style={{ width: '5px', height: '5px', borderTop: '1.5px solid', borderRight: '1.5px solid', borderColor: step === 0 || step === 3 ? '#111' : '#d1d5db', transform: 'rotate(45deg)', marginLeft: '-3px', transition: 'border-color 0.4s ease' }}/>
+        </div>
+        <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          <div className="w-10 h-10 rounded-xl overflow-hidden" style={{ background: '#111' }}>
+            <img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#555' }}>Elevate</span>
+        </div>
+        <div style={{ flex: 0.6, display: 'flex', alignItems: 'center' }}>
+          <div style={{ height: '1px', flex: 1, background: step === 1 || step === 2 ? '#111' : '#d1d5db', transition: 'background 0.4s ease' }}/>
+          <div style={{ width: '5px', height: '5px', borderTop: '1.5px solid', borderRight: '1.5px solid', borderColor: step === 1 || step === 2 ? '#111' : '#d1d5db', transform: 'rotate(45deg)', marginLeft: '-3px', transition: 'border-color 0.4s ease' }}/>
+        </div>
+        <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f0f0f0', border: '1px solid #e5e7eb' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.5" stroke="#111" strokeWidth="1.2"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/></svg>
+          </div>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#555' }}>Creator</span>
+        </div>
+      </div>
+      {/* Steps */}
+      <div className="space-y-1.5" style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.25s' }}>
+        {steps.map((s, i) => (
+          <div key={i} className="flex items-center gap-2.5" style={{ opacity: step === i ? 1 : 0.3, transition: 'opacity 0.35s ease' }}>
+            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: step === i ? '#111' : '#e5e7eb', transition: 'background 0.35s ease' }}>
+              <span style={{ fontSize: '8px', color: step === i ? '#fff' : '#888' }}>{s.icon}</span>
+            </div>
+            <span style={{ fontSize: '10px', fontWeight: step === i ? 600 : 400, color: '#111' }}>{s.label}</span>
+            {step === i && <div className="ml-auto px-1.5 py-0.5 rounded" style={{ background: '#f0f0f0' }}><span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>Active</span></div>}
           </div>
         ))}
       </div>
@@ -863,6 +927,7 @@ function FeatureVisual({ type }: { type: FeatureItem['visual'] }) {
     case 'sponsorships': return <SponsorshipsVisual />;
     case 'consulting': return <ConsultingVisual />;
     case 'marketplace': return <MarketplaceVisual />;
+    case 'middleman': return <MiddlemanVisual />;
     default: return null;
   }
 }
@@ -872,7 +937,6 @@ function FeatureVisual({ type }: { type: FeatureItem['visual'] }) {
 export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
   const [activeTab, setActiveTab] = useState(showArtists ? 'artists' : 'creators');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.1);
 
   const handleTabChange = (tabId: string) => {
     if (tabId !== activeTab) {
@@ -881,12 +945,8 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
       setTimeout(() => setIsTransitioning(false), 100);
     }
   };
-
-  const tabs = [
-    ...(showArtists ? [{ id: 'artists', label: 'Artists' }] : []),
-    { id: 'creators', label: 'Creators' },
-    { id: 'brands', label: 'Brands' }
-  ];
+  void handleTabChange;
+  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.1);
 
   const artistFeatures: FeatureItem[] = [
     { tag: 'Distribution', title: 'Go global with\none click', description: 'Distribution is just the starting point. We provide flexibility along with strategic guidance and industry-leading revenue splits.', visual: 'distribution' },
@@ -903,6 +963,7 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
     { tag: 'Licensing', title: 'Your content\npays you', description: 'When your content reaches viral pages or television, it should pay you. We handle licensing, negotiations, and compliance.', visual: 'licensing' },
     { tag: 'Partnerships', title: 'Brands that\nfit you', description: 'Find sponsorships that align perfectly with your goals and boost your chances of landing high quality, relevant partnerships.', visual: 'brand-partnerships' },
     { tag: 'Strategy', title: 'Scale with\nexperts', description: 'Find and match up with experienced experts to assist you with your growth.', visual: 'marketplace' },
+    { tag: 'Protection', title: 'Middleman\nProtection', description: 'Elevate serves as a neutral third-party facilitator for hiring, sponsorships, partnerships, and strategic deals. We ensure every agreement is executed securely and transparently. Funds, deliverables, and contractual terms are protected through structured deal management, minimizing risk, preventing disputes, and safeguarding all parties involved.', visual: 'middleman' },
     { tag: 'Support', title: 'Real Support,\nReal People', description: 'Priority, human first support built specifically for creators. Fast responses, real solutions.', visual: 'creator-support' },
   ];
 
@@ -911,11 +972,12 @@ export function Partnership({ showArtists = true }: { showArtists?: boolean }) {
     { tag: 'ROI', title: 'Measurable\nResults', description: 'Track every campaign with detailed analytics and clear ROI metrics.', visual: 'content-strategy' },
     { tag: 'Creative', title: 'Creative\nFreedom', description: 'Collaborate with creators while maintaining your brand voice and message.', visual: 'content-strategy' },
     { tag: 'Scale', title: 'Scale\nEfficiently', description: 'Reach millions through our network of vetted creators across all platforms.', visual: 'viral' },
-    { tag: 'Support', title: 'Dedicated\nSupport', description: 'Get personalized guidance from our team of brand partnership experts.', visual: 'consulting' },
     { tag: 'Quality', title: 'Quality\nAssurance', description: 'All creators are vetted for engagement, authenticity, and brand safety.', visual: 'brand-partnerships' },
+    { tag: 'Protection', title: 'Middleman\nProtection', description: 'Elevate serves as a neutral third-party facilitator for hiring, sponsorships, partnerships, and strategic deals. We ensure every agreement is executed securely and transparently. Funds, deliverables, and contractual terms are protected through structured deal management, minimizing risk, preventing disputes, and safeguarding all parties involved.', visual: 'middleman' },
+    { tag: 'Support', title: 'Dedicated\nSupport', description: 'Get personalized guidance from our team of brand partnership experts.', visual: 'consulting' },
   ];
 
-  const features = activeTab === 'artists' && showArtists ? artistFeatures : activeTab === 'creators' ? creatorFeatures : activeTab === 'brands' ? brandFeatures : creatorFeatures;
+  const features = activeTab === 'artists' ? artistFeatures : activeTab === 'brands' ? brandFeatures : creatorFeatures;
 
   return (
     <section

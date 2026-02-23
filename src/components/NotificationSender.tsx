@@ -71,7 +71,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
     <div className="animate-fade-in">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#1a1a1e' }}>
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)' }}>
             <Bell className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div>
@@ -85,7 +85,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
 
       <div className="space-y-6">
         {/* Notification Type Selection */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: 'var(--bg-card)' }}>
           <label className="block text-sm font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
             Notification Type
           </label>
@@ -123,7 +123,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
         </div>
 
         {/* Subject Input */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: 'var(--bg-card)' }}>
           <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>
             Subject Line
           </label>
@@ -143,7 +143,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
         </div>
 
         {/* Content Textarea */}
-        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: '#1a1a1e' }}>
+        <div className="rounded-2xl p-6 shadow-xl" style={{ backgroundColor: 'var(--bg-card)' }}>
           <label className="block text-sm font-medium mb-3" style={{ color: 'var(--text-primary)' }}>
             Email Content
           </label>
@@ -202,7 +202,7 @@ export function NotificationSender({ onClose }: NotificationSenderProps) {
               onClick={onClose}
               className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110"
               style={{
-                backgroundColor: '#1a1a1e',
+                backgroundColor: 'var(--bg-card)',
                 color: 'var(--text-primary)',
                 border: '1px solid rgba(75, 85, 99, 0.2)',
               }}

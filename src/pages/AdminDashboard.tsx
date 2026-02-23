@@ -1987,7 +1987,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'light' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#0F172A' }}
+                              style={{ backgroundColor: '#192231' }}
                               onClick={() => setTheme('light')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2019,7 +2019,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'grey' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#1A1A1E' }}
+                              style={{ backgroundColor: '#222226' }}
                               onClick={() => setTheme('grey')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2051,7 +2051,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'rose' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#120810' }}
+                              style={{ backgroundColor: '#140a12' }}
                               onClick={() => setTheme('rose')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2079,7 +2079,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'dark' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#000000' }}
+                              style={{ backgroundColor: '#0a0a0a' }}
                               onClick={() => setTheme('dark')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2232,7 +2232,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'light' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#0F172A' }}
+                              style={{ backgroundColor: '#192231' }}
                               onClick={() => setTheme('light')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2264,7 +2264,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'grey' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#1A1A1E' }}
+                              style={{ backgroundColor: '#222226' }}
                               onClick={() => setTheme('grey')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2296,7 +2296,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'rose' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#120810' }}
+                              style={{ backgroundColor: '#140a12' }}
                               onClick={() => setTheme('rose')}
                             >
                               <div className="absolute top-4 right-4">
@@ -2324,7 +2324,7 @@ export function AdminDashboard() {
                               className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'dark' ? 'border-white' : 'border-gray-600'
                               }`}
-                              style={{ backgroundColor: '#000000' }}
+                              style={{ backgroundColor: '#0a0a0a' }}
                               onClick={() => setTheme('dark')}
                             >
                               <div className="absolute top-4 right-4">

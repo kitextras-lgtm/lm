@@ -779,7 +779,7 @@ export function SettingsPage() {
 
           <div className="flex gap-6 flex-1 overflow-hidden min-h-0">
             <aside className="w-72 flex-shrink-0">
-              <div className="rounded-2xl p-1 shadow-xl h-full" style={{ backgroundColor: '#1a1a1e' }}>
+              <div className="rounded-2xl p-1 shadow-xl h-full" style={{ backgroundColor: 'var(--bg-card)' }}>
                 <nav className="space-y-1 p-2">
                   <button
                     onClick={() => setActiveSection('personal')}
@@ -845,7 +845,7 @@ export function SettingsPage() {
               </div>
             </aside>
 
-            <main className="flex-1 rounded-2xl p-8 shadow-xl overflow-y-auto" style={{ backgroundColor: '#1a1a1e' }}>
+            <main className="flex-1 rounded-2xl p-8 shadow-xl overflow-y-auto" style={{ backgroundColor: 'var(--bg-card)' }}>
               {activeSection === 'personal' && renderPersonalInfo()}
               {activeSection === 'accounts' && renderPlaceholder('Connected accounts', 'Manage your social media connections')}
               {activeSection === 'payout' && renderPlaceholder('Payment Method', 'Payments are typically processed automatically through Tipalti. If a payout needs to be issued outside of Tipalti, you can add an alternative payment method.')}

@@ -7,7 +7,7 @@ interface FreelancerFeature {
   tag: string;
   title: string;
   description: string;
-  visual: 'marketplace' | 'payments' | 'career' | 'matching' | 'flexible' | 'support';
+  visual: 'marketplace' | 'payments' | 'career' | 'matching' | 'flexible' | 'support' | 'middleman';
 }
 
 const freelancerFeatures: FreelancerFeature[] = [
@@ -40,6 +40,12 @@ const freelancerFeatures: FreelancerFeature[] = [
     title: 'Work on\nyour terms',
     description: 'Set your own rates, choose your hours, and work from anywhere. You have full control over your freelance career.',
     visual: 'flexible'
+  },
+  {
+    tag: 'Protection',
+    title: 'Middleman\nProtection',
+    description: 'Elevate serves as a neutral third-party facilitator for hiring, sponsorships, partnerships, and strategic deals. We ensure every agreement is executed securely and transparently. Funds, deliverables, and contractual terms are protected through structured deal management, minimizing risk, preventing disputes, and safeguarding all parties involved.',
+    visual: 'middleman'
   },
   {
     tag: 'Support',
@@ -133,367 +139,53 @@ function useCountUp(target: number, duration = 1400, start = false) {
 
 // --- Visual Mockup Components ---
 
-function NetworkingRoom({ entered }: { entered: boolean }) {
-  const [bubble, setBubble] = useState(0);
-  const msgs = ['Love your portfolio!', "Let's collaborate", 'Open to projects?', 'Great work!'];
-  useEffect(() => {
-    if (!entered) return;
-    const t = setInterval(() => setBubble(b => (b + 1) % msgs.length), 2000);
-    return () => clearInterval(t);
-  }, [entered]);
-
-  // Tight bubble widths: measure text at ~6px per char + padding
-  const pad = 16;
-  const bw = msgs.map(m => m.length * 5.6 + pad);
-
-  return (
-    <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.55s ease 0.35s, transform 0.55s ease 0.35s' }}>
-      <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(160deg,#1a1a1a 0%,#111 100%)', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <svg viewBox="0 0 280 175" xmlns="http://www.w3.org/2000/svg" width="100%" style={{ display: 'block' }}>
-
-          {/* Floor shadow */}
-          <ellipse cx="140" cy="163" rx="128" ry="10" fill="rgba(255,255,255,0.03)" />
-
-          {/* ── Person A — far left — Male, dark skin, short hair ── */}
-          {/* Shadow */}
-          <ellipse cx="42" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.35)" />
-          {/* Legs */}
-          <rect x="36" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
-          <rect x="43" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
-          {/* Body */}
-          <rect x="33" y="112" width="18" height="30" rx="5" fill="#2563eb" />
-          {/* Left arm — relaxed down */}
-          <path d="M33 118 Q26 126 27 136" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" fill="none" />
-          {/* Right arm — relaxed down */}
-          <path d="M51 118 Q58 126 57 136" stroke="#2563eb" strokeWidth="5" strokeLinecap="round" fill="none" />
-          {/* Neck */}
-          <rect x="39" y="106" width="6" height="8" rx="3" fill="#6b3a2a" />
-          {/* Head */}
-          <circle cx="42" cy="99" r="10" fill="#6b3a2a" />
-          {/* Eyes */}
-          <circle cx="39" cy="98" r="1.2" fill="#1a0a00" />
-          <circle cx="45" cy="98" r="1.2" fill="#1a0a00" />
-          {/* Smile */}
-          <path d="M39 102 Q42 105 45 102" stroke="#1a0a00" strokeWidth="1" strokeLinecap="round" fill="none" />
-          {/* Short hair — close crop */}
-          <path d="M32 97 Q33 88 42 87 Q51 88 52 97 Q50 90 42 89 Q34 90 32 97Z" fill="#1a0a00" />
-
-          {/* ── Person B — center-left — Female, light skin, long hair ── */}
-          <ellipse cx="90" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.33)" />
-          <rect x="84" y="140" width="5" height="22" rx="2.5" fill="#374151" />
-          <rect x="91" y="140" width="5" height="22" rx="2.5" fill="#374151" />
-          {/* Dress/skirt body */}
-          <path d="M80 112 Q80 138 85 142 L95 142 Q100 138 100 112Z" fill="#9333ea" />
-          <rect x="80" y="110" width="20" height="16" rx="5" fill="#9333ea" />
-          {/* Left arm — relaxed */}
-          <path d="M80 116 Q73 124 74 134" stroke="#9333ea" strokeWidth="5" strokeLinecap="round" fill="none" />
-          {/* Right arm — relaxed */}
-          <path d="M100 116 Q107 124 106 134" stroke="#9333ea" strokeWidth="5" strokeLinecap="round" fill="none" />
-          {/* Neck */}
-          <rect x="87" y="104" width="6" height="8" rx="3" fill="#f5d5b8" />
-          {/* Head */}
-          <circle cx="90" cy="97" r="10" fill="#f5d5b8" />
-          {/* Eyes */}
-          <circle cx="87" cy="96" r="1.2" fill="#2d1b00" />
-          <circle cx="93" cy="96" r="1.2" fill="#2d1b00" />
-          {/* Smile */}
-          <path d="M87 100 Q90 103 93 100" stroke="#2d1b00" strokeWidth="1" strokeLinecap="round" fill="none" />
-          {/* Long hair — flows past shoulders */}
-          <path d="M80 95 Q80 87 90 86 Q100 87 100 95 Q99 88 90 87 Q81 88 80 95Z" fill="#7c3f00" />
-          <path d="M80 95 Q78 108 80 118" stroke="#7c3f00" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M100 95 Q102 108 100 118" stroke="#7c3f00" strokeWidth="5" strokeLinecap="round" fill="none" />
-
-          {/* ── Person C — center — Male, medium skin, curly hair ── */}
-          <ellipse cx="140" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.31)" />
-          <rect x="134" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
-          <rect x="141" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
-          <rect x="131" y="110" width="18" height="32" rx="5" fill="#16a34a" />
-          {/* Left arm — slightly raised, conversational */}
-          <path d="M131 116 Q122 120 124 130" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none" />
-          {/* Right arm — slightly raised */}
-          <path d="M149 116 Q157 120 155 130" stroke="#16a34a" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <rect x="137" y="104" width="6" height="8" rx="3" fill="#c68642" />
-          <circle cx="140" cy="97" r="10" fill="#c68642" />
-          <circle cx="137" cy="96" r="1.2" fill="#1a0a00" />
-          <circle cx="143" cy="96" r="1.2" fill="#1a0a00" />
-          <path d="M137 100 Q140 103 143 100" stroke="#1a0a00" strokeWidth="1" strokeLinecap="round" fill="none" />
-          {/* Curly hair */}
-          <circle cx="133" cy="93" r="4.5" fill="#1a0a00" />
-          <circle cx="140" cy="90" r="5" fill="#1a0a00" />
-          <circle cx="147" cy="93" r="4.5" fill="#1a0a00" />
-          <circle cx="136" cy="97" r="3.5" fill="#1a0a00" />
-          <circle cx="144" cy="97" r="3.5" fill="#1a0a00" />
-
-          {/* ── Person D — center-right — Female, tan skin, ponytail ── */}
-          <ellipse cx="190" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.29)" />
-          <rect x="184" y="140" width="5" height="22" rx="2.5" fill="#374151" />
-          <rect x="191" y="140" width="5" height="22" rx="2.5" fill="#374151" />
-          {/* Dress body */}
-          <path d="M180 112 Q180 138 185 142 L195 142 Q200 138 200 112Z" fill="#e11d48" />
-          <rect x="180" y="110" width="20" height="16" rx="5" fill="#e11d48" />
-          <path d="M180 116 Q173 124 174 134" stroke="#e11d48" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M200 116 Q207 124 206 134" stroke="#e11d48" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <rect x="187" y="104" width="6" height="8" rx="3" fill="#d4956a" />
-          <circle cx="190" cy="97" r="10" fill="#d4956a" />
-          <circle cx="187" cy="96" r="1.2" fill="#2d1b00" />
-          <circle cx="193" cy="96" r="1.2" fill="#2d1b00" />
-          <path d="M187 100 Q190 103 193 100" stroke="#2d1b00" strokeWidth="1" strokeLinecap="round" fill="none" />
-          {/* Ponytail */}
-          <path d="M180 93 Q181 86 190 85 Q199 86 200 93 Q198 87 190 86 Q182 87 180 93Z" fill="#5c3317" />
-          <path d="M190 85 Q193 80 191 75" stroke="#5c3317" strokeWidth="4" strokeLinecap="round" fill="none" />
-
-          {/* ── Person E — far right — Male, light skin, side-part hair ── */}
-          <ellipse cx="238" cy="162" rx="11" ry="3.5" fill="rgba(0,0,0,0.27)" />
-          <rect x="232" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
-          <rect x="239" y="140" width="5" height="22" rx="2.5" fill="#1a202c" />
-          <rect x="229" y="112" width="18" height="30" rx="5" fill="#92400e" />
-          <path d="M229 118 Q222 126 223 136" stroke="#92400e" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M247 118 Q254 126 253 136" stroke="#92400e" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <rect x="235" y="106" width="6" height="8" rx="3" fill="#f5cba7" />
-          <circle cx="238" cy="99" r="10" fill="#f5cba7" />
-          <circle cx="235" cy="98" r="1.2" fill="#2d1b00" />
-          <circle cx="241" cy="98" r="1.2" fill="#2d1b00" />
-          <path d="M235 102 Q238 105 241 102" stroke="#2d1b00" strokeWidth="1" strokeLinecap="round" fill="none" />
-          {/* Side-part hair */}
-          <path d="M228 96 Q229 88 238 87 Q247 88 248 96 Q245 89 238 88 Q231 89 228 96Z" fill="#5c3317" />
-          <path d="M228 96 Q229 91 235 90" stroke="#5c3317" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-
-          {/* ── Dashed connection lines ── */}
-          <line x1="53" y1="128" x2="80" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="100" y1="128" x2="131" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="149" y1="128" x2="180" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="200" y1="128" x2="229" y2="128" stroke="rgba(255,255,255,0.08)" strokeWidth="1" strokeDasharray="3 3" />
-
-          {/* ── Speech bubble 0 — above Person A ── */}
-          <g style={{ opacity: bubble === 0 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
-            <rect x="8" y="72" width={bw[0]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
-            <polygon points={`${26},${88} ${32},${88} ${28},${93}`} fill="rgba(255,255,255,0.95)" />
-            <text x="16" y="83.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[0]}</text>
-          </g>
-
-          {/* ── Speech bubble 1 — above Person B ── */}
-          <g style={{ opacity: bubble === 1 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
-            <rect x="58" y="68" width={bw[1]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
-            <polygon points={`${76},${84} ${82},${84} ${78},${89}`} fill="rgba(255,255,255,0.95)" />
-            <text x="66" y="79.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[1]}</text>
-          </g>
-
-          {/* ── Speech bubble 2 — above Person D ── */}
-          <g style={{ opacity: bubble === 2 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
-            <rect x="158" y="68" width={bw[2]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
-            <polygon points={`${176},${84} ${182},${84} ${178},${89}`} fill="rgba(255,255,255,0.95)" />
-            <text x="166" y="79.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[2]}</text>
-          </g>
-
-          {/* ── Speech bubble 3 — above Person E ── */}
-          <g style={{ opacity: bubble === 3 ? 1 : 0, transition: 'opacity 0.35s ease' }}>
-            <rect x="206" y="72" width={bw[3]} height="16" rx="7" fill="rgba(255,255,255,0.95)" />
-            <polygon points={`${224},${88} ${230},${88} ${226},${93}`} fill="rgba(255,255,255,0.95)" />
-            <text x="214" y="83.5" fontSize="6.5" fontFamily="system-ui" fontWeight="600" fill="#111">{msgs[3]}</text>
-          </g>
-
-          {/* Ambient dots */}
-          {[[30,58],[110,48],[200,52],[255,60]].map(([cx,cy],i) => (
-            <circle key={i} cx={cx} cy={cy} r="1.8" fill="rgba(255,255,255,0.12)"
-              style={{ animation: `pulse ${1.5 + i * 0.35}s ease-in-out infinite alternate` }} />
-          ))}
-        </svg>
-
-        {/* Caption bar */}
-        <div className="flex items-center justify-between px-4 py-2.5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontFamily: 'system-ui' }}>Live networking room</span>
-          <div className="flex items-center gap-1.5">
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80' }} />
-            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontFamily: 'system-ui' }}>247 online</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function MarketplaceVisual() {
   const { ref, inView } = useInView();
   const entered = useEnteredDelay(inView);
-  const projects = [
-    { client: 'Tech Startup',   project: 'Brand Identity Design', budget: '$4,500', flag: 'US', delay: 0 },
-    { client: 'E-commerce Co.', project: 'Product Photography',   budget: '$2,800', flag: 'UK', delay: 0.08 },
-    { client: 'SaaS Platform',  project: 'UI/UX Redesign',        budget: '$7,200', flag: 'DE', delay: 0.16 },
-  ];
-  return (
-    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
-          <div className="text-sm font-semibold" style={{ color: '#111' }}>Active Requests</div>
-          <div style={{ fontSize: '9px', color: '#bbb', marginTop: '1px' }}>Matched to your skills</div>
-        </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>
-          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
-          <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>47 new this week</span>
-        </div>
-      </div>
-      {/* Project rows */}
-      <div className="px-5 py-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        <div className="space-y-2">
-          {projects.map((p) => (
-            <div key={p.project} className="flex items-center gap-3"
-              style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: `opacity 0.45s ease ${p.delay}s, transform 0.45s ease ${p.delay}s` }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-bold flex-shrink-0" style={{ background: '#f5f5f5', color: '#555', border: '1px solid #ebebeb' }}>{p.flag}</div>
-              <div className="flex-1 min-w-0">
-                <div style={{ fontSize: '11px', fontWeight: 600, color: '#111' }}>{p.project}</div>
-                <div style={{ fontSize: '9px', color: '#bbb' }}>{p.client}</div>
-              </div>
-              <div className="flex-shrink-0 px-2 py-1 rounded-lg" style={{ background: '#f5f5f5' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#111' }}>{p.budget}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Networking room */}
-      <div className="p-4">
-        <NetworkingRoom entered={entered} />
-      </div>
-    </div>
-  );
-}
-
-const CALENDAR_PAGES = [
-  { month: 'January',  day: '01', year: '2025', earnings: '$6,200',  daysInMonth: 31, startDay: 3 },
-  { month: 'February', day: '15', year: '2025', earnings: '$8,400',  daysInMonth: 28, startDay: 6 },
-  { month: 'March',    day: '22', year: '2025', earnings: '$5,900',  daysInMonth: 31, startDay: 6 },
-  { month: 'April',    day: '08', year: '2025', earnings: '$11,200', daysInMonth: 30, startDay: 2 },
-  { month: 'May',      day: '30', year: '2025', earnings: '$9,750',  daysInMonth: 31, startDay: 4 },
-  { month: 'June',     day: '14', year: '2025', earnings: '$13,100', daysInMonth: 30, startDay: 0 },
-];
-
-function FlipCalendar({ entered }: { entered: boolean }) {
-  const [pageIndex, setPageIndex] = useState(0);
-  const [flipping, setFlipping] = useState(false);
-
+  const [pulse, setPulse] = useState(0);
   useEffect(() => {
     if (!entered) return;
-    const interval = setInterval(() => {
-      setFlipping(true);
-      setTimeout(() => {
-        setPageIndex(i => (i + 1) % CALENDAR_PAGES.length);
-        setFlipping(false);
-      }, 380);
-    }, 2200);
-    return () => clearInterval(interval);
+    const t = setInterval(() => setPulse(p => (p + 1) % 3), 1800);
+    return () => clearInterval(t);
   }, [entered]);
 
-  const cur  = CALENDAR_PAGES[pageIndex];
-  const next = CALENDAR_PAGES[(pageIndex + 1) % CALENDAR_PAGES.length];
+  const clients = [
+    { name: 'Nike',        type: 'Brand Campaign',   budget: '$8,500',  delay: 0 },
+    { name: 'Spotify',     type: 'Content Strategy', budget: '$5,200',  delay: 0.1 },
+    { name: 'HBO Max',     type: 'Creative Direction', budget: '$12,000', delay: 0.2 },
+  ];
 
   return (
-    <div style={{ perspective: '800px', width: '100%' }}>
-      <style>{`
-        @keyframes flipTopLeave {
-          0%   { transform: rotateX(0deg);    opacity: 1; }
-          100% { transform: rotateX(-90deg);  opacity: 0; }
-        }
-        @keyframes flipBottomEnter {
-          0%   { transform: rotateX(90deg);   opacity: 0; }
-          100% { transform: rotateX(0deg);    opacity: 1; }
-        }
-      `}</style>
-
-      {/* Calendar body */}
-      <div className="relative rounded-2xl overflow-hidden select-none"
-        style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.10)', transformStyle: 'preserve-3d' }}>
-
-        {/* Binding rings */}
-        <div className="absolute top-0 left-0 right-0 flex justify-around px-6 z-20" style={{ height: '0px' }}>
-          {[0,1,2,3].map(i => (
-            <div key={i} className="relative" style={{ top: '-6px' }}>
-              <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2.5px solid #bbb', background: '#f5f5f5', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)' }} />
-            </div>
-          ))}
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-sm font-semibold" style={{ color: '#111' }}>Active Opportunities</div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', opacity: inView ? 1 : 0, animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span className="text-[10px] font-medium" style={{ color: '#555' }}>Live</span>
         </div>
-
-        {/* Month header strip */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3"
-          style={{ background: '#111', borderRadius: '16px 16px 0 0' }}>
-          <div>
-            <div style={{ fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontFamily: 'system-ui' }}>
-              {flipping ? next.year : cur.year}
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'system-ui', letterSpacing: '-0.01em' }}>
-              {flipping ? next.month : cur.month}
-            </div>
-          </div>
-          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.45)', fontFamily: 'system-ui' }}>Payout month</div>
-        </div>
-
-        {/* Flip area — top half (leaves) */}
-        <div style={{ position: 'relative', overflow: 'hidden', transformStyle: 'preserve-3d' }}>
-          {/* Static bottom half (next page showing through) */}
-          <div className="flex flex-col items-center justify-center"
-            style={{ padding: '12px 20px 8px', background: '#f7f7f7', borderBottom: '1px solid #e8e8e8' }}>
-            <div style={{ fontSize: '52px', fontWeight: 800, color: '#111', lineHeight: 1, fontFamily: 'system-ui', letterSpacing: '-0.03em' }}>
-              {next.day}
-            </div>
-          </div>
-
-          {/* Flipping top half */}
-          <div className="flex flex-col items-center justify-center absolute inset-0"
+      </div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Matched to your profile</div>
+      <div className="space-y-2.5 mb-4">
+        {clients.map((c, i) => (
+          <div key={c.name} className="flex items-center gap-3 p-3 rounded-xl"
             style={{
-              padding: '12px 20px 8px',
-              background: '#fff',
-              transformOrigin: 'bottom center',
-              animation: flipping ? `flipTopLeave 0.38s cubic-bezier(0.4,0,0.6,1) forwards` : 'none',
-              zIndex: 10,
+              background: pulse === i ? '#111' : '#f0f0f0',
+              opacity: entered ? 1 : 0,
+              transform: entered ? 'none' : 'translateY(10px)',
+              transition: `background 0.4s ease, opacity 0.5s ease ${c.delay}s, transform 0.5s ease ${c.delay}s`,
             }}>
-            <div style={{ fontSize: '52px', fontWeight: 800, color: '#111', lineHeight: 1, fontFamily: 'system-ui', letterSpacing: '-0.03em' }}>
-              {cur.day}
+            <div className="w-8 h-8 rounded-lg flex-shrink-0" style={{ background: pulse === i ? 'rgba(255,255,255,0.15)' : '#e5e7eb', transition: 'background 0.4s ease' }} />
+            <div className="flex-1">
+              <div className="text-xs font-semibold" style={{ color: pulse === i ? '#fff' : '#111', transition: 'color 0.4s ease' }}>{c.name}</div>
+              <div className="text-[10px]" style={{ color: pulse === i ? 'rgba(255,255,255,0.6)' : '#888', transition: 'color 0.4s ease' }}>{c.type}</div>
             </div>
+            <span className="text-xs font-bold" style={{ color: pulse === i ? '#fff' : '#111', transition: 'color 0.4s ease' }}>{c.budget}</span>
           </div>
-        </div>
-
-        {/* Bottom section — earnings */}
-        <div className="flex items-center justify-between px-5 py-3"
-          style={{ background: '#fff' }}>
-          <div>
-            <div style={{ fontSize: '9px', color: '#aaa', fontFamily: 'system-ui' }}>Monthly payout</div>
-            <div style={{ fontSize: '18px', fontWeight: 800, color: '#111', fontFamily: 'system-ui', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-              {flipping ? next.earnings : cur.earnings}
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f0f0f0', borderRadius: '20px', padding: '4px 10px' }}>
-            <svg width="8" height="8" viewBox="0 0 10 10" fill="none">
-              <path d="M5 8V2M2 5l3-3 3 3" stroke="#111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span style={{ fontSize: '10px', fontWeight: 600, color: '#111', fontFamily: 'system-ui' }}>On time</span>
-          </div>
-        </div>
-
-        {/* Mini calendar grid */}
-        <div className="px-5 pb-4">
-          <div className="grid grid-cols-7 gap-0.5 mb-1">
-            {['S','M','T','W','T','F','S'].map((d, i) => (
-              <div key={i} className="text-center" style={{ fontSize: '8px', color: '#bbb', fontFamily: 'system-ui', fontWeight: 600 }}>{d}</div>
-            ))}
-          </div>
-          <div className="grid grid-cols-7 gap-0.5">
-            {Array.from({ length: 42 }, (_, i) => {
-              const dayNum = i - cur.startDay + 1;
-              const isValid = dayNum >= 1 && dayNum <= cur.daysInMonth;
-              const isToday = dayNum === parseInt(cur.day);
-              return (
-                <div key={i} className="flex items-center justify-center"
-                  style={{ height: '16px', borderRadius: '4px', background: isToday ? '#111' : 'transparent' }}>
-                  {isValid && (
-                    <span style={{ fontSize: '7px', fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : '#888', fontFamily: 'system-ui' }}>
-                      {dayNum}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
+        <span className="text-xs" style={{ color: '#555' }}>Avg. project value</span>
+        <span className="text-sm font-bold" style={{ color: '#111' }}>$8,567</span>
       </div>
     </div>
   );
@@ -511,30 +203,26 @@ function PaymentsVisual() {
   ];
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
-      {/* Header bar */}
       <div className="px-5 pt-5 pb-4" style={{ borderBottom: '1px solid #f0f0f0' }}>
         <div className="flex items-center justify-between mb-4"
           style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
-          <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#aaa', letterSpacing: '0.1em' }}>Earnings</span>
+          <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: '#666', letterSpacing: '0.1em' }}>Earnings</span>
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5' }}>
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
             <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>Live</span>
           </div>
         </div>
-        {/* Big balance */}
         <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease 0.05s, transform 0.45s ease 0.05s' }}>
-          <div style={{ fontSize: '9px', color: '#aaa', fontFamily: 'system-ui', marginBottom: '2px' }}>Available balance</div>
+          <div style={{ fontSize: '9px', color: '#666', fontFamily: 'system-ui', marginBottom: '2px' }}>Available balance</div>
           <div style={{ fontSize: '32px', fontWeight: 800, color: '#111', letterSpacing: '-0.03em', lineHeight: 1, fontFamily: 'system-ui' }}>${balance.toLocaleString()}</div>
         </div>
       </div>
-      {/* Lifetime stat */}
       <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid #f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.12s, transform 0.45s ease 0.12s' }}>
-        <span style={{ fontSize: '10px', color: '#aaa' }}>Lifetime earnings</span>
+        <span style={{ fontSize: '10px', color: '#666' }}>Lifetime earnings</span>
         <span style={{ fontSize: '13px', fontWeight: 700, color: '#111' }}>${lifetime.toLocaleString()}</span>
       </div>
-      {/* Transactions */}
-      <div className="px-5 py-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        <div style={{ fontSize: '9px', fontWeight: 600, color: '#bbb', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '10px', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.18s' }}>Recent</div>
+      <div className="px-5 py-3">
+        <div style={{ fontSize: '9px', fontWeight: 600, color: '#777', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '10px', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.18s' }}>Recent</div>
         <div className="space-y-2.5">
           {txns.map((t) => (
             <div key={t.date} className="flex items-center justify-between"
@@ -545,7 +233,7 @@ function PaymentsVisual() {
                 </div>
                 <div>
                   <div style={{ fontSize: '10px', fontWeight: 600, color: '#111' }}>{t.desc}</div>
-                  <div style={{ fontSize: '9px', color: '#bbb' }}>{t.date}</div>
+                  <div style={{ fontSize: '9px', color: '#777' }}>{t.date}</div>
                 </div>
               </div>
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#111' }}>{t.amount}</span>
@@ -553,13 +241,11 @@ function PaymentsVisual() {
           ))}
         </div>
       </div>
-      {/* Flipping calendar */}
-      <div className="p-4" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(10px)', transition: 'opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s' }}>
-        <FlipCalendar entered={entered} />
-      </div>
     </div>
   );
 }
+
+
 
 function CareerVisual() {
   const { ref, inView } = useInView();
@@ -592,14 +278,14 @@ function CareerVisual() {
           <div key={s.label} className="text-center p-2.5 rounded-xl"
             style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
             <div className="text-sm font-bold" style={{ color: '#111' }}>{s.value}</div>
-            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-[10px]" style={{ color: '#555' }}>{s.label}</div>
           </div>
         ))}
       </div>
       <div className="p-3 rounded-xl"
         style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.3s, transform 0.45s ease 0.3s' }}>
         <div className="text-xs font-medium mb-1" style={{ color: '#111' }}>"Exceptional work and communication"</div>
-        <div className="text-[10px]" style={{ color: '#888' }}>— Recent client review</div>
+        <div className="text-[10px]" style={{ color: '#555' }}>— Recent client review</div>
       </div>
     </div>
   );
@@ -628,7 +314,7 @@ function MatchingVisual() {
             <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
               <div className="h-full rounded-full" style={{ width: entered ? `${s.pct}%` : '0%', background: '#111', transition: `width 0.7s cubic-bezier(0.34,1,0.64,1) ${s.delay + 0.1}s` }} />
             </div>
-            <div className="text-[10px] mt-0.5" style={{ color: '#888' }}>{s.projects}</div>
+            <div className="text-[10px] mt-0.5" style={{ color: '#555' }}>{s.projects}</div>
           </div>
         ))}
       </div>
@@ -652,7 +338,7 @@ function FlexibleVisual() {
         ].map((s) => (
           <div key={s.label} className="p-3 rounded-xl"
             style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${s.delay}s, transform 0.45s ease ${s.delay}s` }}>
-            <div className="text-[10px]" style={{ color: '#888' }}>{s.label}</div>
+            <div className="text-[10px]" style={{ color: '#555' }}>{s.label}</div>
             <div className="text-lg font-bold" style={{ color: '#111' }}>{s.value}</div>
           </div>
         ))}
@@ -661,7 +347,7 @@ function FlexibleVisual() {
         {days.map((day, i) => (
           <div key={day} className="flex items-center gap-3"
             style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${0.2 + i * 0.06}s` }}>
-            <span className="text-[10px] w-8" style={{ color: '#888' }}>{day}</span>
+            <span className="text-[10px] w-8" style={{ color: '#555' }}>{day}</span>
             <div className="flex-1 h-2.5 rounded-full" style={{ background: '#e5e7eb' }}>
               <div className="h-full rounded-full" style={{ width: entered ? `${widths[i]}%` : '0%', background: '#111', transition: `width 0.65s cubic-bezier(0.34,1,0.64,1) ${0.25 + i * 0.06}s` }} />
             </div>
@@ -692,30 +378,87 @@ function FreelancerSupportVisual() {
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="text-sm font-semibold mb-4" style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Priority Support</div>
       <div className="space-y-3">
-        {/* User message */}
-        <div className="flex gap-2"
+        <div className="flex gap-2 justify-end"
           style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#111', color: '#fff' }}>Y</div>
+          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
+            Hey! I need help with my upcoming release strategy.
+          </div>
+          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>U</div>
+        </div>
+        <div className="flex gap-2"
+          style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+          <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
           <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>
-            A client hasn't responded in 3 days. Can you help?
+            Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.
           </div>
         </div>
-        {/* Support reply */}
-        <div className="flex gap-2 justify-end"
-          style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
-          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
-            I've reached out to the client directly. They'll respond within 24 hours or we'll release your payment from escrow.
+        <div className="flex items-center gap-2 pt-1"
+          style={{ opacity: showStatus ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>
+          <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e', boxShadow: '0 0 5px rgba(34,197,94,0.33)' }} />
+          <span className="text-[10px]" style={{ color: '#555' }}>Avg. response time: &lt;5 min</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FreelancerMiddlemanVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [step, setStep] = useState(0);
+  const steps = [
+    { label: 'Funds deposited',  icon: '↓' },
+    { label: 'Terms locked',     icon: '⚿' },
+    { label: 'Work delivered',   icon: '✓' },
+    { label: 'Payment released', icon: '→' },
+  ];
+  useEffect(() => {
+    if (!entered) return;
+    const t = setInterval(() => setStep(s => (s + 1) % steps.length), 1800);
+    return () => clearInterval(t);
+  }, [entered]);
+  return (
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px', border: '1px solid #ebebeb' }}>
+      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Deal Protection</div>
+      <div className="text-xs mb-4" style={{ color: '#555' }}>Secure & transparent</div>
+      <div className="flex items-center justify-between gap-2 mb-4" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s' }}>
+        <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f0f0f0', border: '1px solid #e5e7eb' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="6" width="12" height="8" rx="1.5" stroke="#111" strokeWidth="1.2"/><path d="M5 6V4.5a3 3 0 016 0V6" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/></svg>
           </div>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#555' }}>Client</span>
+        </div>
+        <div style={{ flex: 0.6, display: 'flex', alignItems: 'center' }}>
+          <div style={{ height: '1px', flex: 1, background: step === 0 || step === 3 ? '#111' : '#d1d5db', transition: 'background 0.4s ease' }}/>
+          <div style={{ width: '5px', height: '5px', borderTop: '1.5px solid', borderRight: '1.5px solid', borderColor: step === 0 || step === 3 ? '#111' : '#d1d5db', transform: 'rotate(45deg)', marginLeft: '-3px', transition: 'border-color 0.4s ease' }}/>
+        </div>
+        <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          <div className="w-10 h-10 rounded-xl overflow-hidden" style={{ background: '#111' }}>
             <img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#555' }}>Elevate</span>
         </div>
-        {/* Status */}
-        <div className="flex items-center gap-2 pt-1"
-          style={{ opacity: showStatus ? 1 : 0, transition: 'opacity 0.4s ease' }}>
-          <div className="w-2 h-2 rounded-full" style={{ background: '#111' }} />
-          <span className="text-[10px]" style={{ color: '#888' }}>Avg. response time: &lt;5 min</span>
+        <div style={{ flex: 0.6, display: 'flex', alignItems: 'center' }}>
+          <div style={{ height: '1px', flex: 1, background: step === 1 || step === 2 ? '#111' : '#d1d5db', transition: 'background 0.4s ease' }}/>
+          <div style={{ width: '5px', height: '5px', borderTop: '1.5px solid', borderRight: '1.5px solid', borderColor: step === 1 || step === 2 ? '#111' : '#d1d5db', transform: 'rotate(45deg)', marginLeft: '-3px', transition: 'border-color 0.4s ease' }}/>
         </div>
+        <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f0f0f0', border: '1px solid #e5e7eb' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.5" stroke="#111" strokeWidth="1.2"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/></svg>
+          </div>
+          <span style={{ fontSize: '8px', fontWeight: 600, color: '#555' }}>You</span>
+        </div>
+      </div>
+      <div className="space-y-1.5" style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.25s' }}>
+        {steps.map((s, i) => (
+          <div key={i} className="flex items-center gap-2.5" style={{ opacity: step === i ? 1 : 0.3, transition: 'opacity 0.35s ease' }}>
+            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: step === i ? '#111' : '#e5e7eb', transition: 'background 0.35s ease' }}>
+              <span style={{ fontSize: '8px', color: step === i ? '#fff' : '#888' }}>{s.icon}</span>
+            </div>
+            <span style={{ fontSize: '10px', fontWeight: step === i ? 600 : 400, color: '#111' }}>{s.label}</span>
+            {step === i && <div className="ml-auto px-1.5 py-0.5 rounded" style={{ background: '#f0f0f0' }}><span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>Active</span></div>}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -729,6 +472,7 @@ function FreelancerFeatureVisual({ type }: { type: FreelancerFeature['visual'] }
     case 'matching': return <MatchingVisual />;
     case 'flexible': return <FlexibleVisual />;
     case 'support': return <FreelancerSupportVisual />;
+    case 'middleman': return <FreelancerMiddlemanVisual />;
     default: return null;
   }
 }

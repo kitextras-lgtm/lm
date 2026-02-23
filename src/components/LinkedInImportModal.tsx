@@ -215,7 +215,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
       <div
         className="relative rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         style={{
-          backgroundColor: '#000000',
+          backgroundColor: 'var(--bg-card)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           scrollbarWidth: 'none',
         }}

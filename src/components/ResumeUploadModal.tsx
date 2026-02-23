@@ -341,7 +341,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
       <div
         className="relative rounded-2xl p-8 max-w-2xl w-full"
         style={{
-          backgroundColor: '#000000',
+          backgroundColor: 'var(--bg-card)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
         }}
         onClick={(e) => e.stopPropagation()}

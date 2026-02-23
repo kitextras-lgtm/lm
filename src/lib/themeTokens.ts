@@ -3,14 +3,14 @@ export type Theme = 'light' | 'grey' | 'dark' | 'rose' | 'white';
 export const themeTokens = {
   light: {
     bg: {
-      primary: '#0F172A',
-      secondary: '#0F172A',
-      elevated: '#0F172A',
-      active: '#1E293B',
-      sidebar: '#0F172A',
-      input: '#0F172A',
-      card: '#0F172A',
-      modal: '#0F172A',
+      primary: '#192231',
+      secondary: '#192231',
+      elevated: '#192231',
+      active: '#1e2838',
+      sidebar: '#192231',
+      input: '#17202f',
+      card: '#17202f',
+      modal: '#17202f',
     },
     text: {
       primary: '#FFFFFF',
@@ -25,14 +25,14 @@ export const themeTokens = {
 
   grey: {
     bg: {
-      primary: '#1A1A1E',
-      secondary: '#1A1A1E',
-      elevated: '#1A1A1E',
-      active: '#2A2A2E',
-      sidebar: '#1A1A1E',
-      input: '#1A1A1E',
-      card: '#1A1A1E',
-      modal: '#1A1A1E',
+      primary: '#222226',
+      secondary: '#222226',
+      elevated: '#222226',
+      active: '#272729',
+      sidebar: '#222226',
+      input: '#202024',
+      card: '#202024',
+      modal: '#202024',
     },
     text: {
       primary: '#F8FAFC',
@@ -47,11 +47,11 @@ export const themeTokens = {
 
   dark: {
     bg: {
-      primary: '#000000',
-      secondary: '#000000',
-      elevated: '#000000',
-      active: '#0f0f13',
-      sidebar: '#000000',
+      primary: '#0a0a0a',
+      secondary: '#0a0a0a',
+      elevated: '#0a0a0a',
+      active: '#141414',
+      sidebar: '#0a0a0a',
       input: '#000000',
       card: '#000000',
       modal: '#000000',
@@ -68,14 +68,14 @@ export const themeTokens = {
   },
   rose: {
     bg: {
-      primary: '#120810',
-      secondary: '#120810',
-      elevated: '#1C1018',
-      active: '#2E1A28',
-      sidebar: '#120810',
-      input: '#1C1018',
-      card: '#1C1018',
-      modal: '#1C1018',
+      primary: '#140a12',
+      secondary: '#140a12',
+      elevated: '#140a12',
+      active: '#1a1018',
+      sidebar: '#140a12',
+      input: '#120810',
+      card: '#120810',
+      modal: '#120810',
     },
     text: {
       primary: '#F8FAFC',
@@ -89,14 +89,14 @@ export const themeTokens = {
   },
   white: {
     bg: {
-      primary: '#FFFFFF',
-      secondary: '#FFFFFF',
-      elevated: '#FFFFFF',
-      active: '#F1F5F9',
-      sidebar: '#FFFFFF',
-      input: '#FFFFFF',
-      card: '#FFFFFF',
-      modal: '#FFFFFF',
+      primary: '#f5f5f5',
+      secondary: '#f5f5f5',
+      elevated: '#f5f5f5',
+      active: '#ebebeb',
+      sidebar: '#f5f5f5',
+      input: '#ffffff',
+      card: '#ffffff',
+      modal: '#ffffff',
     },
     text: {
       primary: '#0F172A',

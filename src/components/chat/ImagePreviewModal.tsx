@@ -37,7 +37,7 @@ export function ImagePreviewModal({ isOpen, onClose, imageUrl }: ImagePreviewMod
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 rounded-full transition-colors"
-          style={{ backgroundColor: '#1a1a1e', color: 'var(--text-primary)' }}
+          style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
           onClick={(e) => e.stopPropagation()}
         >
           <Download className="w-5 h-5" />
@@ -45,7 +45,7 @@ export function ImagePreviewModal({ isOpen, onClose, imageUrl }: ImagePreviewMod
         <button
           onClick={onClose}
           className="p-2 rounded-full transition-colors"
-          style={{ backgroundColor: '#1a1a1e', color: 'var(--text-primary)' }}
+          style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
         >
           <X className="w-5 h-5" />
         </button>
