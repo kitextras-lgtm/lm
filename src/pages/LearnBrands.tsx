@@ -403,7 +403,7 @@ function SupportVisualBrands() {
         <div className="flex gap-2 justify-end"
           style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}>
           <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
-            Hey! I need help with my upcoming release strategy.
+            We're launching a campaign next month. Can you help us find the right creators?
           </div>
           <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>B</div>
         </div>
@@ -411,7 +411,7 @@ function SupportVisualBrands() {
           style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
           <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
           <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>
-            Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.
+            Absolutely. I've shortlisted 12 vetted creators that match your audience. I'll send over a full brief with reach, engagement, and pricing within the hour.
           </div>
         </div>
         <div className="flex items-center gap-2 pt-1"
@@ -468,25 +468,60 @@ function ViralDistributionVisual() {
 function MiddlemanVisual() {
   const { ref, inView } = useInView();
   const entered = useEnteredDelay(inView);
+  const [scenarioIdx, setScenarioIdx] = useState(0);
   const [step, setStep] = useState(0);
-  const steps = [
-    { label: 'Funds deposited',    icon: '↓', side: 'brand' },
-    { label: 'Terms locked',       icon: '⚿', side: 'center' },
-    { label: 'Work delivered',     icon: '✓', side: 'creator' },
-    { label: 'Payment released',   icon: '→', side: 'brand' },
+
+  const scenarios = [
+    { left: 'Brand',      leftIcon: 'brand',     right: 'Creator',    rightIcon: 'person',  deal: 'Sponsorship deal' },
+    { left: 'Creator',    leftIcon: 'person',    right: 'Creator',    rightIcon: 'person',  deal: 'Collab agreement' },
+    { left: 'Brand',      leftIcon: 'brand',     right: 'Brand',      rightIcon: 'brand',   deal: 'Partnership terms' },
+    { left: 'Creator',    leftIcon: 'person',    right: 'Freelancer', rightIcon: 'freelancer', deal: 'Project contract' },
+    { left: 'Freelancer', leftIcon: 'freelancer',right: 'Creator',    rightIcon: 'person',  deal: 'Service agreement' },
+    { left: 'Brand',      leftIcon: 'brand',     right: 'Freelancer', rightIcon: 'freelancer', deal: 'Campaign hire' },
   ];
+
+  const steps = ['Funds deposited', 'Terms locked', 'Work delivered', 'Payment released'];
+
   useEffect(() => {
     if (!entered) return;
-    const t = setInterval(() => setStep(s => (s + 1) % steps.length), 1800);
-    return () => clearInterval(t);
+    let s = 0;
+    const stepTimer = setInterval(() => {
+      s = (s + 1) % steps.length;
+      setStep(s);
+      if (s === 0) setScenarioIdx(idx => (idx + 1) % scenarios.length);
+    }, 1600);
+    return () => clearInterval(stepTimer);
   }, [entered]);
+
+  const scenario = scenarios[scenarioIdx];
+
+  const PartyIcon = ({ type }: { type: string }) => {
+    if (type === 'brand') return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="6" width="12" height="8" rx="1.5" stroke="#111" strokeWidth="1.2"/>
+        <path d="M5 6V4.5a3 3 0 016 0V6" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    );
+    if (type === 'freelancer') return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="3" y="3" width="10" height="10" rx="2" stroke="#111" strokeWidth="1.2"/>
+        <path d="M6 7h4M6 9.5h2.5" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    );
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="5.5" r="2.5" stroke="#111" strokeWidth="1.2"/>
+        <path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/>
+      </svg>
+    );
+  };
 
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fff', border: '1px solid #ebebeb' }}>
       <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: '1px solid #f0f0f0' }}>
         <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
           <div className="text-sm font-semibold" style={{ color: '#111' }}>Deal Protection</div>
-          <div style={{ fontSize: '9px', color: '#777', marginTop: '1px' }}>Secure & transparent</div>
+          <div style={{ fontSize: '9px', color: '#777', marginTop: '1px', transition: 'opacity 0.3s ease' }}>{scenario.deal}</div>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f5f5f5', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.05s' }}>
           <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
@@ -497,15 +532,12 @@ function MiddlemanVisual() {
       {/* Three-party diagram */}
       <div className="px-5 pt-4 pb-2" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s' }}>
         <div className="flex items-center justify-between gap-2">
-          {/* Brand */}
-          <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          {/* Left party */}
+          <div className="flex flex-col items-center gap-1.5" style={{ flex: 1, transition: 'opacity 0.3s ease' }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f5f5f5', border: '1px solid #ebebeb' }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="6" width="12" height="8" rx="1.5" stroke="#111" strokeWidth="1.2"/>
-                <path d="M5 6V4.5a3 3 0 016 0V6" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
+              <PartyIcon type={scenario.leftIcon} />
             </div>
-            <span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>Brand</span>
+            <span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>{scenario.left}</span>
           </div>
 
           {/* Arrow left */}
@@ -516,7 +548,7 @@ function MiddlemanVisual() {
 
           {/* Elevate center */}
           <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
-            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ background: '#111', border: '1px solid #111' }}>
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0" style={{ background: '#111' }}>
               <img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>Elevate</span>
@@ -528,15 +560,12 @@ function MiddlemanVisual() {
             <div style={{ width: '5px', height: '5px', borderTop: '1.5px solid', borderRight: '1.5px solid', borderColor: step === 1 || step === 2 ? '#111' : '#e0e0e0', transform: 'rotate(45deg)', marginLeft: '-3px', transition: 'border-color 0.4s ease' }}/>
           </div>
 
-          {/* Creator */}
-          <div className="flex flex-col items-center gap-1.5" style={{ flex: 1 }}>
+          {/* Right party */}
+          <div className="flex flex-col items-center gap-1.5" style={{ flex: 1, transition: 'opacity 0.3s ease' }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f5f5f5', border: '1px solid #ebebeb' }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="5.5" r="2.5" stroke="#111" strokeWidth="1.2"/>
-                <path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#111" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
+              <PartyIcon type={scenario.rightIcon} />
             </div>
-            <span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>Creator</span>
+            <span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>{scenario.right}</span>
           </div>
         </div>
       </div>
@@ -544,14 +573,14 @@ function MiddlemanVisual() {
       {/* Step indicator */}
       <div className="px-5 pb-4" style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.25s' }}>
         <div className="space-y-1.5 mt-3">
-          {steps.map((s, i) => (
+          {steps.map((label, i) => (
             <div key={i} className="flex items-center gap-2.5"
               style={{ opacity: step === i ? 1 : 0.3, transition: 'opacity 0.35s ease' }}>
               <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ background: step === i ? '#111' : '#f0f0f0', transition: 'background 0.35s ease' }}>
-                <span style={{ fontSize: '8px', color: step === i ? '#fff' : '#888' }}>{s.icon}</span>
+                <span style={{ fontSize: '8px', color: step === i ? '#fff' : '#888' }}>{i + 1}</span>
               </div>
-              <span style={{ fontSize: '10px', fontWeight: step === i ? 600 : 400, color: '#111' }}>{s.label}</span>
+              <span style={{ fontSize: '10px', fontWeight: step === i ? 600 : 400, color: '#111' }}>{label}</span>
               {step === i && (
                 <div className="ml-auto px-1.5 py-0.5 rounded" style={{ background: '#f5f5f5' }}>
                   <span style={{ fontSize: '8px', fontWeight: 600, color: '#111' }}>Active</span>

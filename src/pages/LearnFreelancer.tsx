@@ -150,9 +150,9 @@ function MarketplaceVisual() {
   }, [entered]);
 
   const clients = [
-    { name: 'Nike',        type: 'Brand Campaign',   budget: '$8,500',  delay: 0 },
-    { name: 'Spotify',     type: 'Content Strategy', budget: '$5,200',  delay: 0.1 },
-    { name: 'HBO Max',     type: 'Creative Direction', budget: '$12,000', delay: 0.2 },
+    { name: 'Marcus J.',   type: 'YouTuber · 4.2M subs · Video editing', budget: '$3,800',  delay: 0 },
+    { name: 'Aura Studio', type: 'Brand · Campaign creative direction',   budget: '$11,500', delay: 0.1 },
+    { name: 'Derek Osei',  type: 'Business owner · Brand identity',       budget: '$6,200',  delay: 0.2 },
   ];
 
   return (
@@ -381,15 +381,15 @@ function FreelancerSupportVisual() {
         <div className="flex gap-2 justify-end"
           style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}>
           <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
-            Hey! I need help with my upcoming release strategy.
+            A client hasn't responded in 5 days. My payment is stuck in escrow.
           </div>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>U</div>
+          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>F</div>
         </div>
         <div className="flex gap-2"
           style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
           <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
           <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>
-            Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.
+            Got it. I've flagged the contract and escalated to our disputes team. We'll have this resolved and your funds released within 24 hours.
           </div>
         </div>
         <div className="flex items-center gap-2 pt-1"

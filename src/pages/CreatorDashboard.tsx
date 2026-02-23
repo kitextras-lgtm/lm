@@ -893,7 +893,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
   
   // Use centralized theme from context
-  const { theme: backgroundTheme, setTheme: setBackgroundTheme } = useTheme();
+  const { theme: backgroundTheme, setTheme: setBackgroundTheme, flatBackground, setFlatBackground } = useTheme();
   // appliedTheme is now the same as backgroundTheme (single source of truth)
   const appliedTheme = backgroundTheme;
   
@@ -2643,7 +2643,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.navyDesc')}</p>
+                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
@@ -2671,7 +2671,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.greyDesc')}</p>
+                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
@@ -2754,9 +2754,18 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                 </div>
-                <h4 className="font-semibold mb-1 text-white">Light</h4>
-                <p className="text-sm text-white">Clean white</p>
+                <h4 className="font-semibold mb-1 text-gray-900">Light</h4>
+                <p className="text-sm text-gray-600">Clean white</p>
               </div>
+            </div>
+
+            {/* Flat background toggle */}
+            <div className="flex items-center justify-between mt-4 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+              <div>
+                <h4 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>No secondary color</h4>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)' }}>Use a single flat color across the entire background</p>
+              </div>
+              <ToggleSwitch isActive={flatBackground} onToggle={() => setFlatBackground(!flatBackground)} backgroundTheme={backgroundTheme} />
             </div>
           </div>
 

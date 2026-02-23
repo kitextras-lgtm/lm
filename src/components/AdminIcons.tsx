@@ -148,7 +148,7 @@ export function AdminUsersIconSVG({ isHovered, isActive }: { isHovered?: boolean
         <path d="M30 42C30 38 32 36 36 36C40 36 42 38 42 42" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" className="opacity-50" />
       </g>
       <g className="transition-all duration-300 origin-center" style={{ transform: shouldAnimate ? 'scale(1.10)' : 'scale(1)' }}>
-        <circle cx="32" cy="14" r="8" stroke="currentColor" strokeWidth="3.5" fill="black" className="fill-black/80" />
+        <circle cx="32" cy="14" r="8" stroke="currentColor" strokeWidth="3.5" style={{ fill: 'var(--bg-primary)' }} />
         <path d="M38 20L44 26" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
         <path d="M28 11C29 10 31 10 32 11" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" className="opacity-60" />
       </g>

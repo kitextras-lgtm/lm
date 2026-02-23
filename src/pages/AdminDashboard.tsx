@@ -13,6 +13,7 @@ import { ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { SettingsView } from '../components/SettingsView';
+import { ToggleSwitch } from '../components/ToggleSwitch';
 import { useTheme } from '../contexts/ThemeContext';
 import { themeTokens } from '../lib/themeTokens';
 
@@ -66,7 +67,7 @@ interface Application {
 export function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { theme, setTheme, tokens } = useTheme();
+  const { theme, setTheme, tokens, flatBackground, setFlatBackground } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
@@ -708,9 +709,9 @@ export function AdminDashboard() {
                 </div>
                 {/* Quick Nav Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                  <button onClick={() => setActiveSection('applications')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                  <button onClick={() => setActiveSection('applications')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
                     <div className="flex items-center gap-4">
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -722,9 +723,9 @@ export function AdminDashboard() {
                       </div>
                     </div>
                   </button>
-                  <button onClick={() => setActiveSection('users')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                  <button onClick={() => setActiveSection('users')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
                     <div className="flex items-center gap-4">
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -805,7 +806,7 @@ export function AdminDashboard() {
                         className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex-shrink-0"
                         style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                       >
-                        {whitelistAdding ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>}
+                        {whitelistAdding ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                         Add
                       </button>
                     </div>
@@ -844,7 +845,7 @@ export function AdminDashboard() {
                             onClick={() => handleRemoveWhitelist(ch.id)}
                             disabled={removingWhitelistId === ch.id}
                             className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
-                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                            style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
                           >
                             {removingWhitelistId === ch.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>}
                           </button>
@@ -1457,7 +1458,7 @@ export function AdminDashboard() {
                       <div className="flex items-center justify-center min-h-[400px]">
                         <div className="text-center px-4">
                           <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
                           </div>
                           <h3 className="text-xl font-bold mb-2" style={{ color: tokens.text.primary }}>No {appStatusFilter} applications</h3>
                           <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Applications will appear here once submitted</p>
@@ -1966,12 +1967,12 @@ export function AdminDashboard() {
                                 />
                               </div>
                               <div className="flex-1 min-w-0 flex items-center">
-                                <h4 className="font-semibold text-white">Elevate</h4>
+                                <h4 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Elevate</h4>
                               </div>
                             </div>
                             
                             <div className="mb-4">
-                              <p className="mb-3 text-white">
+                              <p className="mb-3" style={{ color: 'var(--text-primary)' }}>
                                 Explore opportunities to earn, invest, and connect with top talent. Elevate brings everything you need to scale and succeed into one unified ecosystem.
                               </p>
                             </div>
@@ -2126,9 +2127,17 @@ export function AdminDashboard() {
                                 <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
                                 <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                               </div>
-                              <h4 className="font-semibold mb-1 text-white">Light</h4>
-                              <p className="text-sm text-white">Clean white</p>
+                              <h4 className="font-semibold mb-1 text-gray-900">Light</h4>
+                              <p className="text-sm text-gray-600">Clean white</p>
                             </div>
+                          </div>
+
+                          <div className="flex items-center justify-between mt-4 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No secondary color</h4>
+                              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Use a single flat color across the entire background</p>
+                            </div>
+                            <ToggleSwitch isActive={flatBackground} onToggle={() => setFlatBackground(!flatBackground)} backgroundTheme={theme} />
                           </div>
                         </div>
 
@@ -2136,22 +2145,12 @@ export function AdminDashboard() {
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sidebar</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: tokens.border.subtle }}>
                               <div className="min-w-0 flex-1">
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Collapse sidebar</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
+                                <h4 className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Collapse sidebar</h4>
+                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                                className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none"
-                                style={{ backgroundColor: sidebarCollapsed ? tokens.bg.active : tokens.bg.elevated }}
-                              >
-                                <span
-                                  className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-                                  style={{ transform: sidebarCollapsed ? 'translateX(26px)' : 'translateX(4px)' }}
-                                />
-                              </button>
+                              <ToggleSwitch isActive={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} backgroundTheme={theme} />
                             </div>
                           </div>
                         </div>
@@ -2211,12 +2210,12 @@ export function AdminDashboard() {
                                 />
                               </div>
                               <div className="flex-1 min-w-0 flex items-center">
-                                <h4 className="font-semibold text-white">Elevate</h4>
+                                <h4 className="font-semibold" style={{ color: 'var(--text-primary)' }}>Elevate</h4>
                               </div>
                             </div>
                             
                             <div className="mb-4">
-                              <p className="mb-3 text-white">
+                              <p className="mb-3" style={{ color: 'var(--text-primary)' }}>
                                 Explore opportunities to earn, invest, and connect with top talent. Elevate brings everything you need to scale and succeed into one unified ecosystem.
                               </p>
                             </div>
@@ -2371,9 +2370,17 @@ export function AdminDashboard() {
                                 <div className="h-2 rounded w-3/4 mb-2" style={{ backgroundColor: '#CBD5E1' }}></div>
                                 <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#CBD5E1' }}></div>
                               </div>
-                              <h4 className="font-semibold mb-1 text-white">Light</h4>
-                              <p className="text-sm text-white">Clean white</p>
+                              <h4 className="font-semibold mb-1 text-gray-900">Light</h4>
+                              <p className="text-sm text-gray-600">Clean white</p>
                             </div>
+                          </div>
+
+                          <div className="flex items-center justify-between mt-4 p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                            <div>
+                              <h4 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>No secondary color</h4>
+                              <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)' }}>Use a single flat color across the entire background</p>
+                            </div>
+                            <ToggleSwitch isActive={flatBackground} onToggle={() => setFlatBackground(!flatBackground)} backgroundTheme={theme} />
                           </div>
                         </div>
 
@@ -2381,22 +2388,12 @@ export function AdminDashboard() {
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sidebar</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: tokens.border.subtle }}>
                               <div className="min-w-0 flex-1">
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Collapse sidebar</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
+                                <h4 className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Collapse sidebar</h4>
+                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                                className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none"
-                                style={{ backgroundColor: sidebarCollapsed ? tokens.bg.active : tokens.bg.elevated }}
-                              >
-                                <span
-                                  className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
-                                  style={{ transform: sidebarCollapsed ? 'translateX(26px)' : 'translateX(4px)' }}
-                                />
-                              </button>
+                              <ToggleSwitch isActive={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} backgroundTheme={theme} />
                             </div>
                           </div>
                         </div>

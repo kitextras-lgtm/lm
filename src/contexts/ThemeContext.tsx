@@ -5,6 +5,8 @@ interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   tokens: typeof themeTokens[Theme];
+  flatBackground: boolean;
+  setFlatBackground: (flat: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -15,6 +17,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return saved || 'dark';
   });
 
+  const [flatBackground, setFlatBackgroundState] = useState<boolean>(() => {
+    return localStorage.getItem('flatBackground') === 'true';
+  });
+
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     localStorage.setItem('theme', newTheme);
@@ -23,19 +29,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('appliedTheme', newTheme);
   };
 
+  const setFlatBackground = (flat: boolean) => {
+    setFlatBackgroundState(flat);
+    localStorage.setItem('flatBackground', String(flat));
+  };
+
   useEffect(() => {
-    applyThemeToDOM(theme);
-  }, [theme]);
+    applyThemeToDOM(theme, flatBackground);
+  }, [theme, flatBackground]);
 
   // Apply theme on initial mount
   useEffect(() => {
-    applyThemeToDOM(theme);
+    applyThemeToDOM(theme, flatBackground);
   }, []);
 
   const value: ThemeContextType = {
     theme,
     setTheme,
     tokens: themeTokens[theme],
+    flatBackground,
+    setFlatBackground,
   };
 
   return (

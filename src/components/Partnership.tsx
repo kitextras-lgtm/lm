@@ -237,8 +237,8 @@ function SupportVisual() {
       <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Priority Support</div>
       <div className="space-y-3">
         <div className="flex gap-2 justify-end" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s' }}>
-          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>Hey! I need help with my upcoming release strategy.</div>
-          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
+          <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>A brand just reached out for a collab. How do I make sure I'm protected?</div>
+          <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>C</div>
         </div>
         {showTyping && (
           <div className="flex gap-2 items-end" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
@@ -253,7 +253,7 @@ function SupportVisual() {
         {showReply && (
           <div className="flex gap-2" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
             <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
-            <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.</div>
+            <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>We've got you. We'll handle the contract, escrow the payment, and make sure deliverables are locked in before anything moves forward.</div>
           </div>
         )}
         <div className="flex items-center gap-2 pt-1" style={{ opacity: entered ? 1 : 0, transition: 'opacity 0.5s ease 0.3s' }}>

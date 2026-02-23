@@ -6,11 +6,11 @@ export const themeTokens = {
       primary: '#192231',
       secondary: '#192231',
       elevated: '#192231',
-      active: '#1e2838',
+      active: '#212a39',
       sidebar: '#192231',
-      input: '#17202f',
-      card: '#17202f',
-      modal: '#17202f',
+      input: '#1e2736',
+      card: '#1e2736',
+      modal: '#1e2736',
     },
     text: {
       primary: '#FFFFFF',
@@ -28,11 +28,11 @@ export const themeTokens = {
       primary: '#222226',
       secondary: '#222226',
       elevated: '#222226',
-      active: '#272729',
+      active: '#2a2a2e',
       sidebar: '#222226',
-      input: '#202024',
-      card: '#202024',
-      modal: '#202024',
+      input: '#27272b',
+      card: '#27272b',
+      modal: '#27272b',
     },
     text: {
       primary: '#F8FAFC',
@@ -50,11 +50,11 @@ export const themeTokens = {
       primary: '#0a0a0a',
       secondary: '#0a0a0a',
       elevated: '#0a0a0a',
-      active: '#141414',
+      active: '#121212',
       sidebar: '#0a0a0a',
-      input: '#000000',
-      card: '#000000',
-      modal: '#000000',
+      input: '#0f0f0f',
+      card: '#0f0f0f',
+      modal: '#0f0f0f',
     },
     text: {
       primary: '#F8FAFC',
@@ -71,11 +71,11 @@ export const themeTokens = {
       primary: '#140a12',
       secondary: '#140a12',
       elevated: '#140a12',
-      active: '#1a1018',
+      active: '#1c121a',
       sidebar: '#140a12',
-      input: '#120810',
-      card: '#120810',
-      modal: '#120810',
+      input: '#190f17',
+      card: '#190f17',
+      modal: '#190f17',
     },
     text: {
       primary: '#F8FAFC',
@@ -112,7 +112,7 @@ export const themeTokens = {
 
 export type ThemeTokens = typeof themeTokens[Theme];
 
-export function applyThemeToDOM(theme: Theme): void {
+export function applyThemeToDOM(theme: Theme, flatBackground = false): void {
   const tokens = themeTokens[theme];
 
   Object.entries(tokens).forEach(([group, values]) => {
@@ -123,6 +123,15 @@ export function applyThemeToDOM(theme: Theme): void {
       );
     });
   });
+
+  if (flatBackground) {
+    const primary = tokens.bg.primary;
+    document.documentElement.style.setProperty('--bg-card', primary);
+    document.documentElement.style.setProperty('--bg-input', primary);
+    document.documentElement.style.setProperty('--bg-modal', primary);
+    document.documentElement.style.setProperty('--bg-elevated', primary);
+    document.documentElement.style.setProperty('--bg-active', primary);
+  }
 
   // Also set theme attribute for potential CSS selectors
   document.documentElement.setAttribute('data-theme', theme);

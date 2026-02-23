@@ -180,8 +180,8 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
                 </div>
               )}
               {message.content && (
-                <div className={`flex items-center justify-center min-h-[1.5rem] ${message.type === 'image' && message.image_url ? 'px-4 pb-3' : 'px-4 py-3'}`}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words w-full text-center">
+                <div className={`${message.type === 'image' && message.image_url ? 'px-4 pb-3' : 'px-4 py-3'}`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
                     {message.content.split('👋').map((part, index, array) => 
                       index < array.length - 1 ? (
                         <span key={index}>

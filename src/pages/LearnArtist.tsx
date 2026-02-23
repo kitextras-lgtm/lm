@@ -114,9 +114,12 @@ const artistFAQ = [
 // --- Visual Mockup Components ---
 
 function DistributionVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="flex items-center gap-3 mb-4">
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center gap-3 mb-4"
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease, transform 0.45s ease' }}>
         <div className="w-10 h-10 rounded-full" style={{ background: '#e5e7eb' }} />
         <div>
           <div className="text-sm font-semibold" style={{ color: '#111' }}>Your Release</div>
@@ -132,10 +135,10 @@ function DistributionVisual() {
               <path d="M17.5 10.5c-3.1-1.8-8.2-2-11.2-1.1-.5.1-.8.6-.7 1.1.1.5.6.8 1.1.7 2.6-.8 7.1-.6 9.8 1 .4.3 1 .1 1.3-.3.3-.5.1-1.1-.3-1.4zm-.4 2.9c-.3.4-.8.5-1.2.3-2.6-1.6-6.5-2-9.5-1.1-.4.1-.9-.1-1-.5-.1-.4.1-.9.5-1 3.4-1 7.8-.5 10.7 1.3.4.2.5.7.3 1.1l.2-.1zm-1.3 2.8c-.2.3-.7.4-1 .2-2.2-1.4-5-1.7-8.3-.9-.3.1-.7-.1-.8-.4-.1-.3.1-.7.4-.8 3.6-.8 6.7-.5 9.2 1 .3.2.4.6.2.9h.3z" fill="white"/>
             </svg>
           </div>
-          <span className="text-[10px]" style={{ color: '#555' }}>Spotify</span>
+          <span className="text-[10px]" style={{ color: '#555', opacity: entered ? 1 : 0, transition: 'opacity 0.4s ease 0.1s' }}>Spotify</span>
         </div>
         {/* Apple Music */}
-        <div className="text-center">
+        <div className="text-center" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s' }}>
           <div className="w-full aspect-square rounded-xl mb-1.5 flex items-center justify-center" style={{ background: '#f0f0f0' }}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle cx="12" cy="12" r="12" fill="#FC3C44"/>
@@ -145,7 +148,7 @@ function DistributionVisual() {
           <span className="text-[10px]" style={{ color: '#555' }}>Apple</span>
         </div>
         {/* TikTok */}
-        <div className="text-center">
+        <div className="text-center" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease 0.16s, transform 0.45s ease 0.16s' }}>
           <div className="w-full aspect-square rounded-xl mb-1.5 flex items-center justify-center" style={{ background: '#f0f0f0' }}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle cx="12" cy="12" r="12" fill="#010101"/>
@@ -155,7 +158,7 @@ function DistributionVisual() {
           <span className="text-[10px]" style={{ color: '#555' }}>TikTok</span>
         </div>
         {/* YouTube */}
-        <div className="text-center">
+        <div className="text-center" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.45s ease 0.24s, transform 0.45s ease 0.24s' }}>
           <div className="w-full aspect-square rounded-xl mb-1.5 flex items-center justify-center" style={{ background: '#f0f0f0' }}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
               <circle cx="12" cy="12" r="12" fill="#FF0000"/>
@@ -165,13 +168,14 @@ function DistributionVisual() {
           <span className="text-[10px]" style={{ color: '#555' }}>YouTube</span>
         </div>
       </div>
-      <div className="px-3 py-2.5 rounded-xl" style={{ background: '#f0f0f0' }}>
+      <div className="px-3 py-2.5 rounded-xl"
+        style={{ background: '#f0f0f0', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.32s, transform 0.45s ease 0.32s' }}>
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-xs font-medium" style={{ color: '#555' }}>Status</span>
           <span className="text-xs font-bold" style={{ color: '#111' }}>Optimized</span>
         </div>
         <div className="w-full h-1.5 rounded-full" style={{ background: '#e5e7eb' }}>
-          <div className="h-full rounded-full" style={{ width: '92%', background: '#111' }} />
+          <div className="h-full rounded-full" style={{ width: entered ? '92%' : '0%', background: '#111', transition: 'width 0.9s cubic-bezier(0.22,1,0.36,1) 0.5s' }} />
         </div>
       </div>
     </div>
@@ -179,21 +183,32 @@ function DistributionVisual() {
 }
 
 function GrowthVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const bars = [35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Growth Analytics</div>
-      <div className="text-xs mb-4" style={{ color: '#555' }}>Last 30 days</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+        <div className="text-sm font-semibold mb-1" style={{ color: '#111' }}>Growth Analytics</div>
+        <div className="text-xs mb-4" style={{ color: '#555' }}>Last 30 days</div>
+      </div>
       <div className="flex items-end gap-1.5 mb-4" style={{ height: '80px' }}>
-        {[35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95].map((h, i) => (
-          <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i >= 10 ? '#111' : '#d1d5db' }} />
+        {bars.map((h, i) => (
+          <div key={i} className="flex-1 rounded-t-sm"
+            style={{
+              height: entered ? `${h}%` : '0%',
+              background: i >= 10 ? '#111' : '#d1d5db',
+              transition: `height 0.6s cubic-bezier(0.34,1,0.64,1) ${i * 0.04}s`,
+            }} />
         ))}
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between"
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.5s, transform 0.45s ease 0.5s' }}>
         <div>
           <div className="text-xs" style={{ color: '#555' }}>Monthly Listeners</div>
           <div className="text-lg font-bold" style={{ color: '#111' }}>+247%</div>
         </div>
-        <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: '#dcfce7', color: '#166534' }}>
+        <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ background: '#f0f0f0', color: '#111' }}>
           Trending Up
         </div>
       </div>
@@ -299,24 +314,47 @@ function RoyaltyVisual() {
 }
 
 function SyncVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const [activeSync, setActiveSync] = useState(-1);
+  const items = [
+    { type: 'Film', title: 'Netflix Original Series', status: 'Placed',    fee: '$5,000', delay: 0 },
+    { type: 'Ad',   title: 'Nike Campaign',           status: 'In Review', fee: '$8,500', delay: 0.1 },
+    { type: 'Game', title: 'EA Sports Title',         status: 'Matched',   fee: '$3,200', delay: 0.2 },
+  ];
+  useEffect(() => {
+    if (!entered) return;
+    const t = setInterval(() => setActiveSync(i => (i + 1) % items.length), 1800);
+    return () => clearInterval(t);
+  }, [entered]);
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Sync Opportunities</div>
-      <div className="space-y-3">
-        {[
-          { type: 'Film', title: 'Netflix Original Series', status: 'Placed', fee: '$5,000' },
-          { type: 'Ad', title: 'Nike Campaign', status: 'In Review', fee: '$8,500' },
-          { type: 'Game', title: 'EA Sports Title', status: 'Matched', fee: '$3,200' },
-        ].map((item) => (
-          <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: '#f0f0f0' }}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: '#e5e7eb', color: '#555' }}>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="flex items-center justify-between mb-4"
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
+        <div className="text-sm font-semibold" style={{ color: '#111' }}>Sync Opportunities</div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full" style={{ background: '#f0f0f0' }}>
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#111', animation: inView ? 'pulse 2s infinite' : 'none' }} />
+          <span style={{ fontSize: '9px', fontWeight: 600, color: '#111' }}>Live</span>
+        </div>
+      </div>
+      <div className="space-y-2.5">
+        {items.map((item, i) => (
+          <div key={item.title} className="flex items-center gap-3 p-3 rounded-xl"
+            style={{
+              background: activeSync === i ? '#111' : '#f0f0f0',
+              opacity: entered ? 1 : 0,
+              transform: entered ? 'none' : 'translateY(8px)',
+              transition: `background 0.4s ease, opacity 0.45s ease ${item.delay}s, transform 0.45s ease ${item.delay}s`,
+            }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+              style={{ background: activeSync === i ? 'rgba(255,255,255,0.15)' : '#e5e7eb', color: activeSync === i ? '#fff' : '#555', transition: 'background 0.4s ease, color 0.4s ease' }}>
               {item.type[0]}
             </div>
             <div className="flex-1">
-              <div className="text-xs font-medium" style={{ color: '#111' }}>{item.title}</div>
-              <div className="text-[10px]" style={{ color: '#555' }}>{item.status}</div>
+              <div className="text-xs font-medium" style={{ color: activeSync === i ? '#fff' : '#111', transition: 'color 0.4s ease' }}>{item.title}</div>
+              <div className="text-[10px]" style={{ color: activeSync === i ? 'rgba(255,255,255,0.6)' : '#888', transition: 'color 0.4s ease' }}>{item.status}</div>
             </div>
-            <span className="text-xs font-bold" style={{ color: '#111' }}>{item.fee}</span>
+            <span className="text-xs font-bold" style={{ color: activeSync === i ? '#fff' : '#111', transition: 'color 0.4s ease' }}>{item.fee}</span>
           </div>
         ))}
       </div>
@@ -325,25 +363,30 @@ function SyncVisual() {
 }
 
 function StrategyVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
+  const milestones = [
+    { date: 'Mar 15', title: 'Single Drop',    desc: 'Pre-save campaign live',       done: true,  delay: 0 },
+    { date: 'Apr 2',  title: 'Music Video',    desc: 'YouTube premiere scheduled',   done: true,  delay: 0.1 },
+    { date: 'May 10', title: 'EP Release',     desc: 'Full rollout strategy',        done: false, delay: 0.2 },
+    { date: 'Jun 20', title: 'Campaign',       desc: 'Campaigns Initiated',           done: false, delay: 0.3 },
+  ];
   return (
-    <div className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
-      <div className="text-sm font-semibold mb-4" style={{ color: '#111' }}>Release Calendar</div>
+    <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
+      <div className="text-sm font-semibold mb-4"
+        style={{ color: '#111', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>Release Calendar</div>
       <div className="space-y-3">
-        {[
-          { date: 'Mar 15', title: 'Single Drop', desc: 'Pre-save campaign live', done: true },
-          { date: 'Apr 2', title: 'Music Video', desc: 'YouTube premiere scheduled', done: true },
-          { date: 'May 10', title: 'EP Release', desc: 'Full rollout strategy', done: false },
-          { date: 'Jun 20', title: 'Tour Announce', desc: 'Venue partnerships locked', done: false },
-        ].map((item) => (
-          <div key={item.date} className="flex items-start gap-3">
+        {milestones.map((item) => (
+          <div key={item.date} className="flex items-start gap-3"
+            style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: `opacity 0.45s ease ${item.delay}s, transform 0.45s ease ${item.delay}s` }}>
             <div className="flex flex-col items-center">
-              <div className="w-3 h-3 rounded-full" style={{ background: item.done ? '#111' : '#d1d5db', border: '2px solid ' + (item.done ? '#111' : '#d1d5db') }} />
+              <div className="w-3 h-3 rounded-full" style={{ background: item.done ? '#111' : '#d1d5db', border: '2px solid ' + (item.done ? '#111' : '#d1d5db'), transition: 'background 0.3s ease' }} />
               <div className="w-0.5 h-6" style={{ background: '#e5e7eb' }} />
             </div>
             <div className="flex-1 -mt-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold" style={{ color: '#111' }}>{item.title}</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: item.done ? '#dcfce7' : '#f3f4f6', color: item.done ? '#166534' : '#444' }}>
+                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: item.done ? '#f0f0f0' : '#f3f4f6', color: '#111' }}>
                   {item.date}
                 </span>
               </div>
@@ -357,19 +400,10 @@ function StrategyVisual() {
 }
 
 function SupportVisual() {
+  const { ref, inView } = useInView();
+  const entered = useEnteredDelay(inView);
   const [showReply, setShowReply] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
-  const [entered, setEntered] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setEntered(true); obs.disconnect(); }
-    }, { threshold: 0.25 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
   useEffect(() => {
     if (!entered) return;
     const t1 = setTimeout(() => setShowReply(true), 600);
@@ -383,7 +417,7 @@ function SupportVisual() {
         <div className="flex gap-2 justify-end"
           style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease 0.05s, transform 0.4s ease 0.05s' }}>
           <div className="px-3 py-2 rounded-2xl rounded-tr-sm text-xs max-w-[80%]" style={{ background: '#111', color: '#fff' }}>
-            Hey! I need help with my upcoming release strategy.
+            My EP drops in 3 weeks. Can you help me build a rollout plan?
           </div>
           <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold" style={{ background: '#e5e7eb', color: '#555' }}>A</div>
         </div>
@@ -391,7 +425,7 @@ function SupportVisual() {
           style={{ opacity: showReply ? 1 : 0, transform: showReply ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
           <div className="w-7 h-7 rounded-full flex-shrink-0 overflow-hidden" style={{ background: '#111' }}><img src="/elevate solid white logo ver.jpeg" alt="Elevate" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
           <div className="px-3 py-2 rounded-2xl rounded-tl-sm text-xs" style={{ background: '#f0f0f0', color: '#333' }}>
-            Of course! I've reviewed your analytics. Let me put together a custom rollout plan. Give me 10 minutes.
+            On it. I've pulled your streaming data and playlist positions. I'll have a full pre-save and promo timeline ready within the hour.
           </div>
         </div>
         <div className="flex items-center gap-2 pt-1"

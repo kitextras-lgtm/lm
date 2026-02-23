@@ -23,7 +23,7 @@ export function ToggleSwitch({
       case 'rose':
         return 'bg-rose-950';
       case 'white':
-        return 'bg-slate-700';
+        return 'bg-gray-200';
       case 'dark':
       default:
         return 'bg-zinc-900';
