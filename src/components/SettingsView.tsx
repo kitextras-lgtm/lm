@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserSilhouetteIcon } from './UserSilhouetteIcon';
 import { PuzzlePiecesIcon } from './PuzzlePiecesIcon';
@@ -141,6 +141,14 @@ export function SettingsView({
   const guideArticle = externalGuideArticle ?? null;
   const setGuideSubpageFn = externalSetGuideSubpage ?? (() => {});
   const setGuideArticleFn = externalSetGuideArticle ?? (() => {});
+
+  // Update activeSection when external guide state changes
+  useEffect(() => {
+    const shouldShowGuides = externalGuideSubpage !== undefined || externalGuideArticle !== undefined;
+    if (shouldShowGuides) {
+      setActiveSection('guides');
+    }
+  }, [externalGuideSubpage, externalGuideArticle]);
 
   const getSectionTitle = () => {
     switch (activeSection) {
