@@ -19,6 +19,7 @@ export function LoginPage() {
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
+  const [otpError, setOtpError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [emailWarning, setEmailWarning] = useState('');
   const [devCode, setDevCode] = useState<string | null>(null);
@@ -134,6 +135,7 @@ export function LoginPage() {
     newCode[index] = value.slice(-1);
     setCode(newCode);
     setError('');
+    setOtpError(false);
 
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
@@ -205,6 +207,7 @@ export function LoginPage() {
         }
     } catch (err: any) {
       setError(err.message || 'Invalid verification code');
+      setOtpError(true);
       setCode(['', '', '', '', '', '']);
       // Focus first input after a small delay to ensure state is updated
       setTimeout(() => {
@@ -463,13 +466,21 @@ export function LoginPage() {
                       className="w-11 h-11 text-center text-lg font-semibold focus:outline-none transition-all"
                       style={{
                         color: '#F2F4F7',
-                        background: 'rgba(255, 255, 255, 0.04)',
+                        background: otpError ? 'rgba(239, 68, 68, 0.08)' : 'rgba(255, 255, 255, 0.04)',
                         border: 'none',
                         borderRadius: '8px',
-                        boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'
+                        boxShadow: otpError
+                          ? 'inset 0 0 0 1.5px rgba(239, 68, 68, 0.7)'
+                          : 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'
                       }}
-                      onFocus={(e) => { e.target.style.boxShadow = 'inset 0 0 0 2px #ffffff'; }}
-                      onBlur={(e) => { e.target.style.boxShadow = 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'; }}
+                      onFocus={(e) => {
+                        if (!otpError) e.target.style.boxShadow = 'inset 0 0 0 2px #ffffff';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.boxShadow = otpError
+                          ? 'inset 0 0 0 1.5px rgba(239, 68, 68, 0.7)'
+                          : 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)';
+                      }}
                       disabled={loading}
                     />
                   ))}

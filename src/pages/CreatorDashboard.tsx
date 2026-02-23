@@ -3467,15 +3467,15 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="rounded-2xl p-6" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                       <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>1,247</p>
+                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
                         <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Detected</p>
                       </div>
                       <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>1,180</p>
+                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
                         <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Monetized</p>
                       </div>
                       <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>$48.2K</p>
+                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>$0</p>
                         <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Revenue</p>
                       </div>
                     </div>
