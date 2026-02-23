@@ -602,7 +602,6 @@ const getNavItems = (userType?: 'artist' | 'creator' | 'freelancer' | 'business'
       { id: 'applications', label: 'Applications', Icon: AdminApplicationsIconSVG },
       { id: 'messages', label: tr('nav.messages', 'Messages'), Icon: AdminMessagesIconSVG },
       { id: 'users', label: 'Users', Icon: AdminUsersIconSVG },
-      { id: 'feedback', label: 'Feedback', Icon: AdminFeedbackIconSVG },
       { id: 'data', label: 'Data', Icon: AdminDataIconSVG },
       { id: 'settings', label: tr('nav.settings', 'Settings'), Icon: SettingsIconSVG },
     ];
