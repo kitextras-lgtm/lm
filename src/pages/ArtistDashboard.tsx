@@ -1078,6 +1078,7 @@ export function ArtistDashboard() {
   const [releaseArtistError, setReleaseArtistError] = useState(false);
   const [stepErrors, setStepErrors] = useState<Record<string, boolean>>({});
   const [guideSubpage, setGuideSubpage] = useState<string | null>(null);
+  const [guideArticle, setGuideArticle] = useState<string | null>(null);
   const [releaseDateMode, setReleaseDateMode] = useState<'most-recent' | 'specific'>('most-recent');
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
@@ -3000,12 +3001,12 @@ export function ArtistDashboard() {
         desc: 'How to get started releasing music.',
         count: '6 articles',
         articles: [
-          'How do I find my Amazon Music Artist ID?',
-          'How do I find my Apple Music ID?',
-          'How do I find my Spotify ID?',
-          'How do I find my SoundCloud ID?',
-          'How do I find my Deezer Artist ID?',
-          'How do I find my Audiomack Artist ID?',
+          { id: 'amazon-artist-id', title: 'How do I find my Amazon Music Artist ID?' },
+          { id: 'apple-music-id', title: 'How do I find my Apple Music ID?' },
+          { id: 'spotify-id', title: 'How do I find my Spotify ID?' },
+          { id: 'soundcloud-id', title: 'How do I find my SoundCloud ID?' },
+          { id: 'deezer-id', title: 'How do I find my Deezer Artist ID?' },
+          { id: 'audiomack-id', title: 'How do I find my Audiomack Artist ID?' },
         ],
       },
       {
@@ -3042,46 +3043,104 @@ export function ArtistDashboard() {
       },
     ];
 
-    // Subpage view
+    type GuideArticle = { id: string; title: string };
+
+    // Shared breadcrumb row
+    const Breadcrumb = ({ crumbs }: { crumbs: { label: string; onClick?: () => void }[] }) => (
+      <div className="flex items-center gap-1.5 flex-wrap mb-5">
+        {crumbs.map((crumb, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && (
+              <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><path d="M9 18l6-6-6-6"/></svg>
+            )}
+            {crumb.onClick ? (
+              <button onClick={crumb.onClick} className="text-xs font-medium transition-all hover:opacity-100" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{crumb.label}</button>
+            ) : (
+              <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{crumb.label}</span>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+
+    // Article detail page
+    if (guideArticle && guideSubpage) {
+      const cat = guideCategories.find(c => c.id === guideSubpage);
+      const article = (cat?.articles as GuideArticle[])?.find(a => a.id === guideArticle);
+      const articleContent: Record<string, { paragraphs: string[]; showImage?: boolean }> = {
+        'amazon-artist-id': {
+          paragraphs: [
+            'Your Amazon Music Artist ID allows us to correctly link your releases to the right artist profile on Amazon Music.',
+            'To locate your Artist ID, go to Amazon Music and search for your artist name. Open your artist profile page once you\'ve found it.',
+            'Look at the URL in your browser\'s address bar. In the link, find the section that appears after /artists/ — the combination of letters and numbers that follows is your Artist ID.',
+            'Be sure to add your Amazon Music Artist ID to your Elevate Artist Dashboard before submitting any new releases to Amazon Music.',
+          ],
+          showImage: true,
+        },
+      };
+      const content = articleContent[guideArticle];
+      return (
+        <div key={`article-${guideArticle}`} className="scroll-mt-6 animate-fade-in">
+          <Breadcrumb crumbs={[
+            { label: 'Guides', onClick: () => { setGuideSubpage(null); setGuideArticle(null); } },
+            { label: cat?.title || '', onClick: () => setGuideArticle(null) },
+            { label: article?.title || '' },
+          ]} />
+          <h2 className="text-xl font-bold mb-6 leading-snug" style={{ color: 'var(--text-primary)' }}>{article?.title}</h2>
+          {content ? (
+            <div className="space-y-4">
+              {content.paragraphs.map((para, i) => (
+                <p key={i} className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>{para}</p>
+              ))}
+              {content.showImage && (
+                <div className="mt-6 rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+                  <div className="flex items-center gap-3 px-5 py-4" style={{ backgroundColor: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-subtle)' }}>
+                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                    <code className="text-xs font-mono" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>
+                      https://music.amazon.com/artists/<strong style={{ color: 'var(--text-primary)', opacity: 1 }}>B07PHJMCYM</strong>/forrest-frank
+                    </code>
+                  </div>
+                  <img
+                    src="/amazon-artist-id-example.png"
+                    alt="Amazon Music URL showing Artist ID after /artists/"
+                    className="w-full object-cover block"
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Content coming soon.</p>
+          )}
+        </div>
+      );
+    }
+
+    // Category subpage (article list)
     if (guideSubpage) {
       const cat = guideCategories.find(c => c.id === guideSubpage);
       if (cat) {
+        const arts = cat.articles as GuideArticle[];
         return (
-          <div className="scroll-mt-6 animate-fade-in">
-            {/* Back button + header */}
-            <div className="flex items-center gap-3 mb-6">
-              <button
-                onClick={() => setGuideSubpage(null)}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:opacity-70 flex-shrink-0"
-                style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-              </button>
-              <div>
-                <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Guides</p>
-                <h3 className="text-xl font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>{cat.title}</h3>
-              </div>
-            </div>
-
-            {/* Article count */}
-            <p className="text-sm mb-4 px-1" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{cat.articles.length} articles</p>
-
-            {/* Articles list */}
-            {cat.articles.length > 0 ? (
+          <div key={`subpage-${guideSubpage}`} className="scroll-mt-6 animate-fade-in">
+            <Breadcrumb crumbs={[
+              { label: 'Guides', onClick: () => setGuideSubpage(null) },
+              { label: cat.title },
+            ]} />
+            <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{cat.title}</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{arts.length} articles</p>
+            {arts.length > 0 ? (
               <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
-                {cat.articles.map((article, idx) => (
+                {arts.map((article, idx) => (
                   <button
-                    key={idx}
-                    className="w-full flex items-center justify-between px-5 py-4 text-left transition-all hover:brightness-110"
-                    style={{
-                      backgroundColor: 'var(--bg-card)',
-                      borderBottom: idx < cat.articles.length - 1 ? '1px solid var(--border-subtle)' : 'none',
-                      color: 'var(--text-primary)',
-                    }}
+                    key={article.id}
+                    onClick={() => setGuideArticle(article.id)}
+                    className="w-full flex items-center justify-between px-5 py-4 text-left transition-all"
+                    style={{ backgroundColor: 'var(--bg-card)', borderBottom: idx < arts.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-elevated)')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--bg-card)')}
                   >
-                    <span className="text-sm font-medium pr-4" style={{ color: 'var(--text-primary)' }}>{article}</span>
+                    <span className="text-sm font-medium pr-4" style={{ color: 'var(--text-primary)' }}>{article.title}</span>
                     <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}><path d="M9 5l7 7-7 7"/></svg>
                   </button>
                 ))}
@@ -3096,20 +3155,18 @@ export function ArtistDashboard() {
       }
     }
 
+    // Root guides list
     const filtered = guideCategories.filter(c =>
       !guideSearch.trim() ||
       c.title.toLowerCase().includes(guideSearch.toLowerCase()) ||
       c.desc.toLowerCase().includes(guideSearch.toLowerCase())
     );
     return (
-      <div className="scroll-mt-6">
-        {/* Header */}
+      <div key="guides-root" className="scroll-mt-6 animate-fade-in">
         <div className="px-1 pb-6">
           <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>How can we help?</h3>
           <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>Browse guides and tutorials to get the most out of Elevate.</p>
         </div>
-
-        {/* Search bar */}
         <div className="relative mb-6">
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'var(--text-primary)', opacity: 0.5 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input
@@ -3123,17 +3180,15 @@ export function ArtistDashboard() {
             onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'}
           />
         </div>
-
-        {/* Category list */}
         <div className="space-y-3">
           {filtered.length === 0 ? (
-            <div className="py-12 text-center text-sm" style={{ color: '#CBD5E1' }}>No articles found for "{guideSearch}"</div>
+            <div className="py-12 text-center text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>No articles found for "{guideSearch}"</div>
           ) : filtered.map((cat, idx) => (
             <button
               key={idx}
-              onClick={() => cat.articles.length > 0 ? setGuideSubpage(cat.id) : undefined}
+              onClick={() => (cat.articles as GuideArticle[]).length > 0 ? setGuideSubpage(cat.id) : undefined}
               className="w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', cursor: cat.articles.length > 0 ? 'pointer' : 'default' }}
+              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', cursor: (cat.articles as GuideArticle[]).length > 0 ? 'pointer' : 'default' }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
               onMouseDown={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
