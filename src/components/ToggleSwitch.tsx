@@ -34,6 +34,13 @@ export function ToggleSwitch({
     return backgroundTheme === 'white' ? 'bg-gray-300' : 'bg-gray-600';
   };
 
+  const getBorderStyle = () => {
+    if (backgroundTheme === 'white') {
+      return isActive ? '2px solid #6b7280' : '2px solid #9ca3af';
+    }
+    return 'none';
+  };
+
   const sizeClasses = {
     sm: 'h-5 w-9',
     md: 'h-6 w-11',
@@ -59,6 +66,7 @@ export function ToggleSwitch({
       className={`relative inline-flex ${sizeClasses[size]} items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 ${
         isActive ? getActiveBackgroundColor() : getInactiveBackgroundColor()
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      style={{ border: getBorderStyle() }}
     >
       <span
         className={`inline-block ${thumbSizeClasses[size]} transform rounded-full bg-white transition-transform duration-200 ${thumbTranslateClasses[size]}`}

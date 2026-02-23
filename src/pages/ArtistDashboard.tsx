@@ -1074,6 +1074,8 @@ export function ArtistDashboard() {
   const [copyrightDocs, setCopyrightDocs] = useState<File[]>([]);
   const [uploadingTracks, setUploadingTracks] = useState<{ name: string; size: number; progress: number; done: boolean }[]>([]);
   const [editingTrackIndex, setEditingTrackIndex] = useState<number | null>(null);
+  const [copiedTrackIndex, setCopiedTrackIndex] = useState<number | null>(null);
+  const [releaseArtistError, setReleaseArtistError] = useState(false);
   const [releaseDateMode, setReleaseDateMode] = useState<'most-recent' | 'specific'>('most-recent');
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
@@ -4018,7 +4020,7 @@ export function ArtistDashboard() {
             );
           };
 
-          const ReleaseDropdown = ({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) => {
+          const ReleaseDropdown = ({ value, options, onChange, triggerStyle }: { value: string; options: string[]; onChange: (v: string) => void; triggerStyle?: React.CSSProperties }) => {
             const [open, setOpen] = React.useState(false);
             const ref = React.useRef<HTMLDivElement>(null);
             React.useEffect(() => {
@@ -4032,7 +4034,7 @@ export function ArtistDashboard() {
                   type="button"
                   onClick={() => setOpen(v => !v)}
                   className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all duration-200 flex items-center justify-between group border"
-                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', ...triggerStyle }}
                   onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-card)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   onFocus={(e) => e.currentTarget.style.borderColor = 'var(--text-primary)'}
@@ -4164,11 +4166,20 @@ export function ArtistDashboard() {
                   <div>
                     <InfoLabel text="Release artist(s)" tip="The primary artist name(s) that will appear on all streaming platforms. Add artists via My Accounts → Connected Accounts first." />
                     {artistNames.length > 0 ? (
-                      <ReleaseDropdown
-                        value={rf.releaseArtists || 'Select artist'}
-                        options={['Select artist', ...artistNames]}
-                        onChange={v => setRf({ releaseArtists: v === 'Select artist' ? '' : v })}
-                      />
+                      <>
+                        <ReleaseDropdown
+                          value={rf.releaseArtists || 'Select artist'}
+                          options={['Select artist', ...artistNames]}
+                          onChange={v => { setRf({ releaseArtists: v === 'Select artist' ? '' : v }); setReleaseArtistError(false); }}
+                          triggerStyle={releaseArtistError ? { border: '1px solid rgba(239,68,68,0.8)', boxShadow: '0 0 0 2px rgba(239,68,68,0.2)' } : undefined}
+                        />
+                        {releaseArtistError && (
+                          <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}>
+                            <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            Please select a release artist to continue.
+                          </p>
+                        )}
+                      </>
                     ) : (
                       <button
                         type="button"
@@ -4937,11 +4948,18 @@ export function ArtistDashboard() {
                                     onClick={() => {
                                       const credits = rf.tracks[i].credits;
                                       setRf({ tracks: rf.tracks.map((t, j) => j === i ? t : { ...t, credits: { ...credits } }) });
+                                      setCopiedTrackIndex(i);
+                                      setTimeout(() => setCopiedTrackIndex(null), 2000);
                                     }}
-                                    className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-70"
-                                    style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-70"
+                                    style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: copiedTrackIndex === i ? 'var(--bg-elevated)' : 'transparent' }}
                                   >
-                                    Copy to all tracks
+                                    {copiedTrackIndex === i ? (
+                                      <>
+                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Copied!
+                                      </>
+                                    ) : 'Copy to all tracks'}
                                   </button>
                                 </div>
                               </div>
@@ -5242,20 +5260,63 @@ export function ArtistDashboard() {
                           >{label}</button>
                         ))}
                       </div>
-                      {rf.releasedBefore && (
-                        <div className="space-y-1.5 flex-1" style={{ maxWidth: '280px' }}>
-                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Enter the <strong style={{ color: 'var(--text-primary)' }}>original release date</strong></p>
-                          <input
-                            type="date"
-                            value={rf.originalReleaseDate}
-                            onChange={e => setRf({ originalReleaseDate: e.target.value })}
-                            className={inputCls}
-                            style={{ ...inputStyle, colorScheme: 'dark' }}
-                            onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                            onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
-                          />
-                        </div>
-                      )}
+                      {rf.releasedBefore && (() => {
+                        const [origCalOpen, setOrigCalOpen] = React.useState(false);
+                        const origMonthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                        const [origCalYear, setOrigCalYear] = React.useState(new Date().getFullYear());
+                        const [origCalMonth, setOrigCalMonth] = React.useState(new Date().getMonth());
+                        const origDaysInMonth = new Date(origCalYear, origCalMonth + 1, 0).getDate();
+                        const origFirstDay = new Date(origCalYear, origCalMonth, 1).getDay();
+                        const origParsed = rf.originalReleaseDate ? new Date(rf.originalReleaseDate + 'T00:00:00') : null;
+                        const origRef = React.useRef<HTMLDivElement>(null);
+                        React.useEffect(() => {
+                          const handler = (e: MouseEvent) => { if (origRef.current && !origRef.current.contains(e.target as Node)) setOrigCalOpen(false); };
+                          if (origCalOpen) document.addEventListener('mousedown', handler);
+                          return () => document.removeEventListener('mousedown', handler);
+                        }, [origCalOpen]);
+                        return (
+                          <div className="space-y-1.5 flex-1 relative" style={{ maxWidth: '280px' }} ref={origRef}>
+                            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Enter the <strong style={{ color: 'var(--text-primary)' }}>original release date</strong></p>
+                            <button
+                              type="button"
+                              onClick={() => setOrigCalOpen(v => !v)}
+                              className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between focus:outline-none transition-all"
+                              style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+                              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+                              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+                            >
+                              <span style={{ opacity: rf.originalReleaseDate ? 1 : 0.5 }}>{rf.originalReleaseDate || 'Select date'}</span>
+                              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </button>
+                            {origCalOpen && (
+                              <div className="absolute z-50 mt-1 rounded-xl p-4 space-y-3 animate-fade-in" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', minWidth: '280px', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
+                                <div className="flex items-center justify-between">
+                                  <button onClick={() => { if (origCalMonth === 0) { setOrigCalMonth(11); setOrigCalYear(y => y - 1); } else setOrigCalMonth(m => m - 1); }} className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M15 18l-6-6 6-6"/></svg>
+                                  </button>
+                                  <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{origMonthNames[origCalMonth]} {origCalYear}</span>
+                                  <button onClick={() => { if (origCalMonth === 11) { setOrigCalMonth(0); setOrigCalYear(y => y + 1); } else setOrigCalMonth(m => m + 1); }} className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M9 18l6-6-6-6"/></svg>
+                                  </button>
+                                </div>
+                                <div className="grid grid-cols-7 gap-1 text-center">
+                                  {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => <div key={d} className="text-xs font-medium py-1" style={{ color: 'var(--text-primary)' }}>{d}</div>)}
+                                  {Array.from({ length: origFirstDay }).map((_, idx) => <div key={`e${idx}`} />)}
+                                  {Array.from({ length: origDaysInMonth }).map((_, idx) => {
+                                    const day = idx + 1;
+                                    const dateStr = `${origCalYear}-${String(origCalMonth + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                                    const isSel = origParsed && origParsed.getFullYear() === origCalYear && origParsed.getMonth() === origCalMonth && origParsed.getDate() === day;
+                                    return (
+                                      <button key={day} onClick={() => { setRf({ originalReleaseDate: dateStr }); setOrigCalOpen(false); }} className="w-full aspect-square rounded-full text-xs font-medium transition-all hover:opacity-80" style={{ backgroundColor: isSel ? 'var(--text-primary)' : 'transparent', color: isSel ? 'var(--bg-primary)' : 'var(--text-primary)' }}>{day}</button>
+                                    );
+                                  })}
+                                </div>
+                                {rf.originalReleaseDate && <p className="text-xs text-center" style={{ color: 'var(--text-primary)' }}>Selected: <strong>{rf.originalReleaseDate}</strong></p>}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -5410,10 +5471,17 @@ export function ArtistDashboard() {
                   </div>
 
                   {/* Bottom Complete Release button */}
-                  <div className="flex justify-center pt-2">
+                  <div className="flex flex-col items-center gap-2 pt-2">
+                    {!rf.releaseArtists && (
+                      <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}>
+                        <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        A release artist must be selected before completing.
+                      </p>
+                    )}
                     <button
+                      disabled={!rf.releaseArtists}
                       onClick={() => { setReleaseStep(1); setUploadingTracks([]); setEditingTrackIndex(null); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
-                      className="flex items-center gap-2 px-8 py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+                      className="flex items-center gap-2 px-8 py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
                       style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -5455,13 +5523,17 @@ export function ArtistDashboard() {
 
                 {releaseStep < 5 ? (() => {
                   const checklistBlocked = releaseStep === 2 && !releaseChecklist.every(Boolean);
+                  const artistBlocked = releaseStep === 1 && !rf.releaseArtists;
                   return (
                     <div className="flex flex-col items-end gap-2">
                       {checklistBlocked && (
                         <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Please check all boxes above to continue.</p>
                       )}
                       <button
-                        onClick={() => { if (!checklistBlocked) setReleaseStep(s => s + 1); }}
+                        onClick={() => {
+                          if (artistBlocked) { setReleaseArtistError(true); return; }
+                          if (!checklistBlocked) setReleaseStep(s => s + 1);
+                        }}
                         disabled={checklistBlocked}
                         className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
