@@ -4119,7 +4119,7 @@ export function ArtistDashboard() {
 
                   {/* Title */}
                   <div>
-                    <InfoLabel text="Title of album, EP or single" tip="Enter the official release title exactly as it should appear on streaming platforms. Avoid adding artist names or extra punctuation here." />
+                    <InfoLabel text="Title of album, EP or single" tip="Enter your release title exactly as you want it displayed across all streaming services and digital stores. Important: Do not add extra details in this field, such as version information, producer names, songwriter credits, or release dates." />
                     <input
                       type="text"
                       value={rf.title}
@@ -4135,11 +4135,11 @@ export function ArtistDashboard() {
                   {/* Copyright row */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <InfoLabel text="Copyright Holder" tip="The individual or entity that owns the composition copyright — typically the songwriter or publisher. Format: Your Name or Your Label Name." />
+                      <InfoLabel text="Copyright Holder" tip="Provide the name of the individual or company that owns the ℗ (sound recording) copyright. This copyright applies specifically to the master recordings of the tracks included in the release. If a record label owns the release, enter the label's name. If there is no label involved, the copyright holder is usually the artist, band, or group — enter their name instead." />
                       <input type="text" value={rf.copyrightHolder} onChange={e => setRf({ copyrightHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
                     </div>
                     <div>
-                      <InfoLabel text="Copyright Year" tip="The year the composition was first created or published. This is the © year that will appear on all stores." />
+                      <InfoLabel text="Copyright Year" tip="Specify the year the single, EP, or album is being released (or was originally released)." />
                       <ReleaseDropdown value={rf.copyrightYear} options={years} onChange={v => setRf({ copyrightYear: v })} />
                     </div>
                   </div>
@@ -4203,14 +4203,14 @@ export function ArtistDashboard() {
                       <div className="flex items-start gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
                         <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-                          Not all genres are available on every store. When a genre you have selected does not exist on a specific store, we will select the closest alternative. The stores we distribute to will use this info when they categorize your release.<br /><br />
-                          You must select a primary genre, but a secondary genre is optional.
+                          Keep in mind that not every genre is supported by every store. If a selected genre is unavailable on a specific platform, we will assign the closest matching category. Stores use your chosen genre(s) to classify your release.<br /><br />
+                          Selecting a primary genre is required, while adding a secondary genre is optional.
                         </p>
                       </div>
                       <div className="flex items-start gap-3 p-4 rounded-xl" style={{ border: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
                         <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-                          If your tracks have no lyrics, this can be used to target a language-specific audience.
+                          If your tracks are instrumental and do not contain lyrics, you can use this field to help reach a language-specific audience.
                         </p>
                       </div>
                     </div>
@@ -4239,15 +4239,16 @@ export function ArtistDashboard() {
                       {/* Requirements */}
                       <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                         <div className="text-sm leading-relaxed space-y-2" style={{ color: 'var(--text-primary)' }}>
-                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Artwork requirements:</p>
-                          <p>Cover art must be a square .jpg or .jpeg file, at least 1400x1400 pixels, not blurry or pixelated and no more than 10MB in size.</p>
-                          <p>Cover art cannot contain:</p>
+                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>Artwork Guidelines:</p>
+                          <p>Your cover image must be a square .jpg or .jpeg file with a minimum resolution of 1400 x 1400 pixels. The image should be clear (not blurry or pixelated) and must not exceed 10MB in file size.</p>
+                          <p>The following elements are not permitted on cover art:</p>
                           <ul className="space-y-0.5 list-none">
-                            <li>- Social media logos or handles</li>
-                            <li>- Website links or brand/record label logos</li>
-                            <li>- Any text except for artist names and/or the name of the release</li>
+                            <li>- Social media icons or usernames</li>
+                            <li>- Website URLs</li>
+                            <li>- Brand or record label logos</li>
+                            <li>- Any text other than the artist name and/or release title</li>
                           </ul>
-                          <p>If your cover art contains any of the above, we will have to reject your release. These rules are set by the music stores and we have to follow them.</p>
+                          <p>If your artwork includes any of these prohibited elements, your release will be declined. These requirements are mandated by the digital music platforms and must be strictly followed.</p>
                         </div>
                       </div>
 
