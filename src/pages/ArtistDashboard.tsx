@@ -1076,6 +1076,8 @@ export function ArtistDashboard() {
   const [editingTrackIndex, setEditingTrackIndex] = useState<number | null>(null);
   const [copiedTrackIndex, setCopiedTrackIndex] = useState<number | null>(null);
   const [releaseArtistError, setReleaseArtistError] = useState(false);
+  const [stepErrors, setStepErrors] = useState<Record<string, boolean>>({});
+  const [guideSubpage, setGuideSubpage] = useState<string | null>(null);
   const [releaseDateMode, setReleaseDateMode] = useState<'most-recent' | 'specific'>('most-recent');
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
@@ -2984,42 +2986,116 @@ export function ArtistDashboard() {
   const renderGuides = () => {
     const guideCategories = [
       {
+        id: 'faq',
         icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
         title: 'Frequently Asked Questions',
         desc: 'Answers to questions we\'re asked the most often.',
         count: '27 articles',
+        articles: [],
       },
       {
+        id: 'basics',
         icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>),
         title: 'The Basics',
         desc: 'How to get started releasing music.',
-        count: '18 articles',
+        count: '6 articles',
+        articles: [
+          'How do I find my Amazon Music Artist ID?',
+          'How do I find my Apple Music ID?',
+          'How do I find my Spotify ID?',
+          'How do I find my SoundCloud ID?',
+          'How do I find my Deezer Artist ID?',
+          'How do I find my Audiomack Artist ID?',
+        ],
       },
       {
+        id: 'uploading',
         icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>),
         title: 'Uploading Music',
         desc: 'Advice on using our Release Builder.',
         count: '23 articles',
+        articles: [],
       },
       {
+        id: 'edits',
         icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>),
         title: 'Making Edits',
         desc: 'How to make changes to your releases.',
         count: '5 articles',
+        articles: [],
       },
       {
+        id: 'paid',
         icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>),
         title: 'Getting Paid',
         desc: 'How royalties and payouts work on Elevate.',
         count: '12 articles',
+        articles: [],
       },
       {
+        id: 'campaigns',
         icon: (<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 11l19-9-9 19-2-8-8-2z" /></svg>),
         title: 'Campaigns & Earnings',
         desc: 'Submit clips and earn from brand campaigns.',
         count: '9 articles',
+        articles: [],
       },
     ];
+
+    // Subpage view
+    if (guideSubpage) {
+      const cat = guideCategories.find(c => c.id === guideSubpage);
+      if (cat) {
+        return (
+          <div className="scroll-mt-6 animate-fade-in">
+            {/* Back button + header */}
+            <div className="flex items-center gap-3 mb-6">
+              <button
+                onClick={() => setGuideSubpage(null)}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:opacity-70 flex-shrink-0"
+                style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              </button>
+              <div>
+                <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Guides</p>
+                <h3 className="text-xl font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>{cat.title}</h3>
+              </div>
+            </div>
+
+            {/* Article count */}
+            <p className="text-sm mb-4 px-1" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{cat.articles.length} articles</p>
+
+            {/* Articles list */}
+            {cat.articles.length > 0 ? (
+              <div className="rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+                {cat.articles.map((article, idx) => (
+                  <button
+                    key={idx}
+                    className="w-full flex items-center justify-between px-5 py-4 text-left transition-all hover:brightness-110"
+                    style={{
+                      backgroundColor: 'var(--bg-card)',
+                      borderBottom: idx < cat.articles.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                      color: 'var(--text-primary)',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg-elevated)')}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--bg-card)')}
+                  >
+                    <span className="text-sm font-medium pr-4" style={{ color: 'var(--text-primary)' }}>{article}</span>
+                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}><path d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-sm rounded-2xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: 0.5 }}>
+                No articles yet in this category.
+              </div>
+            )}
+          </div>
+        );
+      }
+    }
+
     const filtered = guideCategories.filter(c =>
       !guideSearch.trim() ||
       c.title.toLowerCase().includes(guideSearch.toLowerCase()) ||
@@ -3055,8 +3131,9 @@ export function ArtistDashboard() {
           ) : filtered.map((cat, idx) => (
             <button
               key={idx}
+              onClick={() => cat.articles.length > 0 ? setGuideSubpage(cat.id) : undefined}
               className="w-full flex items-center gap-4 px-5 py-5 rounded-2xl text-left transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', cursor: cat.articles.length > 0 ? 'pointer' : 'default' }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border-default)')}
               onMouseDown={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
@@ -4129,13 +4206,14 @@ export function ArtistDashboard() {
                     <input
                       type="text"
                       value={rf.title}
-                      onChange={e => setRf({ title: e.target.value })}
+                      onChange={e => { setRf({ title: e.target.value }); if (e.target.value) setStepErrors(prev => { const n = {...prev}; delete n.title; return n; }); }}
                       className={inputCls}
-                      style={inputStyle}
+                      style={{ ...inputStyle, ...(stepErrors.title ? { borderColor: 'rgba(239,68,68,0.8)', boxShadow: '0 0 0 2px rgba(239,68,68,0.2)' } : {}) }}
                       placeholder=""
-                      onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                      onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'}
+                      onFocus={(e) => e.target.style.borderColor = stepErrors.title ? 'rgba(239,68,68,0.8)' : 'var(--text-primary)'}
+                      onBlur={(e) => e.target.style.borderColor = stepErrors.title ? 'rgba(239,68,68,0.8)' : 'var(--border-subtle)'}
                     />
+                    {stepErrors.title && <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}><svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Release title is required.</p>}
                   </div>
 
                   {/* Copyright row */}
@@ -4201,7 +4279,8 @@ export function ArtistDashboard() {
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <label style={labelStyle}>Primary genre</label>
-                        <ReleaseDropdown value={rf.genre || 'Select genre'} options={['Select genre', 'Pop', 'Hip-Hop', 'R&B', 'Rock', 'Electronic', 'Jazz', 'Classical', 'Country', 'Latin', 'Afrobeats', 'Alternative Rock', 'Indie', 'Soul', 'Other']} onChange={v => setRf({ genre: v === 'Select genre' ? '' : v })} />
+                        <ReleaseDropdown value={rf.genre || 'Select genre'} options={['Select genre', 'Pop', 'Hip-Hop', 'R&B', 'Rock', 'Electronic', 'Jazz', 'Classical', 'Country', 'Latin', 'Afrobeats', 'Alternative Rock', 'Indie', 'Soul', 'Other']} onChange={v => { setRf({ genre: v === 'Select genre' ? '' : v }); if (v !== 'Select genre') setStepErrors(prev => { const n = {...prev}; delete n.genre; return n; }); }} triggerStyle={stepErrors.genre ? { border: '1px solid rgba(239,68,68,0.8)', boxShadow: '0 0 0 2px rgba(239,68,68,0.2)' } : undefined} />
+                        {stepErrors.genre && <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}><svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Primary genre is required.</p>}
                       </div>
                       <div>
                         <label style={labelStyle}>Secondary genre</label>
@@ -5142,7 +5221,10 @@ export function ArtistDashboard() {
                         >{label}</button>
                       ))}
                     </div>
-                    {releaseDateMode === 'specific' && (() => {
+                    {stepErrors.releaseDate && (
+                    <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}><svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Please select a specific release date to continue.</p>
+                  )}
+                  {releaseDateMode === 'specific' && (() => {
                       const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
                       const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
                       const firstDay = new Date(calYear, calMonth, 1).getDay();
@@ -5381,6 +5463,9 @@ export function ArtistDashboard() {
                         );
                       })}
                     </div>
+                    {stepErrors.stores && (
+                      <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}><svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Please select at least one store to distribute to.</p>
+                    )}
                     <div className="flex items-center gap-4">
                       <button
                         onClick={() => setShowAllStores(v => !v)}
@@ -5444,8 +5529,11 @@ export function ArtistDashboard() {
                   {/* Tracklist */}
                   <div>
                     <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Tracklist</h3>
+                    {stepErrors.tracks && (
+                      <p className="text-xs mb-2 flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}><svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>At least one track must be uploaded before continuing.</p>
+                    )}
                     {rf.tracks.length === 0 ? (
-                      <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                      <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: `1px solid ${stepErrors.tracks ? 'rgba(239,68,68,0.8)' : 'var(--border-subtle)'}`, color: 'var(--text-primary)', ...(stepErrors.tracks ? { boxShadow: '0 0 0 2px rgba(239,68,68,0.15)' } : {}) }}>
                         No uploaded tracks yet.
                       </div>
                     ) : (
@@ -5524,6 +5612,27 @@ export function ArtistDashboard() {
                 {releaseStep < 5 ? (() => {
                   const checklistBlocked = releaseStep === 2 && !releaseChecklist.every(Boolean);
                   const artistBlocked = releaseStep === 1 && !rf.releaseArtists;
+
+                  const validateStep = () => {
+                    const errors: Record<string, boolean> = {};
+                    if (releaseStep === 1) {
+                      if (!rf.title) errors.title = true;
+                      if (!rf.releaseArtists) { errors.releaseArtists = true; setReleaseArtistError(true); }
+                      if (!rf.genre) errors.genre = true;
+                    }
+                    if (releaseStep === 2) {
+                      if (rf.tracks.length === 0) errors.tracks = true;
+                    }
+                    if (releaseStep === 3) {
+                      if (releaseDateMode === 'specific' && !rf.releaseDate) errors.releaseDate = true;
+                    }
+                    if (releaseStep === 4) {
+                      if (rf.stores.length === 0) errors.stores = true;
+                    }
+                    setStepErrors(errors);
+                    return Object.keys(errors).length === 0;
+                  };
+
                   return (
                     <div className="flex flex-col items-end gap-2">
                       {checklistBlocked && (
@@ -5531,7 +5640,7 @@ export function ArtistDashboard() {
                       )}
                       <button
                         onClick={() => {
-                          if (artistBlocked) { setReleaseArtistError(true); return; }
+                          if (!validateStep()) return;
                           if (!checklistBlocked) setReleaseStep(s => s + 1);
                         }}
                         disabled={checklistBlocked}
