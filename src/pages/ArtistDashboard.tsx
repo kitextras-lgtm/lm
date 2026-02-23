@@ -1008,6 +1008,7 @@ export function ArtistDashboard() {
   const [draftSaving, setDraftSaving] = useState(false);
   const [draftLoading, setDraftLoading] = useState(false);
   const [savedDrafts, setSavedDrafts] = useState<any[]>([]);
+  const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
   const [artistNames, setArtistNames] = useState<string[]>([]);
   const draftSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [releaseForm, setReleaseForm] = useState({
@@ -1104,8 +1105,6 @@ export function ArtistDashboard() {
     if (!fileArr.length) return;
     fileArr.forEach((file: File) => {
       setUploadingTracks(prev => [...prev, { name: file.name, size: file.size, progress: 0, done: false }]);
-      const startTime = Date.now();
-      const simDuration = 3000 + Math.random() * 2000;
       // Read actual audio duration
       const audioEl = new Audio();
       const objectUrl = URL.createObjectURL(file);
@@ -1113,18 +1112,43 @@ export function ArtistDashboard() {
       let audioDuration = 0;
       audioEl.addEventListener('loadedmetadata', () => {
         audioDuration = audioEl.duration;
-        URL.revokeObjectURL(objectUrl);
       });
+      // Animate progress while uploading
+      const startTime = Date.now();
+      const simDuration = 3000 + Math.random() * 2000;
       const interval = setInterval(() => {
         const elapsed = Date.now() - startTime;
-        const progress = Math.min(100, Math.round((elapsed / simDuration) * 100));
+        const progress = Math.min(95, Math.round((elapsed / simDuration) * 95));
         setUploadingTracks(prev => prev.map(t => t.name === file.name && !t.done ? { ...t, progress } : t));
-        if (progress >= 100) {
+      }, 80);
+      // Actually upload to Supabase storage
+      (async () => {
+        try {
+          const uid = localStorage.getItem('verifiedUserId') || '';
+          const dId = draftIdRef.current;
+          let audioUrl = '';
+          if (uid) {
+            const ext = file.name.split('.').pop() || 'mp3';
+            const path = `${uid}/${dId || 'pending'}/${file.name}`;
+            const { error: upErr } = await supabase.storage.from('release-audio').upload(path, file, { upsert: true });
+            if (upErr) {
+              console.error('[audio upload] storage error:', upErr);
+            } else {
+              const { data: urlData } = supabase.storage.from('release-audio').getPublicUrl(path);
+              audioUrl = urlData.publicUrl;
+            }
+          }
+          clearInterval(interval);
+          URL.revokeObjectURL(objectUrl);
+          setUploadingTracks(prev => prev.map(t => t.name === file.name ? { ...t, progress: 100, done: true } : t));
+          setReleaseForm(f => ({ ...f, tracks: [...f.tracks, { title: file.name.replace(/\.(wav|mp3)$/i, ''), featuring: '', explicit: false, duration: audioDuration, fileName: file.name, fileObject: file, audioUrl, previewStart: 0, addLyrics: false, lyricsText: '', lyricsDocName: '', lyricsDocUrl: '', isrcMode: 'auto' as const, isrcCode: '', credits: { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' } }] }));
+        } catch (e) {
+          console.error('[audio upload] exception:', e);
           clearInterval(interval);
           setUploadingTracks(prev => prev.map(t => t.name === file.name ? { ...t, progress: 100, done: true } : t));
-          setReleaseForm(f => ({ ...f, tracks: [...f.tracks, { title: file.name.replace(/\.(wav|mp3)$/i, ''), featuring: '', explicit: false, duration: audioDuration, fileName: file.name, fileObject: file, previewStart: 0, addLyrics: false, lyricsText: '', lyricsDocName: '', isrcMode: 'auto' as const, isrcCode: '', credits: { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' } }] }));
+          setReleaseForm(f => ({ ...f, tracks: [...f.tracks, { title: file.name.replace(/\.(wav|mp3)$/i, ''), featuring: '', explicit: false, duration: audioDuration, fileName: file.name, fileObject: file, audioUrl: '', previewStart: 0, addLyrics: false, lyricsText: '', lyricsDocName: '', lyricsDocUrl: '', isrcMode: 'auto' as const, isrcCode: '', credits: { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' } }] }));
         }
-      }, 80);
+      })();
     });
   }, []);
   // DOM element refs for drop zones
@@ -3868,7 +3892,7 @@ export function ArtistDashboard() {
                               {draft.copyright_year || new Date().getFullYear()}
                             </p>
                             <button
-                              onClick={(e) => { e.stopPropagation(); if (confirm('Delete this draft?')) { supabase.from('release_drafts').delete().eq('id', draft.id).then(() => fetchDrafts(currentUserId)); } }}
+                              onClick={(e) => { e.stopPropagation(); setDeletingDraftId(draft.id); }}
                               className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:opacity-70"
                               style={{ backgroundColor: 'var(--bg-elevated)' }}
                             >
@@ -3881,6 +3905,40 @@ export function ArtistDashboard() {
                   </div>
                 );
               })()}
+
+              {/* Delete draft confirmation dialog */}
+              {deletingDraftId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+                  <div className="w-full max-w-sm rounded-2xl p-6 animate-scale-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                    </div>
+                    <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Delete this draft?</h3>
+                    <p className="text-sm mb-6" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>This action cannot be undone. The draft and any uploaded artwork will be permanently removed.</p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setDeletingDraftId(null)}
+                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          const uid = currentUserId || localStorage.getItem('verifiedUserId') || '';
+                          await supabase.from('release_drafts').delete().eq('id', deletingDraftId);
+                          setDeletingDraftId(null);
+                          await fetchDrafts(uid);
+                        }}
+                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Complete tab */}
               {myReleasesTab === 'complete' && (
@@ -3938,7 +3996,7 @@ export function ArtistDashboard() {
               <div className="flex items-center gap-1.5 mb-2">
                 <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em' }}>{text}</span>
                 <div className="relative flex items-center" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-                  <svg className="w-3.5 h-3.5 cursor-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                  <svg className="w-3.5 h-3.5 cursor-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.85, filter: 'drop-shadow(0 0 4px currentColor)' }}>
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -4573,7 +4631,18 @@ export function ArtistDashboard() {
                               <div className="space-y-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                                 <div className="space-y-1.5">
                                   <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Track artist(s)</p>
-                                  <input type="text" placeholder="Artist name" value={track.featuring} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, featuring: e.target.value } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  {artistNames.length > 0 ? (
+                                    <ReleaseDropdown
+                                      value={track.featuring || 'Select artist'}
+                                      options={['Select artist', ...artistNames]}
+                                      onChange={v => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, featuring: v === 'Select artist' ? '' : v } : t) })}
+                                    />
+                                  ) : (
+                                    <button type="button" disabled className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: 0.45, cursor: 'not-allowed' }}>
+                                      <span>No Artists Available — add via My Accounts</span>
+                                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                    </button>
+                                  )}
                                 </div>
                                 <div className="space-y-1.5">
                                   <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Release Artist</p>
@@ -4751,38 +4820,85 @@ export function ArtistDashboard() {
                                   <input type="text" placeholder="Name" value={track.credits.composer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, composer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
                                 </div>
                                 {/* Songwriter */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Songwriter</p>
-                                    <input type="text" placeholder="Name" value={track.credits.songwriter} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, songwriter: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-                                  </div>
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Role</p>
-                                    <input type="text" placeholder="e.g. Lyricist" value={track.credits.songwriterRole} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, songwriterRole: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-                                  </div>
-                                </div>
-                                {/* Production/Engineer */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Production/Engineer</p>
-                                    <input type="text" placeholder="Name" value={track.credits.engineer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, engineer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-                                  </div>
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Role</p>
-                                    <input type="text" placeholder="e.g. Producer" value={track.credits.engineerRole} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, engineerRole: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-                                  </div>
-                                </div>
-                                {/* Performer */}
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Performer</p>
-                                    <input type="text" placeholder="Name" value={track.credits.performer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, performer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-                                  </div>
-                                  <div className="space-y-1.5">
-                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Role</p>
-                                    <input type="text" placeholder="e.g. Lead Vocals" value={track.credits.performerRole} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, performerRole: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
-                                  </div>
-                                </div>
+                                {(() => {
+                                  const roleOpts = ['Arranger','Author','Conductor','Librettist','Lyricist'];
+                                  const prodOpts = ['Assistant Producer','Mastering Engineer','Mixing Engineer','Musical Director','Producer','Sound Engineer'];
+                                  const perfOpts = ['Acoustic Guitar','Alto Saxophone','Background Vocals','Banjo','Baritone Saxophone','Bass Clarinet','Bass Guitar','Bass Trombone','Bassoon','Bongos','Bouzouki','Cello','Choir','Chorus','Clarinet','Classical Guitar','Congas','Cornet','DJ','Djembe','Double Bass','Drums','Electric Guitar','Fiddle','First Violin','Flugelhorn','Flute','Guitar','Hammond Organ','Harmonica','Harmony Vocals','Harp','Harpsichord','Keyboards','Kora','Lead Guitar','Lead Vocals','Mandolin','Mezzo-soprano Vocals','Oboe','Organ','Pedal Steel Guitar','Percussion','Performer','Piano','Piccolo','Remixer','Rhodes Piano','Rhythm Guitar','Saxophone','Second Violin','Sitar','Sopranino Saxophone','Tabla','Tambourine','Tenor Saxophone','Timbales','Timpani','Trombone','Trumpet','Tuba','Ukulele','Viola','Violin'];
+                                  const CreditDropdown = ({ value, options, onChange, placeholder }: { value: string; options: string[]; onChange: (v: string) => void; placeholder: string }) => {
+                                    const [open, setOpen] = React.useState(false);
+                                    const ref = React.useRef<HTMLDivElement>(null);
+                                    React.useEffect(() => {
+                                      const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+                                      document.addEventListener('mousedown', handler);
+                                      return () => document.removeEventListener('mousedown', handler);
+                                    }, []);
+                                    return (
+                                      <div ref={ref} className="relative">
+                                        <button type="button" onClick={() => setOpen(v => !v)}
+                                          className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between focus:outline-none transition-all"
+                                          style={{ backgroundColor: 'var(--bg-elevated)', color: value ? 'var(--text-primary)' : 'var(--text-primary)', border: '1px solid var(--border-subtle)', opacity: value ? 1 : 0.6 }}
+                                          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                                          onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                                        >
+                                          <span style={{ color: 'var(--text-primary)', opacity: value ? 1 : 0.5 }}>{value || placeholder}</span>
+                                          <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
+                                        </button>
+                                        {open && (
+                                          <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', maxHeight: '200px', overflowY: 'auto' }}>
+                                            {options.map(opt => (
+                                              <button key={opt} type="button"
+                                                onClick={() => { onChange(opt); setOpen(false); }}
+                                                className="w-full text-left px-4 py-2 text-sm flex items-center justify-between transition-all"
+                                                style={{ backgroundColor: value === opt ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
+                                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = value === opt ? 'var(--bg-elevated)' : 'transparent'; e.currentTarget.style.transform = 'none'; }}
+                                              >
+                                                {opt}
+                                                {value === opt && <span style={{ color: '#CBD5E1', fontSize: '0.75rem' }}>✓</span>}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  };
+                                  return (
+                                    <>
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1.5">
+                                          <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Songwriter</p>
+                                          <input type="text" placeholder="Name" value={track.credits.songwriter} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, songwriter: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Role (e.g. Lyricist)</p>
+                                          <CreditDropdown value={track.credits.songwriterRole} options={roleOpts} placeholder="Select role" onChange={v => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, songwriterRole: v } } : t) })} />
+                                        </div>
+                                      </div>
+                                      {/* Production/Engineer */}
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1.5">
+                                          <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Production/Engineer</p>
+                                          <input type="text" placeholder="Name" value={track.credits.engineer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, engineer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Production (e.g. Producer)</p>
+                                          <CreditDropdown value={track.credits.engineerRole} options={prodOpts} placeholder="Select role" onChange={v => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, engineerRole: v } } : t) })} />
+                                        </div>
+                                      </div>
+                                      {/* Performer */}
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1.5">
+                                          <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Performer</p>
+                                          <input type="text" placeholder="Name" value={track.credits.performer} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, performer: e.target.value } } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                          <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Performance / Instrument</p>
+                                          <CreditDropdown value={track.credits.performerRole} options={perfOpts} placeholder="Select instrument" onChange={v => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, credits: { ...t.credits, performerRole: v } } : t) })} />
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })()}
                                 {/* Add more / Copy to all tracks */}
                                 <div className="flex items-center gap-3">
                                   <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
