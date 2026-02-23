@@ -1027,7 +1027,7 @@ export function ArtistDashboard() {
     releasedBefore: false,
     originalReleaseDate: '',
     stores: [] as string[],
-    tracks: [] as { title: string; featuring: string; explicit: boolean; duration: number; fileName: string; fileObject: File | null; previewStart: number; addLyrics: boolean; lyricsText: string; lyricsDocName: string; isrcMode: 'auto' | 'manual'; isrcCode: string; credits: { composer: string; songwriter: string; songwriterRole: string; engineer: string; engineerRole: string; performer: string; performerRole: string } }[],
+    tracks: [] as { title: string; featuring: string; explicit: boolean; duration: number; fileName: string; fileObject: File | null; audioUrl?: string; previewStart: number; addLyrics: boolean; lyricsText: string; lyricsDocName: string; lyricsDocUrl?: string; isrcMode: 'auto' | 'manual'; isrcCode: string; credits: { composer: string; songwriter: string; songwriterRole: string; engineer: string; engineerRole: string; performer: string; performerRole: string }; extraCredits?: { name: string; role: string }[] }[],
     artworkFile: null as File | null,
     artworkPreview: '' as string,
   });
@@ -1103,7 +1103,11 @@ export function ArtistDashboard() {
   const handleAudioFiles = useCallback((files: FileList | File[]) => {
     const fileArr = Array.from(files).filter((f: File) => f.name.endsWith('.wav') || f.name.endsWith('.mp3'));
     if (!fileArr.length) return;
-    fileArr.forEach((file: File) => {
+    // Prevent duplicate uploads
+    const existingNames = new Set(releaseFormRef.current.tracks.map((t: any) => t.fileName));
+    const newFiles = fileArr.filter((f: File) => !existingNames.has(f.name));
+    if (!newFiles.length) return;
+    newFiles.forEach((file: File) => {
       setUploadingTracks(prev => [...prev, { name: file.name, size: file.size, progress: 0, done: false }]);
       // Read actual audio duration
       const audioEl = new Audio();
@@ -4349,10 +4353,10 @@ export function ArtistDashboard() {
                       <div className="flex items-start gap-3 p-4 rounded-xl flex-1" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                         <svg className="w-4 h-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <div className="space-y-1">
-                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Audio file requirements</p>
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Audio File Guidelines</p>
                           <div className="space-y-0.5 text-sm" style={{ color: 'var(--text-primary)' }}>
-                            <p className="flex items-start gap-1"><svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>file format must be .wav or .mp3 (.wav is preferred)</p>
-                            <p className="flex items-start gap-1"><svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>file size no larger than 200Mb</p>
+                            <p className="flex items-start gap-1"><svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>Accepted formats: .wav or .mp3 (we recommend submitting a .wav file for best quality).</p>
+                            <p className="flex items-start gap-1"><svg className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>Maximum file size: 200MB.</p>
                           </div>
                         </div>
                       </div>
@@ -4416,14 +4420,18 @@ export function ArtistDashboard() {
                               onClick={() => {
                                 const url = getTrackUrl(track);
                                 if (!url) return;
-                                // Always use audio-preview-{i} so row + edit panel share state
-                                let el = document.getElementById(`audio-preview-${i}`) as HTMLAudioElement | null;
+                                // Use fileName as ID so reordering/deletion never causes stale src
+                                const elId = `audio-preview-${track.fileName}`;
+                                let el = document.getElementById(elId) as HTMLAudioElement | null;
                                 if (!el) {
                                   el = document.createElement('audio');
-                                  el.id = `audio-preview-${i}`;
+                                  el.id = elId;
                                   el.src = url;
                                   el.onended = () => setPlayingTrackIndex(null);
                                   document.body.appendChild(el);
+                                } else if (el.src !== url) {
+                                  // src changed (e.g. object URL refreshed) — update it
+                                  el.src = url;
                                 }
                                 if (playingTrackIndex === i) {
                                   el.pause();
@@ -4431,11 +4439,14 @@ export function ArtistDashboard() {
                                 } else {
                                   // Pause any currently playing track
                                   if (playingTrackIndex !== null) {
-                                    const prev = document.getElementById(`audio-preview-${playingTrackIndex}`) as HTMLAudioElement | null;
-                                    if (prev) prev.pause();
+                                    const prevTrack = rf.tracks[playingTrackIndex];
+                                    if (prevTrack) {
+                                      const prev = document.getElementById(`audio-preview-${prevTrack.fileName}`) as HTMLAudioElement | null;
+                                      if (prev) prev.pause();
+                                    }
                                   }
                                   el.currentTime = 0;
-                                  el.play();
+                                  el.play().catch(() => {});
                                   setPlayingTrackIndex(i);
                                 }
                               }}
@@ -4718,7 +4729,7 @@ export function ArtistDashboard() {
                                 </div>
                                 <div className="space-y-1.5">
                                   <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Digital audio fingerprint</p>
-                                  <div className="px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>Requires permission</div>
+                                  <div className="px-4 py-3 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', opacity: 0.35, pointerEvents: 'none', minHeight: '46px' }} />
                                 </div>
                               </div>
 
@@ -4901,8 +4912,25 @@ export function ArtistDashboard() {
                                   );
                                 })()}
                                 {/* Add more / Copy to all tracks */}
+                                {(track.extraCredits || []).map((ec: {name: string; role: string}, ei: number) => (
+                                  <div key={ei} className="grid grid-cols-2 gap-3 items-end">
+                                    <div className="space-y-1.5">
+                                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Contributor name</p>
+                                      <input type="text" placeholder="Name" value={ec.name} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, extraCredits: (t.extraCredits || []).map((x: any, xi: number) => xi === ei ? { ...x, name: e.target.value } : x) } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                    </div>
+                                    <div className="space-y-1.5 flex gap-2 items-end">
+                                      <div className="flex-1 space-y-1.5">
+                                        <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Contributor role</p>
+                                        <input type="text" placeholder="Role" value={ec.role} onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, extraCredits: (t.extraCredits || []).map((x: any, xi: number) => xi === ei ? { ...x, role: e.target.value } : x) } : t) })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                      </div>
+                                      <button onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, extraCredits: (t.extraCredits || []).filter((_: any, xi: number) => xi !== ei) } : t) })} className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl transition-all hover:opacity-70 mb-0.5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
                                 <div className="flex items-center gap-3">
-                                  <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
+                                  <button onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, extraCredits: [...(t.extraCredits || []), { name: '', role: '' }] } : t) })} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
                                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> Add more
                                   </button>
                                   <button
@@ -4939,7 +4967,7 @@ export function ArtistDashboard() {
                         return (
                           <div className="flex items-center gap-3 px-4 py-3 text-sm" style={{ borderTop: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                             <span>{rf.tracks.length} track{rf.tracks.length !== 1 ? 's' : ''}</span>
-                            <span>🕐</span>
+                            <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
                             <span>{timeStr}</span>
                           </div>
                         );
@@ -4952,8 +4980,8 @@ export function ArtistDashboard() {
                     <div className="flex items-start gap-3 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                       <svg className="w-5 h-5 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                       <div>
-                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Please complete the following checklist before proceeding</p>
-                        <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)' }}>Please note that answering incorrectly to any of the following questions may result in delays to your music being sent to retailers.</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Before moving forward, make sure you've completed the checklist below.</p>
+                        <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)' }}>Be aware that providing inaccurate information in response to these questions may cause delays in delivering your release to streaming platforms and digital stores.</p>
                       </div>
                     </div>
                     {[
@@ -5282,9 +5310,9 @@ export function ArtistDashboard() {
                             onClick={() => setRf({ stores: selected ? rf.stores.filter(s => s !== store) : [...rf.stores, store] })}
                             className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:brightness-110"
                             style={{
-                              backgroundColor: selected ? 'var(--bg-active)' : 'var(--bg-elevated)',
-                              color: 'var(--text-primary)',
-                              border: `1px solid ${selected ? 'var(--border-default)' : 'var(--border-subtle)'}`,
+                              backgroundColor: selected ? 'var(--text-primary)' : 'var(--bg-elevated)',
+                              color: selected ? 'var(--bg-primary)' : 'var(--text-primary)',
+                              border: `1px solid ${selected ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
                             }}
                           >
                             {store}
@@ -5337,7 +5365,7 @@ export function ArtistDashboard() {
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Type: </span><span style={{ color: 'var(--text-primary)' }}>{rf.tracks.length >= 7 ? 'Album' : rf.tracks.length >= 4 ? 'EP' : rf.tracks.length >= 1 ? 'Single' : '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Price Band: </span><span style={{ color: 'var(--text-primary)' }}>Budget</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Primary Genre: </span><span style={{ color: 'var(--text-primary)' }}>{rf.genre || '—'}</span></div>
-                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{rf.releaseDate ? rf.releaseDate : '—'}</span></div>
+                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{releaseDateMode === 'most-recent' ? 'Most Recent' : rf.releaseDate || '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Secondary Genre: </span><span style={{ color: 'var(--text-primary)' }}>{rf.secondaryGenre || '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Original Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{rf.originalReleaseDate || 'N/A'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Language: </span><span style={{ color: 'var(--text-primary)' }}>{rf.language || '—'}</span></div>
@@ -5369,7 +5397,10 @@ export function ArtistDashboard() {
                           <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                             <span className="w-5 text-center font-medium opacity-50" style={{ color: 'var(--text-primary)' }}>{i + 1}</span>
                             <span className="flex-1 font-medium" style={{ color: 'var(--text-primary)' }}>{track.title || 'Untitled'}</span>
-                            {track.explicit && <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ backgroundColor: 'rgba(239,68,68,0.15)', color: '#f87171' }}>E</span>}
+                            {track.explicit && <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>E</span>}
+                            {(!track.title || !track.credits.composer || !track.credits.songwriter || !track.credits.performer) && (
+                              <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            )}
                             <span className="text-xs font-medium tabular-nums" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{dur}</span>
                           </div>
                           );
