@@ -709,11 +709,9 @@ export function AdminDashboard() {
                 </div>
                 {/* Quick Nav Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                  <button onClick={() => setActiveSection('applications')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
+                  <button onClick={() => setActiveSection('applications')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-elevated)', border: `1px solid ${tokens.border.subtle}` }}>
                     <div className="flex items-center gap-4">
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
-                      </div>
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>Applications</h3>
@@ -723,11 +721,9 @@ export function AdminDashboard() {
                       </div>
                     </div>
                   </button>
-                  <button onClick={() => setActiveSection('users')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
+                  <button onClick={() => setActiveSection('users')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-elevated)', border: `1px solid ${tokens.border.subtle}` }}>
                     <div className="flex items-center gap-4">
-                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                      </div>
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>Users</h3>
@@ -751,9 +747,7 @@ export function AdminDashboard() {
                     style={{ backgroundColor: tokens.bg.elevated }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                      </div>
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
                       <div className="text-left">
                         <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Channel Link Whitelist</p>
                         <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{whitelistedChannels.length} pattern{whitelistedChannels.length !== 1 ? 's' : ''} configured</p>
@@ -762,11 +756,11 @@ export function AdminDashboard() {
                     <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'whitelist' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                   </button>
                   {expandedHomeCard === 'whitelist' && (
-                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
                   <p className="text-xs mb-4 mt-3" style={{ color: tokens.text.primary, opacity: 0.55 }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
 
                   {/* Add form */}
-                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}>
                     <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.primary }}>Add Pattern</p>
                     <div className="flex flex-col sm:flex-row gap-2 mb-2">
                       <input
@@ -829,7 +823,7 @@ export function AdminDashboard() {
                         <div
                           key={ch.id}
                           className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg"
-                          style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}
+                          style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
@@ -865,9 +859,7 @@ export function AdminDashboard() {
                     style={{ backgroundColor: tokens.bg.elevated }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-                      </div>
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
                       <div className="text-left">
                         <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Campaign Manager</p>
                         <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''} active</p>
@@ -876,7 +868,7 @@ export function AdminDashboard() {
                     <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                   </button>
                   {expandedHomeCard === 'campaigns' && (
-                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
                   <div className="flex items-center justify-between mt-3 mb-4">
                     <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.55 }}>Create campaigns and assign them to users. Assigned campaigns appear in the user's dashboard.</p>
                     <button
@@ -1394,9 +1386,7 @@ export function AdminDashboard() {
                     style={{ backgroundColor: tokens.bg.elevated }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}` }}>
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-                      </div>
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                       <div className="text-left">
                         <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Alerts</p>
                         <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Send announcements to users</p>
@@ -1405,7 +1395,7 @@ export function AdminDashboard() {
                     <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'alerts' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                   </button>
                   {expandedHomeCard === 'alerts' && (
-                    <div className="px-5 pb-5 pt-3" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                    <div className="px-5 pb-5 pt-3" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
                       {adminProfileId && <AnnouncementSender adminId={adminProfileId} />}
                     </div>
                   )}

@@ -1004,6 +1004,12 @@ export function ArtistDashboard() {
   const [releasesFilterOpen, setReleasesFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [releaseChecklist, setReleaseChecklist] = useState([false, false, false]);
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [draftSaving, setDraftSaving] = useState(false);
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [savedDrafts, setSavedDrafts] = useState<any[]>([]);
+  const [artistNames, setArtistNames] = useState<string[]>([]);
+  const draftSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [releaseForm, setReleaseForm] = useState({
     title: '',
     copyrightHolder: '',
@@ -1020,7 +1026,7 @@ export function ArtistDashboard() {
     releasedBefore: false,
     originalReleaseDate: '',
     stores: [] as string[],
-    tracks: [] as { title: string; featuring: string; explicit: boolean; duration: number; fileName: string; fileObject: File | null; previewStart: number; addLyrics: boolean; credits: { composer: string; songwriter: string; songwriterRole: string; engineer: string; engineerRole: string; performer: string; performerRole: string } }[],
+    tracks: [] as { title: string; featuring: string; explicit: boolean; duration: number; fileName: string; fileObject: File | null; previewStart: number; addLyrics: boolean; lyricsText: string; lyricsDocName: string; isrcMode: 'auto' | 'manual'; isrcCode: string; credits: { composer: string; songwriter: string; songwriterRole: string; engineer: string; engineerRole: string; performer: string; performerRole: string } }[],
     artworkFile: null as File | null,
     artworkPreview: '' as string,
   });
@@ -1116,7 +1122,7 @@ export function ArtistDashboard() {
         if (progress >= 100) {
           clearInterval(interval);
           setUploadingTracks(prev => prev.map(t => t.name === file.name ? { ...t, progress: 100, done: true } : t));
-          setReleaseForm(f => ({ ...f, tracks: [...f.tracks, { title: file.name.replace(/\.(wav|mp3)$/i, ''), featuring: '', explicit: false, duration: audioDuration, fileName: file.name, fileObject: file, previewStart: 0, addLyrics: false, credits: { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' } }] }));
+          setReleaseForm(f => ({ ...f, tracks: [...f.tracks, { title: file.name.replace(/\.(wav|mp3)$/i, ''), featuring: '', explicit: false, duration: audioDuration, fileName: file.name, fileObject: file, previewStart: 0, addLyrics: false, lyricsText: '', lyricsDocName: '', isrcMode: 'auto' as const, isrcCode: '', credits: { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' } }] }));
         }
       }, 80);
     });
@@ -1659,6 +1665,181 @@ export function ArtistDashboard() {
       console.error('Error in fetchUserProfile:', err);
     }
   };
+
+  // ── Draft persistence ──────────────────────────────────────────────────────
+
+  const fetchDrafts = async (uid?: string) => {
+    // Always use the authenticated session uid for RLS compliance
+    const { data: { user } } = await supabase.auth.getUser();
+    const resolvedUid = user?.id || uid || localStorage.getItem('verifiedUserId') || '';
+    if (!resolvedUid) return;
+    const { data, error } = await supabase
+      .from('release_drafts')
+      .select('*')
+      .eq('user_id', resolvedUid)
+      .order('updated_at', { ascending: false });
+    if (error) { console.error('[fetchDrafts] error:', error); return; }
+    if (data) setSavedDrafts(data);
+  };
+
+  const fetchArtistNames = async (uid: string) => {
+    const { data } = await supabase
+      .from('social_links')
+      .select('display_name')
+      .eq('user_id', uid);
+    if (data) {
+      const names = data.map((r: any) => r.display_name).filter(Boolean);
+      setArtistNames(names);
+    }
+  };
+
+  const saveDraft = useCallback(async (form: typeof releaseForm, step: number, checklist: boolean[], _uid: string, overrideDraftId?: string | null) => {
+    // Always resolve uid from Supabase auth session — this is what RLS checks
+    const { data: { user } } = await supabase.auth.getUser();
+    const effectiveUid = user?.id || _uid || localStorage.getItem('verifiedUserId') || '';
+    if (!effectiveUid) {
+      console.warn('[saveDraft] No authenticated user — skipping save');
+      return;
+    }
+    setDraftSaving(true);
+    try {
+      const tracksForDb = form.tracks.map(t => ({
+        title: t.title,
+        featuring: t.featuring,
+        explicit: t.explicit,
+        duration: t.duration,
+        fileName: t.fileName,
+        previewStart: t.previewStart,
+        addLyrics: t.addLyrics,
+        lyricsText: t.lyricsText,
+        lyricsDocName: t.lyricsDocName,
+        isrcMode: t.isrcMode,
+        isrcCode: t.isrcCode,
+        credits: t.credits,
+      }));
+
+      const payload: any = {
+        user_id: effectiveUid,
+        status: 'incomplete',
+        current_step: step,
+        title: form.title,
+        copyright_holder: form.copyrightHolder,
+        copyright_year: form.copyrightYear,
+        production_holder: form.productionHolder,
+        production_year: form.productionYear,
+        record_label: form.recordLabel,
+        release_artists: form.releaseArtists,
+        genre: form.genre,
+        secondary_genre: form.secondaryGenre,
+        language: form.language,
+        release_date: form.releaseDate,
+        released_before: form.releasedBefore,
+        original_release_date: form.originalReleaseDate,
+        country_restrictions: form.countryRestrictions,
+        tracks: tracksForDb,
+        checklist: checklist,
+        stores: form.stores,
+        updated_at: new Date().toISOString(),
+      };
+
+      const effectiveDraftId = overrideDraftId !== undefined ? overrideDraftId : draftId;
+      if (effectiveDraftId) {
+        const { error } = await supabase.from('release_drafts').update(payload).eq('id', effectiveDraftId);
+        if (error) console.error('[saveDraft] update error:', error);
+      } else {
+        const { data, error } = await supabase.from('release_drafts').insert(payload).select('id').single();
+        if (error) console.error('[saveDraft] insert error:', error);
+        if (data?.id) setDraftId(data.id);
+      }
+      await fetchDrafts(effectiveUid);
+    } catch (e) {
+      console.error('[saveDraft] exception:', e);
+    } finally {
+      setDraftSaving(false);
+    }
+  }, [draftId]);
+
+  const uploadArtwork = async (file: File, uid: string, dId: string): Promise<string> => {
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `${uid}/${dId}.${ext}`;
+    const { error } = await supabase.storage.from('release-artwork').upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data } = supabase.storage.from('release-artwork').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  const loadDraftIntoForm = (draft: any) => {
+    const tracks = (draft.tracks || []).map((t: any) => ({
+      title: t.title || '',
+      featuring: t.featuring || '',
+      explicit: t.explicit || false,
+      duration: t.duration || 0,
+      fileName: t.fileName || '',
+      fileObject: null,
+      previewStart: t.previewStart || 0,
+      addLyrics: t.addLyrics || false,
+      lyricsText: t.lyricsText || '',
+      lyricsDocName: t.lyricsDocName || '',
+      isrcMode: (t.isrcMode as 'auto' | 'manual') || 'auto',
+      isrcCode: t.isrcCode || '',
+      credits: t.credits || { composer: '', songwriter: '', songwriterRole: '', engineer: '', engineerRole: '', performer: '', performerRole: '' },
+    }));
+    setReleaseForm({
+      title: draft.title || '',
+      copyrightHolder: draft.copyright_holder || '',
+      copyrightYear: draft.copyright_year || String(new Date().getFullYear()),
+      productionHolder: draft.production_holder || '',
+      productionYear: draft.production_year || String(new Date().getFullYear()),
+      recordLabel: draft.record_label || 'Independent',
+      releaseArtists: draft.release_artists || '',
+      genre: draft.genre || '',
+      secondaryGenre: draft.secondary_genre || '',
+      language: draft.language || 'English',
+      releaseDate: draft.release_date || '',
+      countryRestrictions: draft.country_restrictions || false,
+      releasedBefore: draft.released_before || false,
+      originalReleaseDate: draft.original_release_date || '',
+      stores: draft.stores || [],
+      tracks,
+      artworkFile: null,
+      artworkPreview: draft.artwork_url || '',
+    });
+    setReleaseChecklist(draft.checklist || [false, false, false]);
+    setReleaseStep(draft.current_step || 1);
+    setDraftId(draft.id);
+  };
+
+  // Auto-save draft whenever releaseForm or step changes (debounced 1.5s)
+  const releaseFormRef = useRef(releaseForm);
+  const releaseStepRef = useRef(releaseStep);
+  const releaseChecklistRef = useRef(releaseChecklist);
+  const draftIdRef = useRef(draftId);
+  useEffect(() => { releaseFormRef.current = releaseForm; }, [releaseForm]);
+  useEffect(() => { releaseStepRef.current = releaseStep; }, [releaseStep]);
+  useEffect(() => { releaseChecklistRef.current = releaseChecklist; }, [releaseChecklist]);
+  useEffect(() => { draftIdRef.current = draftId; }, [draftId]);
+
+  useEffect(() => {
+    if (!showReleaseForm) return;
+    if (draftSaveTimer.current) clearTimeout(draftSaveTimer.current);
+    draftSaveTimer.current = setTimeout(() => {
+      const uid = currentUserId || localStorage.getItem('verifiedUserId') || '';
+      if (!uid) return;
+      saveDraft(releaseFormRef.current, releaseStepRef.current, releaseChecklistRef.current, uid, draftIdRef.current);
+    }, 1500);
+    return () => { if (draftSaveTimer.current) clearTimeout(draftSaveTimer.current); };
+  }, [releaseForm, releaseStep, releaseChecklist, showReleaseForm, currentUserId]);
+
+  // Fetch drafts and artist names when user ID is known (also check localStorage fallback)
+  useEffect(() => {
+    const uid = currentUserId || localStorage.getItem('verifiedUserId') || '';
+    if (uid) {
+      fetchDrafts(uid);
+      fetchArtistNames(uid);
+    }
+  }, [currentUserId]);
+
+  // ──────────────────────────────────────────────────────────────────────────
 
   const handleLogout = () => {
     clearProfileCache(); // Clear cached profile state
@@ -3552,8 +3733,14 @@ export function ArtistDashboard() {
                 {/* Standard Release card */}
                 <div
                   className="group rounded-2xl p-6 flex flex-col gap-5 cursor-pointer transition-all duration-200 hover:brightness-110"
-                  style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
-                  onClick={() => { setShowReleaseForm(true); setReleaseStep(1); }}
+                  style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+                  onClick={() => {
+                    setDraftId(null);
+                    setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
+                    setReleaseChecklist([false, false, false]);
+                    setReleaseStep(1);
+                    setShowReleaseForm(true);
+                  }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -3563,9 +3750,16 @@ export function ArtistDashboard() {
                     <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>Singles, EPs and albums distributed to all major stores.</p>
                   </div>
                   <button
-                    onClick={(e) => { e.stopPropagation(); setShowReleaseForm(true); setReleaseStep(1); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDraftId(null);
+                      setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
+                      setReleaseChecklist([false, false, false]);
+                      setReleaseStep(1);
+                      setShowReleaseForm(true);
+                    }}
                     className="self-start flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110"
-                    style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                   >
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
                     Create New
@@ -3606,18 +3800,20 @@ export function ArtistDashboard() {
               </div>
 
               {/* Tabs */}
-              <div className="flex items-center gap-0 mb-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+              <div className="flex items-center gap-0 mb-6" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                 {(['in-progress', 'complete', 'inactive'] as const).map((tab) => {
                   const label = tab === 'in-progress' ? 'In-Progress' : tab.charAt(0).toUpperCase() + tab.slice(1);
                   const active = myReleasesTab === tab;
+                  const count = tab === 'in-progress' ? savedDrafts.filter(d => d.status === 'incomplete').length : tab === 'complete' ? savedDrafts.filter(d => d.status === 'submitted' || d.status === 'approved').length : savedDrafts.filter(d => d.status === 'inactive').length;
                   return (
                     <button
                       key={tab}
                       onClick={() => setMyReleasesTab(tab)}
-                      className="px-4 py-3 text-sm font-semibold transition-all duration-200 relative"
+                      className="px-4 py-3 text-sm font-semibold transition-all duration-200 relative flex items-center gap-2"
                       style={{ color: 'var(--text-primary)', opacity: active ? 1 : 0.5 }}
                     >
                       {label}
+                      {count > 0 && <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>{count}</span>}
                       {active && (
                         <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
                       )}
@@ -3626,18 +3822,87 @@ export function ArtistDashboard() {
                 })}
               </div>
 
-              {/* Empty state */}
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              {/* Draft cards — In-Progress tab */}
+              {myReleasesTab === 'in-progress' && (() => {
+                const drafts = savedDrafts.filter(d => d.status === 'incomplete');
+                if (drafts.length === 0) return (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    </div>
+                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No releases in progress</p>
+                    <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Create a new release above to get started.</p>
+                  </div>
+                );
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {drafts.map(draft => (
+                      <div
+                        key={draft.id}
+                        className="rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:brightness-110"
+                        style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+                        onClick={() => { loadDraftIntoForm(draft); setShowReleaseForm(true); }}
+                      >
+                        {/* Artwork */}
+                        <div className="relative aspect-square">
+                          {draft.artwork_url ? (
+                            <img src={draft.artwork_url} alt={draft.title || 'Release'} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </div>
+                          )}
+                          {/* INCOMPLETE badge */}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider" style={{ backgroundColor: '#EF4444', color: '#fff' }}>
+                            INCOMPLETE
+                          </div>
+                        </div>
+                        {/* Info */}
+                        <div className="p-4">
+                          <p className="font-semibold text-sm truncate mb-1" style={{ color: 'var(--text-primary)' }}>{draft.title || 'Untitled Release'}</p>
+                          <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                            {draft.tracks?.length ? `${draft.tracks.length} track${draft.tracks.length !== 1 ? 's' : ''}` : 'No tracks yet'}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
+                              {draft.copyright_year || new Date().getFullYear()}
+                            </p>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); if (confirm('Delete this draft?')) { supabase.from('release_drafts').delete().eq('id', draft.id).then(() => fetchDrafts(currentUserId)); } }}
+                              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:opacity-70"
+                              style={{ backgroundColor: 'var(--bg-elevated)' }}
+                            >
+                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+
+              {/* Complete tab */}
+              {myReleasesTab === 'complete' && (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                  </div>
+                  <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No completed releases</p>
+                  <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Submitted releases will appear here once processed.</p>
                 </div>
-                <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  {myReleasesTab === 'in-progress' ? 'No releases in progress' : myReleasesTab === 'complete' ? 'No completed releases' : 'No inactive releases'}
-                </p>
-                <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>
-                  {myReleasesTab === 'in-progress' ? 'Create a new release above to get started.' : 'Submitted releases will appear here once processed.'}
-                </p>
-              </div>
+              )}
+
+              {/* Inactive tab */}
+              {myReleasesTab === 'inactive' && (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                  </div>
+                  <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No inactive releases</p>
+                  <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Inactive releases will appear here.</p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -3665,6 +3930,31 @@ export function ArtistDashboard() {
           const inputCls = 'w-full px-4 py-3 rounded-xl text-base focus:outline-none transition-all';
           const inputStyle = { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' };
           const labelStyle = { color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em', marginBottom: '8px', display: 'block' };
+
+          // Inline tooltip label component
+          const InfoLabel = ({ text, tip }: { text: string; tip: string }) => {
+            const [show, setShow] = React.useState(false);
+            return (
+              <div className="flex items-center gap-1.5 mb-2">
+                <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em' }}>{text}</span>
+                <div className="relative flex items-center" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+                  <svg className="w-3.5 h-3.5 cursor-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  {show && (
+                    <div className="absolute bottom-full left-1/2 mb-2 z-50 animate-fade-in" style={{ transform: 'translateX(-50%)', width: '220px' }}>
+                      <div className="px-3 py-2 rounded-xl text-xs leading-relaxed" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-primary)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
+                        {tip}
+                        <div className="absolute top-full left-1/2" style={{ transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid var(--border-default)' }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          };
 
           const ReleaseDropdown = ({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) => {
             const [open, setOpen] = React.useState(false);
@@ -3723,7 +4013,11 @@ export function ArtistDashboard() {
 
               {/* Back to lobby */}
               <button
-                onClick={() => setShowReleaseForm(false)}
+                onClick={() => {
+                const uid = currentUserId || localStorage.getItem('verifiedUserId') || '';
+                if (uid) saveDraft(releaseFormRef.current, releaseStepRef.current, releaseChecklistRef.current, uid, draftIdRef.current);
+                setShowReleaseForm(false);
+              }}
                 className="flex items-center gap-2 mb-6 text-sm font-medium transition-all hover:opacity-70"
                 style={{ color: 'var(--text-primary)' }}
               >
@@ -3767,7 +4061,7 @@ export function ArtistDashboard() {
 
                   {/* Title */}
                   <div>
-                    <label style={labelStyle}>Title of album, EP or single</label>
+                    <InfoLabel text="Title of album, EP or single" tip="Enter the official release title exactly as it should appear on streaming platforms. Avoid adding artist names or extra punctuation here." />
                     <input
                       type="text"
                       value={rf.title}
@@ -3783,11 +4077,11 @@ export function ArtistDashboard() {
                   {/* Copyright row */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label style={labelStyle}>Copyright Holder</label>
+                      <InfoLabel text="Copyright Holder" tip="The individual or entity that owns the composition copyright — typically the songwriter or publisher. Format: Your Name or Your Label Name." />
                       <input type="text" value={rf.copyrightHolder} onChange={e => setRf({ copyrightHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
                     </div>
                     <div>
-                      <label style={labelStyle}>Copyright Year</label>
+                      <InfoLabel text="Copyright Year" tip="The year the composition was first created or published. This is the © year that will appear on all stores." />
                       <ReleaseDropdown value={rf.copyrightYear} options={years} onChange={v => setRf({ copyrightYear: v })} />
                     </div>
                   </div>
@@ -3806,8 +4100,27 @@ export function ArtistDashboard() {
 
                   {/* Release artists */}
                   <div>
-                    <label style={labelStyle}>Release artist(s)</label>
-                    <input type="text" value={rf.releaseArtists} onChange={e => setRf({ releaseArtists: e.target.value })} className={inputCls} style={inputStyle} placeholder="Artist name" onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'} onBlur={(e) => e.target.style.borderColor = 'var(--border-subtle)'} />
+                    <InfoLabel text="Release artist(s)" tip="The primary artist name(s) that will appear on all streaming platforms. Add artists via My Accounts → Connected Accounts first." />
+                    {artistNames.length > 0 ? (
+                      <ReleaseDropdown
+                        value={rf.releaseArtists || 'Select artist'}
+                        options={['Select artist', ...artistNames]}
+                        onChange={v => setRf({ releaseArtists: v === 'Select artist' ? '' : v })}
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between"
+                        style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: 0.45, cursor: 'not-allowed' }}
+                      >
+                        <span>No Artists Available</span>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                      </button>
+                    )}
+                    {artistNames.length === 0 && (
+                      <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Add artists in My Accounts to populate this dropdown.</p>
+                    )}
                   </div>
 
                   {/* Genre — primary, secondary, language */}
@@ -3886,11 +4199,32 @@ export function ArtistDashboard() {
                         type="file"
                         accept=".jpg,.jpeg"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
-                          if (file) {
-                            const url = URL.createObjectURL(file);
-                            setRf({ artworkFile: file, artworkPreview: url });
+                          if (!file) return;
+                          const url = URL.createObjectURL(file);
+                          setRf({ artworkFile: file, artworkPreview: url });
+                          // Upload to storage immediately and persist URL
+                          try {
+                            // Always use auth session uid for storage path (matches RLS/bucket policies)
+                            const { data: { user } } = await supabase.auth.getUser();
+                            const uid = user?.id || currentUserId || localStorage.getItem('verifiedUserId') || '';
+                            if (!uid) { console.warn('[artwork] No uid — skipping upload'); return; }
+                            let id = draftIdRef.current;
+                            if (!id) {
+                              // Create draft first to get an ID
+                              const { data, error } = await supabase.from('release_drafts').insert({ user_id: uid, status: 'incomplete', current_step: releaseStep }).select('id').single();
+                              if (error) console.error('[artwork] draft insert error:', error);
+                              if (data?.id) { id = data.id; setDraftId(data.id); draftIdRef.current = data.id; }
+                            }
+                            if (id) {
+                              const artworkUrl = await uploadArtwork(file, uid, id);
+                              const { error: updErr } = await supabase.from('release_drafts').update({ artwork_url: artworkUrl }).eq('id', id);
+                              if (updErr) console.error('[artwork] update error:', updErr);
+                              await fetchDrafts(uid);
+                            }
+                          } catch (err) {
+                            console.error('Artwork upload error:', err);
                           }
                         }}
                       />
@@ -4013,18 +4347,21 @@ export function ArtistDashboard() {
                           <div className="grid gap-4 px-5 py-4 items-center" style={{ gridTemplateColumns: '48px 56px 1fr 180px 90px 140px', borderTop: '1px solid var(--border-subtle)' }}>
                             {/* Order */}
                             <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{i + 1}</span>
-                            {/* Play */}
+                            {/* Play — shares audio-preview-{i} with the edit panel */}
                             <button
-                              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70"
-                              style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+                              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70 relative overflow-hidden"
+                              style={{
+                                backgroundColor: playingTrackIndex === i ? 'var(--text-primary)' : 'var(--bg-card)',
+                                border: '1px solid var(--border-default)',
+                              }}
                               onClick={() => {
                                 const url = getTrackUrl(track);
                                 if (!url) return;
-                                const audioId = `audio-row-${i}`;
-                                let el = document.getElementById(audioId) as HTMLAudioElement | null;
+                                // Always use audio-preview-{i} so row + edit panel share state
+                                let el = document.getElementById(`audio-preview-${i}`) as HTMLAudioElement | null;
                                 if (!el) {
                                   el = document.createElement('audio');
-                                  el.id = audioId;
+                                  el.id = `audio-preview-${i}`;
                                   el.src = url;
                                   el.onended = () => setPlayingTrackIndex(null);
                                   document.body.appendChild(el);
@@ -4033,12 +4370,10 @@ export function ArtistDashboard() {
                                   el.pause();
                                   setPlayingTrackIndex(null);
                                 } else {
-                                  // pause any other playing audio
+                                  // Pause any currently playing track
                                   if (playingTrackIndex !== null) {
-                                    const prev = document.getElementById(`audio-row-${playingTrackIndex}`) as HTMLAudioElement | null;
+                                    const prev = document.getElementById(`audio-preview-${playingTrackIndex}`) as HTMLAudioElement | null;
                                     if (prev) prev.pause();
-                                    const prevEdit = document.getElementById(`audio-preview-${playingTrackIndex}`) as HTMLAudioElement | null;
-                                    if (prevEdit) prevEdit.pause();
                                   }
                                   el.currentTime = 0;
                                   el.play();
@@ -4047,7 +4382,16 @@ export function ArtistDashboard() {
                               }}
                             >
                               {playingTrackIndex === i ? (
-                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" style={{ color: 'var(--text-primary)' }}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                                /* Animated bars — playing indicator */
+                                <span className="flex items-end gap-px h-4">
+                                  {[1, 2, 3].map(b => (
+                                    <span key={b} className="w-0.5 rounded-full" style={{
+                                      backgroundColor: 'var(--bg-primary)',
+                                      height: `${b === 2 ? 16 : 10}px`,
+                                      animation: `barBounce${b} 0.7s ease-in-out infinite alternate`,
+                                    }} />
+                                  ))}
+                                </span>
                               ) : (
                                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5" style={{ color: 'var(--text-primary)' }}><path d="M8 5v14l11-7z"/></svg>
                               )}
@@ -4062,9 +4406,12 @@ export function ArtistDashboard() {
                             <div className="text-sm" style={{ color: 'var(--text-primary)' }}>
                               Explicit: {track.explicit ? 'Yes' : 'No'}
                             </div>
-                            {/* Status */}
-                            <div className="w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)' }}>
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            {/* Status — Approved */}
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)' }}>
+                                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><polyline points="20 6 9 17 4 12"/></svg>
+                              </div>
+                              <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Approved</span>
                             </div>
                             {/* Actions */}
                             <div className="flex items-center gap-2">
@@ -4088,7 +4435,6 @@ export function ArtistDashboard() {
 
                           {/* Inline edit panel */}
                           {editingTrackIndex === i && (() => {
-                            const audioSrc = getTrackUrl(track);
                             const previewW = track.duration > 0 ? Math.min(100, (30 / track.duration) * 100) : 20;
                             const previewLeft = track.duration > 0 ? (track.previewStart / track.duration) * 100 : 0;
                             const fmtTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -4127,19 +4473,14 @@ export function ArtistDashboard() {
                                     </div>
                                   )}
                                   <div className="flex items-center gap-2">
-                                    {/* Hidden audio element */}
-                                    {audioSrc && (
-                                      <audio
-                                        id={`audio-preview-${i}`}
-                                        src={audioSrc}
-                                        onEnded={() => setPlayingTrackIndex(null)}
-                                        onPause={() => setPlayingTrackIndex(p => p === i ? null : p)}
-                                      />
-                                    )}
+                                    {/* Audio element is created/owned by the row play button (audio-preview-{i}) */}
                                     {/* Play/pause button — icon driven by React state */}
                                     <button
                                       className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70"
-                                      style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+                                      style={{
+                                        backgroundColor: playingTrackIndex === i ? 'var(--text-primary)' : 'var(--bg-elevated)',
+                                        border: '1px solid var(--border-subtle)',
+                                      }}
                                       onClick={() => {
                                         const el = document.getElementById(`audio-preview-${i}`) as HTMLAudioElement | null;
                                         if (!el) return;
@@ -4147,6 +4488,11 @@ export function ArtistDashboard() {
                                           el.pause();
                                           setPlayingTrackIndex(null);
                                         } else {
+                                          // Pause any other playing track
+                                          if (playingTrackIndex !== null) {
+                                            const prev = document.getElementById(`audio-preview-${playingTrackIndex}`) as HTMLAudioElement | null;
+                                            if (prev) prev.pause();
+                                          }
                                           el.currentTime = track.previewStart;
                                           el.play();
                                           setPlayingTrackIndex(i);
@@ -4154,10 +4500,16 @@ export function ArtistDashboard() {
                                       }}
                                     >
                                       {playingTrackIndex === i ? (
-                                        /* Pause icon */
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" style={{ color: 'var(--text-primary)' }}><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                                        <span className="flex items-end gap-px h-4">
+                                          {[1, 2, 3].map(b => (
+                                            <span key={b} className="w-0.5 rounded-full" style={{
+                                              backgroundColor: 'var(--bg-primary)',
+                                              height: `${b === 2 ? 16 : 10}px`,
+                                              animation: `barBounce${b} 0.7s ease-in-out infinite alternate`,
+                                            }} />
+                                          ))}
+                                        </span>
                                       ) : (
-                                        /* Play icon */
                                         <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-0.5" style={{ color: 'var(--text-primary)' }}><path d="M8 5v14l11-7z"/></svg>
                                       )}
                                     </button>
@@ -4225,7 +4577,18 @@ export function ArtistDashboard() {
                                 </div>
                                 <div className="space-y-1.5">
                                   <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Release Artist</p>
-                                  <input type="text" placeholder="(Missing release artist)" value={rf.releaseArtists} onChange={e => setRf({ releaseArtists: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  {artistNames.length > 0 ? (
+                                    <ReleaseDropdown
+                                      value={rf.releaseArtists || 'Select artist'}
+                                      options={['Select artist', ...artistNames]}
+                                      onChange={v => setRf({ releaseArtists: v === 'Select artist' ? '' : v })}
+                                    />
+                                  ) : (
+                                    <button type="button" disabled className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: 0.45, cursor: 'not-allowed' }}>
+                                      <span>No Artists Available</span>
+                                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                    </button>
+                                  )}
                                 </div>
                                 <p className="text-xs" style={{ color: 'var(--text-primary)' }}>Do you want to add primary, featuring or remix artists?</p>
                                 <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
@@ -4244,8 +4607,34 @@ export function ArtistDashboard() {
                                   <input type="text" placeholder="Copyright holder name" value={rf.copyrightHolder} onChange={e => setRf({ copyrightHolder: e.target.value })} className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
                                 </div>
                                 <div className="space-y-1.5">
-                                  <p className="text-xs" style={{ color: 'var(--text-primary)' }}>ISRC code</p>
-                                  <input type="text" placeholder="Auto Generated" className={inputCls} style={inputStyle} onFocus={e => e.target.style.borderColor = 'var(--text-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'} />
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>ISRC code</p>
+                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                  </div>
+                                  <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+                                    {/* Auto / Manual toggle */}
+                                    <button
+                                      type="button"
+                                      onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, isrcMode: t.isrcMode === 'auto' ? 'manual' : 'auto' } : t) })}
+                                      className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-semibold flex-shrink-0 transition-all hover:opacity-80"
+                                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', borderRight: '1px solid var(--border-subtle)' }}
+                                    >
+                                      {track.isrcMode === 'auto' ? 'Auto' : 'Manual'}
+                                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                    </button>
+                                    {track.isrcMode === 'auto' ? (
+                                      <div className="flex-1 px-4 py-2.5 text-sm" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', opacity: 0.4 }}>Auto Generated</div>
+                                    ) : (
+                                      <input
+                                        type="text"
+                                        placeholder="e.g. USRC17607839"
+                                        value={track.isrcCode}
+                                        onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, isrcCode: e.target.value } : t) })}
+                                        className="flex-1 px-4 py-2.5 text-sm focus:outline-none"
+                                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
+                                      />
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                               <div className="grid grid-cols-3 gap-4">
@@ -4264,20 +4653,75 @@ export function ArtistDashboard() {
                               </div>
 
                               {/* Do you want to add lyrics? */}
-                              <div className="flex items-center gap-4 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                                <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Do you want to add lyrics?</span>
-                                {[{ val: false, label: 'No' }, { val: true, label: 'Yes' }].map(({ val, label }) => (
-                                  <button
-                                    key={String(val)}
-                                    onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, addLyrics: val } : t) })}
-                                    className="px-5 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-80"
-                                    style={{
-                                      backgroundColor: track.addLyrics === val ? 'var(--text-primary)' : 'transparent',
-                                      color: track.addLyrics === val ? 'var(--bg-primary)' : 'var(--text-primary)',
-                                      border: '1px solid var(--border-default)'
-                                    }}
-                                  >{label}</button>
-                                ))}
+                              <div className="space-y-4 pt-6" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                                <div className="flex items-center gap-4">
+                                  <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Do you want to add lyrics?</span>
+                                  {[{ val: false, label: 'No' }, { val: true, label: 'Yes' }].map(({ val, label }) => (
+                                    <button
+                                      key={String(val)}
+                                      onClick={() => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, addLyrics: val } : t) })}
+                                      className="px-5 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-80"
+                                      style={{
+                                        backgroundColor: track.addLyrics === val ? 'var(--text-primary)' : 'transparent',
+                                        color: track.addLyrics === val ? 'var(--bg-primary)' : 'var(--text-primary)',
+                                        border: '1px solid var(--border-default)'
+                                      }}
+                                    >{label}</button>
+                                  ))}
+                                </div>
+                                {track.addLyrics && (
+                                  <div className="grid grid-cols-2 gap-5 animate-fade-in">
+                                    {/* Lyrics textarea */}
+                                    <div className="space-y-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Add Lyrics</p>
+                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                      </div>
+                                      <textarea
+                                        placeholder="Enter lyrics"
+                                        value={track.lyricsText}
+                                        onChange={e => setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, lyricsText: e.target.value } : t) })}
+                                        rows={10}
+                                        className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all resize-none"
+                                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                                        onFocus={e => e.target.style.borderColor = 'var(--text-primary)'}
+                                        onBlur={e => e.target.style.borderColor = 'var(--border-subtle)'}
+                                      />
+                                    </div>
+                                    {/* Upload doc */}
+                                    <div className="space-y-2">
+                                      <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Or upload a document with lyrics</p>
+                                      <label
+                                        className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl cursor-pointer transition-all duration-200 h-[calc(100%-2rem)]"
+                                        style={{ border: '2px dashed var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}
+                                        onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+                                        onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+                                        onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--text-primary)'; }}
+                                        onDragLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+                                        onDrop={e => {
+                                          e.preventDefault();
+                                          e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                                          const file = e.dataTransfer.files[0];
+                                          if (file) setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, lyricsDocName: file.name } : t) });
+                                        }}
+                                      >
+                                        <input type="file" accept=".docx,.txt" className="hidden" onChange={e => {
+                                          const file = e.target.files?.[0];
+                                          if (file) setRf({ tracks: rf.tracks.map((t, j) => j === i ? { ...t, lyricsDocName: file.name } : t) });
+                                        }} />
+                                        <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                        {track.lyricsDocName ? (
+                                          <p className="text-sm font-medium text-center" style={{ color: 'var(--text-primary)' }}>{track.lyricsDocName}</p>
+                                        ) : (
+                                          <>
+                                            <p className="text-sm text-center" style={{ color: 'var(--text-primary)' }}>Drag .docx/.txt file here<br/>or</p>
+                                            <span className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all hover:brightness-110" style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)' }}>Select file</span>
+                                          </>
+                                        )}
+                                      </label>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
 
                               {/* Explicit */}
@@ -4344,7 +4788,14 @@ export function ArtistDashboard() {
                                   <button className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:opacity-70" style={{ border: '1px solid var(--border-default)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
                                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> Add more
                                   </button>
-                                  <button className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-70" style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}>
+                                  <button
+                                    onClick={() => {
+                                      const credits = rf.tracks[i].credits;
+                                      setRf({ tracks: rf.tracks.map((t, j) => j === i ? t : { ...t, credits: { ...credits } }) });
+                                    }}
+                                    className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:opacity-70"
+                                    style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: 'transparent' }}
+                                  >
                                     Copy to all tracks
                                   </button>
                                 </div>
@@ -4766,7 +5217,7 @@ export function ArtistDashboard() {
                         <p className="text-sm mb-4" style={{ color: '#3B82F6' }}>{rf.releaseArtists || '[Untitled]'}</p>
 
                         <div className="grid grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
-                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Type: </span><span style={{ color: 'var(--text-primary)' }}>{rf.tracks.length > 1 ? 'Album' : rf.tracks.length === 1 ? 'Single' : '—'}</span></div>
+                          <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Type: </span><span style={{ color: 'var(--text-primary)' }}>{rf.tracks.length >= 7 ? 'Album' : rf.tracks.length >= 4 ? 'EP' : rf.tracks.length >= 1 ? 'Single' : '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Price Band: </span><span style={{ color: 'var(--text-primary)' }}>Budget</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Primary Genre: </span><span style={{ color: 'var(--text-primary)' }}>{rf.genre || '—'}</span></div>
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Date: </span><span style={{ color: 'var(--text-primary)' }}>{rf.releaseDate ? rf.releaseDate : '—'}</span></div>
@@ -4793,13 +5244,19 @@ export function ArtistDashboard() {
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {rf.tracks.map((track, i) => (
+                        {rf.tracks.map((track, i) => {
+                          const mins = Math.floor((track.duration || 0) / 60);
+                          const secs = String(Math.floor((track.duration || 0) % 60)).padStart(2, '0');
+                          const dur = track.duration > 0 ? `${mins}:${secs}` : '—:——';
+                          return (
                           <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                             <span className="w-5 text-center font-medium opacity-50" style={{ color: 'var(--text-primary)' }}>{i + 1}</span>
                             <span className="flex-1 font-medium" style={{ color: 'var(--text-primary)' }}>{track.title || 'Untitled'}</span>
-                            {track.explicit && <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-red-500/20 text-red-400">E</span>}
+                            {track.explicit && <span className="px-1.5 py-0.5 rounded text-xs font-bold" style={{ backgroundColor: 'rgba(239,68,68,0.15)', color: '#f87171' }}>E</span>}
+                            <span className="text-xs font-medium tabular-nums" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{dur}</span>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -4848,17 +5305,39 @@ export function ArtistDashboard() {
                   {releaseStep > 1 ? 'Back' : 'Cancel'}
                 </button>
 
-                {releaseStep < 5 ? (
+                {releaseStep < 5 ? (() => {
+                  const checklistBlocked = releaseStep === 2 && !releaseChecklist.every(Boolean);
+                  return (
+                    <div className="flex flex-col items-end gap-2">
+                      {checklistBlocked && (
+                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Please check all boxes above to continue.</p>
+                      )}
+                      <button
+                        onClick={() => { if (!checklistBlocked) setReleaseStep(s => s + 1); }}
+                        disabled={checklistBlocked}
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                      >
+                        Continue <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                      </button>
+                    </div>
+                  );
+                })() : (
                   <button
-                    onClick={() => setReleaseStep(s => s + 1)}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
-                    style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                  >
-                    Continue <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => { setReleaseStep(1); setUploadingTracks([]); setEditingTrackIndex(null); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
+                    onClick={async () => {
+                      if (draftId) {
+                        await supabase.from('release_drafts').update({ status: 'submitted' }).eq('id', draftId);
+                        await fetchDrafts(currentUserId);
+                      }
+                      setReleaseStep(1);
+                      setUploadingTracks([]);
+                      setEditingTrackIndex(null);
+                      setDraftId(null);
+                      setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
+                      setReleaseChecklist([false, false, false]);
+                      setShowReleaseForm(false);
+                      setMyReleasesTab('complete');
+                    }}
                     className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
                     style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                   >
