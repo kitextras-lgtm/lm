@@ -23,7 +23,7 @@ export function ToggleSwitch({
       case 'rose':
         return 'bg-rose-950';
       case 'white':
-        return 'bg-gray-200';
+        return 'bg-blue-500';
       case 'dark':
       default:
         return 'bg-zinc-900';
@@ -35,9 +35,6 @@ export function ToggleSwitch({
   };
 
   const getBorderStyle = () => {
-    if (backgroundTheme === 'white') {
-      return isActive ? '2px solid #6b7280' : '2px solid #9ca3af';
-    }
     return 'none';
   };
 

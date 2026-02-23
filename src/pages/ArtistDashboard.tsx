@@ -3067,7 +3067,7 @@ export function ArtistDashboard() {
     if (guideArticle && guideSubpage) {
       const cat = guideCategories.find(c => c.id === guideSubpage);
       const article = (cat?.articles as GuideArticle[])?.find(a => a.id === guideArticle);
-      const articleContent: Record<string, { paragraphs: string[]; showImage?: boolean }> = {
+      const articleContent: Record<string, { paragraphs: string[]; numbered?: string[]; notes?: string[]; showImage?: boolean }> = {
         'amazon-artist-id': {
           paragraphs: [
             'Your Amazon Music Artist ID allows us to correctly link your releases to the right artist profile on Amazon Music.',
@@ -3076,6 +3076,70 @@ export function ArtistDashboard() {
             'Be sure to add your Amazon Music Artist ID to your Elevate Artist Dashboard before submitting any new releases to Amazon Music.',
           ],
           showImage: true,
+        },
+        'apple-music-id': {
+          paragraphs: [
+            'Your Apple Music Artist ID is a unique numeric identifier that links your releases to the correct artist profile on Apple Music.',
+            'How to locate your Apple Music ID:',
+          ],
+          numbered: [
+            'Visit your Artist Page on Apple Music and click the three dots beneath your profile image.',
+            'Choose Share, then select Copy Link.',
+            'Paste the copied link into your browser. The series of numbers at the end of the URL is your Apple Music Artist ID.',
+          ],
+          notes: [
+            'Important: Always include your Apple Music Artist ID when uploading new releases to ensure your music is delivered to the correct profile.',
+            'You can add an Apple Music ID for any artist on your account by going to their Artist Dashboard and entering the ID into the Apple Music ID field.',
+            'If you experience any issues adding your Apple Music ID, please contact our support team and we\'ll be happy to help.',
+          ],
+        },
+        'spotify-id': {
+          paragraphs: [
+            'Your Spotify ID is a unique string of characters that identifies your artist profile on Spotify.',
+            'Here\'s how to find it:',
+          ],
+          numbered: [
+            'Head to your Artist Page on Spotify and click on the 3 dots below your artist name.',
+            'Select Share from the menu and click Copy link to artist.',
+            'Paste this link into a browser. Your Spotify ID is the string of characters located between /artist/ and ?',
+          ],
+          notes: [
+            'Note: Make sure you provide your Spotify ID whenever you upload new releases to Spotify. This will make sure your music is always mapped to the correct artist profile.',
+            'You can enter your Spotify ID for any artists on your account by heading to their Artist Dashboard and pasting it into the Spotify ID field.',
+            'If you\'re having trouble with your Spotify ID, please reach out to our support team.',
+          ],
+        },
+        'soundcloud-id': {
+          paragraphs: [
+            'Your SoundCloud ID helps identify your artist profile on SoundCloud.',
+            'To find your ID, just head to your SoundCloud Artist Page and copy the name after the \'/\' as shown below.',
+            'This is your SoundCloud ID.',
+          ],
+          notes: [
+            'Don\'t forget to provide your SoundCloud ID before you upload new releases to SoundCloud. This will make sure your music is always mapped to the correct artist profile.',
+            'You can enter your SoundCloud ID for any artists on your account by heading to their Artist Dashboard and pasting it into the SoundCloud ID field.',
+          ],
+        },
+        'deezer-id': {
+          paragraphs: [
+            'Your Deezer Artist ID helps us to map your music to the right profile on Deezer.',
+            'You\'ll find your Deezer ID at the end of your Deezer Artist Profile URL.',
+          ],
+          notes: [
+            'Make sure to add your Deezer ID on your Artist Dashboard before you upload new releases to Deezer.',
+            'You can submit the Deezer ID of any artists on your account by heading to their Artist Dashboard. Hit the Edit artist profile button and paste it into the Deezer ID field.',
+          ],
+        },
+        'audiomack-id': {
+          paragraphs: [
+            'Your Audiomack Artist ID helps us link your music to the correct artist profile on Audiomack. Here\'s how to find it.',
+            'Log into your Audiomack account or create a new one and select Creator Dashboard from the dropdown arrow at the top right next to your profile picture.',
+            'You\'ll find your Audiomack Artist ID in the top left corner below your name and profile picture. You can click it and select Copy Artist ID.',
+          ],
+          notes: [
+            'Make sure to add your Audiomack ID on your Artist Dashboard.',
+            'You can submit it for any artists on your account by heading to your Artist Dashboard. Hit the Edit artist profile button and paste it into the Audiomack ID field.',
+          ],
         },
       };
       const content = articleContent[guideArticle];
@@ -3090,10 +3154,20 @@ export function ArtistDashboard() {
           {content ? (
             <div className="space-y-4">
               {content.paragraphs.map((para, i) => (
-                <p key={i} className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>{para}</p>
+                <p key={`p-${i}`} className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>{para}</p>
               ))}
+              {content.numbered && content.numbered.length > 0 && (
+                <ol className="space-y-3 pl-1">
+                  {content.numbered.map((step, i) => (
+                    <li key={`n-${i}`} className="flex items-start gap-3">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{i + 1}</span>
+                      <span className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.85 }}>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
               {content.showImage && (
-                <div className="mt-6 rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+                <div className="mt-2 rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
                   <div className="flex items-center gap-3 px-5 py-4" style={{ backgroundColor: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-subtle)' }}>
                     <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
                     <code className="text-xs font-mono" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>
@@ -3106,6 +3180,13 @@ export function ArtistDashboard() {
                     className="w-full object-cover block"
                     onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                   />
+                </div>
+              )}
+              {content.notes && content.notes.length > 0 && (
+                <div className="mt-2 space-y-3 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                  {content.notes.map((note, i) => (
+                    <p key={`note-${i}`} className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{note}</p>
+                  ))}
                 </div>
               )}
             </div>

@@ -82,7 +82,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
           />
           <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
           {user.username && (
-            <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)' }}>@{user.username}</p>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>@{user.username}</p>
           )}
           {user.user_type && (
             <span
@@ -121,7 +121,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium truncate" style={{ color: '#E2E8F0' }}>
+                          <span className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
                             {link.display_name || link.platform}
                           </span>
                           {link.verified && <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: '#22C55E' }} />}
