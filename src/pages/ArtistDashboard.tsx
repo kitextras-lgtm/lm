@@ -3130,7 +3130,7 @@ export function ArtistDashboard() {
           { type: 'p', text: 'Your Audiomack Artist ID helps us link your music to the correct artist profile on Audiomack. Here\'s how to find it.' },
           { type: 'p', text: 'Log into your Audiomack account or create a new one and select Creator Dashboard from the dropdown arrow at the top right next to your profile picture.' },
           { type: 'p', text: 'You\'ll find your Audiomack Artist ID in the top left corner below your name and profile picture. You can click it and select Copy Artist ID.' },
-          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.32.47%20PM.png', alt: 'Audiomack Creator Dashboard showing Artist ID' },
+          { type: 'img', src: '/Screenshot%202026-02-23%20at%201.32.47%C2%A0PM.png', alt: 'Audiomack Creator Dashboard showing Artist ID' },
           { type: 'note', text: 'Make sure to add your Audiomack ID on your Artist Dashboard.' },
           { type: 'note', text: 'You can submit it for any artists on your account by heading to your Artist Dashboard. Hit the Edit artist profile button and paste it into the Audiomack ID field.' },
         ],
@@ -3904,6 +3904,10 @@ export function ArtistDashboard() {
                 onBack={() => setActiveSection('home')}
                 appliedTheme={appliedTheme}
                 userType={userType}
+                guideSubpage={guideSubpage}
+                guideArticle={guideArticle}
+                setGuideSubpage={setGuideSubpage}
+                setGuideArticle={setGuideArticle}
               />
             </div>
 
@@ -3923,6 +3927,10 @@ export function ArtistDashboard() {
                 isMobile={false}
                 appliedTheme={appliedTheme}
                 userType={userType}
+                guideSubpage={guideSubpage}
+                guideArticle={guideArticle}
+                setGuideSubpage={setGuideSubpage}
+                setGuideArticle={setGuideArticle}
               />
             </div>
           </>

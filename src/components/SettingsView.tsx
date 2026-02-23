@@ -25,6 +25,10 @@ interface SettingsViewProps {
   onBack?: () => void;
   userType?: string;
   appliedTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
+  guideSubpage?: string | null;
+  guideArticle?: string | null;
+  setGuideSubpage?: (subpage: string | null) => void;
+  setGuideArticle?: (article: string | null) => void;
 }
 
 // Account Type Icon Component
@@ -119,12 +123,24 @@ export function SettingsView({
   renderLogOut,
   isMobile = false,
   onBack,
-  userType
+  userType,
+  guideSubpage: externalGuideSubpage,
+  guideArticle: externalGuideArticle,
+  setGuideSubpage: externalSetGuideSubpage,
+  setGuideArticle: externalSetGuideArticle
 }: SettingsViewProps) {
-  const [activeSection, setActiveSection] = useState<string | null>(userType === 'admin' ? 'display' : 'personal');
+  // If external guide state is provided, we're in guides mode
+  const shouldShowGuides = externalGuideSubpage !== undefined || externalGuideArticle !== undefined;
+  const [activeSection, setActiveSection] = useState<string | null>(shouldShowGuides ? 'guides' : (userType === 'admin' ? 'display' : 'personal'));
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileDetailView, setMobileDetailView] = useState<string | null>(null);
   const { t } = useTranslation();
+  
+  // Use external guide state if provided, otherwise use internal state
+  const guideSubpage = externalGuideSubpage ?? null;
+  const guideArticle = externalGuideArticle ?? null;
+  const setGuideSubpageFn = externalSetGuideSubpage ?? (() => {});
+  const setGuideArticleFn = externalSetGuideArticle ?? (() => {});
 
   const getSectionTitle = () => {
     switch (activeSection) {

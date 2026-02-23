@@ -231,11 +231,11 @@ function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => vo
                 <button
                   type="button"
                   onClick={() => onOpenArticle(articleIds[key])}
-                  className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all hover:opacity-70"
-                  style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', backgroundColor: 'var(--bg-elevated)' }}
+                  className="flex-shrink-0 transition-all hover:opacity-70"
+                  style={{ color: 'var(--text-primary)' }}
                   title={`How to find your ${labels[key].replace(':', '')}`}
                 >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 </button>
               )}
             </div>
