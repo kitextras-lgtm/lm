@@ -270,7 +270,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
     <div>
       <div className="space-y-4">
         {/* Announcement Type */}
-        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card }}>
           <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Announcement Type
           </label>
@@ -307,7 +307,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         </div>
 
         {/* Send To Toggle */}
-        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card }}>
           <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Recipients
           </label>
@@ -354,7 +354,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
         {/* Target Audience (only shown when broadcasting) */}
         {sendToAll && (
-          <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+          <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card }}>
             <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
               Target Audience
             </label>
@@ -435,7 +435,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
 
         {/* Username Field (only shown when not sending to all) */}
         {!sendToAll && (
-          <div className="rounded-2xl p-6 shadow-xl relative" style={{ backgroundColor: tokens.bg.elevated }}>
+          <div className="rounded-2xl p-6 shadow-xl relative" style={{ backgroundColor: tokens.bg.card }}>
             <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
               Username
             </label>
@@ -475,7 +475,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                 ref={suggestionsRef}
                 className="absolute left-6 right-6 mt-2 rounded-xl shadow-2xl border z-50 max-h-64 overflow-y-auto"
                 style={{
-                  backgroundColor: tokens.bg.elevated,
+                  backgroundColor: tokens.bg.card,
                   borderColor: tokens.border.default,
                 }}
               >
@@ -512,7 +512,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               <div
                 className="absolute left-6 right-6 mt-2 rounded-xl shadow-2xl border p-4 text-center"
                 style={{
-                  backgroundColor: tokens.bg.elevated,
+                  backgroundColor: tokens.bg.card,
                   borderColor: tokens.border.default,
                 }}
               >
@@ -523,7 +523,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         )}
 
         {/* Title Input */}
-        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card }}>
           <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Title
           </label>
@@ -545,7 +545,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
         </div>
 
         {/* Content Textarea */}
-        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card }}>
           <label className="block text-sm font-medium mb-3" style={{ color: tokens.text.primary, opacity: 0.6 }}>
             Content
           </label>
@@ -571,7 +571,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
           <div
             className="rounded-2xl p-4 border"
             style={{
-              backgroundColor: tokens.bg.elevated,
+              backgroundColor: tokens.bg.card,
               borderColor: tokens.border.default,
             }}
           >
@@ -597,7 +597,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
               onClick={onClose}
               className="flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110"
               style={{
-                backgroundColor: tokens.bg.elevated,
+                backgroundColor: tokens.bg.card,
                 color: tokens.text.primary,
                 border: `1px solid ${tokens.border.default}`,
               }}
@@ -657,7 +657,7 @@ export function AnnouncementSender({ adminId, onClose }: AnnouncementSenderProps
                     key={ann.id}
                     className="rounded-xl p-4 border flex items-start gap-4"
                     style={{
-                      backgroundColor: tokens.bg.elevated,
+                      backgroundColor: tokens.bg.card,
                       borderColor: tokens.border.default,
                     }}
                   >

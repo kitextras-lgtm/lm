@@ -60,6 +60,7 @@ interface Application {
   channel_type: string | null;
   channel_description: string | null;
   admin_note: string | null;
+  decline_reason: string | null;
   created_at: string;
 }
 
@@ -81,6 +82,8 @@ export function AdminDashboard() {
   const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [appStatusFilter, setAppStatusFilter] = useState<'pending' | 'approved' | 'denied'>('pending');
   const [actioningId, setActioningId] = useState<string | null>(null);
+  const [declineModalId, setDeclineModalId] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState('');
 
   // Campaign state
   interface SongEntry { title: string; artist: string; url: string; }
@@ -152,7 +155,7 @@ export function AdminDashboard() {
   const [feedbackEntries, setFeedbackEntries] = useState<FeedbackEntry[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [feedbackCategoryFilter, setFeedbackCategoryFilter] = useState<string>('all');
-  const [feedbackStatusFilter, setFeedbackStatusFilter] = useState<string>('pending');
+  const [feedbackStatusFilter, setFeedbackStatusFilter] = useState<string>('all');
   const [updatingFeedbackId, setUpdatingFeedbackId] = useState<string | null>(null);
   const [expandedHomeCard, setExpandedHomeCard] = useState<string | null>(null);
 
@@ -503,11 +506,11 @@ export function AdminDashboard() {
               key={s.label}
               onClick={() => s.filter !== null ? setFeedbackStatusFilter(s.filter) : undefined}
               className="rounded-xl p-4 border text-left transition-all"
-              style={{ backgroundColor: tokens.bg.elevated, borderColor: s.filter !== null && feedbackStatusFilter === s.filter ? 'rgba(255,255,255,0.2)' : tokens.border.subtle, cursor: s.filter !== null ? 'pointer' : 'default' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = s.filter !== null && feedbackStatusFilter === s.filter ? 'rgba(255,255,255,0.2)' : tokens.border.subtle; }}
+              style={{ backgroundColor: tokens.bg.elevated, borderColor: s.filter !== null && feedbackStatusFilter === s.filter ? tokens.border.default : tokens.border.subtle, cursor: s.filter !== null ? 'pointer' : 'default' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = tokens.border.default; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = s.filter !== null && feedbackStatusFilter === s.filter ? tokens.border.default : tokens.border.subtle; }}
               onMouseDown={e => { e.currentTarget.style.borderColor = 'var(--text-primary)'; }}
-              onMouseUp={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+              onMouseUp={e => { e.currentTarget.style.borderColor = tokens.border.default; }}
             >
               <p className="text-2xl font-bold mb-0.5" style={{ color: tokens.text.primary }}>{s.value}</p>
               <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>{s.label}</p>
@@ -638,20 +641,24 @@ export function AdminDashboard() {
     }
   }, [activeSection, fetchFeedback]);
 
-  const handleApplicationAction = async (id: string, action: 'approved' | 'denied') => {
+  const handleApplicationAction = async (id: string, action: 'approved' | 'denied', reason?: string) => {
     setActioningId(id);
     try {
+      const updateData: Record<string, any> = { status: action, reviewed_at: new Date().toISOString() };
+      if (action === 'denied' && reason) updateData.decline_reason = reason;
       const { error } = await supabase
         .from('applications')
-        .update({ status: action, reviewed_at: new Date().toISOString() })
+        .update(updateData)
         .eq('id', id);
       if (!error) {
-        setApplications(prev => prev.map(a => a.id === id ? { ...a, status: action } : a));
+        setApplications(prev => prev.map(a => a.id === id ? { ...a, status: action, decline_reason: reason || null } : a));
       }
     } catch (e) {
       console.error('Error updating application:', e);
     } finally {
       setActioningId(null);
+      setDeclineModalId(null);
+      setDeclineReason('');
     }
   };
 
@@ -1707,17 +1714,23 @@ export function AdminDashboard() {
                                           style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                                         >
                                           {actioningId === app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
-                                          Approve
+                                          Verify
                                         </button>
                                         <button
-                                          onClick={() => handleApplicationAction(app.id, 'denied')}
+                                          onClick={() => { setDeclineModalId(app.id); setDeclineReason(''); }}
                                           disabled={actioningId === app.id}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
                                           style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                                         >
-                                          {actioningId === app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>}
-                                          Deny
+                                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                          Decline
                                         </button>
+                                      </div>
+                                    )}
+                                    {app.status === 'denied' && app.decline_reason && (
+                                      <div className="flex-shrink-0 max-w-[200px]">
+                                        <p className="text-xs font-medium mb-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Decline reason:</p>
+                                        <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary }}>{app.decline_reason}</p>
                                       </div>
                                     )}
                                   </div>
@@ -1730,6 +1743,49 @@ export function AdminDashboard() {
                     </div>
                   );
                 })()}
+
+              {/* Decline with reason modal */}
+              {declineModalId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                  <div className="w-full max-w-md rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold" style={{ color: tokens.text.primary }}>Decline Application</h3>
+                      <button onClick={() => { setDeclineModalId(null); setDeclineReason(''); }} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                      </button>
+                    </div>
+                    <p className="text-sm mb-4" style={{ color: tokens.text.primary, opacity: 0.7 }}>Provide a reason for declining this application. This will be shown to the user on their dashboard.</p>
+                    <textarea
+                      value={declineReason}
+                      onChange={e => setDeclineReason(e.target.value)}
+                      placeholder="e.g. Incomplete information, duplicate account, policy violation..."
+                      rows={4}
+                      className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all resize-none mb-4"
+                      style={{ backgroundColor: tokens.bg.input, border: `1px solid ${tokens.border.default}`, color: tokens.text.primary }}
+                      onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+                      onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                    />
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => { setDeclineModalId(null); setDeclineReason(''); }}
+                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleApplicationAction(declineModalId, 'denied', declineReason.trim() || undefined)}
+                        disabled={actioningId === declineModalId}
+                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
+                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                      >
+                        {actioningId === declineModalId ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : null}
+                        Confirm Decline
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               </div>
             )}
 

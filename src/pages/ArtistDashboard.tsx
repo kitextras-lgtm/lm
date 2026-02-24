@@ -1065,6 +1065,10 @@ export function ArtistDashboard() {
     email: ''
   });
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [declinedArtistApps, setDeclinedArtistApps] = useState<{ id: string; category: string | null; decline_reason: string | null; created_at: string }[]>([]);
+  const [dismissedDeclineIds, setDismissedDeclineIds] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('dismissedDeclineIds') || '[]'); } catch { return []; }
+  });
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -1357,6 +1361,18 @@ export function ArtistDashboard() {
       setCachedProfilePic(null);
     }
   }, [userProfile?.profile_picture_url, cachedProfilePic]);
+
+  // Fetch declined artist applications
+  useEffect(() => {
+    if (!currentUserId) return;
+    supabase
+      .from('applications')
+      .select('id, category, decline_reason, created_at')
+      .eq('user_id', currentUserId)
+      .eq('application_type', 'artist_account')
+      .eq('status', 'denied')
+      .then(({ data }) => { if (data) setDeclinedArtistApps(data); });
+  }, [currentUserId]);
 
   // Refetch conversations when navigating back to home to ensure badge count is up to date
   useEffect(() => {
@@ -3953,6 +3969,43 @@ export function ArtistDashboard() {
             <TotalSongsDistributedCard />
           </div>
         </section>
+
+        {/* Declined artist application notifications */}
+        {declinedArtistApps.filter(a => !dismissedDeclineIds.includes(a.id)).map(app => (
+          <div key={app.id} className="mb-6 rounded-2xl p-5 border animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+                    Artist account <span className="font-bold">{app.category || 'application'}</span> was declined
+                  </p>
+                  {app.decline_reason && (
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>
+                      {app.decline_reason}
+                    </p>
+                  )}
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                    {new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  const newIds = [...dismissedDeclineIds, app.id];
+                  setDismissedDeclineIds(newIds);
+                  localStorage.setItem('dismissedDeclineIds', JSON.stringify(newIds));
+                }}
+                className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        ))}
 
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">

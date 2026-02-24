@@ -377,7 +377,8 @@ export function SettingsView({
           {(userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).map((item, index) => (
             <SettingsMenuItem
               key={item.id}
-              labelKey={item.labelKey}
+              labelKey={(item as any).labelKey}
+              label={(item as any).label}
               IconComponent={item.IconComponent}
               onClick={() => {
                 setActiveSection(item.id);
@@ -421,7 +422,8 @@ export function SettingsView({
           {(userType === 'admin' ? adminSettingsMenuItems : settingsMenuItems).map((item, index) => (
             <SettingsMenuItem
               key={item.id}
-              labelKey={item.labelKey}
+              labelKey={(item as any).labelKey}
+              label={(item as any).label}
               IconComponent={item.IconComponent}
               onClick={() => setActiveSection(item.id)}
               isActive={activeSection === item.id}

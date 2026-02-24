@@ -221,7 +221,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
         <div className="p-5 pb-4" style={{ borderBottom: `1px solid ${tokens.border.default}`, backgroundColor: tokens.bg.primary }}>
           <div className="mb-4">
             <h2 className="text-xl font-semibold mb-1" style={{ color: tokens.text.primary }}>Messages</h2>
-            <p className="text-sm" style={{ color: tokens.text.muted }}>Manage customer conversations</p>
+            <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Manage customer conversations</p>
           </div>
           
           {/* Tabs */}
@@ -312,8 +312,8 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                 <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               </div>
-              <p className="text-sm font-medium" style={{ color: tokens.text.secondary }}>No conversations found</p>
-              <p className="text-xs mt-1" style={{ color: tokens.text.muted }}>Customer conversations will appear here</p>
+              <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>No conversations found</p>
+              <p className="text-xs mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>Customer conversations will appear here</p>
             </div>
           ) : (
             filteredConversations.map((conv) => (
@@ -353,7 +353,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
                 <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               </div>
               <h2 className="text-xl font-semibold mb-2" style={{ color: tokens.text.primary }}>Select a conversation</h2>
-              <p className="text-sm" style={{ color: tokens.text.secondary }}>Choose a customer from the list to start chatting</p>
+              <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Choose a customer from the list to start chatting</p>
             </div>
           </div>
         )}
