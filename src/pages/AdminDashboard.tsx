@@ -1209,7 +1209,7 @@ export function AdminDashboard() {
                           </button>
                           {payTypeDropdownOpen && (
                             <div className="absolute z-20 w-full mt-1 rounded-lg overflow-hidden shadow-xl" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}>
-                              {['Per view', 'Flat fee', 'Revenue share', 'Varied'].map(opt => (
+                              {['Per view', 'Varied'].map(opt => (
                                 <button
                                   key={opt}
                                   type="button"
@@ -1439,18 +1439,24 @@ export function AdminDashboard() {
                                       key={u.id}
                                       className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:brightness-105 transition-all"
                                       style={{ backgroundColor: tokens.bg.elevated, borderBottom: `1px solid ${tokens.border.subtle}` }}
+                                      onClick={() => setCampaignForm(f => ({
+                                        ...f,
+                                        assigned_user_ids: f.assigned_user_ids.includes(u.id)
+                                          ? f.assigned_user_ids.filter(id => id !== u.id)
+                                          : [...f.assigned_user_ids, u.id]
+                                      }))}
                                     >
-                                      <input
-                                        type="checkbox"
-                                        checked={campaignForm.assigned_user_ids.includes(u.id)}
-                                        onChange={e => setCampaignForm(f => ({
-                                          ...f,
-                                          assigned_user_ids: e.target.checked
-                                            ? [...f.assigned_user_ids, u.id]
-                                            : f.assigned_user_ids.filter(id => id !== u.id)
-                                        }))}
-                                        className="w-3.5 h-3.5 rounded flex-shrink-0"
-                                      />
+                                      <div
+                                        className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0 transition-all"
+                                        style={{
+                                          backgroundColor: campaignForm.assigned_user_ids.includes(u.id) ? tokens.text.primary : 'transparent',
+                                          border: `1px solid ${campaignForm.assigned_user_ids.includes(u.id) ? tokens.text.primary : tokens.border.default}`
+                                        }}
+                                      >
+                                        {campaignForm.assigned_user_ids.includes(u.id) && (
+                                          <svg className="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.bg.primary }}><path d="M20 6L9 17l-5-5"/></svg>
+                                        )}
+                                      </div>
                                       <div className="min-w-0 flex-1">
                                         <p className="text-xs font-medium truncate" style={{ color: tokens.text.primary }}>{u.full_name || u.username || u.email}</p>
                                         <p className="text-xs truncate" style={{ color: tokens.text.primary }}>{u.email}</p>

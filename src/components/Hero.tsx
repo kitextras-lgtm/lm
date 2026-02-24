@@ -1,29 +1,34 @@
-import { useState, useEffect, Suspense, memo } from 'react';
+import { useState, useEffect, useRef, Suspense, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SplineViewer = memo(() => {
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const splineRef = useRef<any>(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
-    
-    // Set loaded immediately since script is preloaded
-    setSplineLoaded(true);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    const el = splineRef.current;
+    if (!el) return;
+    const onLoad = () => setSplineLoaded(true);
+    el.addEventListener('load', onLoad);
+    // Fallback: if already loaded (cached), fire immediately
+    if (el.shadowRoot) setSplineLoaded(true);
+    return () => el.removeEventListener('load', onLoad);
+  }, [isMobile]);
 
   return (
     <>
       {isMobile ? (
         <spline-viewer
+          ref={splineRef}
           key="mobile-spline"
           url="https://prod.spline.design/j6Vui4oX3PbVT0Bv/scene.splinecode"
-          loading="eager"
           style={{
             position: 'absolute',
             top: '72%',
@@ -41,9 +46,9 @@ const SplineViewer = memo(() => {
         />
       ) : (
         <spline-viewer
+          ref={splineRef}
           key="desktop-spline"
           url="https://prod.spline.design/LrLPFXR2ZuBzIAV8/scene.splinecode"
-          loading="eager"
           style={{
             position: 'absolute',
             top: 0,
