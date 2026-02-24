@@ -853,12 +853,16 @@ export function AdminDashboard() {
     });
   };
 
-  if (isLoading || !admin) {
+  if (isLoading && !admin) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: tokens.bg.primary }}>
         <AnimatedBarsLoader text="Loading dashboard..." />
       </div>
     );
+  }
+
+  if (!admin) {
+    return null;
   }
 
   return (

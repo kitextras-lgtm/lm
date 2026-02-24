@@ -135,12 +135,18 @@ Deno.serve(async (req: Request) => {
     }
 
     // Side-effect: if approving an artist_account, mark their Artist social link as verified
+    // and update their user_type to 'artist'
     if (action === "approved" && app.application_type === "artist_account" && app.user_id) {
       await supabase
         .from("social_links")
         .update({ verified: true })
         .eq("user_id", app.user_id)
         .eq("platform", "Artist");
+
+      await supabase
+        .from("users")
+        .update({ user_type: "artist" })
+        .eq("id", app.user_id);
     }
 
     // Audit log

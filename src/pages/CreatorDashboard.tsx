@@ -842,7 +842,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isTipaltiConnected, setIsTipaltiConnected] = useState(false);
-  const [expandedOppsCard, setExpandedOppsCard] = useState<string | null>('campaigns');
+  const [expandedOppsCard, setExpandedOppsCard] = useState<string | null>(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   
   // Talent filter states
@@ -3446,7 +3446,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     </button>
                     {expandedOppsCard === 'detection' && (
                       <div className="px-5 pb-5 pt-3" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
-                        <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
+                        <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Some use case scenarios are Youtubers, Live Streamers, Movie Studios.</p>
+                        <div className="rounded-lg px-4 py-3 mb-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                          <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.9 }}>Disclaimer</p>
+                          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>We only accept high volume clients that have content susceptible to being stolen.</p>
+                        </div>
+                        <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>If you think you are a good fit, apply below.</p>
                         <div className="space-y-2 mb-4">
                           {[{ step: '1', text: 'We scan platforms for unauthorized copies of your content' }, { step: '2', text: 'Detected reuploads are automatically claimed on your behalf' }, { step: '3', text: 'Revenue from those views flows directly to your account' }].map(({ step, text }) => (
                             <div key={step} className="flex items-start gap-3">
@@ -3459,7 +3465,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110"
                           style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                         >
-                          Get Started
+                          Apply Now
                         </button>
                       </div>
                     )}
