@@ -419,7 +419,7 @@ export function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('applications')
-        .select('*, users!applications_user_id_fkey(full_name, username, email, first_name, last_name)')
+        .select('*, users(full_name, username, email, first_name, last_name)')
         .order('created_at', { ascending: false });
       if (!error) {
         const enriched = (data || []).map((app: any) => {
@@ -1854,8 +1854,8 @@ export function AdminDashboard() {
 
               {/* Decline with reason modal */}
               {declineModalId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                  <div className="w-full max-w-md rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}>
+                  <div className="w-full max-w-md rounded-2xl p-6 animate-modal-in" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}`, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-bold" style={{ color: tokens.text.primary }}>Decline Application</h3>
                       <button onClick={() => { setDeclineModalId(null); setDeclineReason(''); }} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>
