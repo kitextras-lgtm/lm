@@ -843,6 +843,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isTipaltiConnected, setIsTipaltiConnected] = useState(false);
+  const [expandedOppsCard, setExpandedOppsCard] = useState<string | null>('campaigns');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   
   // Talent filter states
@@ -3319,7 +3320,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             ) : homeSubPage === 'opportunities' ? (
               <>
                 <div className="mb-6">
-                  <button 
+                  <button
                     onClick={() => setHomeSubPage('main')}
                     className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
                     style={{ color: 'var(--text-primary)' }}
@@ -3331,173 +3332,153 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   </button>
                 </div>
 
-                <section className="mb-10 sm:mb-20">
-                  <div className="mb-5 sm:mb-7">
-                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</h2>
-                    <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaignDesc')}</p>
-                  </div>
+                <div className="mb-8">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</h1>
+                  <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{t('opportunities.campaignDesc')}</p>
+                </div>
 
-                  {campaignsLoading ? (
-                    <div className="flex items-center justify-center py-16">
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.12em' }}>Your Opportunities</p>
+
+                  {/* Campaigns */}
+                  <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'campaigns' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
+                    <button
+                      onClick={() => setExpandedOppsCard(expandedOppsCard === 'campaigns' ? null : 'campaigns')}
+                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      style={{ backgroundColor: 'var(--bg-card)' }}
+                    >
                       <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '300ms' }} />
+                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{assignedCampaigns.length} campaign{assignedCampaigns.length !== 1 ? 's' : ''} assigned</p>
+                        </div>
                       </div>
-                    </div>
-                  ) : assignedCampaigns.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-16 rounded-2xl" style={{ border: '1px dashed rgba(255,255,255,0.12)' }}>
-                      <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                        <svg className="w-7 h-7" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-                        </svg>
-                      </div>
-                      <p className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No campaigns available</p>
-                      <p className="text-sm text-center max-w-xs" style={{ color: 'var(--text-primary)' }}>Campaigns will appear here once they've been assigned to your account.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {assignedCampaigns.map(c => {
-                        const endsIn = c.ends_at ? new Date(c.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Ongoing';
-                        const isActive = c.status === 'active';
-                        const platforms = (c.platforms || []).map((p: string) => p.toLowerCase());
-                        const campaignData: CampaignData = {
-                          id: c.id,
-                          name: c.name,
-                          timeAgo: new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                          title: c.description || '',
-                          description: c.description || '',
-                          status: isActive ? 'Active' : 'Ended',
-                          endsIn,
-                          language: c.language || 'English',
-                          platforms: platforms as any,
-                          payType: c.pay_type || '',
-                          payout: c.payout || '',
-                          rules: c.rules || [],
-                        };
-                        return (
-                          <div
-                            key={c.id}
-                            className="rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:brightness-110"
-                            style={{ backgroundColor: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.1)' }}
-                            onClick={() => setSelectedCampaign(campaignData)}
-                          >
-                            {/* Card header */}
-                            <div className="p-5 pb-4">
-                              <div className="flex items-start gap-4">
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <h4 className="font-bold text-base truncate" style={{ color: 'var(--text-primary)' }}>{c.name}</h4>
-                                  </div>
-                                  <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{campaignData.timeAgo}</p>
-                                  {(c.bio || c.description) && (
-                                    <p className="text-sm mt-1 line-clamp-2" style={{ color: 'var(--text-primary)' }}>{c.bio || c.description}</p>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Stats row */}
-                            <div className="mx-5 mb-4 rounded-xl py-3 px-2" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                              <div className="flex items-center">
-                                <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                  <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Ends</p>
-                                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{endsIn}</p>
-                                </div>
-                                <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                  <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Language</p>
-                                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.language || 'English'}</p>
-                                </div>
-                                <div className="flex-1 text-center" style={{ borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                  <p className="text-xs mb-1.5" style={{ color: 'var(--text-primary)' }}>Platforms</p>
-                                  <div className="flex items-center justify-center gap-1.5">
-                                    {platforms.includes('instagram') && <div className="w-4 h-4"><InstagramIconAnimated isHovered={true} /></div>}
-                                    {platforms.includes('tiktok') && <div className="w-4 h-4"><TikTokIcon isHovered={true} /></div>}
-                                    {platforms.includes('youtube') && <div className="w-4 h-4"><YouTubeIcon isHovered={true} /></div>}
-                                    {platforms.length === 0 && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>—</span>}
-                                  </div>
-                                </div>
-                                <div className="flex-1 text-center" style={c.payout ? { borderRight: '1px solid rgba(255,255,255,0.1)' } : {}}>
-                                  <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Pay Type</p>
-                                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.pay_type || '—'}</p>
-                                </div>
-                                {c.payout && (
-                                  <div className="flex-1 text-center">
-                                    <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Payout</p>
-                                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{c.payout}</p>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Join button */}
-                            <div className="px-5 pb-5">
-                              <button
-                                className="w-full py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
-                                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                                onClick={(e) => { e.stopPropagation(); setSelectedCampaign(campaignData); }}
-                              >
-                                View campaign
-                              </button>
+                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    {expandedOppsCard === 'campaigns' && (
+                      <div className="px-5 pb-5 pt-2" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                        {campaignsLoading ? (
+                          <div className="flex items-center justify-center py-10">
+                            <div className="flex items-center gap-3">
+                              <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '0ms' }} />
+                              <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '150ms' }} />
+                              <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '300ms' }} />
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </section>
-
-                <section className="mb-10 sm:mb-20">
-                  <div className="mb-5 sm:mb-7">
-                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('opportunities.enrolledCampaigns')}</h2>
+                        ) : assignedCampaigns.length === 0 ? (
+                          <div className="text-center py-10">
+                            <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No campaigns available</p>
+                            <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Campaigns will appear here once assigned to your account.</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 mt-2">
+                            {assignedCampaigns.map(c => {
+                              const endsIn = c.ends_at ? new Date(c.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Ongoing';
+                              const isActive = c.status === 'active';
+                              const platforms = (c.platforms || []).map((p: string) => p.toLowerCase());
+                              const campaignData: CampaignData = { id: c.id, name: c.name, timeAgo: new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), title: c.description || '', description: c.description || '', status: isActive ? 'Active' : 'Ended', endsIn, language: c.language || 'English', platforms: platforms as any, payType: c.pay_type || '', payout: c.payout || '', rules: c.rules || [] };
+                              return (
+                                <div key={c.id} className="rounded-xl p-4 cursor-pointer transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }} onClick={() => setSelectedCampaign(campaignData)}>
+                                  <div className="flex items-center justify-between mb-1.5">
+                                    <h4 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{c.name}</h4>
+                                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: isActive ? 1 : 0.5 }}>{isActive ? 'Active' : 'Ended'}</span>
+                                  </div>
+                                  {(c.bio || c.description) && <p className="text-xs mb-2 line-clamp-1" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{c.bio || c.description}</p>}
+                                  <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>
+                                    <span>Ends {endsIn}</span>
+                                    {c.pay_type && <span>{c.pay_type}{c.payout ? ` · ${c.payout}` : ''}</span>}
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      {platforms.includes('instagram') && <div className="w-3.5 h-3.5"><InstagramIconAnimated isHovered={true} /></div>}
+                                      {platforms.includes('tiktok') && <div className="w-3.5 h-3.5"><TikTokIcon isHovered={true} /></div>}
+                                      {platforms.includes('youtube') && <div className="w-3.5 h-3.5"><YouTubeIcon isHovered={true} /></div>}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="text-center py-12">
-                    <p className="text-sm sm:text-base font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('opportunities.noEnrolledCampaigns')}</p>
-                    <p className="text-xs sm:text-sm" style={{ color: 'var(--text-primary)' }}>{t('opportunities.browseOpportunities')}</p>
+                  {/* Enrolled Campaigns */}
+                  <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'enrolled' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
+                    <button
+                      onClick={() => setExpandedOppsCard(expandedOppsCard === 'enrolled' ? null : 'enrolled')}
+                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      style={{ backgroundColor: 'var(--bg-card)' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.enrolledCampaigns')}</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>0 enrolled</p>
+                        </div>
+                      </div>
+                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'enrolled' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    {expandedOppsCard === 'enrolled' && (
+                      <div className="px-5 pb-5 pt-2" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                        <div className="text-center py-10">
+                          <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('opportunities.noEnrolledCampaigns')}</p>
+                          <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{t('opportunities.browseOpportunities')}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </section>
 
-                <section className="mb-10 sm:mb-20">
-                  <div className="mb-5 sm:mb-7">
-                    <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Content Detection</h2>
-                    <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Convert unauthorized re uploads into measurable revenue.</p>
+                  {/* Content Detection */}
+                  <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'detection' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
+                    <button
+                      onClick={() => setExpandedOppsCard(expandedOppsCard === 'detection' ? null : 'detection')}
+                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      style={{ backgroundColor: 'var(--bg-card)' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Content Detection</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>0 detected · $0 revenue</p>
+                        </div>
+                      </div>
+                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'detection' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    {expandedOppsCard === 'detection' && (
+                      <div className="px-5 pb-5 pt-3" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          <div className="rounded-xl px-3 py-3 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Detected</p>
+                          </div>
+                          <div className="rounded-xl px-3 py-3 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Monetized</p>
+                          </div>
+                          <div className="rounded-xl px-3 py-3 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>$0</p>
+                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Revenue</p>
+                          </div>
+                        </div>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
+                        <div className="space-y-2">
+                          {[{ step: '1', text: 'We scan platforms for unauthorized copies of your content' }, { step: '2', text: 'Detected reuploads are automatically claimed on your behalf' }, { step: '3', text: 'Revenue from those views flows directly to your account' }].map(({ step, text }) => (
+                            <div key={step} className="flex items-start gap-3">
+                              <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                              <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="rounded-2xl p-6" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                      <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
-                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Detected</p>
-                      </div>
-                      <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
-                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Monetized</p>
-                      </div>
-                      <div className="rounded-xl px-4 py-3 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                        <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>$0</p>
-                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Revenue</p>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl px-4 py-4 flex items-center gap-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>
-                          <path d="M12 9v4" />
-                          <path d="M12 17h.01" />
-                          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Unauthorized reupload detected</p>
-                        <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Claimed & monetized automatically</p>
-                      </div>
-                      <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>+$420</p>
-                    </div>
-                  </div>
-                </section>
+                </div>
               </>
-            ) : homeSubPage === 'analytics' ? (
+
+                        ) : homeSubPage === 'analytics' ? (
               <>
                 <div className="mb-6">
                   <button 

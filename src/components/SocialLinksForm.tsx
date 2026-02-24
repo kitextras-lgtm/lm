@@ -192,7 +192,7 @@ function ArtistRow({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imagePreview: string, formData?: Record<string, string>) => void; onOpenArticle?: (articleId: string) => void }) {
+function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imageFile: File | null, imagePreview: string, formData?: Record<string, string>) => void; onOpenArticle?: (articleId: string) => void }) {
   const [af, setAfState] = useState({ name: '', imageFile: null as File | null, imagePreview: '', appleMusicId: '', spotifyId: '', soundcloudId: '', deezerId: '', audiomackId: '', amazonId: '', type: 'Solo Artist', role: 'Artist role', genre: 'Select a main genre', bio: '', country: 'United States', websiteUrl: '', facebookUrl: '', xHandle: '', instagramHandle: '', youtubeChannel: '', tiktokUsername: '' });
   const setAf = (p: Partial<typeof af>) => setAfState(f => ({ ...f, ...p }));
   return (
@@ -264,7 +264,7 @@ function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => vo
       })}
 
       <div className="flex justify-end pt-2">
-        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imagePreview, { bio: af.bio, country: af.country })}>
+        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imageFile, af.imagePreview, { bio: af.bio, country: af.country, type: af.type, role: af.role, genre: af.genre, websiteUrl: af.websiteUrl, facebookUrl: af.facebookUrl, xHandle: af.xHandle, instagramHandle: af.instagramHandle, youtubeChannel: af.youtubeChannel, tiktokUsername: af.tiktokUsername, appleMusicId: af.appleMusicId, spotifyId: af.spotifyId, soundcloudId: af.soundcloudId, deezerId: af.deezerId, audiomackId: af.audiomackId, amazonId: af.amazonId })}>
           Create Artist
         </button>
       </div>
@@ -623,7 +623,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
         <AddArtistForm
           onClose={() => setIsAdding(false)}
           onOpenArticle={onOpenArticle}
-          onSubmit={async (name, imagePreview, formData) => {
+          onSubmit={async (name, imageFile, imagePreview, formData) => {
             const newArtist: SocialLink = {
               id: `local-${Date.now()}`,
               platform: 'Artist',
@@ -642,6 +642,19 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                   .select('email, username, first_name, last_name')
                   .eq('id', userId)
                   .single();
+                // Upload artist image if provided
+                let uploadedImageUrl: string | null = null;
+                if (imageFile) {
+                  const ext = imageFile.name.split('.').pop() || 'jpg';
+                  const path = `artist-images/${userId}-${Date.now()}.${ext}`;
+                  const { error: uploadError } = await supabase.storage
+                    .from('avatars')
+                    .upload(path, imageFile, { upsert: true });
+                  if (!uploadError) {
+                    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
+                    uploadedImageUrl = urlData?.publicUrl || null;
+                  }
+                }
                 await supabase.from('applications').insert({
                   user_id: userId,
                   application_type: 'artist_account',
@@ -652,6 +665,22 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                   category: name || null,
                   bio: formData?.bio || null,
                   country: formData?.country || null,
+                  image_url: uploadedImageUrl,
+                  artist_type: formData?.type || null,
+                  artist_role: formData?.role || null,
+                  artist_genre: formData?.genre || null,
+                  website_url: formData?.websiteUrl || null,
+                  facebook_url: formData?.facebookUrl || null,
+                  x_handle: formData?.xHandle || null,
+                  instagram_handle: formData?.instagramHandle || null,
+                  youtube_channel: formData?.youtubeChannel || null,
+                  tiktok_username: formData?.tiktokUsername || null,
+                  apple_music_id: formData?.appleMusicId || null,
+                  spotify_id: formData?.spotifyId || null,
+                  soundcloud_id: formData?.soundcloudId || null,
+                  deezer_id: formData?.deezerId || null,
+                  audiomack_id: formData?.audiomackId || null,
+                  amazon_id: formData?.amazonId || null,
                   created_at: new Date().toISOString(),
                 });
               } catch (e) {

@@ -62,6 +62,22 @@ interface Application {
   admin_note: string | null;
   decline_reason: string | null;
   created_at: string;
+  image_url: string | null;
+  artist_type: string | null;
+  artist_role: string | null;
+  artist_genre: string | null;
+  website_url: string | null;
+  facebook_url: string | null;
+  x_handle: string | null;
+  instagram_handle: string | null;
+  youtube_channel: string | null;
+  tiktok_username: string | null;
+  apple_music_id: string | null;
+  spotify_id: string | null;
+  soundcloud_id: string | null;
+  deezer_id: string | null;
+  audiomack_id: string | null;
+  amazon_id: string | null;
 }
 
 export function AdminDashboard() {
@@ -84,6 +100,7 @@ export function AdminDashboard() {
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [declineModalId, setDeclineModalId] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState('');
+  const [expandedAppId, setExpandedAppId] = useState<string | null>(null);
 
   // Campaign state
   interface SongEntry { title: string; artist: string; url: string; }
@@ -415,6 +432,14 @@ export function AdminDashboard() {
   useEffect(() => {
     if (activeSection === 'applications') {
       fetchApplications();
+      // Real-time subscription
+      const channel = supabase
+        .channel('applications-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, () => {
+          fetchApplications();
+        })
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
     }
   }, [activeSection, fetchApplications]);
 
@@ -1581,7 +1606,16 @@ export function AdminDashboard() {
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>Applications</h2>
                     <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.6 }}>Freelancer onboarding, creator verification, and artist account requests</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchApplications}
+                      disabled={applicationsLoading}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                      style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                    >
+                      <svg className={`w-3.5 h-3.5 ${applicationsLoading ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                      Refresh
+                    </button>
                     {(['pending', 'approved', 'denied'] as const).map(s => (
                       <button
                         key={s}
@@ -1666,10 +1700,73 @@ export function AdminDashboard() {
                                       {app.email && <p className="text-xs mb-2" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.email}</p>}
 
                                       {app.application_type === 'artist_account' && (
-                                        <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2">
-                                          {app.category && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.category}</span></div>}
-                                          {app.country && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country}</span></div>}
-                                          {app.bio && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                        <div className="mt-3">
+                                          {/* Toggle expand */}
+                                          <button
+                                            onClick={() => setExpandedAppId(expandedAppId === app.id ? null : app.id)}
+                                            className="flex items-center gap-1.5 text-xs font-medium mb-3 transition-all hover:opacity-80"
+                                            style={{ color: tokens.text.primary, opacity: 0.6 }}
+                                          >
+                                            <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedAppId === app.id ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                            {expandedAppId === app.id ? 'Hide details' : 'View full application'}
+                                          </button>
+                                          {/* Always-visible summary */}
+                                          <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                                            {app.category && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.category}</span></div>}
+                                            {app.country && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country}</span></div>}
+                                            {app.bio && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                          </div>
+                                          {/* Expanded full details */}
+                                          {expandedAppId === app.id && (
+                                            <div className="mt-4 rounded-xl p-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                              {/* Artist image */}
+                                              {app.image_url && (
+                                                <div className="mb-4 flex items-center gap-4">
+                                                  <img src={app.image_url} alt={app.category || 'Artist'} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                                                  <div>
+                                                    <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>{app.category || 'Unknown Artist'}</p>
+                                                    {app.artist_type && <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.artist_type}{app.artist_role ? ` · ${app.artist_role}` : ''}</p>}
+                                                    {app.artist_genre && <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.artist_genre}</p>}
+                                                  </div>
+                                                </div>
+                                              )}
+                                              {!app.image_url && (app.artist_type || app.artist_role || app.artist_genre) && (
+                                                <div className="mb-3 grid grid-cols-2 gap-x-6 gap-y-1">
+                                                  {app.artist_type && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_type}</span></div>}
+                                                  {app.artist_role && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Role: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_role}</span></div>}
+                                                  {app.artist_genre && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_genre}</span></div>}
+                                                </div>
+                                              )}
+                                              {/* Platform IDs */}
+                                              {(app.spotify_id || app.apple_music_id || app.soundcloud_id || app.deezer_id || app.audiomack_id || app.amazon_id) && (
+                                                <div className="mb-3">
+                                                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Platform IDs</p>
+                                                  <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                                                    {app.spotify_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Spotify: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.spotify_id}</span></div>}
+                                                    {app.apple_music_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Apple Music: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.apple_music_id}</span></div>}
+                                                    {app.soundcloud_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>SoundCloud: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.soundcloud_id}</span></div>}
+                                                    {app.deezer_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Deezer: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.deezer_id}</span></div>}
+                                                    {app.audiomack_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Audiomack: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.audiomack_id}</span></div>}
+                                                    {app.amazon_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Amazon: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.amazon_id}</span></div>}
+                                                  </div>
+                                                </div>
+                                              )}
+                                              {/* Social links */}
+                                              {(app.instagram_handle || app.youtube_channel || app.tiktok_username || app.x_handle || app.facebook_url || app.website_url) && (
+                                                <div>
+                                                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Social Links</p>
+                                                  <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                                                    {app.instagram_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Instagram: </span><span className="text-xs" style={{ color: tokens.text.primary }}>@{app.instagram_handle}</span></div>}
+                                                    {app.youtube_channel && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>YouTube: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.youtube_channel}</span></div>}
+                                                    {app.tiktok_username && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>TikTok: </span><span className="text-xs" style={{ color: tokens.text.primary }}>@{app.tiktok_username}</span></div>}
+                                                    {app.x_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>X: </span><span className="text-xs" style={{ color: tokens.text.primary }}>@{app.x_handle}</span></div>}
+                                                    {app.facebook_url && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Facebook: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.facebook_url}</span></div>}
+                                                    {app.website_url && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Website: </span><a href={app.website_url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.website_url}</a></div>}
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </div>
+                                          )}
                                         </div>
                                       )}
 
