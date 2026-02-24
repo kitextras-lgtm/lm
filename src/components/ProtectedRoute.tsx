@@ -16,56 +16,57 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check localStorage first (faster) - this works during onboarding
-        const verifiedUserId = localStorage.getItem('verifiedUserId');
-        const verifiedEmail = localStorage.getItem('verifiedEmail');
-        
-        console.log('ProtectedRoute - Checking auth:', {
-          verifiedUserId: verifiedUserId ? verifiedUserId.substring(0, 8) + '...' : null,
-          verifiedEmail: verifiedEmail ? verifiedEmail.substring(0, 10) + '...' : null
-        });
-        
-        if (verifiedUserId) {
-          // User has verifiedUserId from OTP - allow access (even without session)
-          console.log('✅ ProtectedRoute - User authenticated via localStorage');
+        // 1. Try Supabase session first (most secure — JWT validated server-side)
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
           setIsAuthenticated(true);
           setIsLoading(false);
           return;
         }
-        
-        if (verifiedEmail) {
-          // Try to verify with Supabase auth
-          const { data: { user } } = await supabase.auth.getUser();
-          
-          if (user) {
-            console.log('✅ ProtectedRoute - User authenticated via Supabase session');
+
+        // 2. Fallback: verifiedUserId from OTP flow — but VERIFY it exists in DB
+        const verifiedUserId = localStorage.getItem('verifiedUserId');
+        if (verifiedUserId) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', verifiedUserId)
+            .maybeSingle();
+
+          if (userData?.id) {
             setIsAuthenticated(true);
           } else {
-            // Check if user exists in database by email
-            const { data: userData } = await supabase
-              .from('users')
-              .select('id')
-              .eq('email', verifiedEmail)
-              .maybeSingle();
-            
-            if (userData?.id) {
-              // Store userId for future use
-              localStorage.setItem('verifiedUserId', userData.id);
-              console.log('✅ ProtectedRoute - Found user by email, authenticated');
-              setIsAuthenticated(true);
-            } else {
-              console.warn('⚠️ ProtectedRoute - No user found, not authenticated');
-              setIsAuthenticated(false);
-            }
+            // Invalid/stale userId — clear it
+            localStorage.removeItem('verifiedUserId');
+            setIsAuthenticated(false);
           }
-        } else {
-          // Check Supabase session as fallback
-          const { data: { session } } = await supabase.auth.getSession();
-          console.log('ProtectedRoute - Session check:', !!session);
-          setIsAuthenticated(!!session);
+          setIsLoading(false);
+          return;
         }
+
+        // 3. Fallback: verifiedEmail — verify user exists in DB
+        const verifiedEmail = localStorage.getItem('verifiedEmail');
+        if (verifiedEmail) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', verifiedEmail)
+            .maybeSingle();
+
+          if (userData?.id) {
+            localStorage.setItem('verifiedUserId', userData.id);
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
+          setIsLoading(false);
+          return;
+        }
+
+        // 4. No credentials at all
+        setIsAuthenticated(false);
       } catch (error) {
-        console.error('❌ ProtectedRoute - Auth check error:', error);
+        console.error('ProtectedRoute auth check error:', error);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);

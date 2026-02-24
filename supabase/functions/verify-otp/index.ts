@@ -32,8 +32,7 @@ Deno.serve(async (req: Request) => {
       return new Response(
         JSON.stringify({
           success: false,
-          message: 'Server configuration error. Please contact support.',
-          debug: { hasUrl: !!supabaseUrl, hasKey: !!serviceRoleKey }
+          message: 'Server configuration error. Please contact support.'
         }),
         {
           status: 500,
@@ -653,11 +652,7 @@ Deno.serve(async (req: Request) => {
               return new Response(
                 JSON.stringify({
                   success: false,
-                  message: userFacingMessage,
-                  debug: {
-                    status: createUserResponse.status,
-                    error: errorDetails?.error || errorDetails?.message || responseText?.substring(0, 200)
-                  }
+                  message: userFacingMessage
                 }),
                 {
                   status: 500,
@@ -807,7 +802,7 @@ Deno.serve(async (req: Request) => {
           return new Response(
             JSON.stringify({ 
               success: false, 
-              message: `Failed to create account: ${fetchError.message || 'Unknown error'}` 
+              message: 'Failed to create account. Please try again.' 
             }),
             {
               status: 500,
@@ -890,7 +885,7 @@ Deno.serve(async (req: Request) => {
         return new Response(
           JSON.stringify({ 
             success: false, 
-            message: `Failed to create user account: ${usersError.message}` 
+            message: 'Failed to create user account. Please try again.' 
           }),
           {
             status: 500,
@@ -1094,8 +1089,7 @@ Deno.serve(async (req: Request) => {
             return new Response(
               JSON.stringify({ 
                 success: false, 
-                message: 'No account found. Please sign up first.',
-                debug: 'Failed to parse auth.users response'
+                message: 'No account found. Please sign up first.'
               }),
               {
                 status: 400,
@@ -1119,8 +1113,7 @@ Deno.serve(async (req: Request) => {
             return new Response(
               JSON.stringify({ 
                 success: false, 
-                message: 'No account found. Please sign up first.',
-                debug: 'User found in users table but not in auth.users'
+                message: 'No account found. Please sign up first.'
               }),
               {
                 status: 400,
@@ -1139,8 +1132,7 @@ Deno.serve(async (req: Request) => {
           return new Response(
             JSON.stringify({ 
               success: false, 
-              message: 'No account found. Please sign up first.',
-              debug: 'User found in users table but auth.users verification failed'
+              message: 'No account found. Please sign up first.'
             }),
             {
               status: 400,
@@ -1172,8 +1164,7 @@ Deno.serve(async (req: Request) => {
           return new Response(
             JSON.stringify({ 
               success: false, 
-              message: 'No account found. Please sign up first.',
-              debug: `Email not found in users table and auth API returned ${getUserResponse.status}`
+              message: 'No account found. Please sign up first.'
             }),
             {
               status: 400,
@@ -1194,8 +1185,7 @@ Deno.serve(async (req: Request) => {
           return new Response(
             JSON.stringify({ 
               success: false, 
-              message: 'No account found. Please sign up first.',
-              debug: 'Failed to parse auth API response'
+              message: 'No account found. Please sign up first.'
             }),
             {
               status: 400,
@@ -1212,8 +1202,7 @@ Deno.serve(async (req: Request) => {
           return new Response(
             JSON.stringify({ 
               success: false, 
-              message: 'No account found. Please sign up first.',
-              debug: 'Email not found in users table or auth.users'
+              message: 'No account found. Please sign up first.'
             }),
             {
               status: 400,
@@ -1242,8 +1231,7 @@ Deno.serve(async (req: Request) => {
           return new Response(
             JSON.stringify({ 
               success: false, 
-              message: 'No account found. Please sign up first.',
-              debug: `Email ${email} not found. Auth API returned different email(s) - possible email collision`
+              message: 'No account found. Please sign up first.'
             }),
             {
               status: 400,

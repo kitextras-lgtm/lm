@@ -11,17 +11,17 @@
  * If .env is not set, fallback values are used (for development only)
  */
 
-// Supabase Configuration
-export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://hlcpoqxzqgbghsadouef.supabase.co';
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsY3BvcXh6cWdiZ2hzYWRvdWVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMzI2MTUsImV4cCI6MjA4MTcwODYxNX0.Qhbzj0g5FbpW0wgtGsJBF2AV0HqL-9X2S2nGL64KCYA';
+// Supabase Configuration — no hardcoded fallbacks (security requirement)
+export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-// Validate configuration on load
+// Validate configuration on load — fail explicitly if env vars are missing
 if (!SUPABASE_URL || SUPABASE_URL === 'undefined') {
-  console.error('❌ VITE_SUPABASE_URL is not set! Check your .env file.');
+  throw new Error('VITE_SUPABASE_URL is required. Set it in your .env file.');
 }
 
 if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'undefined') {
-  console.error('❌ VITE_SUPABASE_ANON_KEY is not set! Check your .env file.');
+  throw new Error('VITE_SUPABASE_ANON_KEY is required. Set it in your .env file.');
 }
 
 // ASR (Speech-to-Text) Service

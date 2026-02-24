@@ -12,10 +12,20 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-  );
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  // Verify caller identity from Authorization header
+  const authHeader = req.headers.get("Authorization");
+  let callerUserId: string | null = null;
+  if (authHeader) {
+    try {
+      const anonClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") ?? authHeader.replace("Bearer ", ""));
+      const { data: { user } } = await anonClient.auth.getUser(authHeader.replace("Bearer ", ""));
+      callerUserId = user?.id ?? null;
+    } catch { /* auth check failed — callerUserId stays null */ }
+  }
 
   try {
     if (req.method === "GET") {
@@ -46,6 +56,13 @@ Deno.serve(async (req: Request) => {
       if (!userId || !linkUrl) {
         return new Response(JSON.stringify({ success: false, message: "userId and url required" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Verify the caller owns this userId (prevent IDOR)
+      if (callerUserId && callerUserId !== userId) {
+        return new Response(JSON.stringify({ success: false, message: "Unauthorized: userId mismatch" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
@@ -93,6 +110,13 @@ Deno.serve(async (req: Request) => {
       if (!id || !userId) {
         return new Response(JSON.stringify({ success: false, message: "id and userId required" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Verify the caller owns this userId (prevent IDOR)
+      if (callerUserId && callerUserId !== userId) {
+        return new Response(JSON.stringify({ success: false, message: "Unauthorized: userId mismatch" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const { error } = await supabase.from("social_links").delete().eq("id", id).eq("user_id", userId);

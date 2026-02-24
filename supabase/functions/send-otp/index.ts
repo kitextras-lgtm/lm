@@ -221,7 +221,7 @@ Deno.serve(async (req: Request) => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
     await supabaseClient
       .from('otp_codes')
@@ -334,7 +334,7 @@ Deno.serve(async (req: Request) => {
 
       <div style="text-align: center;">
         <p class="text" style="font-size: 18px; color: #ffffff !important; line-height: 1.6; margin: 0 0 8px 0;">
-          This code expires after 30 minutes and can
+          This code expires after 10 minutes and can
         </p>
         <p class="text" style="font-size: 18px; color: #ffffff !important; line-height: 1.6; margin: 0 0 8px 0;">
           only be used once.
@@ -392,20 +392,17 @@ Deno.serve(async (req: Request) => {
         emailError = `Failed to send email: ${err.message}`;
       }
     } else {
-      console.log('RESEND_API_KEY not configured. OTP code:', code);
+      console.log('RESEND_API_KEY not configured. OTP will not be delivered.');
       emailError = 'Email service not configured';
     }
 
-    console.log('OTP generated for', email, ':', code);
+    console.log('OTP generated for', email);
     console.log('Email sent status:', emailSent);
-    console.log('Email error:', emailError);
 
     return new Response(
       JSON.stringify({
         success: true,
-        devCode: !emailSent ? code : undefined,
         emailSent: emailSent,
-        emailError: emailError
       }),
       {
         headers: {
