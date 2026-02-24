@@ -893,6 +893,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [detectionSubmitted, setDetectionSubmitted] = useState(false);
   const [showLicensingForm, setShowLicensingForm] = useState(false);
   const [licensingSubmitted, setLicensingSubmitted] = useState(false);
+  const [campaignTermsAccepted, setCampaignTermsAccepted] = useState(false);
+  const [campaignTermsChecked, setCampaignTermsChecked] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -3391,6 +3393,39 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                               <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: 'var(--text-primary)', animationDelay: '300ms' }} />
                             </div>
                           </div>
+                        ) : !campaignTermsAccepted ? (
+                          <>
+                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Clip and distribute our talent and media across social platforms and get paid for doing so.</p>
+                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We provide structured access to content and media assets that can be edited, reformatted, and distributed across digital channels. Revenue is shared based on performance and distribution.</p>
+                            <p className="text-xs mb-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Built for creators who understand virality and attention.</p>
+                            <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Start now and earn your share of the revenue pool.</p>
+                            <div className="space-y-2 mb-5">
+                              {[
+                                { step: '1', text: 'Get access to exclusive media assets from our talent roster' },
+                                { step: '2', text: 'Edit, clip, and distribute content across your channels' },
+                                { step: '3', text: 'Earn revenue based on views, engagement, and distribution reach' },
+                              ].map(({ step, text }) => (
+                                <div key={step} className="flex items-start gap-3">
+                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                                </div>
+                              ))}
+                            </div>
+                            <label className="flex items-start gap-3 cursor-pointer mb-4" onClick={() => setCampaignTermsChecked(v => !v)}>
+                              <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 transition-all" style={{ backgroundColor: campaignTermsChecked ? 'var(--text-primary)' : 'transparent', border: `1px solid ${campaignTermsChecked ? 'var(--text-primary)' : 'var(--border-default)'}` }}>
+                                {campaignTermsChecked && <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>}
+                              </div>
+                              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>I agree to Elevate's campaign terms of service, content usage policies, and revenue sharing agreement.</p>
+                            </label>
+                            <button
+                              disabled={!campaignTermsChecked}
+                              onClick={() => setCampaignTermsAccepted(true)}
+                              className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed"
+                              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                            >
+                              Start Now
+                            </button>
+                          </>
                         ) : assignedCampaigns.length === 0 ? (
                           <div className="text-center py-10">
                             <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>

@@ -2009,6 +2009,14 @@ export function ArtistDashboard() {
     }
   }, [currentUserId]);
 
+  // Re-fetch artist names each time the release form is opened
+  useEffect(() => {
+    if (showReleaseForm) {
+      const uid = currentUserId || localStorage.getItem('verifiedUserId') || '';
+      if (uid) fetchArtistNames(uid);
+    }
+  }, [showReleaseForm]);
+
   // ──────────────────────────────────────────────────────────────────────────
 
   const handleLogout = () => {
@@ -5635,7 +5643,7 @@ export function ArtistDashboard() {
                     <div className="grid grid-cols-2 gap-3">
                       {([
                         { val: 'all', label: 'All stores', desc: `Select all ${allStores.length} stores.` },
-                        { val: 'downloads', label: "Elevate's Package", desc: 'Specifically curated for services we provide such as publishing and others.' },
+                        { val: 'downloads', label: "Elevate's Package", desc: 'Specifically curated for services we provide such as publishing and others. Includes all major streaming platforms.' },
                         { val: 'streaming', label: 'Streaming only stores', desc: "Only select stores which allow fans to stream your music. Your tracks will not be available for personal download." },
                         { val: 'custom', label: 'Custom selection of stores', desc: 'Choose your own mix of streaming, download and social platforms.' },
                       ] as const).map(({ val, label, desc }) => {
@@ -5643,7 +5651,11 @@ export function ArtistDashboard() {
                         return (
                           <button
                             key={val}
-                            onClick={() => { setStoreDistType(val); setRf({ stores: val === 'all' ? [...allStores] : [] }); }}
+                            onClick={() => {
+                            setStoreDistType(val);
+                            const elevatePackage = ['Spotify', 'Apple Music', 'Amazon Music', 'YouTube Music', 'Deezer', 'Tidal', 'Pandora', 'iHeartRadio', 'SoundCloud', 'TikTok', 'Instagram', 'Facebook'];
+                            setRf({ stores: val === 'all' ? [...allStores] : val === 'downloads' ? elevatePackage : [] });
+                          }}
                             className="flex items-start gap-3 p-4 rounded-xl text-left transition-all hover:opacity-90"
                             style={{ backgroundColor: 'var(--bg-elevated)', border: `2px solid ${isSel ? 'var(--text-primary)' : 'var(--border-subtle)'}` }}
                           >

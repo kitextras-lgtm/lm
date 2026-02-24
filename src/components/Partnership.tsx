@@ -68,10 +68,50 @@ interface FeatureItem {
 
 // --- Visual Mockup Components ---
 
+const platformEntries = [
+  {
+    name: 'Spotify',
+    icon: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <circle cx="12" cy="12" r="12" fill="#1DB954"/>
+        <path d="M17.5 10.5c-3.1-1.8-8.2-2-11.2-1.1-.5.1-.8.6-.7 1.1.1.5.6.8 1.1.7 2.6-.8 7.1-.6 9.8 1 .4.3 1 .1 1.3-.3.3-.5.1-1.1-.3-1.4zm-.4 2.9c-.3.4-.8.5-1.2.3-2.6-1.6-6.5-2-9.5-1.1-.4.1-.9-.1-1-.5-.1-.4.1-.9.5-1 3.4-1 7.8-.5 10.7 1.3.4.2.5.7.3 1.1l.2-.1zm-1.3 2.8c-.2.3-.7.4-1 .2-2.2-1.4-5-1.7-8.3-.9-.3.1-.7-.1-.8-.4-.1-.3.1-.7.4-.8 3.6-.8 6.7-.5 9.2 1 .3.2.4.6.2.9h.3z" fill="white"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'Apple',
+    icon: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <circle cx="12" cy="12" r="12" fill="#FC3C44"/>
+        <path d="M15.5 7.5c.1.8-.2 1.6-.7 2.1-.5.6-1.3.9-2 .8-.1-.7.2-1.5.7-2 .5-.6 1.3-1 2-.9zm1.8 8.2c-.3.7-.6 1.3-1.1 1.8-.4.5-.9.9-1.5.9-.6 0-.9-.4-1.7-.4-.8 0-1.1.4-1.7.4-.6 0-1.1-.4-1.5-.9-1.1-1.3-1.8-3.3-1.8-5.2 0-2.3 1.5-3.5 3-3.5.7 0 1.4.5 1.9.5.5 0 1.3-.5 2.1-.5 1 0 2 .6 2.5 1.6-.9.5-1.5 1.4-1.5 2.5 0 1.2.7 2.2 1.7 2.7l-.4.1z" fill="white"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'TikTok',
+    icon: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <circle cx="12" cy="12" r="12" fill="#010101"/>
+        <path d="M16.5 7.2a3.3 3.3 0 01-2-.7 3.3 3.3 0 01-1.2-2.5H11v9.1c0 .9-.7 1.6-1.6 1.6s-1.6-.7-1.6-1.6.7-1.6 1.6-1.6c.2 0 .3 0 .5.1V9.2c-.2 0-.3 0-.5 0A3.9 3.9 0 005.5 13a3.9 3.9 0 003.9 3.9 3.9 3.9 0 003.9-3.9V9.6a5.6 5.6 0 003.2 1V8.3a3.3 3.3 0 01-2-.1l.1-1z" fill="white"/>
+        <path d="M16.5 8.3a3.3 3.3 0 002 .6V7c-.4 0-.8-.1-1.2-.3a3.3 3.3 0 01-2-2.7h-1.7v9a1.6 1.6 0 01-1.6 1.5 1.6 1.6 0 01-1.1-.5 1.6 1.6 0 01-.5-1.1 1.6 1.6 0 011.6-1.6c.2 0 .3 0 .5.1V9.2c-.2 0-.3 0-.5 0A3.9 3.9 0 005.5 13a3.9 3.9 0 003.9 3.9A3.9 3.9 0 0013.3 13V9.6a5.6 5.6 0 003.2 1V8.9l-.1-.1.1-.5z" fill="#69C9D0"/>
+      </svg>
+    ),
+  },
+  {
+    name: 'YouTube',
+    icon: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <circle cx="12" cy="12" r="12" fill="#FF0000"/>
+        <path d="M19.8 8.2a2.2 2.2 0 00-1.5-1.5C17 6.4 12 6.4 12 6.4s-5 0-6.3.3A2.2 2.2 0 004.2 8.2C3.9 9.5 3.9 12 3.9 12s0 2.5.3 3.8a2.2 2.2 0 001.5 1.5c1.3.3 6.3.3 6.3.3s5 0 6.3-.3a2.2 2.2 0 001.5-1.5c.3-1.3.3-3.8.3-3.8s0-2.5-.3-3.8z" fill="white" fillOpacity="0.9"/>
+        <path d="M10.2 14.6V9.4l4.2 2.6-4.2 2.6z" fill="#FF0000"/>
+      </svg>
+    ),
+  },
+];
+
 function DistributionVisual() {
   const { ref, inView } = useInView();
   const entered = useEnteredDelay(inView);
-  const platforms = ['Spotify', 'Apple', 'TikTok', 'YouTube'];
   return (
     <div ref={ref} className="w-full rounded-2xl overflow-hidden" style={{ background: '#fafafa', padding: '24px' }}>
       <div className="flex items-center gap-3 mb-4" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(8px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
@@ -82,12 +122,12 @@ function DistributionVisual() {
         </div>
       </div>
       <div className="grid grid-cols-4 gap-3 mb-4">
-        {platforms.map((p, i) => (
-          <div key={p} className="text-center" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: `opacity 0.5s ease ${0.1 + i * 0.08}s, transform 0.5s ease ${0.1 + i * 0.08}s` }}>
+        {platformEntries.map((p, i) => (
+          <div key={p.name} className="text-center" style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: `opacity 0.45s ease ${0.08 + i * 0.08}s, transform 0.45s ease ${0.08 + i * 0.08}s` }}>
             <div className="w-full aspect-square rounded-xl mb-1.5 flex items-center justify-center" style={{ background: '#f0f0f0' }}>
-              <span className="text-xs font-medium" style={{ color: '#555' }}>{p[0]}</span>
+              {p.icon}
             </div>
-            <span className="text-[10px]" style={{ color: '#555' }}>{p}</span>
+            <span className="text-[10px]" style={{ color: '#555' }}>{p.name}</span>
           </div>
         ))}
       </div>
