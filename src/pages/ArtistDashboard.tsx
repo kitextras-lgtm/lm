@@ -325,17 +325,16 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.18s ease-out forwards' }}
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl animate-modal-in"
         style={{ 
           backgroundColor: 'var(--bg-card)',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          animation: 'popOut 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}
         onClick={(e) => e.stopPropagation()}
       >

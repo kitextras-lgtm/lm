@@ -801,8 +801,8 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
     {verifyModal && (() => {
       const vm = verifyModal;
       return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
-        <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.18s ease-out forwards' }}>
+        <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border animate-modal-in" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Verify Ownership</h3>
             {verifyResult !== 'success' && (

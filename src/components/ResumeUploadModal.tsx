@@ -334,12 +334,12 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 overflow-hidden"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.18s ease-out forwards' }}
       onClick={onClose}
     >
       <div
-        className="relative rounded-2xl p-8 max-w-2xl w-full"
+        className="relative rounded-2xl p-8 max-w-2xl w-full animate-modal-in"
         style={{
           backgroundColor: 'var(--bg-card)',
           border: '1px solid rgba(255, 255, 255, 0.1)',

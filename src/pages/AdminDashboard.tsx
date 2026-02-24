@@ -215,6 +215,16 @@ export function AdminDashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // Lock body scroll when user detail modal is open
+  useEffect(() => {
+    if (selectedUser) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedUser]);
+
   useEffect(() => {
     const fetchAdminProfileId = async () => {
       if (admin && !adminProfileId) {
@@ -1821,14 +1831,14 @@ export function AdminDashboard() {
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
                                           style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                                         >
-                                          {actioningId === app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+                                          {actioningId === app.id && declineModalId !== app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                                           Verify
                                         </button>
                                         <button
-                                          onClick={() => { setDeclineModalId(app.id); setDeclineReason(''); }}
+                                          onClick={() => { setDeclineModalId(declineModalId === app.id ? null : app.id); setDeclineReason(''); }}
                                           disabled={actioningId === app.id}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: declineModalId === app.id ? 'var(--text-primary)' : tokens.bg.elevated, color: declineModalId === app.id ? 'var(--bg-primary)' : tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                                         >
                                           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                           Decline
@@ -1842,6 +1852,42 @@ export function AdminDashboard() {
                                       </div>
                                     )}
                                   </div>
+
+                                  {/* Inline decline panel */}
+                                  {declineModalId === app.id && (
+                                    <div className="mt-3 rounded-xl p-4 animate-modal-in" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                      <p className="text-xs mb-3" style={{ color: tokens.text.primary, opacity: 0.65 }}>Provide a reason for declining — this will be shown to the applicant.</p>
+                                      <textarea
+                                        autoFocus
+                                        value={declineReason}
+                                        onChange={e => setDeclineReason(e.target.value)}
+                                        placeholder="e.g. Incomplete information, duplicate account, policy violation..."
+                                        rows={3}
+                                        className="w-full px-3 py-2.5 rounded-lg text-xs focus:outline-none transition-all resize-none mb-3"
+                                        style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}`, color: tokens.text.primary }}
+                                        onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+                                        onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                                      />
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => { setDeclineModalId(null); setDeclineReason(''); }}
+                                          className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
+                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          onClick={() => handleApplicationAction(app.id, 'denied', declineReason.trim() || undefined)}
+                                          disabled={actioningId === app.id}
+                                          className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                                          style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                                        >
+                                          {actioningId === app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : null}
+                                          Confirm Decline
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -1852,48 +1898,6 @@ export function AdminDashboard() {
                   );
                 })()}
 
-              {/* Decline with reason modal */}
-              {declineModalId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}>
-                  <div className="w-full max-w-md rounded-2xl p-6 animate-modal-in" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}`, boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-bold" style={{ color: tokens.text.primary }}>Decline Application</h3>
-                      <button onClick={() => { setDeclineModalId(null); setDeclineReason(''); }} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                      </button>
-                    </div>
-                    <p className="text-sm mb-4" style={{ color: tokens.text.primary, opacity: 0.7 }}>Provide a reason for declining this application. This will be shown to the user on their dashboard.</p>
-                    <textarea
-                      value={declineReason}
-                      onChange={e => setDeclineReason(e.target.value)}
-                      placeholder="e.g. Incomplete information, duplicate account, policy violation..."
-                      rows={4}
-                      className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all resize-none mb-4"
-                      style={{ backgroundColor: tokens.bg.input, border: `1px solid ${tokens.border.default}`, color: tokens.text.primary }}
-                      onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                      onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
-                    />
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => { setDeclineModalId(null); setDeclineReason(''); }}
-                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => handleApplicationAction(declineModalId, 'denied', declineReason.trim() || undefined)}
-                        disabled={actioningId === declineModalId}
-                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
-                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                      >
-                        {actioningId === declineModalId ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : null}
-                        Confirm Decline
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
               </div>
             )}
 
@@ -2575,17 +2579,18 @@ export function AdminDashboard() {
       {selectedUser && (
         <>
           <div 
-            className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+            className="fixed inset-0 bg-black/60 z-40 transition-opacity"
+            style={{ backdropFilter: 'blur(6px)' }}
             onClick={() => setSelectedUser(null)}
           />
           
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden"
             onClick={() => setSelectedUser(null)}
           >
             <div 
-              className="w-full max-w-4xl h-[75vh] rounded-2xl overflow-hidden flex"
-              style={{ backgroundColor: tokens.bg.modal }}
+              className="w-full max-w-4xl h-[80vh] rounded-2xl overflow-hidden flex animate-modal-in"
+              style={{ backgroundColor: tokens.bg.modal, boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-64 flex-shrink-0 p-6" style={{ backgroundColor: tokens.bg.elevated }}>
@@ -2661,7 +2666,7 @@ export function AdminDashboard() {
 
               <div className="flex-1 overflow-y-auto p-6 sm:p-8">
                 {userDetailSection === 'personal' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Personal Information</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View and manage user's personal details</p>
@@ -2742,7 +2747,7 @@ export function AdminDashboard() {
                 )}
 
                 {userDetailSection === 'connected' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Connected Accounts</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>All social links and external accounts connected to this user's profile</p>
@@ -2808,7 +2813,7 @@ export function AdminDashboard() {
                 )}
 
                 {userDetailSection === 'payment' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Payment Method</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View user's payment and payout methods</p>
@@ -2829,7 +2834,7 @@ export function AdminDashboard() {
                 )}
 
                 {userDetailSection === 'notifications' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Notifications</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View user's notification preferences and history</p>
