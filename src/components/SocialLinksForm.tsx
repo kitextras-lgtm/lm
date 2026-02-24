@@ -192,7 +192,7 @@ function ArtistRow({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imageFile: File | null, imagePreview: string, formData?: Record<string, string>) => void; onOpenArticle?: (articleId: string) => void }) {
+function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imageFile: File | null, formData?: Record<string, string>) => void; onOpenArticle?: (articleId: string) => void }) {
   const [af, setAfState] = useState({ name: '', imageFile: null as File | null, imagePreview: '', appleMusicId: '', spotifyId: '', soundcloudId: '', deezerId: '', audiomackId: '', amazonId: '', type: 'Solo Artist', role: 'Artist role', genre: 'Select a main genre', bio: '', country: 'United States', websiteUrl: '', facebookUrl: '', xHandle: '', instagramHandle: '', youtubeChannel: '', tiktokUsername: '' });
   const setAf = (p: Partial<typeof af>) => setAfState(f => ({ ...f, ...p }));
   return (
@@ -264,7 +264,7 @@ function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => vo
       })}
 
       <div className="flex justify-end pt-2">
-        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imageFile, af.imagePreview, { bio: af.bio, country: af.country, type: af.type, role: af.role, genre: af.genre, websiteUrl: af.websiteUrl, facebookUrl: af.facebookUrl, xHandle: af.xHandle, instagramHandle: af.instagramHandle, youtubeChannel: af.youtubeChannel, tiktokUsername: af.tiktokUsername, appleMusicId: af.appleMusicId, spotifyId: af.spotifyId, soundcloudId: af.soundcloudId, deezerId: af.deezerId, audiomackId: af.audiomackId, amazonId: af.amazonId })}>
+        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imageFile, { bio: af.bio, country: af.country, type: af.type, role: af.role, genre: af.genre, websiteUrl: af.websiteUrl, facebookUrl: af.facebookUrl, xHandle: af.xHandle, instagramHandle: af.instagramHandle, youtubeChannel: af.youtubeChannel, tiktokUsername: af.tiktokUsername, appleMusicId: af.appleMusicId, spotifyId: af.spotifyId, soundcloudId: af.soundcloudId, deezerId: af.deezerId, audiomackId: af.audiomackId, amazonId: af.amazonId })}>
           Create Artist
         </button>
       </div>
@@ -623,17 +623,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
         <AddArtistForm
           onClose={() => setIsAdding(false)}
           onOpenArticle={onOpenArticle}
-          onSubmit={async (name, imageFile, imagePreview, formData) => {
-            const newArtist: SocialLink = {
-              id: `local-${Date.now()}`,
-              platform: 'Artist',
-              url: imagePreview || '',
-              display_name: name || 'New Artist',
-              channel_type: '',
-              channel_description: '',
-              verified: false,
-            };
-            setLinks(prev => [...prev, newArtist]);
+          onSubmit={async (name, imageFile, formData) => {
             setIsAdding(false);
             if (userId) {
               try {
@@ -655,6 +645,24 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                     uploadedImageUrl = urlData?.publicUrl || null;
                   }
                 }
+                // Save artist entry to social_links for persistence
+                const res = await fetch(SOCIAL_LINKS_FN, {
+                  method: 'POST',
+                  headers: fnHeaders,
+                  body: JSON.stringify({
+                    userId,
+                    platform: 'Artist',
+                    url: uploadedImageUrl || '',
+                    display_name: name || 'New Artist',
+                    verified: false,
+                  }),
+                });
+                const json = await res.json();
+                if (json.success) {
+                  await loadLinks();
+                  localStorage.setItem('social_links_updated', Date.now().toString());
+                }
+                // Submit application
                 await supabase.from('applications').insert({
                   user_id: userId,
                   application_type: 'artist_account',
@@ -745,8 +753,8 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                 <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                   {link.verified ? (
                     <span className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
-                      style={{ color: '#22C55E', backgroundColor: '#22C55E15' }}>
-                      <CheckCircle className="w-3 h-3" /> Verified
+                      style={{ color: 'var(--text-primary)', backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg> Verified
                     </span>
                   ) : link.platform === 'Artist' ? (
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"

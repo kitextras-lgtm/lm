@@ -3333,12 +3333,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
 
                 <div className="mb-8">
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</h1>
-                  <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{t('opportunities.campaignDesc')}</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>Active Opportunities</h1>
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.12em' }}>Your Opportunities</p>
 
                   {/* Campaigns */}
                   <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'campaigns' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>

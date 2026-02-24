@@ -677,6 +677,17 @@ export function AdminDashboard() {
         .eq('id', id);
       if (!error) {
         setApplications(prev => prev.map(a => a.id === id ? { ...a, status: action, decline_reason: reason || null } : a));
+        // If approving an artist_account application, mark their Artist social link as verified
+        if (action === 'approved') {
+          const app = applications.find(a => a.id === id);
+          if (app?.application_type === 'artist_account' && app.user_id) {
+            await supabase
+              .from('social_links')
+              .update({ verified: true })
+              .eq('user_id', app.user_id)
+              .eq('platform', 'Artist');
+          }
+        }
       }
     } catch (e) {
       console.error('Error updating application:', e);
@@ -1711,26 +1722,25 @@ export function AdminDashboard() {
                                             {expandedAppId === app.id ? 'Hide details' : 'View full application'}
                                           </button>
                                           {/* Always-visible summary */}
-                                          <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                                            {app.category && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.category}</span></div>}
+                                          <div className="space-y-1.5">
+                                            {app.category && (
+                                              <div className="flex items-center gap-3">
+                                                {app.image_url && (
+                                                  <img src={app.image_url} alt={app.category} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                                                )}
+                                                <div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{app.category}</span></div>
+                                                  {app.artist_type && <div className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.artist_type}{app.artist_role ? ` · ${app.artist_role}` : ''}{app.artist_genre ? ` · ${app.artist_genre}` : ''}</div>}
+                                                </div>
+                                              </div>
+                                            )}
                                             {app.country && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country}</span></div>}
-                                            {app.bio && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                            {app.bio && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
                                           </div>
                                           {/* Expanded full details */}
                                           {expandedAppId === app.id && (
                                             <div className="mt-4 rounded-xl p-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                                              {/* Artist image */}
-                                              {app.image_url && (
-                                                <div className="mb-4 flex items-center gap-4">
-                                                  <img src={app.image_url} alt={app.category || 'Artist'} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" style={{ border: `1px solid ${tokens.border.subtle}` }} />
-                                                  <div>
-                                                    <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>{app.category || 'Unknown Artist'}</p>
-                                                    {app.artist_type && <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.artist_type}{app.artist_role ? ` · ${app.artist_role}` : ''}</p>}
-                                                    {app.artist_genre && <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.artist_genre}</p>}
-                                                  </div>
-                                                </div>
-                                              )}
-                                              {!app.image_url && (app.artist_type || app.artist_role || app.artist_genre) && (
+                                              {(app.artist_type || app.artist_role || app.artist_genre) && (
                                                 <div className="mb-3 grid grid-cols-2 gap-x-6 gap-y-1">
                                                   {app.artist_type && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_type}</span></div>}
                                                   {app.artist_role && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Role: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_role}</span></div>}
@@ -1756,12 +1766,12 @@ export function AdminDashboard() {
                                                 <div>
                                                   <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Social Links</p>
                                                   <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                                                    {app.instagram_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Instagram: </span><span className="text-xs" style={{ color: tokens.text.primary }}>@{app.instagram_handle}</span></div>}
-                                                    {app.youtube_channel && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>YouTube: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.youtube_channel}</span></div>}
-                                                    {app.tiktok_username && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>TikTok: </span><span className="text-xs" style={{ color: tokens.text.primary }}>@{app.tiktok_username}</span></div>}
-                                                    {app.x_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>X: </span><span className="text-xs" style={{ color: tokens.text.primary }}>@{app.x_handle}</span></div>}
-                                                    {app.facebook_url && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Facebook: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.facebook_url}</span></div>}
-                                                    {app.website_url && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Website: </span><a href={app.website_url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.website_url}</a></div>}
+                                                    {app.instagram_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Instagram: </span><a href={`https://instagram.com/${app.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.instagram_handle}</a></div>}
+                                                    {app.youtube_channel && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>YouTube: </span><a href={`https://youtube.com/${app.youtube_channel.startsWith('@') ? app.youtube_channel : '@' + app.youtube_channel}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.youtube_channel}</a></div>}
+                                                    {app.tiktok_username && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>TikTok: </span><a href={`https://tiktok.com/@${app.tiktok_username}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.tiktok_username}</a></div>}
+                                                    {app.x_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>X: </span><a href={`https://x.com/${app.x_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.x_handle}</a></div>}
+                                                    {app.facebook_url && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Facebook: </span><a href={app.facebook_url.startsWith('http') ? app.facebook_url : `https://facebook.com/${app.facebook_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.facebook_url}</a></div>}
+                                                    {app.website_url && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Website: </span><a href={app.website_url.startsWith('http') ? app.website_url : `https://${app.website_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.website_url}</a></div>}
                                                   </div>
                                                 </div>
                                               )}
@@ -1843,7 +1853,7 @@ export function AdminDashboard() {
 
               {/* Decline with reason modal */}
               {declineModalId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                   <div className="w-full max-w-md rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}>
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-bold" style={{ color: tokens.text.primary }}>Decline Application</h3>
