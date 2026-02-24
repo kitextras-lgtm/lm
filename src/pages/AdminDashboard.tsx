@@ -15,7 +15,6 @@ import { MobileBottomNav } from '../components/MobileBottomNav';
 import { SettingsView } from '../components/SettingsView';
 import { ToggleSwitch } from '../components/ToggleSwitch';
 import { useTheme } from '../contexts/ThemeContext';
-import { themeTokens } from '../lib/themeTokens';
 
 interface SocialLink {
   id: string;
@@ -497,7 +496,7 @@ export function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    if (activeSection === 'feedback') {
+    if (activeSection === 'data') {
       fetchFeedback();
     }
   }, [activeSection, fetchFeedback]);
@@ -514,6 +513,50 @@ export function AdminDashboard() {
     }
   };
 
+  const renderAdminActivityLog = () => (
+    <div className="scroll-mt-6">
+      {activityLoading ? (
+        <div className="flex justify-center py-6">
+          <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ color: tokens.text.primary }}>
+            <path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/>
+          </svg>
+        </div>
+      ) : activityLog.length === 0 ? (
+        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>No recent activity</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {activityLog.map((entry) => (
+            <div key={entry.id} className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>
+                    {entry.user_full_name || entry.user_email} has created a new artist account
+                  </p>
+                  {entry.details && (
+                    <p className="text-xs mt-2" style={{ color: tokens.text.primary, opacity: 0.75 }}>{entry.details}</p>
+                  )}
+                  <p className="text-xs mt-2" style={{ color: tokens.text.primary, opacity: 0.45 }}>{formatDate(entry.created_at)}</p>
+                </div>
+                <button
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 flex-shrink-0"
+                  style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                  onClick={() => {
+                    setSelectedUser(users.find(u => u.id === entry.user_id) || null);
+                    setActiveSection('users');
+                  }}
+                >
+                  View
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   useEffect(() => {
     if (activeSection === 'home') {
       fetchWhitelistedChannels();
@@ -522,6 +565,12 @@ export function AdminDashboard() {
       fetchFeedback();
     }
   }, [activeSection, fetchWhitelistedChannels, fetchCampaigns, fetchActivityLog, fetchFeedback]);
+
+  useEffect(() => {
+    if (activeSection === 'settings') {
+      fetchActivityLog();
+    }
+  }, [activeSection, fetchActivityLog]);
 
   const handleApplicationAction = async (id: string, action: 'approved' | 'denied') => {
     setActioningId(id);
@@ -1448,75 +1497,6 @@ export function AdminDashboard() {
                   )}
                 </div>
 
-                {/* Activity Log Card */}
-                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'activity' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}` }}>
-                  <button
-                    onClick={() => setExpandedHomeCard(expandedHomeCard === 'activity' ? null : 'activity')}
-                    className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
-                    style={{ backgroundColor: tokens.bg.card }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}>
-                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                      </svg>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Activity Log</p>
-                        <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Recent artist account creations</p>
-                      </div>
-                    </div>
-                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'activity' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
-                  </button>
-                  {expandedHomeCard === 'activity' && (
-                    <div className="px-5 pb-5 pt-3" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
-                      {activityLoading ? (
-                        <div className="flex justify-center py-4">
-                          <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                            <path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/>
-                          </svg>
-                        </div>
-                      ) : activityLog.length === 0 ? (
-                        <p className="text-sm text-center py-4" style={{ color: tokens.text.primary, opacity: 0.5 }}>No recent activity</p>
-                      ) : (
-                        <div className="space-y-3">
-                          {activityLog.map((entry) => (
-                            <div key={entry.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}>
-                              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}>
-                                  <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                                  <circle cx="8.5" cy="7" r="4"/>
-                                  <path d="M20 8v6M23 11h-6"/>
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>
-                                  {entry.user_full_name || entry.user_email}
-                                </p>
-                                <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.7 }}>
-                                  {entry.details}
-                                </p>
-                                <p className="text-xs mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>
-                                  {new Date(entry.created_at).toLocaleString()}
-                                </p>
-                              </div>
-                              <button
-                                className="px-3 py-1 rounded text-xs font-medium transition-all hover:brightness-110"
-                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}
-                                onClick={() => {
-                                  // Navigate to user details
-                                  setSelectedUser(users.find(u => u.id === entry.user_id) || null);
-                                  setActiveSection('users');
-                                }}
-                              >
-                                View
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
                 {/* Feedback Card */}
                 <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'feedback' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}` }}>
                   <button
@@ -1571,8 +1551,7 @@ export function AdminDashboard() {
                                 className="px-3 py-1 rounded text-xs font-medium transition-all hover:brightness-110"
                                 style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}
                                 onClick={() => {
-                                  // Navigate to feedback section
-                                  setActiveSection('feedback');
+                                  setActiveSection('data');
                                 }}
                               >
                                 View
@@ -1581,7 +1560,7 @@ export function AdminDashboard() {
                           ))}
                           {feedbackEntries.length > 5 && (
                             <button
-                              onClick={() => setActiveSection('feedback')}
+                              onClick={() => setActiveSection('data')}
                               className="w-full py-2 text-xs font-medium transition-all hover:brightness-110 rounded-lg"
                               style={{ backgroundColor: tokens.bg.card, color: tokens.text.primary }}
                             >
@@ -1925,7 +1904,7 @@ export function AdminDashboard() {
               </div>
             )}
 
-            {activeSection === 'feedback' && (() => {
+            {activeSection === 'data' && (() => {
               const categoryLabels: Record<string, string> = {
                 suggestion: 'Suggestion',
                 bug: 'Bug Report',
@@ -2100,21 +2079,6 @@ export function AdminDashboard() {
                 </div>
               );
             })()}
-
-            {activeSection === 'data' && (
-              <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
-                <div className="text-center px-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                    <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No data yet</h3>
-                  <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.5 }}>Revenue and analytics data will appear here</p>
-                </div>
-              </div>
-            )}
-
             {activeSection === 'settings' && (
               <>
                 {/* Mobile Settings View */}
@@ -2341,7 +2305,7 @@ export function AdminDashboard() {
                     )}
                     renderLanguages={() => <div></div>}
                     renderNotifications={() => <div></div>}
-                    renderSendFeedback={() => <div></div>}
+                    renderSendFeedback={renderAdminActivityLog}
                     renderLogOut={() => (
                       <div className="scroll-mt-6 flex gap-3">
                         <button
@@ -2584,7 +2548,7 @@ export function AdminDashboard() {
                     )}
                     renderLanguages={() => <div></div>}
                     renderNotifications={() => <div></div>}
-                    renderSendFeedback={() => <div></div>}
+                    renderSendFeedback={renderAdminActivityLog}
                     renderLogOut={() => (
                       <div className="scroll-mt-6 flex gap-3">
                         <button

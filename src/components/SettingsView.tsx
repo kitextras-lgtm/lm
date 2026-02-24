@@ -66,6 +66,7 @@ const settingsMenuItems = [
 // Admin settings menu items (only Display and Log out)
 const adminSettingsMenuItems = [
   { id: 'display', labelKey: 'settings.display', IconComponent: DisplayIcon },
+  { id: 'feedback', label: 'Feedback', IconComponent: SendFeedbackIcon },
   { id: 'logout', labelKey: 'settings.logOut', IconComponent: LogOutIcon },
 ];
 
@@ -159,7 +160,7 @@ export function SettingsView({
       case 'display': return t('settings.display');
       case 'languages': return t('settings.languages');
       case 'notifications': return t('settings.notifications');
-      case 'feedback': return t('settings.sendFeedback');
+      case 'feedback': return userType === 'admin' ? 'Feedback' : t('settings.sendFeedback');
       case 'guides': return t('settings.guides');
       case 'logout': return t('settings.logOut');
       default: return '';
@@ -276,7 +277,7 @@ export function SettingsView({
       case 'display': return t('settings.displayDesc');
       case 'languages': return t('settings.languagesDesc');
       case 'notifications': return t('settings.notificationsDesc');
-      case 'feedback': return t('settings.sendFeedbackDesc');
+      case 'feedback': return userType === 'admin' ? 'View activity and feedback tools.' : t('settings.sendFeedbackDesc');
       case 'guides': return t('settings.guidesDesc');
       case 'logout': return t('settings.logOutDesc');
       default: return '';

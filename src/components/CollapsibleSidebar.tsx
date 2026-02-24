@@ -4,8 +4,7 @@ import {
   AdminApplicationsIconSVG, 
   AdminMessagesIconSVG, 
   AdminUsersIconSVG, 
-  AdminDataIconSVG,
-  AdminFeedbackIconSVG
+  AdminDataIconSVG
 } from './AdminIcons';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
 
