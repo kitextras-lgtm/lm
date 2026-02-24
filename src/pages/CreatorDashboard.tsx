@@ -2385,7 +2385,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       },
       {
         icon: (<svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>),
-        title: 'Uploading Content', desc: 'How to upload and publish your creative work.', count: '20 articles',
+        title: 'Terms of Service', desc: 'Review our platform terms, usage policies, and agreements.', count: '20 articles',
         accent: 'rgba(59,130,246,0.12)', accentBorder: 'rgba(59,130,246,0.3)', accentColor: '#60A5FA',
       },
       {
@@ -3373,7 +3373,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                         <div className="text-left">
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{assignedCampaigns.length} campaign{assignedCampaigns.length !== 1 ? 's' : ''} assigned</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: campaignTermsAccepted ? 1 : 0.5 }}>{campaignTermsAccepted ? 'Active' : 'Not active'}</p>
                         </div>
                         {newCampaignIds.size > 0 && (
                           <span className="flex items-center justify-center text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[20px]" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)', fontSize: '10px' }}>
@@ -3395,10 +3395,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </div>
                         ) : !campaignTermsAccepted ? (
                           <>
-                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Clip and distribute our talent and media across social platforms and get paid for doing so.</p>
-                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We provide structured access to content and media assets that can be edited, reformatted, and distributed across digital channels. Revenue is shared based on performance and distribution.</p>
+                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)' }}>Clip and distribute our talent and media across social platforms and get paid for doing so.</p>
+                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)' }}>We provide structured access to content and media assets that can be edited, reformatted, and distributed across digital channels. Revenue is shared based on performance and distribution.</p>
                             <p className="text-xs mb-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Built for creators who understand virality and attention.</p>
-                            <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Start now and earn your share of the revenue pool.</p>
+                            <p className="text-xs mb-4" style={{ color: 'var(--text-primary)' }}>Start now and earn your share of the revenue pool.</p>
                             <div className="space-y-2 mb-5">
                               {[
                                 { step: '1', text: 'Get access to exclusive media assets from our talent roster' },
@@ -3407,7 +3407,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                               ].map(({ step, text }) => (
                                 <div key={step} className="flex items-start gap-3">
                                   <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
-                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)' }}>{text}</p>
                                 </div>
                               ))}
                             </div>
@@ -3415,7 +3415,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                               <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 transition-all" style={{ backgroundColor: campaignTermsChecked ? 'var(--text-primary)' : 'transparent', border: `1px solid ${campaignTermsChecked ? 'var(--text-primary)' : 'var(--border-default)'}` }}>
                                 {campaignTermsChecked && <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>}
                               </div>
-                              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>I agree to Elevate's campaign terms of service, content usage policies, and revenue sharing agreement.</p>
+                              <p className="text-xs" style={{ color: 'var(--text-primary)' }}>I agree to Elevate's campaign terms of service, content usage policies, and revenue sharing agreement.</p>
                             </label>
                             <button
                               disabled={!campaignTermsChecked}
@@ -3568,7 +3568,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
                         <div className="text-left">
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Licensing</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Manage and protect your content licenses</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: licensingSubmitted ? 1 : 0.5 }}>{licensingSubmitted ? 'Active' : 'Not active'}</p>
                         </div>
                       </div>
                       <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'licensing' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
