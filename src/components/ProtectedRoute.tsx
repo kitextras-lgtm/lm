@@ -17,11 +17,15 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     const checkAuth = async () => {
       try {
         // 1. Try Supabase session first (most secure — JWT validated server-side)
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          setIsAuthenticated(true);
-          setIsLoading(false);
-          return;
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            return;
+          }
+        } catch {
+          // No active Supabase session — fall through to localStorage checks
         }
 
         // 2. Fallback: verifiedUserId from OTP flow — but VERIFY it exists in DB
