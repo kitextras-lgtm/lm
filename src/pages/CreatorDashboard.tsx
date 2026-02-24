@@ -3447,22 +3447,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     </button>
                     {expandedOppsCard === 'detection' && (
                       <div className="px-5 pb-5 pt-3" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
-                        <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div className="rounded-xl px-3 py-3 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
-                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Detected</p>
-                          </div>
-                          <div className="rounded-xl px-3 py-3 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
-                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Monetized</p>
-                          </div>
-                          <div className="rounded-xl px-3 py-3 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>$0</p>
-                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Revenue</p>
-                          </div>
-                        </div>
                         <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
-                        <div className="space-y-2">
+                        <div className="space-y-2 mb-4">
                           {[{ step: '1', text: 'We scan platforms for unauthorized copies of your content' }, { step: '2', text: 'Detected reuploads are automatically claimed on your behalf' }, { step: '3', text: 'Revenue from those views flows directly to your account' }].map(({ step, text }) => (
                             <div key={step} className="flex items-start gap-3">
                               <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
@@ -3470,6 +3456,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                             </div>
                           ))}
                         </div>
+                        <button
+                          className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110"
+                          style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                        >
+                          Get Started
+                        </button>
                       </div>
                     )}
                   </div>

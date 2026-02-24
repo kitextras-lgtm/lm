@@ -636,31 +636,30 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                 let uploadedImageUrl: string | null = null;
                 if (imageFile) {
                   const ext = imageFile.name.split('.').pop() || 'jpg';
-                  const path = `artist-images/${userId}-${Date.now()}.${ext}`;
+                  const path = `artist-images/${userId}/${Date.now()}.${ext}`;
                   const { error: uploadError } = await supabase.storage
-                    .from('avatars')
+                    .from('artist-images')
                     .upload(path, imageFile, { upsert: true });
                   if (!uploadError) {
-                    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
+                    const { data: urlData } = supabase.storage.from('artist-images').getPublicUrl(path);
                     uploadedImageUrl = urlData?.publicUrl || null;
+                  } else {
+                    console.error('Artist image upload error:', uploadError);
                   }
                 }
-                // Save artist entry to social_links for persistence
-                const res = await fetch(SOCIAL_LINKS_FN, {
-                  method: 'POST',
-                  headers: fnHeaders,
-                  body: JSON.stringify({
-                    userId,
-                    platform: 'Artist',
-                    url: uploadedImageUrl || '',
-                    display_name: name || 'New Artist',
-                    verified: false,
-                  }),
+                // Save artist entry directly to social_links (bypass edge fn duplicate check)
+                const { error: slError } = await supabase.from('social_links').insert({
+                  user_id: userId,
+                  platform: 'Artist',
+                  url: uploadedImageUrl || `artist:${userId}:${Date.now()}`,
+                  display_name: name || 'New Artist',
+                  verified: false,
                 });
-                const json = await res.json();
-                if (json.success) {
+                if (!slError) {
                   await loadLinks();
                   localStorage.setItem('social_links_updated', Date.now().toString());
+                } else {
+                  console.error('Error saving artist to social_links:', slError);
                 }
                 // Submit application
                 await supabase.from('applications').insert({
