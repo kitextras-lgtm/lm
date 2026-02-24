@@ -192,7 +192,7 @@ function ArtistRow({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
-function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imagePreview: string) => void; onOpenArticle?: (articleId: string) => void }) {
+function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => void; onSubmit: (name: string, imagePreview: string, formData?: Record<string, string>) => void; onOpenArticle?: (articleId: string) => void }) {
   const [af, setAfState] = useState({ name: '', imageFile: null as File | null, imagePreview: '', appleMusicId: '', spotifyId: '', soundcloudId: '', deezerId: '', audiomackId: '', amazonId: '', type: 'Solo Artist', role: 'Artist role', genre: 'Select a main genre', bio: '', country: 'United States', websiteUrl: '', facebookUrl: '', xHandle: '', instagramHandle: '', youtubeChannel: '', tiktokUsername: '' });
   const setAf = (p: Partial<typeof af>) => setAfState(f => ({ ...f, ...p }));
   return (
@@ -264,7 +264,7 @@ function AddArtistForm({ onClose, onSubmit, onOpenArticle }: { onClose: () => vo
       })}
 
       <div className="flex justify-end pt-2">
-        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imagePreview)}>
+        <button type="button" className="px-8 py-3 rounded-full text-sm font-bold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }} onClick={() => onSubmit(af.name, af.imagePreview, { bio: af.bio, country: af.country })}>
           Create Artist
         </button>
       </div>
@@ -623,7 +623,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
         <AddArtistForm
           onClose={() => setIsAdding(false)}
           onOpenArticle={onOpenArticle}
-          onSubmit={(name, imagePreview) => {
+          onSubmit={async (name, imagePreview, formData) => {
             const newArtist: SocialLink = {
               id: `local-${Date.now()}`,
               platform: 'Artist',
@@ -635,6 +635,29 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
             };
             setLinks(prev => [...prev, newArtist]);
             setIsAdding(false);
+            if (userId) {
+              try {
+                const { data: userData } = await supabase
+                  .from('users')
+                  .select('email, username, first_name, last_name')
+                  .eq('id', userId)
+                  .single();
+                await supabase.from('applications').insert({
+                  user_id: userId,
+                  application_type: 'artist_account',
+                  status: 'pending',
+                  full_name: userData ? `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || null : null,
+                  email: userData?.email || null,
+                  username: userData?.username || null,
+                  category: name || null,
+                  bio: formData?.bio || null,
+                  country: formData?.country || null,
+                  created_at: new Date().toISOString(),
+                });
+              } catch (e) {
+                console.error('Error submitting artist application:', e);
+              }
+            }
           }}
         />
       )}
@@ -695,6 +718,11 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                     <span className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
                       style={{ color: '#22C55E', backgroundColor: '#22C55E15' }}>
                       <CheckCircle className="w-3 h-3" /> Verified
+                    </span>
+                  ) : link.platform === 'Artist' ? (
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
+                      style={{ color: 'var(--text-primary)', backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      Pending
                     </span>
                   ) : (
                     <div className="flex items-center gap-2">

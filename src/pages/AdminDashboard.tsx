@@ -43,7 +43,7 @@ interface User {
 interface Application {
   id: string;
   user_id: string;
-  application_type: 'freelancer_onboarding' | 'creator_verification';
+  application_type: 'freelancer_onboarding' | 'creator_verification' | 'artist_account';
   status: 'pending' | 'approved' | 'denied';
   full_name: string | null;
   email: string | null;
@@ -155,19 +155,6 @@ export function AdminDashboard() {
   const [feedbackStatusFilter, setFeedbackStatusFilter] = useState<string>('pending');
   const [updatingFeedbackId, setUpdatingFeedbackId] = useState<string | null>(null);
   const [expandedHomeCard, setExpandedHomeCard] = useState<string | null>(null);
-
-  // Activity log state
-  interface ActivityLogEntry {
-    id: string;
-    user_id: string;
-    user_email: string;
-    user_full_name: string | null;
-    action: string;
-    details: string | null;
-    created_at: string;
-  }
-  const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
-  const [activityLoading, setActivityLoading] = useState(false);
 
   // Whitelist state
   interface WhitelistedChannel {
@@ -463,37 +450,6 @@ export function AdminDashboard() {
     }
   }, []);
 
-  const fetchActivityLog = useCallback(async () => {
-    setActivityLoading(true);
-    try {
-      // For now, create mock data since we don't have an activity_log table yet
-      const mockActivity: ActivityLogEntry[] = [
-        {
-          id: '1',
-          user_id: 'user1',
-          user_email: 'sing.song@example.com',
-          user_full_name: 'Sing Song',
-          action: 'artist_created',
-          details: 'Created new artist account "The Beatles"',
-          created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 minutes ago
-        },
-        {
-          id: '2',
-          user_id: 'user2',
-          user_email: 'john.doe@example.com',
-          user_full_name: 'John Doe',
-          action: 'artist_created',
-          details: 'Created new artist account "Solo Artist"',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2 hours ago
-        }
-      ];
-      setActivityLog(mockActivity);
-    } catch (e) {
-      console.error('Error fetching activity log:', e);
-    } finally {
-      setActivityLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
     if (activeSection === 'data') {
@@ -513,64 +469,174 @@ export function AdminDashboard() {
     }
   };
 
-  const renderAdminActivityLog = () => (
-    <div className="scroll-mt-6">
-      {activityLoading ? (
-        <div className="flex justify-center py-6">
-          <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ color: tokens.text.primary }}>
-            <path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/>
-          </svg>
-        </div>
-      ) : activityLog.length === 0 ? (
-        <div className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
-          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>No recent activity</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {activityLog.map((entry) => (
-            <div key={entry.id} className="rounded-xl p-4" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>
-                    {entry.user_full_name || entry.user_email} has created a new artist account
-                  </p>
-                  {entry.details && (
-                    <p className="text-xs mt-2" style={{ color: tokens.text.primary, opacity: 0.75 }}>{entry.details}</p>
-                  )}
-                  <p className="text-xs mt-2" style={{ color: tokens.text.primary, opacity: 0.45 }}>{formatDate(entry.created_at)}</p>
-                </div>
-                <button
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 flex-shrink-0"
-                  style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                  onClick={() => {
-                    setSelectedUser(users.find(u => u.id === entry.user_id) || null);
-                    setActiveSection('users');
-                  }}
-                >
-                  View
-                </button>
-              </div>
-            </div>
+  const renderAdminFeedback = () => {
+    const categoryLabels: Record<string, string> = {
+      suggestion: 'Suggestion',
+      bug: 'Bug Report',
+      feature: 'Feature Request',
+      other: 'Other',
+    };
+    const filtered = feedbackEntries.filter(f => {
+      if (feedbackCategoryFilter !== 'all' && f.category !== feedbackCategoryFilter) return false;
+      if (feedbackStatusFilter !== 'all' && f.status !== feedbackStatusFilter) return false;
+      return true;
+    });
+    const counts = {
+      total: feedbackEntries.length,
+      pending: feedbackEntries.filter(f => f.status === 'pending').length,
+      bug: feedbackEntries.filter(f => f.category === 'bug').length,
+      feature: feedbackEntries.filter(f => f.category === 'feature').length,
+      suggestion: feedbackEntries.filter(f => f.category === 'suggestion').length,
+    };
+    return (
+      <div className="scroll-mt-6">
+        {/* Stats row */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-7">
+          {[
+            { label: 'Total', value: counts.total, filter: 'all' },
+            { label: 'Pending', value: counts.pending, filter: 'pending' },
+            { label: 'Bug Reports', value: counts.bug, filter: null },
+            { label: 'Features', value: counts.feature, filter: null },
+            { label: 'Suggestions', value: counts.suggestion, filter: null },
+          ].map(s => (
+            <button
+              key={s.label}
+              onClick={() => s.filter !== null ? setFeedbackStatusFilter(s.filter) : undefined}
+              className="rounded-xl p-4 border text-left transition-all"
+              style={{ backgroundColor: tokens.bg.elevated, borderColor: s.filter !== null && feedbackStatusFilter === s.filter ? 'rgba(255,255,255,0.2)' : tokens.border.subtle, cursor: s.filter !== null ? 'pointer' : 'default' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = s.filter !== null && feedbackStatusFilter === s.filter ? 'rgba(255,255,255,0.2)' : tokens.border.subtle; }}
+              onMouseDown={e => { e.currentTarget.style.borderColor = 'var(--text-primary)'; }}
+              onMouseUp={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+            >
+              <p className="text-2xl font-bold mb-0.5" style={{ color: tokens.text.primary }}>{s.value}</p>
+              <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>{s.label}</p>
+            </button>
           ))}
         </div>
-      )}
-    </div>
-  );
+
+        {/* Status tabs + category filter row */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+          <div className="flex gap-1 p-1 rounded-xl flex-shrink-0" style={{ backgroundColor: tokens.bg.input }}>
+            {['pending', 'reviewed', 'resolved', 'closed', 'all'].map(st => (
+              <button
+                key={st}
+                onClick={() => setFeedbackStatusFilter(st)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                style={{
+                  backgroundColor: feedbackStatusFilter === st ? 'var(--bg-elevated)' : 'transparent',
+                  color: tokens.text.primary,
+                  border: feedbackStatusFilter === st ? '1px solid var(--text-primary)' : '1px solid transparent',
+                }}
+              >
+                {st === 'all' ? 'All' : st.charAt(0).toUpperCase() + st.slice(1)}
+                <span className="ml-1.5 text-xs" style={{ opacity: 0.5 }}>
+                  {st === 'all' ? feedbackEntries.length : feedbackEntries.filter(f => f.status === st).length}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1.5 flex-wrap">
+            {['all', 'suggestion', 'bug', 'feature', 'other'].map(cat => (
+              <button
+                key={cat}
+                onClick={() => setFeedbackCategoryFilter(cat)}
+                className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: feedbackCategoryFilter === cat ? 'var(--bg-elevated)' : 'transparent',
+                  color: tokens.text.primary,
+                  border: `1px solid ${feedbackCategoryFilter === cat ? 'var(--text-primary)' : tokens.border.subtle}`,
+                }}
+              >
+                {cat === 'all' ? 'All Types' : categoryLabels[cat]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Feedback list */}
+        {feedbackLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <AnimatedBarsLoader text="Loading feedback..." />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+              <svg className="w-6 h-6" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <p className="font-semibold" style={{ color: tokens.text.primary }}>No {feedbackStatusFilter !== 'all' ? feedbackStatusFilter : ''} feedback</p>
+            <p className="text-sm mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>{feedbackStatusFilter === 'pending' ? 'All caught up — no pending items.' : 'Try adjusting your filters'}</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filtered.map(f => (
+              <div key={f.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.subtle }}>
+                <div className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                        <span className="px-2 py-0.5 rounded-md text-xs font-semibold" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
+                          {categoryLabels[f.category] || f.category}
+                        </span>
+                        <span className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>
+                          {f.username ? `@${f.username}` : f.user_email || f.user_id.slice(0, 8)}
+                        </span>
+                        <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.35 }}>
+                          {new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <p className="text-sm leading-relaxed" style={{ color: tokens.text.primary }}>{f.content}</p>
+                      {f.media_url && (
+                        <div className="mt-3">
+                          {f.media_url.match(/\.(mp4|mov|webm|ogg)$/i) ? (
+                            <video src={f.media_url} controls className="max-h-52 rounded-xl" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                          ) : (
+                            <a href={f.media_url} target="_blank" rel="noopener noreferrer">
+                              <img src={f.media_url} alt="Attached media" className="max-h-52 rounded-xl object-cover transition-all hover:brightness-110" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 flex flex-col gap-1.5">
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-semibold text-center" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
+                        {f.status.charAt(0).toUpperCase() + f.status.slice(1)}
+                      </span>
+                      {['pending', 'reviewed', 'resolved', 'closed'].filter(s => s !== f.status).map(s => (
+                        <button
+                          key={s}
+                          onClick={() => handleFeedbackStatusUpdate(f.id, s)}
+                          disabled={updatingFeedbackId === f.id}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all hover:brightness-110 text-left"
+                          style={{ backgroundColor: 'transparent', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary, opacity: updatingFeedbackId === f.id ? 0.4 : 0.7 }}
+                        >
+                          → {s.charAt(0).toUpperCase() + s.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   useEffect(() => {
     if (activeSection === 'home') {
       fetchWhitelistedChannels();
       fetchCampaigns();
-      fetchActivityLog();
       fetchFeedback();
     }
-  }, [activeSection, fetchWhitelistedChannels, fetchCampaigns, fetchActivityLog, fetchFeedback]);
+  }, [activeSection, fetchWhitelistedChannels, fetchCampaigns, fetchFeedback]);
 
   useEffect(() => {
     if (activeSection === 'settings') {
-      fetchActivityLog();
+      fetchFeedback();
     }
-  }, [activeSection, fetchActivityLog]);
+  }, [activeSection, fetchFeedback]);
 
   const handleApplicationAction = async (id: string, action: 'approved' | 'denied') => {
     setActioningId(id);
@@ -1497,82 +1563,6 @@ export function AdminDashboard() {
                   )}
                 </div>
 
-                {/* Feedback Card */}
-                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'feedback' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}` }}>
-                  <button
-                    onClick={() => setExpandedHomeCard(expandedHomeCard === 'feedback' ? null : 'feedback')}
-                    className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
-                    style={{ backgroundColor: tokens.bg.card }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}>
-                        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
-                      </svg>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>User Feedback</p>
-                        <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>
-                          {feedbackEntries.filter(f => f.status === 'pending').length} pending • {feedbackEntries.length} total
-                        </p>
-                      </div>
-                    </div>
-                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'feedback' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
-                  </button>
-                  {expandedHomeCard === 'feedback' && (
-                    <div className="px-5 pb-5 pt-3" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
-                      {feedbackLoading ? (
-                        <div className="flex justify-center py-4">
-                          <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                            <path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/>
-                          </svg>
-                        </div>
-                      ) : feedbackEntries.length === 0 ? (
-                        <p className="text-sm text-center py-4" style={{ color: tokens.text.primary, opacity: 0.5 }}>No feedback received</p>
-                      ) : (
-                        <div className="space-y-3">
-                          {feedbackEntries.slice(0, 5).map((entry) => (
-                            <div key={entry.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}>
-                              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}>
-                                  <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
-                                </svg>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>
-                                  {entry.username || entry.user_email || 'Anonymous'}
-                                </p>
-                                <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.7 }}>
-                                  {entry.category} • {entry.status}
-                                </p>
-                                <p className="text-xs mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>
-                                  {new Date(entry.created_at).toLocaleString()}
-                                </p>
-                              </div>
-                              <button
-                                className="px-3 py-1 rounded text-xs font-medium transition-all hover:brightness-110"
-                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}
-                                onClick={() => {
-                                  setActiveSection('data');
-                                }}
-                              >
-                                View
-                              </button>
-                            </div>
-                          ))}
-                          {feedbackEntries.length > 5 && (
-                            <button
-                              onClick={() => setActiveSection('data')}
-                              className="w-full py-2 text-xs font-medium transition-all hover:brightness-110 rounded-lg"
-                              style={{ backgroundColor: tokens.bg.card, color: tokens.text.primary }}
-                            >
-                              View all {feedbackEntries.length} feedback entries
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
                 </div>
               </div>
             )}
@@ -1582,7 +1572,7 @@ export function AdminDashboard() {
                 <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
                   <div>
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>Applications</h2>
-                    <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.6 }}>Freelancer onboarding and creator social verification requests</p>
+                    <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.6 }}>Freelancer onboarding, creator verification, and artist account requests</p>
                   </div>
                   <div className="flex gap-2">
                     {(['pending', 'approved', 'denied'] as const).map(s => (
@@ -1611,6 +1601,7 @@ export function AdminDashboard() {
                   </div>
                 ) : (() => {
                   const sections = [
+                    { type: 'artist_account' as const, label: 'Artist Accounts', color: '#f9a8d4' },
                     { type: 'freelancer_onboarding' as const, label: 'Freelancer Onboarding', color: '#60a5fa' },
                     { type: 'creator_verification' as const, label: 'Creator Verification', color: '#a78bfa' },
                   ];
@@ -1666,6 +1657,14 @@ export function AdminDashboard() {
                                         </span>
                                       </div>
                                       {app.email && <p className="text-xs mb-2" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.email}</p>}
+
+                                      {app.application_type === 'artist_account' && (
+                                        <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2">
+                                          {app.category && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.category}</span></div>}
+                                          {app.country && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country}</span></div>}
+                                          {app.bio && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                        </div>
+                                      )}
 
                                       {app.application_type === 'freelancer_onboarding' && (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1 mt-2">
@@ -1904,181 +1903,19 @@ export function AdminDashboard() {
               </div>
             )}
 
-            {activeSection === 'data' && (() => {
-              const categoryLabels: Record<string, string> = {
-                suggestion: 'Suggestion',
-                bug: 'Bug Report',
-                feature: 'Feature Request',
-                other: 'Other',
-              };
-              const filtered = feedbackEntries.filter(f => {
-                if (feedbackCategoryFilter !== 'all' && f.category !== feedbackCategoryFilter) return false;
-                if (feedbackStatusFilter !== 'all' && f.status !== feedbackStatusFilter) return false;
-                return true;
-              });
-              const counts = {
-                total: feedbackEntries.length,
-                pending: feedbackEntries.filter(f => f.status === 'pending').length,
-                bug: feedbackEntries.filter(f => f.category === 'bug').length,
-                feature: feedbackEntries.filter(f => f.category === 'feature').length,
-                suggestion: feedbackEntries.filter(f => f.category === 'suggestion').length,
-              };
-              return (
-                <div className="animate-fade-in">
-                  <div className="mb-6">
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>User Feedback</h2>
-                    <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Review and triage feedback to inform product decisions</p>
+            {activeSection === 'data' && (
+              <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
+                <div className="text-center px-4">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
                   </div>
-
-                  {/* Stats row */}
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-7">
-                    {[
-                      { label: 'Total', value: counts.total, filter: 'all' },
-                      { label: 'Pending', value: counts.pending, filter: 'pending' },
-                      { label: 'Bug Reports', value: counts.bug, filter: null },
-                      { label: 'Features', value: counts.feature, filter: null },
-                      { label: 'Suggestions', value: counts.suggestion, filter: null },
-                    ].map(s => (
-                      <button
-                        key={s.label}
-                        onClick={() => s.filter !== null ? setFeedbackStatusFilter(s.filter) : undefined}
-                        className="rounded-xl p-4 border text-left transition-all"
-                        style={{ backgroundColor: tokens.bg.elevated, borderColor: s.filter !== null && feedbackStatusFilter === s.filter ? 'rgba(255,255,255,0.2)' : tokens.border.subtle, cursor: s.filter !== null ? 'pointer' : 'default' }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = s.filter !== null && feedbackStatusFilter === s.filter ? 'rgba(255,255,255,0.2)' : tokens.border.subtle; }}
-                        onMouseDown={e => { e.currentTarget.style.borderColor = 'var(--text-primary)'; }}
-                        onMouseUp={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                      >
-                        <p className="text-2xl font-bold mb-0.5" style={{ color: tokens.text.primary }}>{s.value}</p>
-                        <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>{s.label}</p>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Status tabs + category filter row */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
-                    {/* Status tabs */}
-                    <div className="flex gap-1 p-1 rounded-xl flex-shrink-0" style={{ backgroundColor: tokens.bg.input }}>
-                      {['pending', 'reviewed', 'resolved', 'closed', 'all'].map(st => (
-                        <button
-                          key={st}
-                          onClick={() => setFeedbackStatusFilter(st)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                          style={{
-                            backgroundColor: feedbackStatusFilter === st ? 'var(--bg-elevated)' : 'transparent',
-                            color: tokens.text.primary,
-                            border: feedbackStatusFilter === st ? '1px solid var(--text-primary)' : '1px solid transparent',
-                          }}
-                        >
-                          {st === 'all' ? 'All' : st.charAt(0).toUpperCase() + st.slice(1)}
-                          <span className="ml-1.5 text-xs" style={{ opacity: 0.5 }}>
-                            {st === 'all' ? feedbackEntries.length : feedbackEntries.filter(f => f.status === st).length}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                    {/* Category filter bubbles */}
-                    <div className="flex gap-1.5 flex-wrap">
-                      {['all', 'suggestion', 'bug', 'feature', 'other'].map(cat => (
-                        <button
-                          key={cat}
-                          onClick={() => setFeedbackCategoryFilter(cat)}
-                          className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
-                          style={{
-                            backgroundColor: feedbackCategoryFilter === cat ? 'var(--bg-elevated)' : 'transparent',
-                            color: tokens.text.primary,
-                            border: `1px solid ${feedbackCategoryFilter === cat ? 'var(--text-primary)' : tokens.border.subtle}`,
-                          }}
-                        >
-                          {cat === 'all' ? 'All Types' : categoryLabels[cat]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Feedback list */}
-                  {feedbackLoading ? (
-                    <div className="flex items-center justify-center py-20">
-                      <AnimatedBarsLoader text="Loading feedback..." />
-                    </div>
-                  ) : filtered.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
-                        <svg className="w-6 h-6" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                      </div>
-                      <p className="font-semibold" style={{ color: tokens.text.primary }}>No {feedbackStatusFilter !== 'all' ? feedbackStatusFilter : ''} feedback</p>
-                      <p className="text-sm mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>{feedbackStatusFilter === 'pending' ? 'All caught up — no pending items.' : 'Try adjusting your filters'}</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {filtered.map(f => (
-                        <div key={f.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.subtle }}>
-                          <div className="p-5">
-                            <div className="flex items-start gap-4">
-                              <div className="flex-1 min-w-0">
-                                {/* Meta row */}
-                                <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                                  <span className="px-2 py-0.5 rounded-md text-xs font-semibold" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
-                                    {categoryLabels[f.category] || f.category}
-                                  </span>
-                                  <span className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>
-                                    {f.username ? `@${f.username}` : f.user_email || f.user_id.slice(0, 8)}
-                                  </span>
-                                  <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.35 }}>
-                                    {new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                  </span>
-                                </div>
-                                {/* Content */}
-                                <p className="text-sm leading-relaxed" style={{ color: tokens.text.primary }}>{f.content}</p>
-                                {/* Attached media */}
-                                {f.media_url && (
-                                  <div className="mt-3">
-                                    {f.media_url.match(/\.(mp4|mov|webm|ogg)$/i) ? (
-                                      <video
-                                        src={f.media_url}
-                                        controls
-                                        className="max-h-52 rounded-xl"
-                                        style={{ border: `1px solid ${tokens.border.subtle}` }}
-                                      />
-                                    ) : (
-                                      <a href={f.media_url} target="_blank" rel="noopener noreferrer">
-                                        <img
-                                          src={f.media_url}
-                                          alt="Attached media"
-                                          className="max-h-52 rounded-xl object-cover transition-all hover:brightness-110"
-                                          style={{ border: `1px solid ${tokens.border.subtle}` }}
-                                        />
-                                      </a>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                              {/* Status actions */}
-                              <div className="flex-shrink-0 flex flex-col gap-1.5">
-                                <span className="px-2.5 py-1 rounded-lg text-xs font-semibold text-center" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
-                                  {f.status.charAt(0).toUpperCase() + f.status.slice(1)}
-                                </span>
-                                {['pending', 'reviewed', 'resolved', 'closed'].filter(s => s !== f.status).map(s => (
-                                  <button
-                                    key={s}
-                                    onClick={() => handleFeedbackStatusUpdate(f.id, s)}
-                                    disabled={updatingFeedbackId === f.id}
-                                    className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all hover:brightness-110 text-left"
-                                    style={{ backgroundColor: 'transparent', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary, opacity: updatingFeedbackId === f.id ? 0.4 : 0.7 }}
-                                  >
-                                    → {s.charAt(0).toUpperCase() + s.slice(1)}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No data yet</h3>
+                  <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.5 }}>Revenue and analytics data will appear here</p>
                 </div>
-              );
-            })()}
+              </div>
+            )}
             {activeSection === 'settings' && (
               <>
                 {/* Mobile Settings View */}
@@ -2305,7 +2142,7 @@ export function AdminDashboard() {
                     )}
                     renderLanguages={() => <div></div>}
                     renderNotifications={() => <div></div>}
-                    renderSendFeedback={renderAdminActivityLog}
+                    renderSendFeedback={renderAdminFeedback}
                     renderLogOut={() => (
                       <div className="scroll-mt-6 flex gap-3">
                         <button
@@ -2548,7 +2385,7 @@ export function AdminDashboard() {
                     )}
                     renderLanguages={() => <div></div>}
                     renderNotifications={() => <div></div>}
-                    renderSendFeedback={renderAdminActivityLog}
+                    renderSendFeedback={renderAdminFeedback}
                     renderLogOut={() => (
                       <div className="scroll-mt-6 flex gap-3">
                         <button
