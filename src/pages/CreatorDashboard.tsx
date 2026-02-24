@@ -18,6 +18,8 @@ import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { MessageToast } from '../components/MessageToast';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
+import ContentDetectionForm from '../components/ContentDetectionForm';
+import LicensingForm from '../components/LicensingForm';
 import { ProfileView } from '../components/ProfileView';
 import { SettingsView } from '../components/SettingsView';
 import { AccountTypeSection } from '../components/AccountTypeSection';
@@ -886,6 +888,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [assignedCampaigns, setAssignedCampaigns] = useState<any[]>([]);
   const [campaignsLoading, setCampaignsLoading] = useState(false);
+  const [newCampaignIds, setNewCampaignIds] = useState<Set<string>>(new Set());
+  const [showDetectionForm, setShowDetectionForm] = useState(false);
+  const [detectionSubmitted, setDetectionSubmitted] = useState(false);
+  const [showLicensingForm, setShowLicensingForm] = useState(false);
+  const [licensingSubmitted, setLicensingSubmitted] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -1011,6 +1018,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           .map((row: any) => row.campaigns)
           .filter(Boolean);
         setAssignedCampaigns(campaigns);
+        // Track new campaigns via localStorage
+        const seenKey = `seen_campaigns_${currentUserId}`;
+        const seen: string[] = JSON.parse(localStorage.getItem(seenKey) || '[]');
+        const seenSet = new Set(seen);
+        const newIds = new Set(campaigns.filter((c: any) => !seenSet.has(c.id)).map((c: any) => c.id as string));
+        setNewCampaignIds(newIds);
       } catch (e) {
         console.error('[Campaigns] Error fetching assigned campaigns:', e);
       } finally {
@@ -3340,7 +3353,17 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   {/* Campaigns */}
                   <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'campaigns' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
                     <button
-                      onClick={() => setExpandedOppsCard(expandedOppsCard === 'campaigns' ? null : 'campaigns')}
+                      onClick={() => {
+                        setExpandedOppsCard(expandedOppsCard === 'campaigns' ? null : 'campaigns');
+                        // Mark all campaigns as seen when opened
+                        if (expandedOppsCard !== 'campaigns' && currentUserId && newCampaignIds.size > 0) {
+                          const seenKey = `seen_campaigns_${currentUserId}`;
+                          const seen: string[] = JSON.parse(localStorage.getItem(seenKey) || '[]');
+                          const updated = Array.from(new Set([...seen, ...Array.from(newCampaignIds)]));
+                          localStorage.setItem(seenKey, JSON.stringify(updated));
+                          setNewCampaignIds(new Set());
+                        }
+                      }}
                       className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
                       style={{ backgroundColor: 'var(--bg-card)' }}
                     >
@@ -3350,6 +3373,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</p>
                           <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{assignedCampaigns.length} campaign{assignedCampaigns.length !== 1 ? 's' : ''} assigned</p>
                         </div>
+                        {newCampaignIds.size > 0 && (
+                          <span className="flex items-center justify-center text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[20px]" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)', fontSize: '10px' }}>
+                            {newCampaignIds.size} new
+                          </span>
+                        )}
                       </div>
                       <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                     </button>
@@ -3439,34 +3467,119 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                         <div className="text-left">
                           <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Content Detection</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>0 detected · $0 revenue</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: detectionSubmitted ? 1 : 0.5 }}>{detectionSubmitted ? 'Active' : 'Not active'}</p>
                         </div>
                       </div>
                       <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'detection' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     {expandedOppsCard === 'detection' && (
                       <div className="px-5 pb-5 pt-3" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
-                        <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
-                        <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Some use case scenarios are Youtubers, Live Streamers, Movie Studios.</p>
-                        <div className="rounded-lg px-4 py-3 mb-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                          <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.9 }}>Disclaimer</p>
-                          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>We only accept high volume clients that have content susceptible to being stolen.</p>
-                        </div>
-                        <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>If you think you are a good fit, apply below.</p>
-                        <div className="space-y-2 mb-4">
-                          {[{ step: '1', text: 'We scan platforms for unauthorized copies of your content' }, { step: '2', text: 'Detected reuploads are automatically claimed on your behalf' }, { step: '3', text: 'Revenue from those views flows directly to your account' }].map(({ step, text }) => (
-                            <div key={step} className="flex items-start gap-3">
-                              <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
-                              <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                        {detectionSubmitted ? (
+                          <div className="text-center py-6">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>
                             </div>
-                          ))}
+                            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Application Submitted</p>
+                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Our team will review your application and reach out within 3–5 business days.</p>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
+                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Some use case scenarios are Youtubers, Live Streamers, Movie Studios.</p>
+                            <div className="rounded-lg px-4 py-3 mb-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.9 }}>Disclaimer</p>
+                              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>We only accept high volume clients that have content susceptible to being stolen.</p>
+                            </div>
+                            <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>If you think you are a good fit, apply below.</p>
+                            <div className="space-y-2 mb-4">
+                              {[{ step: '1', text: 'We scan platforms for unauthorized copies of your content' }, { step: '2', text: 'Detected reuploads are automatically claimed on your behalf' }, { step: '3', text: 'Revenue from those views flows directly to your account' }].map(({ step, text }) => (
+                                <div key={step} className="flex items-start gap-3">
+                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                                </div>
+                              ))}
+                            </div>
+                            {!showDetectionForm ? (
+                              <button
+                                onClick={() => setShowDetectionForm(true)}
+                                className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110"
+                                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                              >
+                                Apply Now
+                              </button>
+                            ) : (
+                              <ContentDetectionForm
+                                onClose={() => setShowDetectionForm(false)}
+                                onSubmit={(_data) => {
+                                  setShowDetectionForm(false);
+                                  setDetectionSubmitted(true);
+                                }}
+                              />
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Licensing */}
+                  <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'licensing' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
+                    <button
+                      onClick={() => setExpandedOppsCard(expandedOppsCard === 'licensing' ? null : 'licensing')}
+                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      style={{ backgroundColor: 'var(--bg-card)' }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Licensing</p>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Manage and protect your content licenses</p>
                         </div>
-                        <button
-                          className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110"
-                          style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                        >
-                          Apply Now
-                        </button>
+                      </div>
+                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'licensing' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    {expandedOppsCard === 'licensing' && (
+                      <div className="px-5 pb-5 pt-4" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                        {licensingSubmitted ? (
+                          <div className="py-6 text-center">
+                            <svg className="w-8 h-8 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                            <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Application submitted</p>
+                            <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Our team will review your licensing application and reach out within 5–7 business days.</p>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Turn your content into a recurring revenue stream. Elevate handles licensing negotiations, brand sync deals, and platform monetization on your behalf — so you can focus on creating.</p>
+                            <div className="space-y-2 mb-4">
+                              {[
+                                { step: '1', text: 'We represent your catalog to brands, agencies, and platforms looking for licensed content' },
+                                { step: '2', text: 'Sync and licensing deals are negotiated by our team and require your approval before closing' },
+                                { step: '3', text: 'Revenue from licensing deals is paid out monthly, directly to your connected payout account' },
+                              ].map(({ step, text }) => (
+                                <div key={step} className="flex items-start gap-3">
+                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                                </div>
+                              ))}
+                            </div>
+                            {!showLicensingForm ? (
+                              <button
+                                onClick={() => setShowLicensingForm(true)}
+                                className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110"
+                                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                              >
+                                Apply Now
+                              </button>
+                            ) : (
+                              <LicensingForm
+                                onClose={() => setShowLicensingForm(false)}
+                                onSubmit={() => {
+                                  setShowLicensingForm(false);
+                                  setLicensingSubmitted(true);
+                                }}
+                              />
+                            )}
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
