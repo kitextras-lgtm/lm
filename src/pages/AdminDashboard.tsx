@@ -669,25 +669,14 @@ export function AdminDashboard() {
   const handleApplicationAction = async (id: string, action: 'approved' | 'denied', reason?: string) => {
     setActioningId(id);
     try {
-      const updateData: Record<string, any> = { status: action, reviewed_at: new Date().toISOString() };
-      if (action === 'denied' && reason) updateData.decline_reason = reason;
-      const { error } = await supabase
-        .from('applications')
-        .update(updateData)
-        .eq('id', id);
-      if (!error) {
+      const result = await adminFetch('admin-application-action', {
+        method: 'POST',
+        body: JSON.stringify({ applicationId: id, action, declineReason: reason }),
+      });
+      if (result?.success) {
         setApplications(prev => prev.map(a => a.id === id ? { ...a, status: action, decline_reason: reason || null } : a));
-        // If approving an artist_account application, mark their Artist social link as verified
-        if (action === 'approved') {
-          const app = applications.find(a => a.id === id);
-          if (app?.application_type === 'artist_account' && app.user_id) {
-            await supabase
-              .from('social_links')
-              .update({ verified: true })
-              .eq('user_id', app.user_id)
-              .eq('platform', 'Artist');
-          }
-        }
+      } else {
+        console.error('Error updating application:', result?.message);
       }
     } catch (e) {
       console.error('Error updating application:', e);
