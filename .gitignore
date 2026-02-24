@@ -5,6 +5,10 @@ node_modules/
 .DS_Store
 **/.DS_Store
 
+# Backup files
+*.bak
+*.backup
+
 # Cursor workflow files (keep local, don't commit)
 .cursor-edit-verification.md
 .cursor-workflow.md

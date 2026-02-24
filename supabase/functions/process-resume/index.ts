@@ -1,10 +1,8 @@
-import { createClient } from 'npm:@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { handleCors } from '../_shared/cors.ts';
+import { json, jsonError } from '../_shared/response.ts';
+import { createServiceClient } from '../_shared/supabase-client.ts';
+import { corsHeaders } from '../_shared/cors.ts';
 
 // ─── Helpers ───
 
@@ -946,23 +944,16 @@ function parseResumeHeuristic(text: string): {
 // ═══════════════════════════════════════════════════════════════
 
 Deno.serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createServiceClient();
 
     const { resumeId, userId } = await req.json();
 
     if (!resumeId || !userId) {
-      return new Response(
-        JSON.stringify({ success: false, message: 'Missing resumeId or userId' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return jsonError('Missing resumeId or userId');
     }
 
     // ─── Stage 0: Load & Validate ───
@@ -974,10 +965,7 @@ Deno.serve(async (req: Request) => {
       .single();
 
     if (resumeErr || !resume) {
-      return new Response(
-        JSON.stringify({ success: false, message: 'Resume not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return jsonError('Resume not found', 404);
     }
 
     await updateResumeStatus(supabase, resumeId, 'SCANNING');
@@ -989,10 +977,7 @@ Deno.serve(async (req: Request) => {
 
     if (fileErr || !fileData) {
       await updateResumeStatus(supabase, resumeId, 'FAILED', 'FILE_NOT_FOUND');
-      return new Response(
-        JSON.stringify({ success: false, message: 'File not found in storage' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return jsonError('File not found in storage', 404);
     }
 
     // ─── Stage 2: Text Extraction ───
@@ -1118,10 +1103,7 @@ Deno.serve(async (req: Request) => {
 
       if (draftErr || !newDraft) {
         await updateResumeStatus(supabase, resumeId, 'FAILED', 'DRAFT_CREATE_FAILED');
-        return new Response(
-          JSON.stringify({ success: false, message: 'Failed to create profile draft' }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return jsonError('Failed to create profile draft', 500);
       }
       draftId = newDraft.id;
     }
@@ -1166,30 +1148,24 @@ Deno.serve(async (req: Request) => {
     // Mark resume as complete
     await updateResumeStatus(supabase, resumeId, 'COMPLETE');
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        draftId,
-        resumeId,
-        parserVersion: '2.0.0-heuristic',
-        summary: {
-          workExperiences: workExperiences.length,
-          educations: educations.length,
-          certifications: certifications.length,
-          skills: skills.length,
-          needsReview: workExperiences.filter((w) => w.needs_review).length,
-          extractionMethod: extraction.method,
-          textLength: normalizedText.length,
-        },
-      }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return json({
+      success: true,
+      draftId,
+      resumeId,
+      parserVersion: '2.0.0-heuristic',
+      summary: {
+        workExperiences: workExperiences.length,
+        educations: educations.length,
+        certifications: certifications.length,
+        skills: skills.length,
+        needsReview: workExperiences.filter((w) => w.needs_review).length,
+        extractionMethod: extraction.method,
+        textLength: normalizedText.length,
+      },
+    });
 
   } catch (err) {
-    console.error('❌ process-resume error:', err);
-    return new Response(
-      JSON.stringify({ success: false, message: err instanceof Error ? err.message : 'Internal error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.error('process-resume error:', err);
+    return jsonError(err instanceof Error ? err.message : 'Internal error', 500);
   }
 });

@@ -1,7 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, ChevronDown } from 'lucide-react';
-import { submitContactForm } from '../api/submissions';
+
+async function submitContactForm(data: { name: string; email: string; subject: string; message: string }) {
+  const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/contact-form`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) return { success: false };
+  return await res.json();
+}
 
 interface SubjectDropdownProps {
   value: string;

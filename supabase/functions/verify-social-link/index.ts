@@ -1,103 +1,84 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { handleCors } from '../_shared/cors.ts';
+import { json, jsonError } from '../_shared/response.ts';
+import { createServiceClient } from '../_shared/supabase-client.ts';
 
 const WORDS = [
-  "Anchor","Blaze","Cedar","Drift","Eagle","Flare","Grove","Haven","Ivory","Jade",
-  "Kite","Lumen","Maple","Noble","Orbit","Pearl","Quest","Ridge","Stone","Tide",
-  "Unity","Valor","Willow","Xenon","Yield","Zenith","Amber","Birch","Coral","Dawn",
-  "Echo","Fern","Gale","Halo","Iris","Jewel","Knoll","Lotus","Mist","Nova",
-  "Opal","Pine","Quill","River","Sage","Terra","Umber","Veil","Wave","Zinc",
-  "Acorn","Brook","Cliff","Dune","Ember","Frost","Glow","Heath","Isle","Jasper",
-  "Kelp","Lark","Marsh","Nook","Onyx","Petal","Quartz","Reed","Slate","Thorn",
-  "Umber","Vine","Wren","Yew","Zeal","Alder","Brine","Crest","Dell","Elm",
-  "Finch","Gust","Haze","Ink","Juniper","Knot","Leaf","Moss","Nile","Oak",
-  "Plum","Quake","Rune","Silt","Tuft","Urn","Vale","Wick","Yolk","Zest"
+  'Anchor','Blaze','Cedar','Drift','Eagle','Flare','Grove','Haven','Ivory','Jade',
+  'Kite','Lumen','Maple','Noble','Orbit','Pearl','Quest','Ridge','Stone','Tide',
+  'Unity','Valor','Willow','Xenon','Yield','Zenith','Amber','Birch','Coral','Dawn',
+  'Echo','Fern','Gale','Halo','Iris','Jewel','Knoll','Lotus','Mist','Nova',
+  'Opal','Pine','Quill','River','Sage','Terra','Umber','Veil','Wave','Zinc',
+  'Acorn','Brook','Cliff','Dune','Ember','Frost','Glow','Heath','Isle','Jasper',
+  'Kelp','Lark','Marsh','Nook','Onyx','Petal','Quartz','Reed','Slate','Thorn',
+  'Umber','Vine','Wren','Yew','Zeal','Alder','Brine','Crest','Dell','Elm',
+  'Finch','Gust','Haze','Ink','Juniper','Knot','Leaf','Moss','Nile','Oak',
+  'Plum','Quake','Rune','Silt','Tuft','Urn','Vale','Wick','Yolk','Zest',
 ];
 
 function generatePhrase(): string {
-  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
-  return `Elevate ${word}`;
+  return `Elevate ${WORDS[Math.floor(Math.random() * WORDS.length)]}`;
 }
 
 async function fetchPageText(url: string): Promise<string> {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; ElevateBot/1.0)",
-        "Accept": "text/html,application/xhtml+xml",
+        'User-Agent': 'Mozilla/5.0 (compatible; ElevateBot/1.0)',
+        Accept: 'text/html,application/xhtml+xml',
       },
-      redirect: "follow",
+      redirect: 'follow',
     });
-    if (!res.ok) return "";
+    if (!res.ok) return '';
     const html = await res.text();
-    // Strip HTML tags to get plain text
-    return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+    return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   } catch {
-    return "";
+    return '';
   }
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-  );
+  const supabase = createServiceClient();
 
   try {
     const { action, linkId, userId } = await req.json();
 
     if (!linkId || !userId) {
-      return new Response(JSON.stringify({ success: false, message: "linkId and userId required" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonError('linkId and userId required');
     }
 
-    // Fetch the link row
     const { data: link, error: fetchErr } = await supabase
-      .from("social_links")
-      .select("*")
-      .eq("id", linkId)
-      .eq("user_id", userId)
+      .from('social_links')
+      .select('*')
+      .eq('id', linkId)
+      .eq('user_id', userId)
       .maybeSingle();
 
     if (fetchErr || !link) {
-      return new Response(JSON.stringify({ success: false, message: "Link not found" }), {
-        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonError('Link not found', 404);
     }
 
-    // ACTION: get-phrase — generate and store a phrase if not already set
-    if (action === "get-phrase") {
+    // ── get-phrase: generate and store a verification phrase ──
+    if (action === 'get-phrase') {
       let phrase = link.verification_phrase;
       if (!phrase) {
         phrase = generatePhrase();
         await supabase
-          .from("social_links")
+          .from('social_links')
           .update({ verification_phrase: phrase })
-          .eq("id", linkId);
+          .eq('id', linkId);
       }
-      return new Response(JSON.stringify({ success: true, phrase }), {
-        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ success: true, phrase });
     }
 
-    // ACTION: check — scrape the URL and look for the phrase
-    if (action === "check") {
+    // ── check: scrape the URL and look for the phrase ──
+    if (action === 'check') {
       const phrase = link.verification_phrase;
       if (!phrase) {
-        return new Response(JSON.stringify({ success: false, message: "No phrase assigned yet" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonError('No phrase assigned yet');
       }
 
       const pageText = await fetchPageText(link.url);
@@ -105,25 +86,18 @@ Deno.serve(async (req: Request) => {
 
       if (found) {
         await supabase
-          .from("social_links")
+          .from('social_links')
           .update({ verified: true })
-          .eq("id", linkId);
+          .eq('id', linkId);
       }
 
-      return new Response(JSON.stringify({ success: true, verified: found }), {
-        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ success: true, verified: found });
     }
 
-    return new Response(JSON.stringify({ success: false, message: "Unknown action" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
+    return jsonError('Unknown action');
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("verify-social-link error:", message);
-    return new Response(JSON.stringify({ success: false, message }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error('verify-social-link error:', message);
+    return jsonError(message, 500);
   }
 });

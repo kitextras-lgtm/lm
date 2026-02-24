@@ -1,13 +1,11 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { SupabaseClient } from 'npm:@supabase/supabase-js@2';
+import { handleCors } from '../_shared/cors.ts';
+import { json, jsonError } from '../_shared/response.ts';
+import { createServiceClient, getSupabaseEnv } from '../_shared/supabase-client.ts';
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+// ── Constants ──
 
-// Allowed MIME types
 const RESUME_ALLOWED_MIMES = [
   'application/pdf',
   'application/msword',
@@ -16,319 +14,238 @@ const RESUME_ALLOWED_MIMES = [
   'text/rtf',
 ];
 
-const LINKEDIN_ALLOWED_MIMES = [
-  'application/pdf',
-];
+const LINKEDIN_ALLOWED_MIMES = ['application/pdf'];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-// Simple magic-byte check for PDF
-function isPdfByMagic(bytes: Uint8Array): boolean {
-  // PDF starts with %PDF
-  return bytes.length >= 4 &&
-    bytes[0] === 0x25 && bytes[1] === 0x50 &&
-    bytes[2] === 0x44 && bytes[3] === 0x46;
-}
-
-// Simple magic-byte check for DOCX (ZIP-based)
-function isDocxByMagic(bytes: Uint8Array): boolean {
-  return bytes.length >= 4 &&
-    bytes[0] === 0x50 && bytes[1] === 0x4B &&
-    bytes[2] === 0x03 && bytes[3] === 0x04;
-}
-
-// Simple magic-byte check for DOC (OLE2)
-function isDocByMagic(bytes: Uint8Array): boolean {
-  return bytes.length >= 8 &&
-    bytes[0] === 0xD0 && bytes[1] === 0xCF &&
-    bytes[2] === 0x11 && bytes[3] === 0xE0 &&
-    bytes[4] === 0xA1 && bytes[5] === 0xB1 &&
-    bytes[6] === 0x1A && bytes[7] === 0xE1;
-}
+// ── Magic-byte validators ──
 
 function validateMagicBytes(bytes: Uint8Array, mimeType: string): boolean {
   switch (mimeType) {
     case 'application/pdf':
-      return isPdfByMagic(bytes);
+      return bytes.length >= 4 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46;
     case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-      return isDocxByMagic(bytes);
+      return bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
     case 'application/msword':
-      return isDocByMagic(bytes);
+      return (
+        bytes.length >= 8 &&
+        bytes[0] === 0xd0 && bytes[1] === 0xcf && bytes[2] === 0x11 && bytes[3] === 0xe0 &&
+        bytes[4] === 0xa1 && bytes[5] === 0xb1 && bytes[6] === 0x1a && bytes[7] === 0xe1
+      );
     case 'application/rtf':
     case 'text/rtf':
-      // RTF starts with {\rtf
-      return bytes.length >= 5 &&
-        bytes[0] === 0x7B && bytes[1] === 0x5C &&
-        bytes[2] === 0x72 && bytes[3] === 0x74 &&
-        bytes[4] === 0x66;
+      return (
+        bytes.length >= 5 &&
+        bytes[0] === 0x7b && bytes[1] === 0x5c && bytes[2] === 0x72 && bytes[3] === 0x74 && bytes[4] === 0x66
+      );
     default:
       return false;
   }
 }
 
+// ── Handler ──
+
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  );
-
+  const supabase = createServiceClient();
   const url = new URL(req.url);
-  const pathParts = url.pathname.split('/').filter(Boolean);
-  // Expected paths: /profile-upload/init, /profile-upload/complete, /profile-upload/delete
-  const action = pathParts[pathParts.length - 1];
+  const action = url.pathname.split('/').filter(Boolean).pop();
 
   try {
-    // ─── INIT: Validate metadata, create DB record, return signed upload URL ───
-    if (action === 'init' && req.method === 'POST') {
-      const { userId, uploadType, fileName, fileSize, mimeType } = await req.json();
+    if (action === 'init' && req.method === 'POST') return await handleInit(req, supabase);
+    if (action === 'complete' && req.method === 'POST') return await handleComplete(req, supabase);
+    if (action === 'delete' && req.method === 'POST') return await handleDelete(req, supabase);
 
-      // Validate required fields
-      if (!userId || !uploadType || !fileName || !fileSize || !mimeType) {
-        return jsonResponse(400, { success: false, message: 'Missing required fields: userId, uploadType, fileName, fileSize, mimeType' });
-      }
-
-      // Validate upload type
-      if (!['resume', 'linkedin_pdf'].includes(uploadType)) {
-        return jsonResponse(400, { success: false, message: 'Invalid uploadType. Must be "resume" or "linkedin_pdf"' });
-      }
-
-      // Validate file size
-      if (fileSize > MAX_FILE_SIZE) {
-        return jsonResponse(400, { success: false, message: 'File exceeds 5MB limit' });
-      }
-
-      // Validate MIME type
-      const allowedMimes = uploadType === 'linkedin_pdf' ? LINKEDIN_ALLOWED_MIMES : RESUME_ALLOWED_MIMES;
-      if (!allowedMimes.includes(mimeType)) {
-        return jsonResponse(400, { success: false, message: `File type "${mimeType}" is not supported` });
-      }
-
-      // Verify user exists
-      const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-      const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-      const userCheck = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
-        method: 'GET',
-        headers: {
-          'apikey': serviceRoleKey,
-          'Authorization': `Bearer ${serviceRoleKey}`,
-        },
-      });
-      if (!userCheck.ok) {
-        return jsonResponse(404, { success: false, message: 'User not found' });
-      }
-
-      // Delete any existing upload of the same type for this user (replace behavior)
-      const { data: existingUploads } = await supabaseClient
-        .from('profile_uploads')
-        .select('id, storage_path')
-        .eq('user_id', userId)
-        .eq('upload_type', uploadType);
-
-      if (existingUploads && existingUploads.length > 0) {
-        for (const existing of existingUploads) {
-          // Delete from storage
-          await supabaseClient.storage
-            .from('profile-uploads')
-            .remove([existing.storage_path]);
-          // Delete DB record
-          await supabaseClient
-            .from('profile_uploads')
-            .delete()
-            .eq('id', existing.id);
-        }
-        console.log(`🗑️ Cleaned up ${existingUploads.length} existing ${uploadType} upload(s) for user ${userId}`);
-      }
-
-      // Generate storage path
-      const timestamp = Date.now();
-      const sanitizedName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const storagePath = `${uploadType}/${userId}/${timestamp}_${sanitizedName}`;
-
-      // Create DB record with status 'uploading'
-      const { data: uploadRecord, error: insertError } = await supabaseClient
-        .from('profile_uploads')
-        .insert({
-          user_id: userId,
-          upload_type: uploadType,
-          file_name: fileName,
-          file_size: fileSize,
-          mime_type: mimeType,
-          storage_path: storagePath,
-          status: 'uploading',
-        })
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error('❌ Failed to create upload record:', insertError);
-        return jsonResponse(500, { success: false, message: 'Failed to initialize upload' });
-      }
-
-      // Create a signed upload URL for direct client upload
-      const { data: signedUrl, error: signedUrlError } = await supabaseClient.storage
-        .from('profile-uploads')
-        .createSignedUploadUrl(storagePath);
-
-      if (signedUrlError) {
-        console.error('❌ Failed to create signed URL:', signedUrlError);
-        // Clean up the DB record
-        await supabaseClient.from('profile_uploads').delete().eq('id', uploadRecord.id);
-        return jsonResponse(500, { success: false, message: 'Failed to create upload URL' });
-      }
-
-      console.log(`✅ Upload initialized: ${uploadRecord.id} → ${storagePath}`);
-
-      return jsonResponse(200, {
-        success: true,
-        uploadId: uploadRecord.id,
-        signedUrl: signedUrl.signedUrl,
-        token: signedUrl.token,
-        storagePath,
-      });
-    }
-
-    // ─── COMPLETE: Verify file was uploaded, validate magic bytes, update status ───
-    if (action === 'complete' && req.method === 'POST') {
-      const { uploadId, userId } = await req.json();
-
-      if (!uploadId || !userId) {
-        return jsonResponse(400, { success: false, message: 'Missing required fields: uploadId, userId' });
-      }
-
-      // Fetch the upload record
-      const { data: upload, error: fetchError } = await supabaseClient
-        .from('profile_uploads')
-        .select('*')
-        .eq('id', uploadId)
-        .eq('user_id', userId)
-        .single();
-
-      if (fetchError || !upload) {
-        return jsonResponse(404, { success: false, message: 'Upload record not found' });
-      }
-
-      if (upload.status !== 'uploading') {
-        return jsonResponse(400, { success: false, message: `Upload is in "${upload.status}" state, expected "uploading"` });
-      }
-
-      // Verify the file exists in storage
-      const { data: fileData, error: downloadError } = await supabaseClient.storage
-        .from('profile-uploads')
-        .download(upload.storage_path);
-
-      if (downloadError || !fileData) {
-        console.error('❌ File not found in storage:', downloadError);
-        await supabaseClient
-          .from('profile_uploads')
-          .update({ status: 'failed', error_message: 'File not found in storage after upload' })
-          .eq('id', uploadId);
-        return jsonResponse(400, { success: false, message: 'File was not uploaded successfully' });
-      }
-
-      // Server-side validation: check actual file size
-      const arrayBuffer = await fileData.arrayBuffer();
-      const bytes = new Uint8Array(arrayBuffer);
-
-      if (bytes.length > MAX_FILE_SIZE) {
-        await supabaseClient.storage.from('profile-uploads').remove([upload.storage_path]);
-        await supabaseClient
-          .from('profile_uploads')
-          .update({ status: 'failed', error_message: 'File exceeds size limit' })
-          .eq('id', uploadId);
-        return jsonResponse(400, { success: false, message: 'File exceeds 5MB limit' });
-      }
-
-      // Server-side validation: verify magic bytes match claimed MIME type
-      if (!validateMagicBytes(bytes, upload.mime_type)) {
-        await supabaseClient.storage.from('profile-uploads').remove([upload.storage_path]);
-        await supabaseClient
-          .from('profile_uploads')
-          .update({ status: 'failed', error_message: 'File content does not match declared type' })
-          .eq('id', uploadId);
-        return jsonResponse(400, { success: false, message: 'File content does not match the declared file type' });
-      }
-
-      // Mark as uploaded (scanning/parsing would be queued here in production)
-      await supabaseClient
-        .from('profile_uploads')
-        .update({
-          status: 'uploaded',
-          file_size: bytes.length, // update with actual size
-        })
-        .eq('id', uploadId);
-
-      console.log(`✅ Upload complete: ${uploadId} (${bytes.length} bytes, ${upload.mime_type})`);
-
-      return jsonResponse(200, {
-        success: true,
-        uploadId,
-        status: 'uploaded',
-        fileName: upload.file_name,
-        fileSize: bytes.length,
-      });
-    }
-
-    // ─── DELETE: Remove file from storage and DB ───
-    if (action === 'delete' && req.method === 'POST') {
-      const { uploadId, userId } = await req.json();
-
-      if (!uploadId || !userId) {
-        return jsonResponse(400, { success: false, message: 'Missing required fields: uploadId, userId' });
-      }
-
-      // Fetch the upload record
-      const { data: upload, error: fetchError } = await supabaseClient
-        .from('profile_uploads')
-        .select('*')
-        .eq('id', uploadId)
-        .eq('user_id', userId)
-        .single();
-
-      if (fetchError || !upload) {
-        return jsonResponse(404, { success: false, message: 'Upload record not found' });
-      }
-
-      // Delete from storage
-      const { error: storageError } = await supabaseClient.storage
-        .from('profile-uploads')
-        .remove([upload.storage_path]);
-
-      if (storageError) {
-        console.error('⚠️ Storage delete warning:', storageError);
-        // Continue anyway — DB record should still be cleaned up
-      }
-
-      // Delete DB record
-      const { error: dbError } = await supabaseClient
-        .from('profile_uploads')
-        .delete()
-        .eq('id', uploadId);
-
-      if (dbError) {
-        console.error('❌ Failed to delete upload record:', dbError);
-        return jsonResponse(500, { success: false, message: 'Failed to delete upload record' });
-      }
-
-      console.log(`🗑️ Upload deleted: ${uploadId}`);
-
-      return jsonResponse(200, { success: true, message: 'Upload deleted' });
-    }
-
-    return jsonResponse(404, { success: false, message: `Unknown action: ${action}` });
-
+    return jsonError(`Unknown action: ${action}`, 404);
   } catch (error) {
-    console.error('❌ profile-upload error:', error);
-    return jsonResponse(500, { success: false, message: 'Internal server error' });
+    console.error('profile-upload error:', error);
+    return jsonError('Internal server error', 500);
   }
 });
 
-function jsonResponse(status: number, body: Record<string, unknown>) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+// ── INIT: validate metadata, create DB record, return signed upload URL ──
+
+async function handleInit(req: Request, supabase: SupabaseClient) {
+  const { userId, uploadType, fileName, fileSize, mimeType } = await req.json();
+
+  if (!userId || !uploadType || !fileName || !fileSize || !mimeType) {
+    return jsonError('Missing required fields: userId, uploadType, fileName, fileSize, mimeType');
+  }
+  if (!['resume', 'linkedin_pdf'].includes(uploadType)) {
+    return jsonError('Invalid uploadType. Must be "resume" or "linkedin_pdf"');
+  }
+  if (fileSize > MAX_FILE_SIZE) {
+    return jsonError('File exceeds 5MB limit');
+  }
+
+  const allowedMimes = uploadType === 'linkedin_pdf' ? LINKEDIN_ALLOWED_MIMES : RESUME_ALLOWED_MIMES;
+  if (!allowedMimes.includes(mimeType)) {
+    return jsonError(`File type "${mimeType}" is not supported`);
+  }
+
+  // Verify user exists
+  const { url: supabaseUrl, serviceRoleKey } = getSupabaseEnv();
+  const userCheck = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
+    method: 'GET',
+    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}` },
   });
+  if (!userCheck.ok) {
+    return jsonError('User not found', 404);
+  }
+
+  // Replace any existing upload of this type
+  const { data: existing } = await supabase
+    .from('profile_uploads')
+    .select('id, storage_path')
+    .eq('user_id', userId)
+    .eq('upload_type', uploadType);
+
+  if (existing?.length) {
+    for (const e of existing) {
+      await supabase.storage.from('profile-uploads').remove([e.storage_path]);
+      await supabase.from('profile_uploads').delete().eq('id', e.id);
+    }
+  }
+
+  // Generate storage path
+  const sanitizedName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const storagePath = `${uploadType}/${userId}/${Date.now()}_${sanitizedName}`;
+
+  const { data: record, error: insertError } = await supabase
+    .from('profile_uploads')
+    .insert({
+      user_id: userId,
+      upload_type: uploadType,
+      file_name: fileName,
+      file_size: fileSize,
+      mime_type: mimeType,
+      storage_path: storagePath,
+      status: 'uploading',
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error('Failed to create upload record:', insertError);
+    return jsonError('Failed to initialize upload', 500);
+  }
+
+  const { data: signedUrl, error: signedUrlError } = await supabase.storage
+    .from('profile-uploads')
+    .createSignedUploadUrl(storagePath);
+
+  if (signedUrlError) {
+    console.error('Failed to create signed URL:', signedUrlError);
+    await supabase.from('profile_uploads').delete().eq('id', record.id);
+    return jsonError('Failed to create upload URL', 500);
+  }
+
+  return json({
+    success: true,
+    uploadId: record.id,
+    signedUrl: signedUrl.signedUrl,
+    token: signedUrl.token,
+    storagePath,
+  });
+}
+
+// ── COMPLETE: verify file was uploaded, validate magic bytes, update status ──
+
+async function handleComplete(req: Request, supabase: SupabaseClient) {
+  const { uploadId, userId } = await req.json();
+
+  if (!uploadId || !userId) {
+    return jsonError('Missing required fields: uploadId, userId');
+  }
+
+  const { data: upload, error: fetchError } = await supabase
+    .from('profile_uploads')
+    .select('*')
+    .eq('id', uploadId)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !upload) return jsonError('Upload record not found', 404);
+  if (upload.status !== 'uploading') {
+    return jsonError(`Upload is in "${upload.status}" state, expected "uploading"`);
+  }
+
+  const { data: fileData, error: dlError } = await supabase.storage
+    .from('profile-uploads')
+    .download(upload.storage_path);
+
+  if (dlError || !fileData) {
+    await supabase.from('profile_uploads')
+      .update({ status: 'failed', error_message: 'File not found in storage after upload' })
+      .eq('id', uploadId);
+    return jsonError('File was not uploaded successfully');
+  }
+
+  const bytes = new Uint8Array(await fileData.arrayBuffer());
+
+  if (bytes.length > MAX_FILE_SIZE) {
+    await supabase.storage.from('profile-uploads').remove([upload.storage_path]);
+    await supabase.from('profile_uploads')
+      .update({ status: 'failed', error_message: 'File exceeds size limit' })
+      .eq('id', uploadId);
+    return jsonError('File exceeds 5MB limit');
+  }
+
+  if (!validateMagicBytes(bytes, upload.mime_type)) {
+    await supabase.storage.from('profile-uploads').remove([upload.storage_path]);
+    await supabase.from('profile_uploads')
+      .update({ status: 'failed', error_message: 'File content does not match declared type' })
+      .eq('id', uploadId);
+    return jsonError('File content does not match the declared file type');
+  }
+
+  await supabase.from('profile_uploads')
+    .update({ status: 'uploaded', file_size: bytes.length })
+    .eq('id', uploadId);
+
+  return json({
+    success: true,
+    uploadId,
+    status: 'uploaded',
+    fileName: upload.file_name,
+    fileSize: bytes.length,
+  });
+}
+
+// ── DELETE: remove file from storage and DB ──
+
+async function handleDelete(req: Request, supabase: SupabaseClient) {
+  const { uploadId, userId } = await req.json();
+
+  if (!uploadId || !userId) {
+    return jsonError('Missing required fields: uploadId, userId');
+  }
+
+  const { data: upload, error: fetchError } = await supabase
+    .from('profile_uploads')
+    .select('*')
+    .eq('id', uploadId)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !upload) return jsonError('Upload record not found', 404);
+
+  const { error: storageError } = await supabase.storage
+    .from('profile-uploads')
+    .remove([upload.storage_path]);
+
+  if (storageError) {
+    console.error('Storage delete warning:', storageError);
+  }
+
+  const { error: dbError } = await supabase.from('profile_uploads').delete().eq('id', uploadId);
+
+  if (dbError) {
+    console.error('Failed to delete upload record:', dbError);
+    return jsonError('Failed to delete upload record', 500);
+  }
+
+  return json({ success: true, message: 'Upload deleted' });
 }
