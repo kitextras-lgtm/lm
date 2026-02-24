@@ -1,11 +1,16 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+function getCorsHeaders(req: Request) {
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "*";
+  const origin = req.headers.get("Origin") || "";
+  const resolvedOrigin = allowedOrigin === "*" ? "*" : (origin === allowedOrigin ? origin : allowedOrigin);
+  return {
+    "Access-Control-Allow-Origin": resolvedOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+  };
+}
 
 // Allowed MIME types
 const RESUME_ALLOWED_MIMES = [
@@ -67,6 +72,8 @@ function validateMagicBytes(bytes: Uint8Array, mimeType: string): boolean {
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
+  const jsonResp = (status: number, body: Record<string, unknown>) => jsonResponse(status, body, corsHeaders);
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
@@ -88,23 +95,23 @@ Deno.serve(async (req: Request) => {
 
       // Validate required fields
       if (!userId || !uploadType || !fileName || !fileSize || !mimeType) {
-        return jsonResponse(400, { success: false, message: 'Missing required fields: userId, uploadType, fileName, fileSize, mimeType' });
+        return jsonResp(400, { success: false, message: 'Missing required fields: userId, uploadType, fileName, fileSize, mimeType' });
       }
 
       // Validate upload type
       if (!['resume', 'linkedin_pdf'].includes(uploadType)) {
-        return jsonResponse(400, { success: false, message: 'Invalid uploadType. Must be "resume" or "linkedin_pdf"' });
+        return jsonResp(400, { success: false, message: 'Invalid uploadType. Must be "resume" or "linkedin_pdf"' });
       }
 
       // Validate file size
       if (fileSize > MAX_FILE_SIZE) {
-        return jsonResponse(400, { success: false, message: 'File exceeds 5MB limit' });
+        return jsonResp(400, { success: false, message: 'File exceeds 5MB limit' });
       }
 
       // Validate MIME type
       const allowedMimes = uploadType === 'linkedin_pdf' ? LINKEDIN_ALLOWED_MIMES : RESUME_ALLOWED_MIMES;
       if (!allowedMimes.includes(mimeType)) {
-        return jsonResponse(400, { success: false, message: `File type "${mimeType}" is not supported` });
+        return jsonResp(400, { success: false, message: `File type "${mimeType}" is not supported` });
       }
 
       // Verify user exists
@@ -118,7 +125,7 @@ Deno.serve(async (req: Request) => {
         },
       });
       if (!userCheck.ok) {
-        return jsonResponse(404, { success: false, message: 'User not found' });
+        return jsonResp(404, { success: false, message: 'User not found' });
       }
 
       // Delete any existing upload of the same type for this user (replace behavior)
@@ -165,7 +172,7 @@ Deno.serve(async (req: Request) => {
 
       if (insertError) {
         console.error('❌ Failed to create upload record:', insertError);
-        return jsonResponse(500, { success: false, message: 'Failed to initialize upload' });
+        return jsonResp(500, { success: false, message: 'Failed to initialize upload' });
       }
 
       // Create a signed upload URL for direct client upload
@@ -177,12 +184,12 @@ Deno.serve(async (req: Request) => {
         console.error('❌ Failed to create signed URL:', signedUrlError);
         // Clean up the DB record
         await supabaseClient.from('profile_uploads').delete().eq('id', uploadRecord.id);
-        return jsonResponse(500, { success: false, message: 'Failed to create upload URL' });
+        return jsonResp(500, { success: false, message: 'Failed to create upload URL' });
       }
 
       console.log(`✅ Upload initialized: ${uploadRecord.id} → ${storagePath}`);
 
-      return jsonResponse(200, {
+      return jsonResp(200, {
         success: true,
         uploadId: uploadRecord.id,
         signedUrl: signedUrl.signedUrl,
@@ -196,7 +203,7 @@ Deno.serve(async (req: Request) => {
       const { uploadId, userId } = await req.json();
 
       if (!uploadId || !userId) {
-        return jsonResponse(400, { success: false, message: 'Missing required fields: uploadId, userId' });
+        return jsonResp(400, { success: false, message: 'Missing required fields: uploadId, userId' });
       }
 
       // Fetch the upload record
@@ -208,11 +215,11 @@ Deno.serve(async (req: Request) => {
         .single();
 
       if (fetchError || !upload) {
-        return jsonResponse(404, { success: false, message: 'Upload record not found' });
+        return jsonResp(404, { success: false, message: 'Upload record not found' });
       }
 
       if (upload.status !== 'uploading') {
-        return jsonResponse(400, { success: false, message: `Upload is in "${upload.status}" state, expected "uploading"` });
+        return jsonResp(400, { success: false, message: `Upload is in "${upload.status}" state, expected "uploading"` });
       }
 
       // Verify the file exists in storage
@@ -226,7 +233,7 @@ Deno.serve(async (req: Request) => {
           .from('profile_uploads')
           .update({ status: 'failed', error_message: 'File not found in storage after upload' })
           .eq('id', uploadId);
-        return jsonResponse(400, { success: false, message: 'File was not uploaded successfully' });
+        return jsonResp(400, { success: false, message: 'File was not uploaded successfully' });
       }
 
       // Server-side validation: check actual file size
@@ -239,7 +246,7 @@ Deno.serve(async (req: Request) => {
           .from('profile_uploads')
           .update({ status: 'failed', error_message: 'File exceeds size limit' })
           .eq('id', uploadId);
-        return jsonResponse(400, { success: false, message: 'File exceeds 5MB limit' });
+        return jsonResp(400, { success: false, message: 'File exceeds 5MB limit' });
       }
 
       // Server-side validation: verify magic bytes match claimed MIME type
@@ -249,7 +256,7 @@ Deno.serve(async (req: Request) => {
           .from('profile_uploads')
           .update({ status: 'failed', error_message: 'File content does not match declared type' })
           .eq('id', uploadId);
-        return jsonResponse(400, { success: false, message: 'File content does not match the declared file type' });
+        return jsonResp(400, { success: false, message: 'File content does not match the declared file type' });
       }
 
       // Mark as uploaded (scanning/parsing would be queued here in production)
@@ -263,7 +270,7 @@ Deno.serve(async (req: Request) => {
 
       console.log(`✅ Upload complete: ${uploadId} (${bytes.length} bytes, ${upload.mime_type})`);
 
-      return jsonResponse(200, {
+      return jsonResp(200, {
         success: true,
         uploadId,
         status: 'uploaded',
@@ -277,7 +284,7 @@ Deno.serve(async (req: Request) => {
       const { uploadId, userId } = await req.json();
 
       if (!uploadId || !userId) {
-        return jsonResponse(400, { success: false, message: 'Missing required fields: uploadId, userId' });
+        return jsonResp(400, { success: false, message: 'Missing required fields: uploadId, userId' });
       }
 
       // Fetch the upload record
@@ -289,7 +296,7 @@ Deno.serve(async (req: Request) => {
         .single();
 
       if (fetchError || !upload) {
-        return jsonResponse(404, { success: false, message: 'Upload record not found' });
+        return jsonResp(404, { success: false, message: 'Upload record not found' });
       }
 
       // Delete from storage
@@ -310,25 +317,25 @@ Deno.serve(async (req: Request) => {
 
       if (dbError) {
         console.error('❌ Failed to delete upload record:', dbError);
-        return jsonResponse(500, { success: false, message: 'Failed to delete upload record' });
+        return jsonResp(500, { success: false, message: 'Failed to delete upload record' });
       }
 
       console.log(`🗑️ Upload deleted: ${uploadId}`);
 
-      return jsonResponse(200, { success: true, message: 'Upload deleted' });
+      return jsonResp(200, { success: true, message: 'Upload deleted' });
     }
 
-    return jsonResponse(404, { success: false, message: `Unknown action: ${action}` });
+    return jsonResp(404, { success: false, message: `Unknown action: ${action}` });
 
   } catch (error) {
     console.error('❌ profile-upload error:', error);
-    return jsonResponse(500, { success: false, message: 'Internal server error' });
+    return jsonResp(500, { success: false, message: 'Internal server error' });
   }
 });
 
-function jsonResponse(status: number, body: Record<string, unknown>) {
+function jsonResponse(status: number, body: Record<string, unknown>, headers: Record<string, string> = {}) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

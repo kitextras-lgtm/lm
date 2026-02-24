@@ -1,11 +1,16 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+function getCorsHeaders(req: Request) {
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "*";
+  const origin = req.headers.get("Origin") || "";
+  const resolvedOrigin = allowedOrigin === "*" ? "*" : (origin === allowedOrigin ? origin : allowedOrigin);
+  return {
+    "Access-Control-Allow-Origin": resolvedOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+  };
+}
 
 // Email template matching OTP style
 function getEmailTemplate(title: string, content: string, unsubscribeUrl?: string): string {
@@ -78,6 +83,7 @@ function getEmailTemplate(title: string, content: string, unsubscribeUrl?: strin
 }
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 200,

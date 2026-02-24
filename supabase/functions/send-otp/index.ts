@@ -1,13 +1,19 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+function getCorsHeaders(req: Request) {
+  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "*";
+  const origin = req.headers.get("Origin") || "";
+  const resolvedOrigin = allowedOrigin === "*" ? "*" : (origin === allowedOrigin ? origin : allowedOrigin);
+  return {
+    "Access-Control-Allow-Origin": resolvedOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+  };
+}
 
 Deno.serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 200,
@@ -38,6 +44,54 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
+    // ─── Rate Limiting ───────────────────────────────────────────────────────
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || req.headers.get('x-real-ip')
+      || 'unknown';
+
+    async function checkRateLimit(identifier: string, type: 'otp_email' | 'otp_ip', maxAttempts: number): Promise<string | null> {
+      const now = new Date().toISOString();
+      // Clean up expired windows
+      await supabaseClient.from('rate_limits').delete().lt('window_end', now);
+      // Check current count
+      const { data: existing } = await supabaseClient
+        .from('rate_limits')
+        .select('id, count, window_end')
+        .eq('identifier', identifier)
+        .eq('type', type)
+        .gt('window_end', now)
+        .maybeSingle();
+      if (existing && existing.count >= maxAttempts) {
+        const remainingMs = new Date(existing.window_end).getTime() - Date.now();
+        const remainingMin = Math.ceil(remainingMs / 60000);
+        return `Too many attempts. Try again in ${remainingMin} minute${remainingMin !== 1 ? 's' : ''}.`;
+      }
+      if (existing) {
+        await supabaseClient.from('rate_limits').update({ count: existing.count + 1 }).eq('id', existing.id);
+      } else {
+        await supabaseClient.from('rate_limits').insert({
+          identifier,
+          type,
+          window_end: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        });
+      }
+      return null;
+    }
+
+    const emailLimit = await checkRateLimit(email.toLowerCase(), 'otp_email', 5);
+    if (emailLimit) {
+      return new Response(JSON.stringify({ success: false, message: emailLimit }), {
+        status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const ipLimit = await checkRateLimit(clientIP, 'otp_ip', 10);
+    if (ipLimit) {
+      return new Response(JSON.stringify({ success: false, message: ipLimit }), {
+        status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // Check auth.users as the source of truth (consistent with verify-otp)
     let existingAuthUser = null;
