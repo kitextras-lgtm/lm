@@ -647,19 +647,24 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                     console.error('Artist image upload error:', uploadError);
                   }
                 }
-                // Save artist entry directly to social_links (bypass edge fn duplicate check)
-                const { error: slError } = await supabase.from('social_links').insert({
-                  user_id: userId,
-                  platform: 'Artist',
-                  url: uploadedImageUrl || `artist:${userId}:${Date.now()}`,
-                  display_name: name || 'New Artist',
-                  verified: false,
+                // Save artist entry via Edge Function (uses service role key, bypasses RLS)
+                const slRes = await fetch(SOCIAL_LINKS_FN, {
+                  method: 'POST',
+                  headers: fnHeaders,
+                  body: JSON.stringify({
+                    userId,
+                    platform: 'Artist',
+                    url: uploadedImageUrl || `artist:${userId}:${Date.now()}`,
+                    display_name: name || 'New Artist',
+                    verified: false,
+                  }),
                 });
-                if (!slError) {
+                const slJson = await slRes.json();
+                if (slJson.success || slJson.duplicate) {
                   await loadLinks();
                   localStorage.setItem('social_links_updated', Date.now().toString());
                 } else {
-                  console.error('Error saving artist to social_links:', slError);
+                  console.error('Error saving artist to social_links:', slJson);
                 }
                 // Submit application
                 await supabase.from('applications').insert({

@@ -1718,9 +1718,7 @@ export function ArtistDashboard() {
   // ── Draft persistence ──────────────────────────────────────────────────────
 
   const fetchDrafts = async (uid?: string) => {
-    // Always use the authenticated session uid for RLS compliance
-    const { data: { user } } = await supabase.auth.getUser();
-    const resolvedUid = user?.id || uid || localStorage.getItem('verifiedUserId') || '';
+    const resolvedUid = uid || localStorage.getItem('verifiedUserId') || '';
     if (!resolvedUid) return;
     const { data, error } = await supabase
       .from('release_drafts')
@@ -1743,11 +1741,9 @@ export function ArtistDashboard() {
   };
 
   const saveDraft = useCallback(async (form: typeof releaseForm, step: number, checklist: boolean[], _uid: string, overrideDraftId?: string | null) => {
-    // Always resolve uid from Supabase auth session — this is what RLS checks
-    const { data: { user } } = await supabase.auth.getUser();
-    const effectiveUid = user?.id || _uid || localStorage.getItem('verifiedUserId') || '';
+    const effectiveUid = _uid || localStorage.getItem('verifiedUserId') || '';
     if (!effectiveUid) {
-      console.warn('[saveDraft] No authenticated user — skipping save');
+      console.warn('[saveDraft] No user ID — skipping save');
       return;
     }
     setDraftSaving(true);
