@@ -23,6 +23,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [emailWarning, setEmailWarning] = useState('');
   const [devCode, setDevCode] = useState<string | null>(null);
+  const [resendSent, setResendSent] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
@@ -252,6 +253,8 @@ export function LoginPage() {
         setEmailWarning('');
         setDevCode(null);
       }
+      setResendSent(true);
+      setTimeout(() => setResendSent(false), 4000);
     } catch (err: any) {
       setError(err.message || 'Failed to resend code');
     } finally {
@@ -503,21 +506,27 @@ export function LoginPage() {
                 )}
 
                 <div className="text-center text-sm leading-snug pt-2">
-                  <p className="mb-2" style={{ color: 'rgba(156, 163, 175, 0.7)' }}>Didn't get anything?</p>
-                  <p style={{ color: 'rgba(156, 163, 175, 0.7)' }}>
-                    Check your spam or{' '}
-                    <button
-                      onClick={handleResendCode}
-                      disabled={loading}
-                      className="font-medium transition-colors disabled:opacity-50"
-                      style={{ color: '#FFFFFF' }}
-                      onMouseEnter={(e) => !loading && (e.currentTarget.style.color = '#C9CBD1')}
-                      onMouseLeave={(e) => !loading && (e.currentTarget.style.color = '#FFFFFF')}
-                    >
-                      send a new one
-                    </button>
-                    .
-                  </p>
+                  {resendSent ? (
+                    <p className="font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>New code sent — check your inbox.</p>
+                  ) : (
+                    <>
+                      <p className="mb-2" style={{ color: 'rgba(255,255,255,0.45)' }}>Didn't get anything?</p>
+                      <p style={{ color: 'rgba(255,255,255,0.45)' }}>
+                        Check your spam or{' '}
+                        <button
+                          onClick={handleResendCode}
+                          disabled={loading}
+                          className="font-medium transition-colors disabled:opacity-50"
+                          style={{ color: '#FFFFFF' }}
+                          onMouseEnter={(e) => !loading && (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+                          onMouseLeave={(e) => !loading && (e.currentTarget.style.color = '#FFFFFF')}
+                        >
+                          send a new one
+                        </button>
+                        .
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

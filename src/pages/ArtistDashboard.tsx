@@ -754,21 +754,71 @@ function PowerWidgetDischarged({ }: PowerWidgetDischargedProps) {
 }
 
 function FighterMusicCard({ onClick }: { onClick?: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setInView(true); obs.disconnect(); }
+    }, { threshold: 0.25 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!inView) return;
+    const t = setTimeout(() => setEntered(true), 60);
+    return () => clearTimeout(t);
+  }, [inView]);
+
+  const bars = [35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95];
+
   return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
+    <div
+      ref={ref}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border"
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onClick={onClick}
     >
       <div className="mb-4 sm:mb-5">
-        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Publishing Revenue Status</h3>
+        <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>New Exposure</h3>
       </div>
-      
-      <div className="flex flex-col items-center gap-3 mt-8">
-        <PowerWidgetDischarged />
-        <div className="text-sm" style={{ color: 'var(--text-primary)' }}>
-          Status: <span style={{ color: '#ef4444' }}>Disconnected</span>
+
+      <div
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}
+      >
+        <div className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Last 30 days</div>
+      </div>
+
+      <div className="flex items-end gap-1 mb-4" style={{ height: '64px' }}>
+        {bars.map((h, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-t-sm"
+            style={{
+              height: entered ? `${h}%` : '0%',
+              backgroundColor: i >= 10 ? 'var(--text-primary)' : 'var(--bg-elevated)',
+              transition: `height 0.6s cubic-bezier(0.34,1,0.64,1) ${i * 0.04}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div
+        className="flex items-center justify-between"
+        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.5s, transform 0.45s ease 0.5s' }}
+      >
+        <div>
+          <div className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>New Exposure</div>
+          <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>+247%</div>
         </div>
+        <span
+          className="px-3 py-1.5 rounded-full text-xs font-medium"
+          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+        >
+          Trending Up
+        </span>
       </div>
     </div>
   );

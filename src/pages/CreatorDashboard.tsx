@@ -4648,7 +4648,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             {/* Page Header */}
             <div className="mb-8">
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1.5" style={{ color: 'var(--text-primary)' }}>Deals</h1>
-              <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Incoming collaboration requests, sponsorships, and freelance opportunities</p>
+              <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Browse various different requests and complete collaborations</p>
             </div>
 
             {/* Tab bar */}
@@ -4691,15 +4691,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                 {/* Empty state */}
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)' }}>
-                      <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 22V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>
+                    <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 22V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                   <div className="text-center">
                     <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No offers yet</p>
                     <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Collaboration requests and brand sponsorships will appear here.</p>
@@ -4748,13 +4746,11 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
                 {/* Empty state */}
                 <div className="flex flex-col items-center justify-center py-16 gap-4">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)' }}>
-                      <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/>
-                      <path d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                      <path d="M12 12v4M10 14h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                    </svg>
-                  </div>
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>
+                    <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/>
+                    <path d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                    <path d="M12 12v4M10 14h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                  </svg>
                   <div className="text-center">
                     <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No hire requests yet</p>
                     <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Freelance hire requests from brands and artists will appear here.</p>

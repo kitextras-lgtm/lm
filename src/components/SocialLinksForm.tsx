@@ -732,15 +732,12 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                 style={{ backgroundColor: 'transparent' }}
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div
-                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
-                    style={{ backgroundColor: 'var(--bg-elevated)' }}
-                  >
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center flex-shrink-0">
                     {link.platform === 'Artist' && link.url
-                      ? <img src={link.url} alt={link.display_name} className="w-full h-full object-cover" />
+                      ? <img src={link.url} alt={link.display_name} className="w-full h-full object-cover rounded-lg" />
                       : link.platform === 'Artist'
-                        ? <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-primary)' }} />
-                        : <Icon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-primary)' }} />
+                        ? <User className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: 'var(--text-primary)' }} />
+                        : <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: 'var(--text-primary)' }} />
                     }
                   </div>
                   <div className="flex-1 min-w-0">
