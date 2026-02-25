@@ -319,10 +319,22 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
 
 function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
   const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setEntered(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    <div
+      ref={ref}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease, transform 0.45s ease, filter 0.2s' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.monthlyRecurringRevenue')}</h3>
@@ -361,10 +373,22 @@ function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
 
 function ActiveCollaborationsCard({ setActiveSection }: { setActiveSection: (section: string) => void }) {
   const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setEntered(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    <div
+      ref={ref}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s, filter 0.2s' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>
@@ -697,10 +721,22 @@ function PowerWidget() {
 
 function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
   const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setEntered(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    <div
+      ref={ref}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease 0.16s, transform 0.45s ease 0.16s, filter 0.2s' }}
     >
       <div className="mb-4 sm:mb-5">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.activeOpportunities')}</h3>

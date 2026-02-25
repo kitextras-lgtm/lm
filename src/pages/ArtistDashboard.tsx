@@ -468,10 +468,22 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
 
 function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
   const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setEntered(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    <div
+      ref={ref}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease, transform 0.45s ease, filter 0.2s' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.monthlyRecurringRevenue')}</h3>
@@ -788,7 +800,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
       <div
         style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}
       >
-        <div className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Last 30 days</div>
+        <div className="text-xs mb-4" style={{ color: 'var(--text-primary)' }}>Last 30 days</div>
       </div>
 
       <div className="flex items-end gap-1 mb-4" style={{ height: '64px' }}>
@@ -798,7 +810,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
             className="flex-1 rounded-t-sm"
             style={{
               height: entered ? `${h}%` : '0%',
-              backgroundColor: i >= 10 ? 'var(--text-primary)' : 'var(--bg-elevated)',
+              backgroundColor: i >= 10 ? 'var(--text-primary)' : '#d1d5db',
               transition: `height 0.6s cubic-bezier(0.34,1,0.64,1) ${i * 0.04}s`,
             }}
           />
@@ -810,25 +822,37 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
         style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.5s, transform 0.45s ease 0.5s' }}
       >
         <div>
-          <div className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>New Exposure</div>
-          <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>+247%</div>
+          <div className="text-xs mb-0.5" style={{ color: 'var(--text-primary)' }}>New Exposure</div>
+          <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>—</div>
         </div>
-        <span
+        <div
           className="px-3 py-1.5 rounded-full text-xs font-medium"
-          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+          style={{ background: '#f0f0f0', color: '#111' }}
         >
           Trending Up
-        </span>
+        </div>
       </div>
     </div>
   );
 }
 
 function TotalSongsDistributedCard() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setEntered(true); obs.disconnect(); }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <div 
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border" 
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+    <div
+      ref={ref}
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s, filter 0.2s' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Total Songs Distributed</h3>
@@ -4154,8 +4178,8 @@ export function ArtistDashboard() {
           <div key={app.id} className="mb-6 rounded-2xl p-5 border animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3 flex-1 min-w-0">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div className="flex-shrink-0 mt-0.5">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
