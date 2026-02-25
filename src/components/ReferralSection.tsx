@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, Check, Gift, Link2 } from 'lucide-react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
+import { AnimatedBarsLoader } from './AnimatedBarsLoader';
 
 interface ReferralData {
   code: string;
@@ -192,8 +193,8 @@ export function ReferralSection({ userType, userId: userIdProp }: ReferralSectio
 
   if (loading) {
     return (
-      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="text-center" style={{ color: 'var(--text-primary)' }}>Loading...</div>
+      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', minHeight: '120px' }}>
+        <AnimatedBarsLoader text="" />
       </div>
     );
   }

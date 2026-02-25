@@ -876,22 +876,22 @@ function TotalSongsDistributedCard() {
 function PublishingSynopsisPage() {
   const ref = useRef<HTMLDivElement>(null);
   const [vis, setVis] = useState(false);
+  const [phoneIn, setPhoneIn] = useState(false);
   const [countUp, setCountUp] = useState(0);
-  const [floatIn, setFloatIn] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) { setVis(true); obs.disconnect(); }
-    }, { threshold: 0.1 });
+    }, { threshold: 0.05 });
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
   useEffect(() => {
     if (!vis) return;
-    const t1 = setTimeout(() => setFloatIn(true), 300);
+    const t1 = setTimeout(() => setPhoneIn(true), 400);
     let start = 0;
     const target = 1643;
     const duration = 1800;
@@ -904,12 +904,12 @@ function PublishingSynopsisPage() {
         else setCountUp(Math.floor(start));
       }, step);
       return () => clearInterval(iv);
-    }, 500);
+    }, 600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [vis]);
 
   const royalties = [
-    { label: 'Mechanical', pct: 68 },
+    { label: 'Publishing', pct: 68 },
     { label: 'Performance', pct: 82 },
     { label: 'Sync', pct: 45 },
     { label: 'Digital', pct: 91 },
@@ -940,13 +940,13 @@ function PublishingSynopsisPage() {
             opacity: vis ? 1 : 0,
             transform: vis ? 'none' : 'translateY(8px)',
             transition: 'opacity 0.5s ease, transform 0.5s ease',
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.12)',
+            backgroundColor: 'var(--bg-elevated)',
+            border: '1px solid var(--border-subtle)',
           }}
         >
-          <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>An Elevate</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>An Elevate</span>
           <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>©</span>
-          <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>Service</span>
+          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Service</span>
         </div>
 
         {/* Two-column layout */}
@@ -971,8 +971,8 @@ function PublishingSynopsisPage() {
             <p
               className="text-base sm:text-lg leading-relaxed mb-10 max-w-md"
               style={{
-                color: 'rgba(255,255,255,0.6)',
-                opacity: vis ? 1 : 0,
+                color: 'var(--text-primary)',
+                opacity: vis ? 0.6 : 0,
                 transform: vis ? 'none' : 'translateY(16px)',
                 transition: 'opacity 0.6s ease 0.22s, transform 0.6s ease 0.22s',
               }}
@@ -1002,7 +1002,7 @@ function PublishingSynopsisPage() {
               </button>
               <button
                 className="text-sm font-medium transition-all duration-200 hover:opacity-70"
-                style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+                style={{ color: 'var(--text-primary)', opacity: 0.5, textDecoration: 'underline', textUnderlineOffset: '3px' }}
               >
                 Find out more →
               </button>
@@ -1016,14 +1016,14 @@ function PublishingSynopsisPage() {
                 transition: 'opacity 0.5s ease 0.5s',
               }}
             >
-              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em' }}>Royalty Types Collected</p>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-primary)', opacity: 0.3, letterSpacing: '0.12em' }}>Royalty Types Collected</p>
               {royalties.map((r, i) => (
                 <div key={r.label}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{r.label}</span>
+                    <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{r.label}</span>
                     <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{vis ? r.pct : 0}%</span>
                   </div>
-                  <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+                  <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -1038,121 +1038,235 @@ function PublishingSynopsisPage() {
             </div>
           </div>
 
-          {/* Right column — floating visual */}
-          <div className="flex-1 w-full lg:max-w-sm relative" style={{ minHeight: '340px' }}>
-
-            {/* Main card */}
+          {/* Right column — iPhone mockup */}
+          <div
+            className="flex-1 w-full lg:max-w-xs flex justify-center"
+            style={{
+              opacity: phoneIn ? 1 : 0,
+              transform: phoneIn ? 'none' : 'translateY(24px)',
+              transition: 'opacity 0.7s ease, transform 0.7s ease',
+              animation: phoneIn ? 'pubPhoneFloat 5s ease-in-out infinite' : 'none',
+            }}
+          >
+            {/* iPhone shell */}
             <div
-              className="rounded-2xl p-5 border"
+              className="relative rounded-[2.5rem] overflow-hidden"
               style={{
+                width: '220px',
+                height: '440px',
                 backgroundColor: 'var(--bg-card)',
-                borderColor: 'var(--border-subtle)',
-                opacity: floatIn ? 1 : 0,
-                transform: floatIn ? 'none' : 'translateY(20px)',
-                transition: 'opacity 0.6s ease, transform 0.6s ease',
-                animation: floatIn ? 'pubFloat 4s ease-in-out infinite' : 'none',
+                border: '6px solid var(--border-subtle)',
+                boxShadow: '0 32px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
               }}
             >
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>Balance</p>
-                <div className="flex items-center gap-1">
-                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-                    <path d="M6 1v12M1 4l5-3 5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}/>
-                    <path d="M1 9l5 3 5-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}/>
-                  </svg>
-                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-                    <path d="M6 13V1M1 10l5 3 5-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}/>
-                    <path d="M1 5l5-3 5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}/>
-                  </svg>
+              {/* Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 rounded-b-xl z-10" style={{ backgroundColor: 'var(--bg-primary)' }} />
+
+              {/* Screen content */}
+              <div className="absolute inset-0 flex flex-col p-3 pt-7">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Publishing</p>
+                  <div className="w-5 h-5 rounded-full" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }} />
                 </div>
-              </div>
-              <div className="text-4xl font-bold mb-1" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
-                ${countUp.toLocaleString()}
-              </div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Uncollected royalties · Est.</p>
-              <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Streams counted</span>
-                  <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>2.4M</span>
+
+                {/* Balance card */}
+                <div className="rounded-xl p-3 mb-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <p className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Royalty Balance</p>
+                  <p className="text-xl font-bold" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>${countUp.toLocaleString()}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>Uncollected · Est.</p>
                 </div>
+
+                {/* Bar chart */}
+                <div className="rounded-xl p-3 mb-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Monthly Royalties</p>
+                  <div className="flex items-end gap-1" style={{ height: '48px' }}>
+                    {[30,45,35,60,50,70,55,80,65,90,85,95].map((h, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-sm"
+                        style={{
+                          height: phoneIn ? `${h}%` : '0%',
+                          backgroundColor: i >= 10 ? 'var(--text-primary)' : 'var(--border-subtle)',
+                          transition: `height 0.6s cubic-bezier(0.34,1,0.64,1) ${0.4 + i * 0.04}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Song rows */}
+                {[{ title: 'Night Drive', streams: '1.2M' }, { title: 'Echoes', streams: '842K' }, { title: 'Last Summer', streams: '612K' }].map((s, i) => (
+                  <div key={s.title} className="flex items-center justify-between py-1.5" style={{ borderBottom: i < 2 ? '1px solid var(--border-subtle)' : 'none' }}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }} />
+                      <p className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{s.title}</p>
+                    </div>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{s.streams}</p>
+                  </div>
+                ))}
               </div>
+
+              {/* Home bar */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full" style={{ backgroundColor: 'var(--text-primary)', opacity: 0.25 }} />
             </div>
 
-            {/* Floating badge top-right */}
+            {/* Floating pip - top right */}
             <div
-              className="absolute -top-4 right-0 rounded-xl px-4 py-2.5 border"
+              className="absolute top-4 -right-4 rounded-xl px-3 py-2 border"
               style={{
                 backgroundColor: 'var(--bg-elevated)',
                 borderColor: 'var(--border-subtle)',
-                opacity: floatIn ? 1 : 0,
-                transform: floatIn ? 'none' : 'translateY(10px) scale(0.95)',
-                transition: 'opacity 0.5s ease 0.15s, transform 0.5s ease 0.15s',
-                animation: floatIn ? 'pubFloatAlt 5s ease-in-out 0.5s infinite' : 'none',
+                opacity: phoneIn ? 1 : 0,
+                transform: phoneIn ? 'none' : 'scale(0.9)',
+                transition: 'opacity 0.5s ease 0.5s, transform 0.5s ease 0.5s',
+                animation: phoneIn ? 'pubFloatAlt 6s ease-in-out 0.3s infinite' : 'none',
               }}
             >
-              <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>PRO Royalties</p>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>PRO</p>
               <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Registered</p>
             </div>
 
-            {/* Floating badge bottom-left */}
+            {/* Floating pip - bottom left */}
             <div
-              className="absolute -bottom-4 left-0 rounded-xl px-4 py-2.5 border"
+              className="absolute bottom-8 -left-4 rounded-xl px-3 py-2 border"
               style={{
                 backgroundColor: 'var(--bg-elevated)',
                 borderColor: 'var(--border-subtle)',
-                opacity: floatIn ? 1 : 0,
-                transform: floatIn ? 'none' : 'translateY(10px) scale(0.95)',
-                transition: 'opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s',
-                animation: floatIn ? 'pubFloatAlt 5s ease-in-out 1s infinite' : 'none',
+                opacity: phoneIn ? 1 : 0,
+                transform: phoneIn ? 'none' : 'scale(0.9)',
+                transition: 'opacity 0.5s ease 0.7s, transform 0.5s ease 0.7s',
+                animation: phoneIn ? 'pubFloatAlt 6s ease-in-out 1.2s infinite' : 'none',
               }}
             >
-              <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Sync Licensing</p>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Sync</p>
               <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Active</p>
             </div>
+          </div>
 
-            <style>{`
-              @keyframes pubFloat {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-8px); }
-              }
-              @keyframes pubFloatAlt {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-5px); }
-              }
-            `}</style>
+          <style>{`
+            @keyframes pubPhoneFloat {
+              0%, 100% { transform: translateY(0px); }
+              50% { transform: translateY(-10px); }
+            }
+            @keyframes pubFloatAlt {
+              0%, 100% { transform: translateY(0px); }
+              50% { transform: translateY(-5px); }
+            }
+          `}</style>
+        </div>
+
+        {/* ── Feature section: Earn more from your music ── */}
+        <div className="mt-20 lg:mt-28">
+          <h2
+            className="text-2xl sm:text-3xl font-bold text-center mb-12 tracking-tight"
+            style={{
+              color: 'var(--text-primary)',
+              opacity: vis ? 1 : 0,
+              transform: vis ? 'none' : 'translateY(12px)',
+              transition: 'opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s',
+            }}
+          >
+            Earn more from your music.
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>,
+                title: 'Register unlimited music worldwide',
+                desc: "We'll register your music for publishing royalties across the globe, while you keep full ownership and copyright.",
+              },
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>,
+                title: 'Fair and direct payments',
+                desc: 'We only take a 10% commission on publishing royalties we collect and you keep the rest. You won\'t find a better deal anywhere else in the industry.',
+              },
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
+                title: 'New royalties & sync opportunities',
+                desc: 'Unlock new royalties & exposure worldwide. Earn royalties every time your music is heard, and pitch your tracks for TV & film placements.',
+              },
+            ].map((f, i) => (
+              <div
+                key={f.title}
+                className="rounded-2xl p-6 border"
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderColor: 'var(--border-subtle)',
+                  opacity: vis ? 1 : 0,
+                  transform: vis ? 'none' : 'translateY(12px)',
+                  transition: `opacity 0.5s ease ${0.85 + i * 0.12}s, transform 0.5s ease ${0.85 + i * 0.12}s`,
+                }}
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                  {f.icon}
+                </div>
+                <p className="text-sm font-bold mb-2 leading-snug" style={{ color: 'var(--text-primary)' }}>{f.title}</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{f.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Bottom feature strip */}
+        {/* ── Bottom CTA: Not claiming royalties ── */}
         <div
-          className="mt-16 lg:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-4"
+          className="mt-16 lg:mt-20 rounded-2xl p-8 sm:p-12 border"
           style={{
+            backgroundColor: 'var(--bg-card)',
+            borderColor: 'var(--border-subtle)',
             opacity: vis ? 1 : 0,
             transform: vis ? 'none' : 'translateY(16px)',
-            transition: 'opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s',
+            transition: 'opacity 0.6s ease 1.1s, transform 0.6s ease 1.1s',
           }}
         >
-          {[
-            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>, title: 'PRO Registration', desc: 'Register your works with performing rights organizations globally.' },
-            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>, title: 'Royalty Tracking', desc: 'Real-time tracking of all royalty streams across every platform.' },
-            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>, title: 'Sync Licensing', desc: 'Pitch your catalog to film, TV, and advertising opportunities.' },
-          ].map((f, i) => (
-            <div
-              key={f.title}
-              className="rounded-2xl p-5 border"
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                borderColor: 'var(--border-subtle)',
-                opacity: vis ? 1 : 0,
-                transform: vis ? 'none' : 'translateY(12px)',
-                transition: `opacity 0.5s ease ${0.75 + i * 0.1}s, transform 0.5s ease ${0.75 + i * 0.1}s`,
-              }}
-            >
-              <div className="mb-3" style={{ color: 'var(--text-primary)' }}>{f.icon}</div>
-              <p className="text-sm font-semibold mb-1.5" style={{ color: 'var(--text-primary)' }}>{f.title}</p>
-              <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+            <div className="flex-1">
+              <h3
+                className="text-xl sm:text-2xl font-bold mb-4 leading-snug"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                Not claiming publishing royalties?<br />You're missing out.
+              </h3>
+              <p className="text-sm leading-relaxed mb-6 max-w-lg" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
+                You could be earning extra revenue whenever your music is performed live or broadcast in any kind of media. You can even claim additional publishing royalties every time your music is streamed on platforms like Spotify, Apple Music and YouTube.
+              </p>
+              <button
+                className="px-8 py-3.5 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              >
+                Get Started
+              </button>
             </div>
-          ))}
+            {/* Right-side visual accent */}
+            <div className="flex-shrink-0 flex items-center gap-3">
+              {[{ label: 'Spotify', pct: 78 }, { label: 'YouTube', pct: 91 }, { label: 'Apple', pct: 65 }, { label: 'Live', pct: 52 }].map((p, i) => (
+                <div key={p.label} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className="w-6 rounded-full"
+                    style={{
+                      backgroundColor: 'var(--bg-elevated)',
+                      border: '1px solid var(--border-subtle)',
+                      height: '80px',
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      overflow: 'hidden',
+                      padding: '2px',
+                    }}
+                  >
+                    <div
+                      className="w-full rounded-full"
+                      style={{
+                        height: vis ? `${p.pct}%` : '0%',
+                        backgroundColor: 'var(--text-primary)',
+                        transition: `height 0.8s cubic-bezier(0.34,1,0.64,1) ${1.15 + i * 0.1}s`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{p.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

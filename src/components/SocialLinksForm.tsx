@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown, CheckCircle, Check, ExternalLink, Loader, User, Info } from 'lucide-react';
+import { AnimatedBarsLoader } from './AnimatedBarsLoader';
 import { useTranslation } from 'react-i18next';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabase } from '../lib/supabase';
 import { AnimatedLinkIcon } from './AnimatedLinkIcon';
@@ -462,8 +463,8 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
 
   if (loading) {
     return (
-      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <div className="text-center" style={{ color: 'var(--text-primary)' }}>{t('common.loading')}</div>
+      <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 border flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', minHeight: '120px' }}>
+        <AnimatedBarsLoader text="" />
       </div>
     );
   }
