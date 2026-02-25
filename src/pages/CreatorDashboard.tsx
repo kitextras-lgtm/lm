@@ -895,6 +895,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [licensingSubmitted, setLicensingSubmitted] = useState(false);
   const [campaignTermsAccepted, setCampaignTermsAccepted] = useState(false);
   const [campaignTermsChecked, setCampaignTermsChecked] = useState(false);
+  const [exploreDevUnlocked, setExploreDevUnlocked] = useState(false);
+  const [exploreDevPassword, setExploreDevPassword] = useState('');
+  const [exploreDevError, setExploreDevError] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -2431,8 +2434,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-base mb-1" style={{ color: 'var(--text-primary)' }}>{cat.title}</p>
-                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{cat.desc}</p>
-                <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{cat.count}</p>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{cat.desc}</p>
+                <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{cat.count}</p>
               </div>
               <svg className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
@@ -3093,120 +3096,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </div>
 
               {/* Transaction List */}
-              <div className="space-y-0">
-                {/* Transaction Row 1 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>16 Aug 2025</span>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} JP Morgan Chase (0440)</p>
-                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-1,275.79 USD</span>
-                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Transaction Row 2 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>5 Aug 2025</span>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} Citibank (2290)</p>
-                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-202.99 USD</span>
-                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Transaction Row 3 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>4 Aug 2025</span>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.paymentFrom')} Paddle</p>
-                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: '#10b981' }}>+5,651.56 USD</span>
-                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Transaction Row 4 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>4 Aug 2025</span>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} HSBC (5522)</p>
-                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-1,679.35 USD</span>
-                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Transaction Row 5 */}
-                <div className="flex items-center justify-between py-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>20 Aug 2025</span>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.withdrawalTo')} JP Morgan Chase (1133)</p>
-                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: '#ef4444' }}>-3,420.00 USD</span>
-                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Transaction Row 6 */}
-                <div className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm w-24" style={{ color: 'var(--text-primary)' }}>18 Aug 2025</span>
-                    <div>
-                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('earnings.paymentFrom')} Stripe</p>
-                      <p className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('earnings.completed')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium" style={{ color: '#10b981' }}>+2,345.75 USD</span>
-                    <button className="w-8 h-8 rounded-lg border flex items-center justify-center transition-all hover:bg-white/5" style={{ borderColor: '#2f2f2f' }}>
-                      <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+              <div className="py-10 flex flex-col items-center justify-center gap-3">
+                <svg className="w-8 h-8" style={{ color: 'var(--text-primary)', opacity: 0.3 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                </svg>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No transactions yet</p>
+                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Your transaction history will appear here.</p>
               </div>
             </div>
           </div>
@@ -4662,48 +4557,75 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
         {activeSection === 'explore' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8 relative">
-            {/* Coming Soon Overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-              {/* Lock Icon with Animation */}
-              <div className="mb-6" style={{ animation: 'float 3s ease-in-out infinite' }}>
-                <svg 
-                  width="64" 
-                  height="64" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-white transition-transform duration-300 hover:scale-110"
-                  style={{ filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))' }}
-                >
-                  <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="12" cy="16" r="1" fill="currentColor"/>
-                </svg>
+            {/* Dev Password Gate Overlay */}
+            {!exploreDevUnlocked && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
+                <div className="mb-6" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+                    <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-1" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Developer Access</h2>
+                <p className="text-sm text-white mb-6" style={{ opacity: 0.7, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>Enter password to preview this page</p>
+                <div className="w-full max-w-xs">
+                  <input
+                    type="password"
+                    placeholder="Enter dev password"
+                    value={exploreDevPassword}
+                    onChange={e => { setExploreDevPassword(e.target.value); setExploreDevError(false); }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        if (exploreDevPassword === 'elevate2025') {
+                          setExploreDevUnlocked(true);
+                          setExploreDevError(false);
+                        } else {
+                          setExploreDevError(true);
+                        }
+                      }
+                    }}
+                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all mb-2"
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      border: `1px solid ${exploreDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
+                      color: 'white',
+                      backdropFilter: 'blur(4px)',
+                    }}
+                    onFocus={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
+                    onBlur={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+                  />
+                  {exploreDevError && (
+                    <p className="text-xs mb-3" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (exploreDevPassword === 'elevate2025') {
+                        setExploreDevUnlocked(true);
+                        setExploreDevError(false);
+                      } else {
+                        setExploreDevError(true);
+                      }
+                    }}
+                    className="w-full py-3 rounded-xl text-sm font-bold transition-all hover:brightness-110"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', backdropFilter: 'blur(4px)' }}
+                  >
+                    Unlock
+                  </button>
+                </div>
               </div>
-              
-              {/* Coming Soon Header */}
-              <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3 transition-all duration-300 hover:scale-105" style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)' }}>
-                {t('explore.comingSoon')}
-              </h1>
-              <p className="text-lg text-white transition-all duration-300 hover:scale-105" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>
-                {t('explore.comingSoonDesc')}
-              </p>
-            </div>
-            
+            )}
+
             <style dangerouslySetInnerHTML={{
               __html: `
                 @keyframes float {
-                  0%, 100% {
-                    transform: translateY(0px);
-                  }
-                  50% {
-                    transform: translateY(-10px);
-                  }
+                  0%, 100% { transform: translateY(0px); }
+                  50% { transform: translateY(-10px); }
                 }
               `
             }} />
-            
-            <div className="blur-[18px]" style={{ backdropFilter: 'blur(18px)' }}>
+
+            <div className={exploreDevUnlocked ? '' : 'blur-[18px] pointer-events-none select-none'} style={exploreDevUnlocked ? {} : { backdropFilter: 'blur(18px)' }}>
               {/* Trending Search Tags */}
               <section className="mb-8 -mx-4 px-4 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center justify-center gap-3 min-w-max pb-2">
