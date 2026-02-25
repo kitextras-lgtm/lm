@@ -49,8 +49,8 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
 
   const creatorNavItems = [
     { id: 'home' },
-    { id: 'explore' },
     { id: 'talent' },
+    { id: 'deals' },
     { id: 'messages' },
     { id: 'profile' },
   ];
@@ -228,6 +228,24 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
               />
             </svg>
           </div>
+        );
+      case 'deals':
+        return (
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7">
+            <path
+              d="M6 12 H20 V18 C20 20.2 18.2 22 16 22 C13.8 22 12 20.2 12 18 V12 H6 V36 H20 V30 C20 27.8 18.2 26 16 26 C13.8 26 12 27.8 12 30 V36 H6 Z"
+              stroke={color} strokeWidth={strokeWidth} strokeLinejoin="round" fill="none"
+              style={{ transform: isActive ? 'translateX(2px)' : 'translateX(-3px)', transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+            />
+            <path
+              d="M42 12 H28 V18 C28 20.2 29.8 22 32 22 C34.2 22 36 20.2 36 18 V12 H42 V36 H28 V30 C28 27.8 29.8 26 32 26 C34.2 26 36 27.8 36 30 V36 H42 Z"
+              stroke={color} strokeWidth={strokeWidth} strokeLinejoin="round" fill="none"
+              style={{ transform: isActive ? 'translateX(-2px)' : 'translateX(3px)', transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+            />
+            <line x1="24" y1="12" x2="24" y2="36" stroke={color} strokeWidth="2" strokeLinecap="round"
+              style={{ opacity: isActive ? 0.6 : 0, transition: 'opacity 0.3s ease 0.2s' }}
+            />
+          </svg>
         );
       case 'messages':
         return (

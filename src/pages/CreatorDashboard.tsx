@@ -895,12 +895,20 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [licensingSubmitted, setLicensingSubmitted] = useState(false);
   const [campaignTermsAccepted, setCampaignTermsAccepted] = useState(false);
   const [campaignTermsChecked, setCampaignTermsChecked] = useState(false);
-  const [exploreDevUnlocked, setExploreDevUnlocked] = useState(false);
+  const [exploreDevUnlocked, setExploreDevUnlocked] = useState(() => localStorage.getItem('elevate_dev_unlocked') === '1');
   const [exploreDevPassword, setExploreDevPassword] = useState('');
   const [exploreDevError, setExploreDevError] = useState(false);
-  const [lockActivated, setLockActivated] = useState(false);
-  const [lockHolding, setLockHolding] = useState(false);
-  const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [exploreLockActivated, setExploreLockActivated] = useState(false);
+  const [exploreLockHolding, setExploreLockHolding] = useState(false);
+  const exploreLockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [talentLockActivated, setTalentLockActivated] = useState(false);
+  const [talentLockHolding, setTalentLockHolding] = useState(false);
+  const talentLockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [talentDevPassword, setTalentDevPassword] = useState('');
+  const [talentDevError, setTalentDevError] = useState(false);
+  const handleDevUnlock = () => { localStorage.setItem('elevate_dev_unlocked', '1'); setExploreDevUnlocked(true); };
+  const [dealsTab, setDealsTab] = useState<'offers' | 'freelance'>('offers');
+  const [dealsFilter, setDealsFilter] = useState<'all' | 'collab' | 'sponsorship'>('all');
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -3935,23 +3943,21 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   className="mb-5 cursor-pointer select-none"
                   style={{ animation: 'float 3s ease-in-out infinite', WebkitUserSelect: 'none' }}
                   onMouseDown={() => {
-                    setLockHolding(true);
-                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
+                    setTalentLockHolding(true);
+                    talentLockTimerRef.current = setTimeout(() => { setTalentLockActivated(true); setTalentLockHolding(false); }, 3000);
                   }}
-                  onMouseUp={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
-                  onMouseLeave={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
-                  onTouchStart={() => {
-                    setLockHolding(true);
-                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
-                  }}
-                  onTouchEnd={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                  onMouseUp={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                  onMouseLeave={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                  onTouchStart={e => { e.preventDefault(); setTalentLockHolding(true); talentLockTimerRef.current = setTimeout(() => { setTalentLockActivated(true); setTalentLockHolding(false); }, 3000); }}
+                  onTouchEnd={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                  onTouchCancel={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
                 >
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3)) ${lockHolding ? 'drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3))${talentLockHolding ? ' drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
                     <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
                     <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill={lockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
+                    <circle cx="12" cy="16" r="1" fill={talentLockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
                   </svg>
-                  {lockHolding && (
+                  {talentLockHolding && (
                     <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ width: '56px', backgroundColor: 'rgba(255,255,255,0.2)' }}>
                       <div className="h-full rounded-full" style={{ backgroundColor: 'white', animation: 'lockFill 3s linear forwards' }} />
                     </div>
@@ -3959,41 +3965,38 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
                 <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
-                {lockActivated && (
+                {talentLockActivated && (
                 <div className="w-full max-w-xs" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
                   <input
                     type="password"
                     placeholder="Enter password"
                     autoFocus
-                    value={exploreDevPassword}
-                    onChange={e => { setExploreDevPassword(e.target.value); setExploreDevError(false); }}
+                    value={talentDevPassword}
+                    onChange={e => { setTalentDevPassword(e.target.value); setTalentDevError(false); }}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
-                        if (exploreDevPassword === 'master100') {
-                          setExploreDevUnlocked(true);
-                          setExploreDevError(false);
+                        if (talentDevPassword === 'master100') {
+                          handleDevUnlock();
+                          setTalentDevError(false);
                         } else {
-                          setExploreDevError(true);
+                          setTalentDevError(true);
                         }
                       }
                     }}
                     className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
                     style={{
                       backgroundColor: glassBg,
-                      border: `1px solid ${exploreDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
+                      border: `1px solid ${talentDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
                       color: 'white',
                       backdropFilter: 'blur(12px)',
                     }}
-                    onFocus={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
-                    onBlur={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+                    onFocus={e => { if (!talentDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
+                    onBlur={e => { if (!talentDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
                   />
-                  {exploreDevError && (
+                  {talentDevError && (
                     <p className="text-xs mt-2 text-center" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
                   )}
                 </div>
-                )}
-                {!lockActivated && (
-                  <p className="text-xs text-white mt-2" style={{ opacity: 0.45 }}>Hold the lock to activate</p>
                 )}
               </div>
               );
@@ -4639,6 +4642,155 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           </div>
         )}
 
+        {activeSection === 'deals' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+
+            {/* Page Header */}
+            <div className="mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1.5" style={{ color: 'var(--text-primary)' }}>Deals</h1>
+              <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Incoming collaboration requests, sponsorships, and freelance opportunities</p>
+            </div>
+
+            {/* Tab bar */}
+            <div className="flex items-center gap-1 mb-8 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              {(['offers', 'freelance'] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setDealsTab(tab)}
+                  className="px-4 py-2.5 text-sm font-medium transition-all relative"
+                  style={{ color: 'var(--text-primary)', opacity: dealsTab === tab ? 1 : 0.45 }}
+                >
+                  {tab === 'offers' ? 'Offers' : 'Freelance Requests'}
+                  {dealsTab === tab && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: 'var(--text-primary)' }} />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* OFFERS TAB */}
+            {dealsTab === 'offers' && (
+              <div>
+                {/* Sub-filter */}
+                <div className="flex items-center gap-2 mb-6">
+                  {(['all', 'collab', 'sponsorship'] as const).map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setDealsFilter(f)}
+                      className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all"
+                      style={{
+                        backgroundColor: dealsFilter === f ? 'var(--text-primary)' : 'var(--bg-elevated)',
+                        color: dealsFilter === f ? 'var(--bg-primary)' : 'var(--text-primary)',
+                        border: `1px solid ${dealsFilter === f ? 'transparent' : 'var(--border-subtle)'}`,
+                      }}
+                    >
+                      {f === 'all' ? 'All' : f === 'collab' ? 'Collaborations' : 'Sponsorships'}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Empty state */}
+                <div className="flex flex-col items-center justify-center py-20 gap-4">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)' }}>
+                      <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M12 22V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No offers yet</p>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Collaboration requests and brand sponsorships will appear here.</p>
+                  </div>
+                </div>
+
+                {/* Offer card template — hidden until data exists, shown here for visual reference */}
+                {false && (
+                  <div className="rounded-2xl p-5 border transition-all hover:border-white/20" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-3 mb-1">
+                          <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>Brand Name</p>
+                          <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>2d ago</span>
+                        </div>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>Looking to partner for a 3-post Instagram campaign around their new product launch...</p>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>Sponsorship</span>
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>$2,500</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+                      <button className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>Decline</button>
+                      <button className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>View Offer</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* FREELANCE REQUESTS TAB */}
+            {dealsTab === 'freelance' && (
+              <div>
+                {/* Info notice */}
+                <div className="rounded-xl p-4 mb-6 flex items-start gap-3" style={{ backgroundColor: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5" style={{ color: '#93C5FD' }}>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/>
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                  </svg>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>
+                    Businesses and artists can send you direct hire requests through the platform. Complete your profile and link your services to start receiving requests.
+                  </p>
+                </div>
+
+                {/* Empty state */}
+                <div className="flex flex-col items-center justify-center py-16 gap-4">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)' }}>
+                      <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/>
+                      <path d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                      <path d="M12 12v4M10 14h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No hire requests yet</p>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Freelance hire requests from brands and artists will appear here.</p>
+                  </div>
+                </div>
+
+                {/* Hire request card template */}
+                {false && (
+                  <div className="rounded-2xl p-5 border transition-all hover:border-white/20" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-3 mb-1">
+                          <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>Client Name</p>
+                          <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>1d ago</span>
+                        </div>
+                        <p className="text-xs mb-1 font-medium" style={{ color: 'var(--text-primary)' }}>Short-form video editing — 10 reels</p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>Need a skilled editor for a monthly batch of 10 short-form videos for TikTok and Instagram Reels...</p>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>Video Editing</span>
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>$800 / mo</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+                      <button className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>Pass</button>
+                      <button className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>Review Request</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+          </div>
+        )}
+
         {activeSection === 'explore' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8 relative">
             {/* Dev Password Gate Overlay */}
@@ -4657,23 +4809,21 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   className="mb-5 cursor-pointer select-none"
                   style={{ animation: 'float 3s ease-in-out infinite', WebkitUserSelect: 'none' }}
                   onMouseDown={() => {
-                    setLockHolding(true);
-                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
+                    setExploreLockHolding(true);
+                    exploreLockTimerRef.current = setTimeout(() => { setExploreLockActivated(true); setExploreLockHolding(false); }, 3000);
                   }}
-                  onMouseUp={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
-                  onMouseLeave={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
-                  onTouchStart={() => {
-                    setLockHolding(true);
-                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
-                  }}
-                  onTouchEnd={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                  onMouseUp={() => { setExploreLockHolding(false); if (exploreLockTimerRef.current) { clearTimeout(exploreLockTimerRef.current); exploreLockTimerRef.current = null; } }}
+                  onMouseLeave={() => { setExploreLockHolding(false); if (exploreLockTimerRef.current) { clearTimeout(exploreLockTimerRef.current); exploreLockTimerRef.current = null; } }}
+                  onTouchStart={e => { e.preventDefault(); setExploreLockHolding(true); exploreLockTimerRef.current = setTimeout(() => { setExploreLockActivated(true); setExploreLockHolding(false); }, 3000); }}
+                  onTouchEnd={() => { setExploreLockHolding(false); if (exploreLockTimerRef.current) { clearTimeout(exploreLockTimerRef.current); exploreLockTimerRef.current = null; } }}
+                  onTouchCancel={() => { setExploreLockHolding(false); if (exploreLockTimerRef.current) { clearTimeout(exploreLockTimerRef.current); exploreLockTimerRef.current = null; } }}
                 >
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3)) ${lockHolding ? 'drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3))${exploreLockHolding ? ' drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
                     <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
                     <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill={lockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
+                    <circle cx="12" cy="16" r="1" fill={exploreLockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
                   </svg>
-                  {lockHolding && (
+                  {exploreLockHolding && (
                     <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ width: '56px', backgroundColor: 'rgba(255,255,255,0.2)' }}>
                       <div className="h-full rounded-full" style={{ backgroundColor: 'white', animation: 'lockFill 3s linear forwards' }} />
                     </div>
@@ -4681,7 +4831,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
                 <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
-                {lockActivated && (
+                {exploreLockActivated && (
                 <div className="w-full max-w-xs" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
                   <input
                     type="password"
@@ -4692,7 +4842,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
                         if (exploreDevPassword === 'master100') {
-                          setExploreDevUnlocked(true);
+                          handleDevUnlock();
                           setExploreDevError(false);
                         } else {
                           setExploreDevError(true);
@@ -4713,9 +4863,6 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     <p className="text-xs mt-2 text-center" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
                   )}
                 </div>
-                )}
-                {!lockActivated && (
-                  <p className="text-xs text-white mt-2" style={{ opacity: 0.45 }}>Hold the lock to activate</p>
                 )}
               </div>
               );
