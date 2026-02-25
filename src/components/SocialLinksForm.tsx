@@ -291,6 +291,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
     channel_description: '',
   });
   const [loading, setLoading] = useState(false);
+  const [linksLoaded, setLinksLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
   const [verifyModal, setVerifyModal] = useState<{ link: SocialLink; phrase: string } | null>(null);
@@ -317,6 +318,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
       console.error('Error loading links:', error);
     } finally {
       setLoading(false);
+      setLinksLoaded(true);
     }
   };
 
@@ -696,7 +698,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
       )}
 
       <div className="space-y-3">
-        {links.length === 0 ? (
+        {!linksLoaded ? null : links.length === 0 ? (
           <div className="text-center py-8 sm:py-12">
             <AnimatedLinkIcon />
             <p className="text-sm sm:text-base font-medium mb-1" style={{ color: 'var(--text-primary)' }}>

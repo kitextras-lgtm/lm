@@ -832,6 +832,19 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
           No Activity
         </div>
       </div>
+
+      <div className="mt-4 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
+        <button
+          className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+          style={{ color: 'var(--text-primary)' }}
+          onClick={e => { e.stopPropagation(); onClick?.(); }}
+        >
+          <span>View more</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
@@ -874,6 +887,7 @@ function TotalSongsDistributedCard() {
 }
 
 function PublishingDashboardPage() {
+  const [proGateAccepted, setProGateAccepted] = useState(false);
   const [query, setQuery] = useState('');
   const [writers, setWriters] = useState('');
   const [isrc, setIsrc] = useState('');
@@ -902,10 +916,125 @@ function PublishingDashboardPage() {
     <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>PRO Registration Check</h1>
-        <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Check whether a musical work is registered with a Performing Rights Organisation worldwide.</p>
+        <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Publishing</h1>
+        <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Manage your publishing royalties and registered works.</p>
       </div>
 
+      {/* Tabs */}
+      <div className="flex items-center gap-0 mb-10" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        {['Overview', 'My Works', 'Sync Opportunities'].map((tab, i) => (
+          <div
+            key={tab}
+            className="px-4 py-3 text-sm font-semibold relative cursor-default"
+            style={{ color: 'var(--text-primary)', opacity: i === 0 ? 1 : 0.4 }}
+          >
+            {tab}
+            {i === 0 && <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />}
+          </div>
+        ))}
+      </div>
+
+      {/* Register + Stats row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div
+          className="rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden"
+          style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', minHeight: '200px' }}
+        >
+          <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid var(--border-subtle)', opacity: 0.3 }} />
+          <div style={{ position: 'absolute', top: '10px', right: '10px', width: '90px', height: '90px', borderRadius: '50%', border: '1px solid var(--border-subtle)', opacity: 0.2 }} />
+          <div className="relative z-10">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+              </svg>
+            </div>
+            <p className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Register a new <strong>Musical Work.</strong></p>
+            <p className="text-sm leading-relaxed mb-6 max-w-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Add & register tracks from your release library to claim publishing royalties worldwide.</p>
+            <button
+              className="px-6 py-3 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+            >
+              Register Song
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="rounded-2xl p-6 flex items-center gap-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Works Registered</p>
+              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+            </div>
+          </div>
+          <div className="rounded-2xl p-6 flex items-center gap-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Publishing Balance</p>
+              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider + PRO check section */}
+      <div className="mt-10 mb-6 flex items-center gap-4">
+        <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border-subtle)' }} />
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.12em' }}>PRO Registration Check</p>
+        <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border-subtle)' }} />
+      </div>
+
+      {/* PRO consent gate */}
+      {!proGateAccepted && (
+        <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="max-w-xl">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <p className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Before using this tool, please review the following:</p>
+            <div className="space-y-3 mb-6">
+              {[
+                'Have you previously registered with a PRO (Performing Rights Organization)?',
+                'Have you used any publishing services in the past?',
+              ].map((q, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{i + 1}</span>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>{q}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>
+              If not, you may use our service to check whether your work has been registered with a publisher.
+            </p>
+            <div className="rounded-xl p-4 border mb-6" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                <strong style={{ opacity: 1 }}>Disclaimer:</strong> Please note that this tool is not 100% accurate, but it is still worth checking.
+              </p>
+            </div>
+            <button
+              onClick={() => setProGateAccepted(true)}
+              className="px-7 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+            >
+              I understand — proceed to check
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Search card — only shown after gate */}
+      {proGateAccepted && <>
       {/* Search card */}
       <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
         <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Work Details</p>
@@ -1094,6 +1223,7 @@ function PublishingDashboardPage() {
           </div>
         ))}
       </div>
+      </> }
     </div>
   );
 }
@@ -4929,6 +5059,30 @@ export function ArtistDashboard() {
 
         {activeSection === 'talent' && (
           publishingStarted ? <PublishingDashboardPage /> : <PublishingSynopsisPage onStart={() => { localStorage.setItem('publishingStarted', '1'); setPublishingStarted(true); }} />
+        )}
+
+        {activeSection === 'deals' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
+            <div className="mb-10">
+              <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Sync Opportunities</h1>
+              <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Apply to any available feature below.</p>
+            </div>
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                <svg width="26" height="26" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                  <rect x="8" y="24" width="32" height="16" rx="2"/>
+                  <line x1="12" y1="30" x2="28" y2="30"/>
+                  <line x1="12" y1="36" x2="22" y2="36"/>
+                  <path d="M8 24V16C8 14.9 8.9 14 10 14H38C39.1 14 40 14.9 40 16V24"/>
+                  <line x1="14" y1="14" x2="20" y2="24"/>
+                  <line x1="22" y1="14" x2="28" y2="24"/>
+                  <line x1="30" y1="14" x2="36" y2="24"/>
+                </svg>
+              </div>
+              <p className="text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No sync opportunities available</p>
+              <p className="text-sm max-w-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>There are currently no sync opportunities available. We encourage you to check back for future openings.</p>
+            </div>
+          </div>
         )}
 
         {activeSection === 'explore' && !showReleaseForm && (
