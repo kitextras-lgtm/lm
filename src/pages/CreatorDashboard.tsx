@@ -3915,7 +3915,62 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         )}
 
         {activeSection === 'talent' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8 relative">
+            {/* Dev Password Gate Overlay */}
+            {!exploreDevUnlocked && (() => {
+              const glassColors: Record<string, string> = {
+                dark: 'rgba(15,15,20,0.55)',
+                grey: 'rgba(30,32,38,0.55)',
+                light: 'rgba(220,225,235,0.55)',
+                rose: 'rgba(40,18,22,0.55)',
+                white: 'rgba(240,242,248,0.55)',
+              };
+              const glassBg = glassColors[appliedTheme] || glassColors.dark;
+              return (
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
+                <div className="mb-5" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+                    <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                  </svg>
+                </div>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
+                <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
+                <div className="w-full max-w-xs">
+                  <input
+                    type="password"
+                    placeholder="Enter Beta"
+                    value={exploreDevPassword}
+                    onChange={e => { setExploreDevPassword(e.target.value); setExploreDevError(false); }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        if (exploreDevPassword === 'elevate2025') {
+                          setExploreDevUnlocked(true);
+                          setExploreDevError(false);
+                        } else {
+                          setExploreDevError(true);
+                        }
+                      }
+                    }}
+                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
+                    style={{
+                      backgroundColor: glassBg,
+                      border: `1px solid ${exploreDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
+                      color: 'white',
+                      backdropFilter: 'blur(12px)',
+                    }}
+                    onFocus={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
+                    onBlur={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+                  />
+                  {exploreDevError && (
+                    <p className="text-xs mt-2" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
+                  )}
+                </div>
+              </div>
+              );
+            })()}
+            <div className={exploreDevUnlocked ? '' : 'blur-[18px] pointer-events-none select-none'} style={exploreDevUnlocked ? {} : { backdropFilter: 'blur(18px)' }}>
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
                 <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('talent.discoverTitle')}</h2>
@@ -4552,27 +4607,37 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
               </div>
             </section>
+            </div>
           </div>
         )}
 
         {activeSection === 'explore' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8 relative">
             {/* Dev Password Gate Overlay */}
-            {!exploreDevUnlocked && (
+            {!exploreDevUnlocked && (() => {
+              const glassColors: Record<string, string> = {
+                dark: 'rgba(15,15,20,0.55)',
+                grey: 'rgba(30,32,38,0.55)',
+                light: 'rgba(220,225,235,0.55)',
+                rose: 'rgba(40,18,22,0.55)',
+                white: 'rgba(240,242,248,0.55)',
+              };
+              const glassBg = glassColors[appliedTheme] || glassColors.dark;
+              return (
               <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
-                <div className="mb-6" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                <div className="mb-5" style={{ animation: 'float 3s ease-in-out infinite' }}>
                   <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
                     <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
                     <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     <circle cx="12" cy="16" r="1" fill="currentColor"/>
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-1" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>Developer Access</h2>
-                <p className="text-sm text-white mb-6" style={{ opacity: 0.7, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>Enter password to preview this page</p>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
+                <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
                 <div className="w-full max-w-xs">
                   <input
                     type="password"
-                    placeholder="Enter dev password"
+                    placeholder="Enter Beta"
                     value={exploreDevPassword}
                     onChange={e => { setExploreDevPassword(e.target.value); setExploreDevError(false); }}
                     onKeyDown={e => {
@@ -4585,36 +4650,23 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         }
                       }
                     }}
-                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all mb-2"
+                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      backgroundColor: glassBg,
                       border: `1px solid ${exploreDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
                       color: 'white',
-                      backdropFilter: 'blur(4px)',
+                      backdropFilter: 'blur(12px)',
                     }}
                     onFocus={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
                     onBlur={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
                   />
                   {exploreDevError && (
-                    <p className="text-xs mb-3" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
+                    <p className="text-xs mt-2" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
                   )}
-                  <button
-                    onClick={() => {
-                      if (exploreDevPassword === 'elevate2025') {
-                        setExploreDevUnlocked(true);
-                        setExploreDevError(false);
-                      } else {
-                        setExploreDevError(true);
-                      }
-                    }}
-                    className="w-full py-3 rounded-xl text-sm font-bold transition-all hover:brightness-110"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', backdropFilter: 'blur(4px)' }}
-                  >
-                    Unlock
-                  </button>
                 </div>
               </div>
-            )}
+              );
+            })()}
 
             <style dangerouslySetInnerHTML={{
               __html: `
