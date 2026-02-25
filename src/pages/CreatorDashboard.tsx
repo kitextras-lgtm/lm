@@ -898,6 +898,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [exploreDevUnlocked, setExploreDevUnlocked] = useState(false);
   const [exploreDevPassword, setExploreDevPassword] = useState('');
   const [exploreDevError, setExploreDevError] = useState(false);
+  const [lockActivated, setLockActivated] = useState(false);
+  const [lockHolding, setLockHolding] = useState(false);
+  const lockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -3928,24 +3931,45 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               const glassBg = glassColors[appliedTheme] || glassColors.dark;
               return (
               <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
-                <div className="mb-5" style={{ animation: 'float 3s ease-in-out infinite' }}>
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+                <div
+                  className="mb-5 cursor-pointer select-none"
+                  style={{ animation: 'float 3s ease-in-out infinite', WebkitUserSelect: 'none' }}
+                  onMouseDown={() => {
+                    setLockHolding(true);
+                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
+                  }}
+                  onMouseUp={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                  onMouseLeave={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                  onTouchStart={() => {
+                    setLockHolding(true);
+                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
+                  }}
+                  onTouchEnd={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                >
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3)) ${lockHolding ? 'drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
                     <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
                     <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                    <circle cx="12" cy="16" r="1" fill={lockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
                   </svg>
+                  {lockHolding && (
+                    <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ width: '56px', backgroundColor: 'rgba(255,255,255,0.2)' }}>
+                      <div className="h-full rounded-full" style={{ backgroundColor: 'white', animation: 'lockFill 3s linear forwards' }} />
+                    </div>
+                  )}
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
                 <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
-                <div className="w-full max-w-xs">
+                {lockActivated && (
+                <div className="w-full max-w-xs" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
                   <input
                     type="password"
-                    placeholder="Enter Beta"
+                    placeholder="Enter password"
+                    autoFocus
                     value={exploreDevPassword}
                     onChange={e => { setExploreDevPassword(e.target.value); setExploreDevError(false); }}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
-                        if (exploreDevPassword === 'elevate2025') {
+                        if (exploreDevPassword === 'master100') {
                           setExploreDevUnlocked(true);
                           setExploreDevError(false);
                         } else {
@@ -3964,9 +3988,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     onBlur={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
                   />
                   {exploreDevError && (
-                    <p className="text-xs mt-2" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
+                    <p className="text-xs mt-2 text-center" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
                   )}
                 </div>
+                )}
+                {!lockActivated && (
+                  <p className="text-xs text-white mt-2" style={{ opacity: 0.45 }}>Hold the lock to activate</p>
+                )}
               </div>
               );
             })()}
@@ -4625,24 +4653,45 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               const glassBg = glassColors[appliedTheme] || glassColors.dark;
               return (
               <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
-                <div className="mb-5" style={{ animation: 'float 3s ease-in-out infinite' }}>
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+                <div
+                  className="mb-5 cursor-pointer select-none"
+                  style={{ animation: 'float 3s ease-in-out infinite', WebkitUserSelect: 'none' }}
+                  onMouseDown={() => {
+                    setLockHolding(true);
+                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
+                  }}
+                  onMouseUp={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                  onMouseLeave={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                  onTouchStart={() => {
+                    setLockHolding(true);
+                    lockTimerRef.current = setTimeout(() => { setLockActivated(true); setLockHolding(false); }, 3000);
+                  }}
+                  onTouchEnd={() => { setLockHolding(false); if (lockTimerRef.current) { clearTimeout(lockTimerRef.current); lockTimerRef.current = null; } }}
+                >
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3)) ${lockHolding ? 'drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
                     <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
                     <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                    <circle cx="12" cy="16" r="1" fill={lockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
                   </svg>
+                  {lockHolding && (
+                    <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ width: '56px', backgroundColor: 'rgba(255,255,255,0.2)' }}>
+                      <div className="h-full rounded-full" style={{ backgroundColor: 'white', animation: 'lockFill 3s linear forwards' }} />
+                    </div>
+                  )}
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
                 <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
-                <div className="w-full max-w-xs">
+                {lockActivated && (
+                <div className="w-full max-w-xs" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
                   <input
                     type="password"
-                    placeholder="Enter Beta"
+                    placeholder="Enter password"
+                    autoFocus
                     value={exploreDevPassword}
                     onChange={e => { setExploreDevPassword(e.target.value); setExploreDevError(false); }}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
-                        if (exploreDevPassword === 'elevate2025') {
+                        if (exploreDevPassword === 'master100') {
                           setExploreDevUnlocked(true);
                           setExploreDevError(false);
                         } else {
@@ -4661,9 +4710,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                     onBlur={e => { if (!exploreDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
                   />
                   {exploreDevError && (
-                    <p className="text-xs mt-2" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
+                    <p className="text-xs mt-2 text-center" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
                   )}
                 </div>
+                )}
+                {!lockActivated && (
+                  <p className="text-xs text-white mt-2" style={{ opacity: 0.45 }}>Hold the lock to activate</p>
+                )}
               </div>
               );
             })()}
@@ -4673,6 +4726,14 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 @keyframes float {
                   0%, 100% { transform: translateY(0px); }
                   50% { transform: translateY(-10px); }
+                }
+                @keyframes lockFill {
+                  from { width: 0%; }
+                  to { width: 100%; }
+                }
+                @keyframes fadeInUp {
+                  from { opacity: 0; transform: translateY(8px); }
+                  to { opacity: 1; transform: translateY(0); }
                 }
               `
             }} />
