@@ -784,7 +784,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
     return () => clearTimeout(t);
   }, [inView]);
 
-  const bars = [35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 95];
+  const bars = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 85, 95];
 
   return (
     <div
@@ -867,6 +867,292 @@ function TotalSongsDistributedCard() {
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>This Month</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>—</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PublishingSynopsisPage() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [vis, setVis] = useState(false);
+  const [countUp, setCountUp] = useState(0);
+  const [floatIn, setFloatIn] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setVis(true); obs.disconnect(); }
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!vis) return;
+    const t1 = setTimeout(() => setFloatIn(true), 300);
+    let start = 0;
+    const target = 1643;
+    const duration = 1800;
+    const step = 16;
+    const increment = (target / duration) * step;
+    const t2 = setTimeout(() => {
+      const iv = setInterval(() => {
+        start += increment;
+        if (start >= target) { setCountUp(target); clearInterval(iv); }
+        else setCountUp(Math.floor(start));
+      }, step);
+      return () => clearInterval(iv);
+    }, 500);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [vis]);
+
+  const royalties = [
+    { label: 'Mechanical', pct: 68 },
+    { label: 'Performance', pct: 82 },
+    { label: 'Sync', pct: 45 },
+    { label: 'Digital', pct: 91 },
+  ];
+
+  return (
+    <div
+      ref={ref}
+      className="min-h-screen pb-20 lg:pb-0 relative overflow-hidden"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
+    >
+      {/* Subtle radial glow behind heading */}
+      <div
+        className="absolute top-0 left-1/2 pointer-events-none"
+        style={{
+          transform: 'translateX(-50%)',
+          width: '600px',
+          height: '400px',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 70%)',
+        }}
+      />
+
+      <div className="relative z-10 px-6 sm:px-10 lg:px-16 pt-12 lg:pt-16">
+        {/* Badge */}
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8"
+          style={{
+            opacity: vis ? 1 : 0,
+            transform: vis ? 'none' : 'translateY(8px)',
+            transition: 'opacity 0.5s ease, transform 0.5s ease',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.12)',
+          }}
+        >
+          <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>An Elevate</span>
+          <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>©</span>
+          <span className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>Service</span>
+        </div>
+
+        {/* Two-column layout */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center gap-12 lg:gap-20">
+
+          {/* Left column — text */}
+          <div className="flex-1 max-w-xl">
+            <h1
+              className="font-bold leading-none mb-6"
+              style={{
+                fontSize: 'clamp(3rem, 7vw, 5.5rem)',
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.03em',
+                opacity: vis ? 1 : 0,
+                transform: vis ? 'none' : 'translateY(20px)',
+                transition: 'opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s',
+              }}
+            >
+              Music<br />Publishing
+            </h1>
+
+            <p
+              className="text-base sm:text-lg leading-relaxed mb-10 max-w-md"
+              style={{
+                color: 'rgba(255,255,255,0.6)',
+                opacity: vis ? 1 : 0,
+                transform: vis ? 'none' : 'translateY(16px)',
+                transition: 'opacity 0.6s ease 0.22s, transform 0.6s ease 0.22s',
+              }}
+            >
+              You might be missing out on royalties you didn't know existed.{' '}
+              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Let us claim what you're owed.</span>
+            </p>
+
+            {/* CTA */}
+            <div
+              className="flex items-center gap-4 flex-wrap"
+              style={{
+                opacity: vis ? 1 : 0,
+                transform: vis ? 'none' : 'translateY(12px)',
+                transition: 'opacity 0.6s ease 0.34s, transform 0.6s ease 0.34s',
+              }}
+            >
+              <button
+                className="px-7 py-3.5 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
+                style={{
+                  backgroundColor: 'var(--text-primary)',
+                  color: 'var(--bg-primary)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Register Your Works
+              </button>
+              <button
+                className="text-sm font-medium transition-all duration-200 hover:opacity-70"
+                style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+              >
+                Find out more →
+              </button>
+            </div>
+
+            {/* Royalty bars */}
+            <div
+              className="mt-12 space-y-3"
+              style={{
+                opacity: vis ? 1 : 0,
+                transition: 'opacity 0.5s ease 0.5s',
+              }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.3)', letterSpacing: '0.12em' }}>Royalty Types Collected</p>
+              {royalties.map((r, i) => (
+                <div key={r.label}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{r.label}</span>
+                    <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{vis ? r.pct : 0}%</span>
+                  </div>
+                  <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}>
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: vis ? `${r.pct}%` : '0%',
+                        backgroundColor: 'var(--text-primary)',
+                        transition: `width 0.9s cubic-bezier(0.34,1,0.64,1) ${0.55 + i * 0.12}s`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right column — floating visual */}
+          <div className="flex-1 w-full lg:max-w-sm relative" style={{ minHeight: '340px' }}>
+
+            {/* Main card */}
+            <div
+              className="rounded-2xl p-5 border"
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderColor: 'var(--border-subtle)',
+                opacity: floatIn ? 1 : 0,
+                transform: floatIn ? 'none' : 'translateY(20px)',
+                transition: 'opacity 0.6s ease, transform 0.6s ease',
+                animation: floatIn ? 'pubFloat 4s ease-in-out infinite' : 'none',
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em' }}>Balance</p>
+                <div className="flex items-center gap-1">
+                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+                    <path d="M6 1v12M1 4l5-3 5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}/>
+                    <path d="M1 9l5 3 5-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}/>
+                  </svg>
+                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+                    <path d="M6 13V1M1 10l5 3 5-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}/>
+                    <path d="M1 5l5-3 5 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}/>
+                  </svg>
+                </div>
+              </div>
+              <div className="text-4xl font-bold mb-1" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+                ${countUp.toLocaleString()}
+              </div>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Uncollected royalties · Est.</p>
+              <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Streams counted</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>2.4M</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating badge top-right */}
+            <div
+              className="absolute -top-4 right-0 rounded-xl px-4 py-2.5 border"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border-subtle)',
+                opacity: floatIn ? 1 : 0,
+                transform: floatIn ? 'none' : 'translateY(10px) scale(0.95)',
+                transition: 'opacity 0.5s ease 0.15s, transform 0.5s ease 0.15s',
+                animation: floatIn ? 'pubFloatAlt 5s ease-in-out 0.5s infinite' : 'none',
+              }}
+            >
+              <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>PRO Royalties</p>
+              <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Registered</p>
+            </div>
+
+            {/* Floating badge bottom-left */}
+            <div
+              className="absolute -bottom-4 left-0 rounded-xl px-4 py-2.5 border"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                borderColor: 'var(--border-subtle)',
+                opacity: floatIn ? 1 : 0,
+                transform: floatIn ? 'none' : 'translateY(10px) scale(0.95)',
+                transition: 'opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s',
+                animation: floatIn ? 'pubFloatAlt 5s ease-in-out 1s infinite' : 'none',
+              }}
+            >
+              <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Sync Licensing</p>
+              <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Active</p>
+            </div>
+
+            <style>{`
+              @keyframes pubFloat {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-8px); }
+              }
+              @keyframes pubFloatAlt {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-5px); }
+              }
+            `}</style>
+          </div>
+        </div>
+
+        {/* Bottom feature strip */}
+        <div
+          className="mt-16 lg:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-4"
+          style={{
+            opacity: vis ? 1 : 0,
+            transform: vis ? 'none' : 'translateY(16px)',
+            transition: 'opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s',
+          }}
+        >
+          {[
+            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>, title: 'PRO Registration', desc: 'Register your works with performing rights organizations globally.' },
+            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>, title: 'Royalty Tracking', desc: 'Real-time tracking of all royalty streams across every platform.' },
+            { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>, title: 'Sync Licensing', desc: 'Pitch your catalog to film, TV, and advertising opportunities.' },
+          ].map((f, i) => (
+            <div
+              key={f.title}
+              className="rounded-2xl p-5 border"
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderColor: 'var(--border-subtle)',
+                opacity: vis ? 1 : 0,
+                transform: vis ? 'none' : 'translateY(12px)',
+                transition: `opacity 0.5s ease ${0.75 + i * 0.1}s, transform 0.5s ease ${0.75 + i * 0.1}s`,
+              }}
+            >
+              <div className="mb-3" style={{ color: 'var(--text-primary)' }}>{f.icon}</div>
+              <p className="text-sm font-semibold mb-1.5" style={{ color: 'var(--text-primary)' }}>{f.title}</p>
+              <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -4160,10 +4446,6 @@ export function ArtistDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <AnnouncementBanner userId={currentUserId} userType="artist" />
         <section className="mb-10 sm:mb-20">
-          <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.overview')}</h2>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
             <RevenueAnalyticsCard />
 
@@ -4231,18 +4513,7 @@ export function ArtistDashboard() {
         )}
 
         {activeSection === 'talent' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
-            <section className="mb-10 sm:mb-20">
-              <div className="mb-5 sm:mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Discover Talent</h2>
-                <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Find and connect with talented creators</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} />
-              </div>
-            </section>
-          </div>
+          <PublishingSynopsisPage />
         )}
 
         {activeSection === 'explore' && !showReleaseForm && (
