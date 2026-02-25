@@ -647,19 +647,24 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                     console.error('Artist image upload error:', uploadError);
                   }
                 }
-                // Save artist entry directly to social_links (bypass edge fn duplicate check)
-                const { error: slError } = await supabase.from('social_links').insert({
-                  user_id: userId,
-                  platform: 'Artist',
-                  url: uploadedImageUrl || `artist:${userId}:${Date.now()}`,
-                  display_name: name || 'New Artist',
-                  verified: false,
+                // Save artist entry via Edge Function (uses service role key, bypasses RLS)
+                const slRes = await fetch(SOCIAL_LINKS_FN, {
+                  method: 'POST',
+                  headers: fnHeaders,
+                  body: JSON.stringify({
+                    userId,
+                    platform: 'Artist',
+                    url: uploadedImageUrl || `artist:${userId}:${Date.now()}`,
+                    display_name: name || 'New Artist',
+                    verified: false,
+                  }),
                 });
-                if (!slError) {
+                const slJson = await slRes.json();
+                if (slJson.success || slJson.duplicate) {
                   await loadLinks();
                   localStorage.setItem('social_links_updated', Date.now().toString());
                 } else {
-                  console.error('Error saving artist to social_links:', slError);
+                  console.error('Error saving artist to social_links:', slJson);
                 }
                 // Submit application
                 await supabase.from('applications').insert({
@@ -796,8 +801,8 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
     {verifyModal && (() => {
       const vm = verifyModal;
       return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
-        <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.18s ease-out forwards' }}>
+        <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl border animate-modal-in" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Verify Ownership</h3>
             {verifyResult !== 'success' && (

@@ -106,12 +106,12 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm animate-fade-in overflow-y-auto p-0 sm:p-4"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-0 sm:p-4"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.18s ease-out forwards' }}
       onClick={onClose}
     >
       <div
-        className="relative w-full h-full sm:h-auto sm:max-w-2xl sm:mx-4 sm:my-8 sm:rounded-2xl shadow-2xl animate-fade-in flex flex-col"
+        className="relative w-full h-full sm:h-auto sm:max-w-2xl sm:mx-4 sm:my-8 sm:rounded-2xl shadow-2xl animate-modal-in flex flex-col"
         style={{ backgroundColor: '#111111', border: 'none' }}
         onClick={(e) => e.stopPropagation()}
       >

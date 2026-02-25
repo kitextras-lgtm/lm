@@ -12,7 +12,7 @@ Deno.serve(async (req: Request) => {
   try {
     const { error, admin, sessionId } = await verifyAdminSession(req);
     if (error || !admin) {
-      return jsonError(error || 'Unauthorized', 401);
+      return jsonError(error || 'Unauthorized', 401, req);
     }
 
     const supabase = createServiceClient();
@@ -39,7 +39,7 @@ Deno.serve(async (req: Request) => {
         p_success: false,
         p_error_message: 'Permission denied',
       });
-      return jsonError('Permission denied', 403);
+      return jsonError('Permission denied', 403, req);
     }
 
     // ── GET: List channels ──
@@ -62,7 +62,7 @@ Deno.serve(async (req: Request) => {
         p_error_message: null,
       });
 
-      return json({ success: true, channels: channels || [] });
+      return json({ success: true, channels: channels || [] }, 200, req);
     }
 
     // ── POST: Approve / reject a channel ──
@@ -72,7 +72,7 @@ Deno.serve(async (req: Request) => {
       const { action: channelAction, reason } = await req.json();
 
       if (channelAction !== 'approve' && channelAction !== 'reject') {
-        return jsonError("Invalid action. Use 'approve' or 'reject'");
+        return jsonError("Invalid action. Use 'approve' or 'reject'", 400, req);
       }
 
       await supabase.rpc('admin_log_action', {
@@ -88,12 +88,12 @@ Deno.serve(async (req: Request) => {
         p_error_message: null,
       });
 
-      return json({ success: true, message: `Channel ${channelAction}d successfully` });
+      return json({ success: true, message: `Channel ${channelAction}d successfully` }, 200, req);
     }
 
-    return jsonError('Method not allowed', 405);
+    return jsonError('Method not allowed', 405, req);
   } catch (error) {
     console.error('Admin channels error:', error);
-    return jsonError('Internal server error', 500);
+    return jsonError('Internal server error', 500, req);
   }
 });

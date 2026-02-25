@@ -43,10 +43,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     applyThemeToDOM(theme, flatBackground);
   }, []);
 
+  const baseTokens = themeTokens[theme];
+  const tokens = (flatBackground
+    ? {
+        ...baseTokens,
+        bg: {
+          ...baseTokens.bg,
+          card: baseTokens.bg.primary,
+          elevated: baseTokens.bg.primary,
+          input: baseTokens.bg.primary,
+          modal: baseTokens.bg.primary,
+          active: baseTokens.bg.primary,
+        },
+      }
+    : baseTokens) as typeof baseTokens;
+
   const value: ThemeContextType = {
     theme,
     setTheme,
-    tokens: themeTokens[theme],
+    tokens,
     flatBackground,
     setFlatBackground,
   };

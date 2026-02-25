@@ -21,7 +21,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!sessionToken) {
-      return jsonError('No session token provided');
+      return jsonError('No session token provided', 400, req);
     }
 
     const supabase = createServiceClient();
@@ -50,9 +50,9 @@ Deno.serve(async (req: Request) => {
       await supabase.from('admin_sessions').delete().eq('id', session.id);
     }
 
-    return json({ success: true, message: 'Logged out successfully' });
+    return json({ success: true, message: 'Logged out successfully' }, 200, req);
   } catch (error) {
     console.error('Logout error:', error);
-    return jsonError('Internal server error', 500);
+    return jsonError('Internal server error', 500, req);
   }
 });

@@ -9,16 +9,17 @@
  * 3. Restart the dev server
  */
 
-// Supabase Configuration — fail fast if env vars are missing
-export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Supabase Configuration — no hardcoded fallbacks (security requirement)
+export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
+// Validate configuration on load — fail explicitly if env vars are missing
 if (!SUPABASE_URL || SUPABASE_URL === 'undefined') {
-  throw new Error('VITE_SUPABASE_URL is not set. Add it to your .env file.');
+  throw new Error('VITE_SUPABASE_URL is required. Set it in your .env file.');
 }
 
 if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'undefined') {
-  throw new Error('VITE_SUPABASE_ANON_KEY is not set. Add it to your .env file.');
+  throw new Error('VITE_SUPABASE_ANON_KEY is required. Set it in your .env file.');
 }
 
 // ASR (Speech-to-Text) Service

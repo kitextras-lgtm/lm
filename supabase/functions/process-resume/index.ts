@@ -2,7 +2,6 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { handleCors } from '../_shared/cors.ts';
 import { json, jsonError } from '../_shared/response.ts';
 import { createServiceClient } from '../_shared/supabase-client.ts';
-import { corsHeaders } from '../_shared/cors.ts';
 
 // ─── Helpers ───
 

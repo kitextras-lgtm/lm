@@ -215,6 +215,16 @@ export function AdminDashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  // Lock body scroll when user detail modal is open
+  useEffect(() => {
+    if (selectedUser) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedUser]);
+
   useEffect(() => {
     const fetchAdminProfileId = async () => {
       if (admin && !adminProfileId) {
@@ -419,9 +429,20 @@ export function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('applications')
-        .select('*')
+        .select('*, users(full_name, username, email, first_name, last_name)')
         .order('created_at', { ascending: false });
-      if (!error) setApplications(data || []);
+      if (!error) {
+        const enriched = (data || []).map((app: any) => {
+          const u = app.users;
+          return {
+            ...app,
+            full_name: app.full_name || (u ? `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.full_name || null : null),
+            username: app.username || u?.username || null,
+            email: app.email || u?.email || null,
+          };
+        });
+        setApplications(enriched);
+      }
     } catch (e) {
       console.error('Error fetching applications:', e);
     } finally {
@@ -669,25 +690,14 @@ export function AdminDashboard() {
   const handleApplicationAction = async (id: string, action: 'approved' | 'denied', reason?: string) => {
     setActioningId(id);
     try {
-      const updateData: Record<string, any> = { status: action, reviewed_at: new Date().toISOString() };
-      if (action === 'denied' && reason) updateData.decline_reason = reason;
-      const { error } = await supabase
-        .from('applications')
-        .update(updateData)
-        .eq('id', id);
-      if (!error) {
+      const result = await adminFetch('admin-application-action', {
+        method: 'POST',
+        body: JSON.stringify({ applicationId: id, action, declineReason: reason }),
+      });
+      if (result?.success) {
         setApplications(prev => prev.map(a => a.id === id ? { ...a, status: action, decline_reason: reason || null } : a));
-        // If approving an artist_account application, mark their Artist social link as verified
-        if (action === 'approved') {
-          const app = applications.find(a => a.id === id);
-          if (app?.application_type === 'artist_account' && app.user_id) {
-            await supabase
-              .from('social_links')
-              .update({ verified: true })
-              .eq('user_id', app.user_id)
-              .eq('platform', 'Artist');
-          }
-        }
+      } else {
+        console.error('Error updating application:', result?.message);
       }
     } catch (e) {
       console.error('Error updating application:', e);
@@ -843,12 +853,16 @@ export function AdminDashboard() {
     });
   };
 
-  if (isLoading || !admin) {
+  if (isLoading && !admin) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: tokens.bg.primary }}>
         <AnimatedBarsLoader text="Loading dashboard..." />
       </div>
     );
+  }
+
+  if (!admin) {
+    return null;
   }
 
   return (
@@ -1739,42 +1753,43 @@ export function AdminDashboard() {
                                           </div>
                                           {/* Expanded full details */}
                                           {expandedAppId === app.id && (
-                                            <div className="mt-4 rounded-xl p-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                                              {(app.artist_type || app.artist_role || app.artist_genre) && (
-                                                <div className="mb-3 grid grid-cols-2 gap-x-6 gap-y-1">
-                                                  {app.artist_type && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_type}</span></div>}
-                                                  {app.artist_role && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Role: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_role}</span></div>}
-                                                  {app.artist_genre && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_genre}</span></div>}
+                                            <div className="mt-4 rounded-xl p-4 space-y-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                              {/* Artist info */}
+                                              <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Artist Info</p>
+                                                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{app.category || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_type || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Role: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_role || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_genre || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country || '-'}</span></div>
                                                 </div>
-                                              )}
+                                                {app.bio && <div className="mt-1.5"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                              </div>
                                               {/* Platform IDs */}
-                                              {(app.spotify_id || app.apple_music_id || app.soundcloud_id || app.deezer_id || app.audiomack_id || app.amazon_id) && (
-                                                <div className="mb-3">
-                                                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Platform IDs</p>
-                                                  <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                                                    {app.spotify_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Spotify: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.spotify_id}</span></div>}
-                                                    {app.apple_music_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Apple Music: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.apple_music_id}</span></div>}
-                                                    {app.soundcloud_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>SoundCloud: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.soundcloud_id}</span></div>}
-                                                    {app.deezer_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Deezer: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.deezer_id}</span></div>}
-                                                    {app.audiomack_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Audiomack: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.audiomack_id}</span></div>}
-                                                    {app.amazon_id && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Amazon: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.amazon_id}</span></div>}
-                                                  </div>
+                                              <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Platform IDs</p>
+                                                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Spotify: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.spotify_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Apple Music: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.apple_music_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>SoundCloud: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.soundcloud_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Deezer: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.deezer_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Audiomack: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.audiomack_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Amazon: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.amazon_id || '-'}</span></div>
                                                 </div>
-                                              )}
+                                              </div>
                                               {/* Social links */}
-                                              {(app.instagram_handle || app.youtube_channel || app.tiktok_username || app.x_handle || app.facebook_url || app.website_url) && (
-                                                <div>
-                                                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Social Links</p>
-                                                  <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                                                    {app.instagram_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Instagram: </span><a href={`https://instagram.com/${app.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.instagram_handle}</a></div>}
-                                                    {app.youtube_channel && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>YouTube: </span><a href={`https://youtube.com/${app.youtube_channel.startsWith('@') ? app.youtube_channel : '@' + app.youtube_channel}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.youtube_channel}</a></div>}
-                                                    {app.tiktok_username && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>TikTok: </span><a href={`https://tiktok.com/@${app.tiktok_username}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.tiktok_username}</a></div>}
-                                                    {app.x_handle && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>X: </span><a href={`https://x.com/${app.x_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.x_handle}</a></div>}
-                                                    {app.facebook_url && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Facebook: </span><a href={app.facebook_url.startsWith('http') ? app.facebook_url : `https://facebook.com/${app.facebook_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.facebook_url}</a></div>}
-                                                    {app.website_url && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Website: </span><a href={app.website_url.startsWith('http') ? app.website_url : `https://${app.website_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.website_url}</a></div>}
-                                                  </div>
+                                              <div>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Social Links</p>
+                                                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Instagram: </span>{app.instagram_handle ? <a href={`https://instagram.com/${app.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.instagram_handle}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>YouTube: </span>{app.youtube_channel ? <a href={`https://youtube.com/${app.youtube_channel.startsWith('@') ? app.youtube_channel : '@' + app.youtube_channel}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.youtube_channel}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>TikTok: </span>{app.tiktok_username ? <a href={`https://tiktok.com/@${app.tiktok_username}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.tiktok_username}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>X: </span>{app.x_handle ? <a href={`https://x.com/${app.x_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.x_handle}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Facebook: </span>{app.facebook_url ? <a href={app.facebook_url.startsWith('http') ? app.facebook_url : `https://facebook.com/${app.facebook_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.facebook_url}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Website: </span>{app.website_url ? <a href={app.website_url.startsWith('http') ? app.website_url : `https://${app.website_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.website_url}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
                                                 </div>
-                                              )}
+                                              </div>
                                             </div>
                                           )}
                                         </div>
@@ -1820,14 +1835,14 @@ export function AdminDashboard() {
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
                                           style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                                         >
-                                          {actioningId === app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+                                          {actioningId === app.id && declineModalId !== app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                                           Verify
                                         </button>
                                         <button
-                                          onClick={() => { setDeclineModalId(app.id); setDeclineReason(''); }}
+                                          onClick={() => { setDeclineModalId(declineModalId === app.id ? null : app.id); setDeclineReason(''); }}
                                           disabled={actioningId === app.id}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: declineModalId === app.id ? 'var(--text-primary)' : tokens.bg.elevated, color: declineModalId === app.id ? 'var(--bg-primary)' : tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
                                         >
                                           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                           Decline
@@ -1841,6 +1856,42 @@ export function AdminDashboard() {
                                       </div>
                                     )}
                                   </div>
+
+                                  {/* Inline decline panel */}
+                                  {declineModalId === app.id && (
+                                    <div className="mt-3 rounded-xl p-4 animate-modal-in" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                      <p className="text-xs mb-3" style={{ color: tokens.text.primary, opacity: 0.65 }}>Provide a reason for declining — this will be shown to the applicant.</p>
+                                      <textarea
+                                        autoFocus
+                                        value={declineReason}
+                                        onChange={e => setDeclineReason(e.target.value)}
+                                        placeholder="e.g. Incomplete information, duplicate account, policy violation..."
+                                        rows={3}
+                                        className="w-full px-3 py-2.5 rounded-lg text-xs focus:outline-none transition-all resize-none mb-3"
+                                        style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}`, color: tokens.text.primary }}
+                                        onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+                                        onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                                      />
+                                      <div className="flex gap-2">
+                                        <button
+                                          onClick={() => { setDeclineModalId(null); setDeclineReason(''); }}
+                                          className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
+                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          onClick={() => handleApplicationAction(app.id, 'denied', declineReason.trim() || undefined)}
+                                          disabled={actioningId === app.id}
+                                          className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                                          style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                                        >
+                                          {actioningId === app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : null}
+                                          Confirm Decline
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -1851,48 +1902,6 @@ export function AdminDashboard() {
                   );
                 })()}
 
-              {/* Decline with reason modal */}
-              {declineModalId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                  <div className="w-full max-w-md rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-bold" style={{ color: tokens.text.primary }}>Decline Application</h3>
-                      <button onClick={() => { setDeclineModalId(null); setDeclineReason(''); }} className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                      </button>
-                    </div>
-                    <p className="text-sm mb-4" style={{ color: tokens.text.primary, opacity: 0.7 }}>Provide a reason for declining this application. This will be shown to the user on their dashboard.</p>
-                    <textarea
-                      value={declineReason}
-                      onChange={e => setDeclineReason(e.target.value)}
-                      placeholder="e.g. Incomplete information, duplicate account, policy violation..."
-                      rows={4}
-                      className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all resize-none mb-4"
-                      style={{ backgroundColor: tokens.bg.input, border: `1px solid ${tokens.border.default}`, color: tokens.text.primary }}
-                      onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                      onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
-                    />
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => { setDeclineModalId(null); setDeclineReason(''); }}
-                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => handleApplicationAction(declineModalId, 'denied', declineReason.trim() || undefined)}
-                        disabled={actioningId === declineModalId}
-                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
-                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                      >
-                        {actioningId === declineModalId ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : null}
-                        Confirm Decline
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
               </div>
             )}
 
@@ -2574,17 +2583,18 @@ export function AdminDashboard() {
       {selectedUser && (
         <>
           <div 
-            className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+            className="fixed inset-0 bg-black/60 z-40 transition-opacity"
+            style={{ backdropFilter: 'blur(6px)' }}
             onClick={() => setSelectedUser(null)}
           />
           
           <div 
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden"
             onClick={() => setSelectedUser(null)}
           >
             <div 
-              className="w-full max-w-4xl h-[75vh] rounded-2xl overflow-hidden flex"
-              style={{ backgroundColor: tokens.bg.modal }}
+              className="w-full max-w-4xl h-[80vh] rounded-2xl overflow-hidden flex animate-modal-in"
+              style={{ backgroundColor: tokens.bg.modal, boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-64 flex-shrink-0 p-6" style={{ backgroundColor: tokens.bg.elevated }}>
@@ -2660,7 +2670,7 @@ export function AdminDashboard() {
 
               <div className="flex-1 overflow-y-auto p-6 sm:p-8">
                 {userDetailSection === 'personal' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Personal Information</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View and manage user's personal details</p>
@@ -2741,7 +2751,7 @@ export function AdminDashboard() {
                 )}
 
                 {userDetailSection === 'connected' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Connected Accounts</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>All social links and external accounts connected to this user's profile</p>
@@ -2807,7 +2817,7 @@ export function AdminDashboard() {
                 )}
 
                 {userDetailSection === 'payment' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Payment Method</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View user's payment and payout methods</p>
@@ -2828,7 +2838,7 @@ export function AdminDashboard() {
                 )}
 
                 {userDetailSection === 'notifications' && (
-                  <div className="space-y-6 animate-fade-in">
+                  <div className="space-y-6 animate-modal-in">
                     <div>
                       <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Notifications</h3>
                       <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View user's notification preferences and history</p>

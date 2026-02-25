@@ -325,17 +325,16 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(6px)', animation: 'fadeIn 0.18s ease-out forwards' }}
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl animate-modal-in"
         style={{ 
           backgroundColor: 'var(--bg-card)',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          animation: 'popOut 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -989,6 +988,119 @@ const LANGUAGES = [
   'Other'
 ];
 
+function InfoLabel({ text, tip }: { text: string; tip: string }) {
+  const [show, setShow] = React.useState(false);
+  return (
+    <div className="flex items-center gap-1.5 mb-2">
+      <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em' }}>{text}</span>
+      <div className="relative flex items-center" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+        <svg className="w-3.5 h-3.5 cursor-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.85, filter: 'drop-shadow(0 0 4px currentColor)' }}>
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {show && (
+          <div className="absolute bottom-full left-1/2 mb-2 z-50 animate-fade-in" style={{ transform: 'translateX(-50%)', width: '220px' }}>
+            <div className="px-3 py-2 rounded-xl text-xs leading-relaxed" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-primary)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
+              {tip}
+              <div className="absolute top-full left-1/2" style={{ transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid var(--border-default)' }} />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ReleaseDropdown({ value, options, onChange, triggerStyle }: { value: string; options: string[]; onChange: (v: string) => void; triggerStyle?: React.CSSProperties }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    if (open) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all duration-200 flex items-center justify-between group border"
+        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', ...triggerStyle }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-card)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+        onFocus={(e) => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+        onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+      >
+        <span className="transition-all duration-200">{value || options[0]}</span>
+        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      {open && (
+        <div className="absolute z-50 w-full mt-1 rounded-xl shadow-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
+          <div className="max-h-52 overflow-y-auto">
+            {options.map(opt => {
+              const isSelected = opt === value;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => { onChange(opt); setOpen(false); }}
+                  className="w-full px-4 py-2.5 text-left text-sm transition-all duration-200 flex items-center justify-between group/opt"
+                  style={{ backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
+                  onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                  onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                >
+                  <span className="transition-all duration-200">{opt}</span>
+                  {isSelected && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>✓</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CreditDropdown({ value, options, onChange, placeholder }: { value: string; options: string[]; onChange: (v: string) => void; placeholder: string }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+  return (
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen(v => !v)}
+        className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between focus:outline-none transition-all"
+        style={{ backgroundColor: 'var(--bg-elevated)', color: value ? 'var(--text-primary)' : 'var(--text-primary)', border: '1px solid var(--border-subtle)', opacity: value ? 1 : 0.6 }}
+        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+        onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+      >
+        <span style={{ color: 'var(--text-primary)', opacity: value ? 1 : 0.5 }}>{value || placeholder}</span>
+        <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      {open && (
+        <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', maxHeight: '200px', overflowY: 'auto' }}>
+          {options.map(opt => (
+            <button key={opt} type="button"
+              onClick={() => { onChange(opt); setOpen(false); }}
+              className="w-full text-left px-4 py-2 text-sm flex items-center justify-between transition-all"
+              style={{ backgroundColor: value === opt ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = value === opt ? 'var(--bg-elevated)' : 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; }}
+            >
+              <span>{opt}</span>
+              {value === opt && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ArtistDashboard() {
   // Use cached profile for instant loading (like Twitter/Instagram)
   const { profile: cachedProfile, userId: cachedUserId, updateProfile: updateCachedProfile, clearCache: clearProfileCache } = useUserProfile();
@@ -1090,6 +1202,10 @@ export function ArtistDashboard() {
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const [storeDistType, setStoreDistType] = useState<'all' | 'downloads' | 'streaming' | 'custom'>('all');
   const [showAllStores, setShowAllStores] = useState(false);
+  const [origCalOpen, setOrigCalOpen] = useState(false);
+  const [origCalYear, setOrigCalYear] = useState(new Date().getFullYear());
+  const [origCalMonth, setOrigCalMonth] = useState(new Date().getMonth());
+  const origRef = useRef<HTMLDivElement>(null);
   const [playingTrackIndex, setPlayingTrackIndex] = useState<number | null>(null);
   // Always-fresh ref to tracks — used in scrubber drag to avoid stale closures
   const latestTracksRef = useRef(releaseForm.tracks);
@@ -1308,6 +1424,14 @@ export function ArtistDashboard() {
       }))
     });
   }, [currentUserId, conversations, unreadCount, activeSection, shouldShowBadge]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (origRef.current && !origRef.current.contains(e.target as Node)) setOrigCalOpen(false);
+    };
+    if (origCalOpen) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [origCalOpen]);
 
   // INSTANT: Initialize from cached profile immediately (like Twitter/Instagram)
   useEffect(() => {
@@ -1718,9 +1842,7 @@ export function ArtistDashboard() {
   // ── Draft persistence ──────────────────────────────────────────────────────
 
   const fetchDrafts = async (uid?: string) => {
-    // Always use the authenticated session uid for RLS compliance
-    const { data: { user } } = await supabase.auth.getUser();
-    const resolvedUid = user?.id || uid || localStorage.getItem('verifiedUserId') || '';
+    const resolvedUid = uid || localStorage.getItem('verifiedUserId') || '';
     if (!resolvedUid) return;
     const { data, error } = await supabase
       .from('release_drafts')
@@ -1735,7 +1857,8 @@ export function ArtistDashboard() {
     const { data } = await supabase
       .from('social_links')
       .select('display_name')
-      .eq('user_id', uid);
+      .eq('user_id', uid)
+      .eq('platform', 'Artist');
     if (data) {
       const names = data.map((r: any) => r.display_name).filter(Boolean);
       setArtistNames(names);
@@ -1743,11 +1866,9 @@ export function ArtistDashboard() {
   };
 
   const saveDraft = useCallback(async (form: typeof releaseForm, step: number, checklist: boolean[], _uid: string, overrideDraftId?: string | null) => {
-    // Always resolve uid from Supabase auth session — this is what RLS checks
-    const { data: { user } } = await supabase.auth.getUser();
-    const effectiveUid = user?.id || _uid || localStorage.getItem('verifiedUserId') || '';
+    const effectiveUid = _uid || localStorage.getItem('verifiedUserId') || '';
     if (!effectiveUid) {
-      console.warn('[saveDraft] No authenticated user — skipping save');
+      console.warn('[saveDraft] No user ID — skipping save');
       return;
     }
     setDraftSaving(true);
@@ -4210,7 +4331,7 @@ export function ArtistDashboard() {
               {/* Delete draft confirmation dialog */}
               {deletingDraftId && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-                  <div className="w-full max-w-sm rounded-2xl p-6 animate-scale-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
+                  <div className="w-full max-w-sm rounded-2xl p-6 animate-modal-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
                     <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
                     </div>
@@ -4289,81 +4410,6 @@ export function ArtistDashboard() {
           const inputCls = 'w-full px-4 py-3 rounded-xl text-base focus:outline-none transition-all';
           const inputStyle = { backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' };
           const labelStyle = { color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em', marginBottom: '8px', display: 'block' };
-
-          // Inline tooltip label component
-          const InfoLabel = ({ text, tip }: { text: string; tip: string }) => {
-            const [show, setShow] = React.useState(false);
-            return (
-              <div className="flex items-center gap-1.5 mb-2">
-                <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em' }}>{text}</span>
-                <div className="relative flex items-center" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-                  <svg className="w-3.5 h-3.5 cursor-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.85, filter: 'drop-shadow(0 0 4px currentColor)' }}>
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                  {show && (
-                    <div className="absolute bottom-full left-1/2 mb-2 z-50 animate-fade-in" style={{ transform: 'translateX(-50%)', width: '220px' }}>
-                      <div className="px-3 py-2 rounded-xl text-xs leading-relaxed" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', color: 'var(--text-primary)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
-                        {tip}
-                        <div className="absolute top-full left-1/2" style={{ transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid var(--border-default)' }} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          };
-
-          const ReleaseDropdown = ({ value, options, onChange, triggerStyle }: { value: string; options: string[]; onChange: (v: string) => void; triggerStyle?: React.CSSProperties }) => {
-            const [open, setOpen] = React.useState(false);
-            const ref = React.useRef<HTMLDivElement>(null);
-            React.useEffect(() => {
-              const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-              if (open) document.addEventListener('mousedown', handler);
-              return () => document.removeEventListener('mousedown', handler);
-            }, [open]);
-            return (
-              <div className="relative" ref={ref}>
-                <button
-                  type="button"
-                  onClick={() => setOpen(v => !v)}
-                  className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all duration-200 flex items-center justify-between group border"
-                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', ...triggerStyle }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-card)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                  onFocus={(e) => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                  onBlur={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
-                >
-                  <span className="transition-all duration-200">{value || options[0]}</span>
-                  <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                {open && (
-                  <div className="absolute z-50 w-full mt-1 rounded-xl shadow-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}>
-                    <div className="max-h-52 overflow-y-auto">
-                      {options.map(opt => {
-                        const isSelected = opt === value;
-                        return (
-                          <button
-                            key={opt}
-                            type="button"
-                            onClick={() => { onChange(opt); setOpen(false); }}
-                            className="w-full px-4 py-2.5 text-left text-sm transition-all duration-200 flex items-center justify-between group/opt"
-                            style={{ backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
-                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
-                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; }}
-                          >
-                            <span className="transition-all duration-200">{opt}</span>
-                            {isSelected && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>✓</span>}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          };
 
           return (
             <div ref={releaseFormScrollRef} className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
@@ -5144,44 +5190,6 @@ export function ArtistDashboard() {
                                   const roleOpts = ['Arranger','Author','Conductor','Librettist','Lyricist'];
                                   const prodOpts = ['Assistant Producer','Mastering Engineer','Mixing Engineer','Musical Director','Producer','Sound Engineer'];
                                   const perfOpts = ['Acoustic Guitar','Alto Saxophone','Background Vocals','Banjo','Baritone Saxophone','Bass Clarinet','Bass Guitar','Bass Trombone','Bassoon','Bongos','Bouzouki','Cello','Choir','Chorus','Clarinet','Classical Guitar','Congas','Cornet','DJ','Djembe','Double Bass','Drums','Electric Guitar','Fiddle','First Violin','Flugelhorn','Flute','Guitar','Hammond Organ','Harmonica','Harmony Vocals','Harp','Harpsichord','Keyboards','Kora','Lead Guitar','Lead Vocals','Mandolin','Mezzo-soprano Vocals','Oboe','Organ','Pedal Steel Guitar','Percussion','Performer','Piano','Piccolo','Remixer','Rhodes Piano','Rhythm Guitar','Saxophone','Second Violin','Sitar','Sopranino Saxophone','Tabla','Tambourine','Tenor Saxophone','Timbales','Timpani','Trombone','Trumpet','Tuba','Ukulele','Viola','Violin'];
-                                  const CreditDropdown = ({ value, options, onChange, placeholder }: { value: string; options: string[]; onChange: (v: string) => void; placeholder: string }) => {
-                                    const [open, setOpen] = React.useState(false);
-                                    const ref = React.useRef<HTMLDivElement>(null);
-                                    React.useEffect(() => {
-                                      const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-                                      document.addEventListener('mousedown', handler);
-                                      return () => document.removeEventListener('mousedown', handler);
-                                    }, []);
-                                    return (
-                                      <div ref={ref} className="relative">
-                                        <button type="button" onClick={() => setOpen(v => !v)}
-                                          className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between focus:outline-none transition-all"
-                                          style={{ backgroundColor: 'var(--bg-elevated)', color: value ? 'var(--text-primary)' : 'var(--text-primary)', border: '1px solid var(--border-subtle)', opacity: value ? 1 : 0.6 }}
-                                          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-                                          onMouseLeave={e => e.currentTarget.style.transform = 'none'}
-                                        >
-                                          <span style={{ color: 'var(--text-primary)', opacity: value ? 1 : 0.5 }}>{value || placeholder}</span>
-                                          <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
-                                        </button>
-                                        {open && (
-                                          <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', maxHeight: '200px', overflowY: 'auto' }}>
-                                            {options.map(opt => (
-                                              <button key={opt} type="button"
-                                                onClick={() => { onChange(opt); setOpen(false); }}
-                                                className="w-full text-left px-4 py-2 text-sm flex items-center justify-between transition-all"
-                                                style={{ backgroundColor: value === opt ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
-                                                onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
-                                                onMouseLeave={e => { e.currentTarget.style.backgroundColor = value === opt ? 'var(--bg-elevated)' : 'transparent'; e.currentTarget.style.transform = 'none'; }}
-                                              >
-                                                {opt}
-                                                {value === opt && <span style={{ color: '#CBD5E1', fontSize: '0.75rem' }}>✓</span>}
-                                              </button>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  };
                                   return (
                                     <>
                                       <div className="grid grid-cols-2 gap-3">
@@ -5561,19 +5569,10 @@ export function ArtistDashboard() {
                         ))}
                       </div>
                       {rf.releasedBefore && (() => {
-                        const [origCalOpen, setOrigCalOpen] = React.useState(false);
                         const origMonthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-                        const [origCalYear, setOrigCalYear] = React.useState(new Date().getFullYear());
-                        const [origCalMonth, setOrigCalMonth] = React.useState(new Date().getMonth());
                         const origDaysInMonth = new Date(origCalYear, origCalMonth + 1, 0).getDate();
                         const origFirstDay = new Date(origCalYear, origCalMonth, 1).getDay();
                         const origParsed = rf.originalReleaseDate ? new Date(rf.originalReleaseDate + 'T00:00:00') : null;
-                        const origRef = React.useRef<HTMLDivElement>(null);
-                        React.useEffect(() => {
-                          const handler = (e: MouseEvent) => { if (origRef.current && !origRef.current.contains(e.target as Node)) setOrigCalOpen(false); };
-                          if (origCalOpen) document.addEventListener('mousedown', handler);
-                          return () => document.removeEventListener('mousedown', handler);
-                        }, [origCalOpen]);
                         return (
                           <div className="space-y-1.5 flex-1 relative" style={{ maxWidth: '280px' }} ref={origRef}>
                             <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Enter the <strong style={{ color: 'var(--text-primary)' }}>original release date</strong></p>
@@ -5829,13 +5828,13 @@ export function ArtistDashboard() {
 
                 {releaseStep < 5 ? (() => {
                   const checklistBlocked = releaseStep === 2 && !releaseChecklist.every(Boolean);
-                  const artistBlocked = releaseStep === 1 && !rf.releaseArtists;
+                  const artistBlocked = releaseStep === 1 && !rf.releaseArtists && artistNames.length > 0;
 
                   const validateStep = () => {
                     const errors: Record<string, boolean> = {};
                     if (releaseStep === 1) {
                       if (!rf.title) errors.title = true;
-                      if (!rf.releaseArtists) { errors.releaseArtists = true; setReleaseArtistError(true); }
+                      if (!rf.releaseArtists && artistNames.length > 0) { errors.releaseArtists = true; setReleaseArtistError(true); }
                       if (!rf.genre) errors.genre = true;
                     }
                     if (releaseStep === 2) {

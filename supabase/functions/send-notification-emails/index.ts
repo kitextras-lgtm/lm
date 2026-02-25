@@ -1,34 +1,50 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { handleCors } from '../_shared/cors.ts';
-import { json, jsonError } from '../_shared/response.ts';
-import { createServiceClient, getSupabaseEnv } from '../_shared/supabase-client.ts';
+import { handleCors, getCorsHeaders } from '../_shared/cors.ts';
+import { createServiceClient } from '../_shared/supabase-client.ts';
 import { getValidatedFromEmail, getEmailTemplate } from '../_shared/email.ts';
 
 Deno.serve(async (req: Request) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
 
+  const corsHeaders = getCorsHeaders(req);
+
+  const jsonResp = (status: number, body: Record<string, unknown>) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
   try {
     const { notificationType, subject, content } = await req.json();
 
     if (!notificationType || !subject || !content) {
-      return jsonError('notificationType, subject, and content are required');
+      return jsonResp(400, {
+        success: false,
+        message: 'notificationType, subject, and content are required',
+      });
     }
 
     if (!['new_features', 'platform_updates'].includes(notificationType)) {
-      return jsonError('Invalid notification type. Must be "new_features" or "platform_updates"');
+      return jsonResp(400, {
+        success: false,
+        message: 'Invalid notification type. Must be "new_features" or "platform_updates"',
+      });
     }
 
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
     if (!RESEND_API_KEY) {
-      return jsonError('Email service not configured (RESEND_API_KEY missing)', 500);
+      return jsonResp(500, {
+        success: false,
+        message: 'Email service not configured (RESEND_API_KEY missing)',
+      });
     }
 
-    const supabase = createServiceClient();
-    const { url: supabaseUrl } = getSupabaseEnv();
     const FROM_EMAIL = getValidatedFromEmail();
+    const supabase = createServiceClient();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
 
-    // ── Fetch opted-in users ──
+    // Get users with the relevant preference enabled
     const preferenceColumn =
       notificationType === 'new_features' ? 'email_new_features' : 'email_platform_updates';
 
@@ -41,24 +57,31 @@ Deno.serve(async (req: Request) => {
 
     if (dbError) {
       console.error('Database error:', dbError);
-      return jsonError(`Failed to fetch users: ${dbError.message}`, 500);
+      return jsonResp(500, {
+        success: false,
+        message: 'Failed to fetch users',
+        error: dbError.message,
+      });
     }
 
     if (!users || users.length === 0) {
-      return json({ success: true, message: 'No users found with this preference enabled', total: 0, sent: 0, failed: 0 });
+      return jsonResp(200, {
+        success: true,
+        message: 'No users found with this preference enabled',
+        total: 0,
+        sent: 0,
+        failed: 0,
+      });
     }
 
-    // ── Build email ──
     const unsubscribeUrl = `${supabaseUrl.replace('/rest/v1', '')}/#/settings/notifications`;
     const htmlContent = getEmailTemplate(subject, content, unsubscribeUrl);
     const textContent = content.replace(/\n/g, '\n\n');
 
-    // ── Send emails ──
-    const results: { userId: string; email: string; success: boolean; messageId?: string; error?: string }[] = [];
-
+    const results = [];
     for (const user of users) {
       try {
-        const res = await fetch('https://api.resend.com/emails', {
+        const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -73,34 +96,43 @@ Deno.serve(async (req: Request) => {
           }),
         });
 
-        const data = await res.json();
+        const emailData = await emailResponse.json();
 
-        results.push({
-          userId: user.id,
-          email: user.email,
-          success: res.ok,
-          ...(res.ok ? { messageId: data.id } : { error: data.message || 'Unknown error' }),
-        });
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Failed to send email';
+        if (emailResponse.ok) {
+          results.push({
+            userId: user.id,
+            email: user.email,
+            success: true,
+            messageId: emailData.id || null,
+          });
+        } else {
+          results.push({
+            userId: user.id,
+            email: user.email,
+            success: false,
+            error: emailData.message || 'Unknown error',
+          });
+        }
+      } catch (emailError: unknown) {
+        const msg = emailError instanceof Error ? emailError.message : 'Failed to send email';
         results.push({ userId: user.id, email: user.email, success: false, error: msg });
       }
     }
 
-    const sent = results.filter((r) => r.success).length;
-    const failed = results.filter((r) => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
 
-    return json({
+    return jsonResp(200, {
       success: true,
-      message: `Sent ${sent} emails, ${failed} failed`,
+      message: `Sent ${successCount} emails, ${failureCount} failed`,
       total: users.length,
-      sent,
-      failed,
+      sent: successCount,
+      failed: failureCount,
       results,
     });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Internal server error';
     console.error('Error in send-notification-emails:', msg);
-    return jsonError(msg, 500);
+    return jsonResp(500, { success: false, message: msg });
   }
 });

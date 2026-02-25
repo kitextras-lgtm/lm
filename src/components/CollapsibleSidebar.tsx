@@ -669,15 +669,19 @@ export function CollapsibleSidebar({
     }
   };
 
-  // Handle responsive collapse based on screen width
+  // Handle responsive collapse: force-collapse on small screens only
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1280) {
         setIsCollapsed(true);
       }
+      // On wide screens, do NOT auto-expand — respect user's toggle preference
     };
 
-    handleResize();
+    // Only apply on initial mount if screen is small
+    if (window.innerWidth < 1280) {
+      setIsCollapsed(true);
+    }
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -694,11 +698,9 @@ export function CollapsibleSidebar({
     // If permanently collapsed, don't change state
     if (permanentlyCollapsed) return;
     
-    // Collapse when Messages is clicked, expand for everything else
+    // Collapse when Messages is clicked; otherwise respect the user's current preference
     if (itemId === 'messages') {
       setIsCollapsed(true);
-    } else {
-      setIsCollapsed(false);
     }
   };
 

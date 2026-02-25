@@ -12,12 +12,12 @@ Deno.serve(async (req: Request) => {
     const { resource, action } = await req.json();
 
     if (!resource || !action) {
-      return jsonError('Resource and action required');
+      return jsonError('Resource and action required', 400, req);
     }
 
     const { error, admin } = await verifyAdminSession(req);
     if (error || !admin) {
-      return jsonError(error || 'Unauthorized', 401);
+      return jsonError(error || 'Unauthorized', 401, req);
     }
 
     const supabase = createServiceClient();
@@ -33,12 +33,12 @@ Deno.serve(async (req: Request) => {
 
     if (permError) {
       console.error('Permission check error:', permError);
-      return jsonError('Permission check failed', 500);
+      return jsonError('Permission check failed', 500, req);
     }
 
-    return json({ success: true, hasPermission: hasPermission === true });
+    return json({ success: true, hasPermission: hasPermission === true }, 200, req);
   } catch (error) {
     console.error('Check permission error:', error);
-    return jsonError('Internal server error', 500);
+    return jsonError('Internal server error', 500, req);
   }
 });

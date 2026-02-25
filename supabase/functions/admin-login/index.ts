@@ -20,7 +20,7 @@ Deno.serve(async (req: Request) => {
     const { email, password, totpCode } = await req.json();
 
     if (!email || !password) {
-      return jsonError('Email and password required');
+      return jsonError('Email and password required', 400, req);
     }
 
     const ipAddress = getClientIp(req);
@@ -40,11 +40,11 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (adminError || !admin) {
-      return jsonError('Invalid email or password', 401);
+      return jsonError('Invalid email or password', 401, req);
     }
 
     if (!admin.is_active) {
-      return jsonError('Account is deactivated', 403);
+      return jsonError('Account is deactivated', 403, req);
     }
 
     // ── Check lockout ──
@@ -52,7 +52,7 @@ Deno.serve(async (req: Request) => {
       const mins = Math.ceil(
         (new Date(admin.account_locked_until).getTime() - Date.now()) / 60_000,
       );
-      return jsonError(`Account locked. Try again in ${mins} minutes.`, 403);
+      return jsonError(`Account locked. Try again in ${mins} minutes.`, 403, req);
     }
 
     // ── Verify password ──
@@ -87,13 +87,13 @@ Deno.serve(async (req: Request) => {
       const msg = lock
         ? `Account locked after ${MAX_FAILED_ATTEMPTS} failed attempts. Try again in ${LOCKOUT_DURATION_MINUTES} minutes.`
         : 'Invalid email or password';
-      return jsonError(msg, 401);
+      return jsonError(msg, 401, req);
     }
 
     // ── Verify TOTP (if enabled) ──
     if (admin.totp_enabled) {
       if (!totpCode) {
-        return json({ success: false, message: 'TOTP code required', requiresTotp: true }, 400);
+        return json({ success: false, message: 'TOTP code required', requiresTotp: true }, 400, req);
       }
 
       try {
@@ -111,11 +111,11 @@ Deno.serve(async (req: Request) => {
             p_success: false,
             p_error_message: 'Invalid TOTP code',
           });
-          return jsonError('Invalid TOTP code', 401);
+          return jsonError('Invalid TOTP code', 401, req);
         }
       } catch (totpError) {
         console.error('TOTP verification error:', totpError);
-        return jsonError('TOTP verification failed', 500);
+        return jsonError('TOTP verification failed', 500, req);
       }
     }
 
@@ -139,7 +139,7 @@ Deno.serve(async (req: Request) => {
 
     if (sessionError || !session) {
       console.error('Session creation error:', sessionError);
-      return jsonError('Failed to create session', 500);
+      return jsonError('Failed to create session', 500, req);
     }
 
     // ── Reset failed attempts & update last-login ──
@@ -180,9 +180,9 @@ Deno.serve(async (req: Request) => {
         permissions: admin.custom_permissions || role.default_permissions,
       },
       expiresAt: expiresAt.toISOString(),
-    });
+    }, 200, req);
   } catch (error) {
     console.error('Admin login error:', error);
-    return jsonError('Internal server error', 500);
+    return jsonError('Internal server error', 500, req);
   }
 });

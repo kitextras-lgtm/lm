@@ -1,6 +1,5 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { handleCors } from '../_shared/cors.ts';
-import { json, jsonError } from '../_shared/response.ts';
+import { handleCors, getCorsHeaders } from '../_shared/cors.ts';
 import { createServiceClient } from '../_shared/supabase-client.ts';
 
 const WORDS = [
@@ -17,7 +16,8 @@ const WORDS = [
 ];
 
 function generatePhrase(): string {
-  return `Elevate ${WORDS[Math.floor(Math.random() * WORDS.length)]}`;
+  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+  return `Elevate ${word}`;
 }
 
 async function fetchPageText(url: string): Promise<string> {
@@ -25,7 +25,7 @@ async function fetchPageText(url: string): Promise<string> {
     const res = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; ElevateBot/1.0)',
-        Accept: 'text/html,application/xhtml+xml',
+        'Accept': 'text/html,application/xhtml+xml',
       },
       redirect: 'follow',
     });
@@ -41,13 +41,20 @@ Deno.serve(async (req: Request) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
 
+  const corsHeaders = getCorsHeaders(req);
   const supabase = createServiceClient();
+
+  const jsonResp = (status: number, body: Record<string, unknown>) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   try {
     const { action, linkId, userId } = await req.json();
 
     if (!linkId || !userId) {
-      return jsonError('linkId and userId required');
+      return jsonResp(400, { success: false, message: 'linkId and userId required' });
     }
 
     const { data: link, error: fetchErr } = await supabase
@@ -58,10 +65,10 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (fetchErr || !link) {
-      return jsonError('Link not found', 404);
+      return jsonResp(404, { success: false, message: 'Link not found' });
     }
 
-    // ── get-phrase: generate and store a verification phrase ──
+    // ACTION: get-phrase
     if (action === 'get-phrase') {
       let phrase = link.verification_phrase;
       if (!phrase) {
@@ -71,14 +78,14 @@ Deno.serve(async (req: Request) => {
           .update({ verification_phrase: phrase })
           .eq('id', linkId);
       }
-      return json({ success: true, phrase });
+      return jsonResp(200, { success: true, phrase });
     }
 
-    // ── check: scrape the URL and look for the phrase ──
+    // ACTION: check
     if (action === 'check') {
       const phrase = link.verification_phrase;
       if (!phrase) {
-        return jsonError('No phrase assigned yet');
+        return jsonResp(400, { success: false, message: 'No phrase assigned yet' });
       }
 
       const pageText = await fetchPageText(link.url);
@@ -91,13 +98,13 @@ Deno.serve(async (req: Request) => {
           .eq('id', linkId);
       }
 
-      return json({ success: true, verified: found });
+      return jsonResp(200, { success: true, verified: found });
     }
 
-    return jsonError('Unknown action');
+    return jsonResp(400, { success: false, message: 'Unknown action' });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('verify-social-link error:', message);
-    return jsonError(message, 500);
+    return jsonResp(500, { success: false, message });
   }
 });

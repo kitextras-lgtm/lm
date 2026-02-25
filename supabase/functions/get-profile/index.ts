@@ -12,30 +12,30 @@ Deno.serve(async (req: Request) => {
     const userId = url.searchParams.get('userId');
 
     if (!userId) {
-      return jsonError('User ID required');
+      return jsonError('User ID required', 400, req);
     }
 
     const supabase = createServiceClient();
 
-    const { data: userData, error } = await supabase
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .maybeSingle();
 
-    if (error) {
-      console.error('Error fetching user data:', error);
-      return jsonError(error.message || 'Failed to fetch user data', 500);
+    if (userError) {
+      console.error('Error fetching user data:', userError);
+      return jsonError(userError.message || 'Failed to fetch user data', 500, req);
     }
 
     return json({
       success: true,
       profile: userData,
-      user: userData, // backwards compatibility
-    });
+      user: userData,
+    }, 200, req);
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to fetch profile';
+    const message = err instanceof Error ? err.message : String(err);
     console.error('Error in get-profile:', message);
-    return jsonError(message, 500);
+    return jsonError(message || 'Failed to fetch profile', 500, req);
   }
 });

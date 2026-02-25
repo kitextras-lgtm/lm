@@ -22,7 +22,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!sessionToken) {
-      return jsonError('No session token provided', 401);
+      return jsonError('No session token provided', 401, req);
     }
 
     const supabase = createServiceClient();
@@ -42,30 +42,30 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (sessionError || !session) {
-      return jsonError('Invalid session', 401);
+      return jsonError('Invalid session', 401, req);
     }
 
     if (new Date(session.expires_at) < new Date()) {
       await supabase.from('admin_sessions').delete().eq('id', session.id);
-      return jsonError('Session expired', 401);
+      return jsonError('Session expired', 401, req);
     }
 
     const inactiveMinutes = (Date.now() - new Date(session.last_activity_at).getTime()) / 60_000;
     if (inactiveMinutes > SESSION_DURATION_MINUTES) {
       await supabase.from('admin_sessions').delete().eq('id', session.id);
-      return jsonError('Session expired due to inactivity', 401);
+      return jsonError('Session expired due to inactivity', 401, req);
     }
 
     const admin = session.admins as Record<string, unknown> | null;
     if (!admin || !admin.is_active) {
-      return jsonError('Admin account is deactivated', 403);
+      return jsonError('Admin account is deactivated', 403, req);
     }
 
     if (
       admin.account_locked_until &&
       new Date(admin.account_locked_until as string) > new Date()
     ) {
-      return jsonError('Admin account is locked', 403);
+      return jsonError('Admin account is locked', 403, req);
     }
 
     await supabase.rpc('admin_update_session_activity', { p_session_id: session.id });
@@ -83,9 +83,9 @@ Deno.serve(async (req: Request) => {
       },
       sessionId: session.id,
       expiresAt: session.expires_at,
-    });
+    }, 200, req);
   } catch (error) {
     console.error('Session verification error:', error);
-    return jsonError('Internal server error', 500);
+    return jsonError('Internal server error', 500, req);
   }
 });

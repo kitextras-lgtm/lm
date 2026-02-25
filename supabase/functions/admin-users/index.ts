@@ -12,13 +12,14 @@ Deno.serve(async (req: Request) => {
   try {
     const { error, admin, sessionId } = await verifyAdminSession(req);
     if (error || !admin) {
-      return jsonError(error || 'Unauthorized', 401);
+      return jsonError(error || 'Unauthorized', 401, req);
     }
 
     const supabase = createServiceClient();
     const ipAddress = getClientIp(req);
     const userAgent = getUserAgent(req);
 
+    // Check permission for viewing users
     const { data: hasPermission } = await supabase.rpc('admin_has_permission', {
       p_admin_id: admin.id,
       p_resource: 'users',
@@ -38,10 +39,11 @@ Deno.serve(async (req: Request) => {
         p_success: false,
         p_error_message: 'Permission denied',
       });
-      return jsonError('Permission denied', 403);
+
+      return jsonError('Permission denied', 403, req);
     }
 
-    // ── GET: List users ──
+    // GET /admin-users - List all users
     if (req.method === 'GET') {
       const url = new URL(req.url);
       const limit = parseInt(url.searchParams.get('limit') || '100');
@@ -55,7 +57,7 @@ Deno.serve(async (req: Request) => {
 
       if (usersError) {
         console.error('Error fetching users:', usersError);
-        return jsonError('Failed to fetch users', 500);
+        return jsonError('Failed to fetch users', 500, req);
       }
 
       const { count } = await supabase
@@ -81,12 +83,12 @@ Deno.serve(async (req: Request) => {
         total: count || 0,
         limit,
         offset,
-      });
+      }, 200, req);
     }
 
-    return jsonError('Method not allowed', 405);
+    return jsonError('Method not allowed', 405, req);
   } catch (error) {
     console.error('Admin users error:', error);
-    return jsonError('Internal server error', 500);
+    return jsonError('Internal server error', 500, req);
   }
 });

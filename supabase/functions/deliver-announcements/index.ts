@@ -1,18 +1,22 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { handleCors } from '../_shared/cors.ts';
-import { json, jsonError } from '../_shared/response.ts';
+import { handleCors, getCorsHeaders } from '../_shared/cors.ts';
 import { createServiceClient } from '../_shared/supabase-client.ts';
 
 Deno.serve(async (req: Request) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
 
+  const corsHeaders = getCorsHeaders(req);
+
   try {
     const supabase = createServiceClient();
 
     const { data, error } = await supabase
       .from('admin_announcements')
-      .select(`*, created_by:admins(email, full_name)`)
+      .select(`
+        *,
+        created_by:admins(email, full_name)
+      `)
       .eq('status', 'sent')
       .order('created_at', { ascending: false });
 
@@ -29,7 +33,6 @@ Deno.serve(async (req: Request) => {
           .select('id');
         targetUsers = allUsers || [];
       } else {
-        // Remove trailing 's' from audience name (e.g. "creators" -> "creator")
         const { data: usersByType } = await supabase
           .from('user_profiles')
           .select('id')
@@ -37,7 +40,7 @@ Deno.serve(async (req: Request) => {
         targetUsers = usersByType || [];
       }
 
-      const records = targetUsers.map((user) => ({
+      const announcementsToInsert = targetUsers.map((user) => ({
         admin_id: announcement.created_by,
         user_id: user.id,
         title: announcement.title,
@@ -47,8 +50,8 @@ Deno.serve(async (req: Request) => {
         is_read: false,
       }));
 
-      if (records.length > 0) {
-        await supabase.from('announcements').insert(records);
+      if (announcementsToInsert.length > 0) {
+        await supabase.from('announcements').insert(announcementsToInsert);
       }
 
       await supabase
@@ -57,10 +60,21 @@ Deno.serve(async (req: Request) => {
         .eq('id', announcement.id);
     }
 
-    return json({ success: true, processed: data.length });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('deliver-announcements error:', message);
-    return jsonError(message, 500);
+    return new Response(
+      JSON.stringify({ success: true, processed: data.length }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      },
+    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    return new Response(
+      JSON.stringify({ error: message }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    );
   }
 });
