@@ -462,8 +462,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
 
   return (
     <>
-    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', animation: 'socialFormIn 0.45s ease both' }}>
-    <style>{`@keyframes socialFormIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }`}</style>
+    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
       <div className="flex items-center justify-end mb-5 sm:mb-6">
         {!isAdding && (userType !== 'artist' || links.length === 0) && (
           <button

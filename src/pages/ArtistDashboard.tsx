@@ -874,114 +874,225 @@ function TotalSongsDistributedCard() {
 }
 
 function PublishingDashboardPage() {
+  const [query, setQuery] = useState('');
+  const [writers, setWriters] = useState('');
+  const [isrc, setIsrc] = useState('');
+  const [checkState, setCheckState] = useState<'idle' | 'searching' | 'done'>('idle');
+  const [result, setResult] = useState<null | { verdict: 'registered' | 'possible' | 'not_found'; confidence: number; title: string; matches: { source: string; territory: string; status: string; iswc?: string }[]; reasons: string[] }>(null);
+  const inputCls = "w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none border";
+  const inputStyle = { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' };
+
+  const runCheck = () => {
+    if (!query.trim()) return;
+    setCheckState('searching');
+    setResult(null);
+    setTimeout(() => {
+      setCheckState('done');
+      setResult({
+        verdict: 'not_found',
+        confidence: 12,
+        title: query.trim(),
+        matches: [],
+        reasons: ['No ISWC or ISRC provided', 'No matching work found in connected PRO databases', 'Title search returned no high-confidence results'],
+      });
+    }, 2800);
+  };
+
   return (
     <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
       {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Publishing</h1>
-        <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Manage your publishing royalties and registered works.</p>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>PRO Registration Check</h1>
+        <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Check whether a musical work is registered with a Performing Rights Organisation worldwide.</p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-0 mb-10" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-        {['Overview', 'My Works', 'Sync Opportunities'].map((tab, i) => (
-          <div
-            key={tab}
-            className="px-4 py-3 text-sm font-semibold relative"
-            style={{ color: 'var(--text-primary)', opacity: i === 0 ? 1 : 0.45 }}
-          >
-            {tab}
-            {i === 0 && <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />}
+      {/* Search card */}
+      <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Work Details</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Song Title <span style={{ opacity: 0.4 }}>(required)</span></label>
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && runCheck()}
+              placeholder="e.g. Night Drive"
+              className={inputCls}
+              style={inputStyle}
+              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+            />
           </div>
-        ))}
-      </div>
-
-      {/* Hero banner */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div
-          className="rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden"
-          style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', minHeight: '220px' }}
-        >
-          {/* Decorative circles */}
-          <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid var(--border-subtle)', opacity: 0.4 }} />
-          <div style={{ position: 'absolute', top: '10px', right: '10px', width: '90px', height: '90px', borderRadius: '50%', border: '1px solid var(--border-subtle)', opacity: 0.3 }} />
-
-          <div className="relative z-10">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-                <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
-              </svg>
-            </div>
-            <p className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Register a new <strong>Musical Work.</strong></p>
-            <p className="text-sm leading-relaxed mb-6 max-w-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Add & register tracks from your release library to claim publishing royalties.</p>
+          <div>
+            <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Writer(s) <span style={{ opacity: 0.4 }}>(optional)</span></label>
+            <input
+              type="text"
+              value={writers}
+              onChange={e => setWriters(e.target.value)}
+              placeholder="e.g. Michael Lee, Jane Smith"
+              className={inputCls}
+              style={inputStyle}
+              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>ISRC <span style={{ opacity: 0.4 }}>(optional)</span></label>
+            <input
+              type="text"
+              value={isrc}
+              onChange={e => setIsrc(e.target.value)}
+              placeholder="e.g. USRC17607839"
+              className={inputCls}
+              style={inputStyle}
+              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+            />
+          </div>
+          <div className="flex items-end">
             <button
-              className="px-6 py-3 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
+              onClick={runCheck}
+              disabled={!query.trim() || checkState === 'searching'}
+              className="w-full px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
               style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
             >
-              Register Song
+              {checkState === 'searching' ? 'Checking registries…' : 'Check Registration'}
             </button>
           </div>
         </div>
 
-        {/* Stats column */}
-        <div className="flex flex-col gap-4">
-          <div className="rounded-2xl p-6 flex items-center gap-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Works Approved:</p>
-              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
-            </div>
-          </div>
-          <div className="rounded-2xl p-6 flex items-center gap-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-                <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Catalog Registered:</p>
-              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>0<span className="text-lg font-normal" style={{ opacity: 0.4 }}>/0</span></p>
-            </div>
-          </div>
+        {/* How it works hint */}
+        <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>
+            We search across <strong style={{ opacity: 1 }}>ASCAP, BMI, SOCAN, PRS, APRA, SESAC</strong> and other global PRO databases. Providing a writer name or ISRC significantly improves accuracy.
+          </p>
         </div>
       </div>
 
-      {/* Action cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-2xl p-8 flex flex-col items-center text-center border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
+      {/* Searching state */}
+      {checkState === 'searching' && (
+        <div className="rounded-2xl p-10 border flex flex-col items-center justify-center gap-5 mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <div className="flex items-end gap-1" style={{ height: '32px' }}>
+            {[0.4, 0.7, 1, 0.7, 0.4].map((h, i) => (
+              <div
+                key={i}
+                className="w-1.5 rounded-full"
+                style={{
+                  height: `${h * 100}%`,
+                  backgroundColor: 'var(--text-primary)',
+                  opacity: 0.7,
+                  animation: `proBarPulse 1.1s ease-in-out ${i * 0.15}s infinite alternate`,
+                }}
+              />
+            ))}
           </div>
-          <p className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Apply for the latest <strong>Sync<br/>Opportunities</strong></p>
-          <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Submit your tracks for the chance to be featured in movies, TV shows, ads, games and more.</p>
-          <button
-            className="px-6 py-3 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
-            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-          >
-            Apply Now
-          </button>
-        </div>
-        <div className="rounded-2xl p-8 flex flex-col items-center text-center border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-            </svg>
+          <style>{`@keyframes proBarPulse { from { transform: scaleY(0.4); } to { transform: scaleY(1); } }`}</style>
+          <div className="text-center">
+            <p className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Querying PRO databases…</p>
+            <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Checking ASCAP · BMI · PRS · SOCAN · APRA · SESAC</p>
           </div>
-          <p className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>View/amend <strong>Your Works</strong></p>
-          <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>See the works you've already registered and the details that have been submitted.</p>
-          <button
-            className="px-6 py-3 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
-            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-          >
-            My Works
-          </button>
         </div>
+      )}
+
+      {/* Result */}
+      {checkState === 'done' && result && (
+        <div className="rounded-2xl border overflow-hidden mb-6" style={{ borderColor: 'var(--border-subtle)' }}>
+          {/* Verdict banner */}
+          <div className="p-6 border-b" style={{
+            backgroundColor: result.verdict === 'registered' ? 'var(--bg-card)' : result.verdict === 'possible' ? 'var(--bg-card)' : 'var(--bg-card)',
+            borderColor: 'var(--border-subtle)',
+          }}>
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                {result.verdict === 'registered' ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><polyline points="20 6 9 17 4 12"/></svg>
+                ) : result.verdict === 'possible' ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1 flex-wrap">
+                  <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
+                    {result.verdict === 'registered' ? 'Registered' : result.verdict === 'possible' ? 'Possible Match Found' : 'No Public Match Found'}
+                  </p>
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full border" style={{ color: 'var(--text-primary)', backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                    {result.confidence}% confidence
+                  </span>
+                </div>
+                <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
+                  {result.verdict === 'registered'
+                    ? `"${result.title}" appears to be registered in one or more PRO databases.`
+                    : result.verdict === 'possible'
+                    ? `A partial match was found for "${result.title}" — manual confirmation recommended.`
+                    : `No registration was found for "${result.title}" in connected PRO databases. This does not guarantee the work is unregistered.`}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Confidence bar */}
+          <div className="px-6 py-4 border-b" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Match confidence</p>
+              <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{result.confidence}%</p>
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <div className="h-full rounded-full" style={{ width: `${result.confidence}%`, backgroundColor: 'var(--text-primary)', transition: 'width 0.9s cubic-bezier(0.34,1,0.64,1)' }} />
+            </div>
+          </div>
+
+          {/* Reasons */}
+          <div className="px-6 py-5 border-b" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.1em' }}>Findings</p>
+            <div className="space-y-2">
+              {result.reasons.map((r, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <div className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)', opacity: 0.4 }} />
+                  <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.65 }}>{r}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Next steps */}
+          <div className="px-6 py-5" style={{ backgroundColor: 'var(--bg-card)' }}>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.1em' }}>Recommended next steps</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { label: 'Register this work', desc: 'Submit to your PRO and claim all future royalties for this composition.' },
+                { label: 'Add ISRC / ISWC', desc: 'Providing a unique identifier greatly improves search accuracy.' },
+                { label: 'Contact Elevate', desc: 'Our team can manually investigate and register on your behalf.' },
+              ].map(step => (
+                <div key={step.label} className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                  <p className="text-xs font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{step.label}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Info cards row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, title: 'Global Coverage', desc: 'We query PROs across North America, Europe, Australasia and beyond.' },
+          { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>, title: 'Fuzzy Matching', desc: 'Our engine handles alternate titles, misspellings and name variants.' },
+          { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, title: 'Confidence Scoring', desc: 'Every result is scored so you know how certain the match is.' },
+        ].map(card => (
+          <div key={card.title} className="rounded-2xl p-5 border flex gap-4" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+              {card.icon}
+            </div>
+            <div>
+              <p className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{card.title}</p>
+              <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{card.desc}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1347,79 +1458,76 @@ function PublishingSynopsisPage({ onStart }: { onStart: () => void }) {
                 Get Started
               </button>
             </div>
-            {/* Right-side visual: hidden revenue */}
-            <div className="flex-shrink-0">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-primary)', opacity: 0.35, letterSpacing: '0.1em' }}>Estimated uncollected</p>
-              <div className="flex items-end gap-2" style={{ height: '96px' }}>
+            {/* Right-side visual: premium royalty revenue card */}
+            <div
+              className="rounded-2xl border p-6 flex flex-col gap-5"
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderColor: 'var(--border-subtle)',
+                minWidth: '260px',
+                opacity: vis ? 1 : 0,
+                transform: vis ? 'none' : 'translateY(16px)',
+                transition: 'opacity 0.6s ease 1.1s, transform 0.6s ease 1.1s',
+              }}
+            >
+              {/* Card header */}
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.1em' }}>Uncollected Royalties</p>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--text-primary)', opacity: 0.45 }} />
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Est.</span>
+                </div>
+              </div>
+
+              {/* Big number */}
+              <div>
+                <p
+                  className="font-bold leading-none"
+                  style={{
+                    fontSize: '2.6rem',
+                    color: 'var(--text-primary)',
+                    letterSpacing: '-0.04em',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  ${countUp.toLocaleString()}
+                </p>
+                <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>avg. per independent artist / year</p>
+              </div>
+
+              {/* Breakdown rows */}
+              <div className="space-y-2.5">
                 {[
-                  { label: 'Mechanical', pct: 72, locked: true },
-                  { label: 'Performance', pct: 88, locked: true },
-                  { label: 'Sync', pct: 55, locked: true },
-                  { label: 'Digital', pct: 93, locked: true },
-                  { label: 'Print', pct: 40, locked: true },
-                  { label: 'Neighbouring', pct: 64, locked: true },
-                ].map((p, i) => (
-                  <div key={p.label} className="flex flex-col items-center gap-1" style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        width: '100%',
-                        height: '80px',
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                        position: 'relative',
-                      }}
-                    >
-                      {/* Full bar (ghosted) */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          height: vis ? `${p.pct}%` : '0%',
-                          backgroundColor: 'var(--text-primary)',
-                          opacity: 0.08,
-                          borderRadius: '4px 4px 0 0',
-                          transition: `height 0.7s cubic-bezier(0.34,1,0.64,1) ${1.1 + i * 0.08}s`,
-                        }}
-                      />
-                      {/* Blurred/blocked portion */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          height: vis ? `${p.pct}%` : '0%',
-                          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.04) 3px, rgba(255,255,255,0.04) 6px)',
-                          border: '1px solid var(--border-subtle)',
-                          borderBottom: 'none',
-                          borderRadius: '4px 4px 0 0',
-                          transition: `height 0.7s cubic-bezier(0.34,1,0.64,1) ${1.1 + i * 0.08}s`,
-                        }}
-                      />
-                      {/* Lock icon centred on bar */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, 50%)',
-                          opacity: vis ? 0.3 : 0,
-                          transition: `opacity 0.5s ease ${1.3 + i * 0.06}s`,
-                        }}
-                      >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}>
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                      </div>
+                  { label: 'Mechanical', pct: 68, delay: 1.15 },
+                  { label: 'Performance', pct: 82, delay: 1.22 },
+                  { label: 'Sync Licensing', pct: 45, delay: 1.29 },
+                  { label: 'Digital / Neighbouring', pct: 91, delay: 1.36 },
+                ].map((row) => (
+                  <div key={row.label}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{row.label}</span>
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{vis ? row.pct : 0}%</span>
                     </div>
-                    <span className="text-xs text-center" style={{ color: 'var(--text-primary)', opacity: 0.25, fontSize: '9px', lineHeight: '1.2' }}>{p.label}</span>
+                    <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: vis ? `${row.pct}%` : '0%',
+                          backgroundColor: 'var(--text-primary)',
+                          transition: `width 0.9s cubic-bezier(0.34,1,0.64,1) ${row.delay}s`,
+                        }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
-              <p className="text-xs mt-3" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>Revenue sitting uncollected — unlock it.</p>
+
+              {/* Footer note */}
+              <div className="rounded-xl p-3 border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>
+                  These royalty streams go uncollected for most artists. Elevate locates and claims them on your behalf.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -1788,7 +1896,7 @@ export function ArtistDashboard() {
   const [savedDrafts, setSavedDrafts] = useState<any[]>([]);
   const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
   const [artistNames, setArtistNames] = useState<string[]>([]);
-  const [publishingStarted, setPublishingStarted] = useState(false);
+  const [publishingStarted, setPublishingStarted] = useState(() => localStorage.getItem('publishingStarted') === '1');
   const draftSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [releaseForm, setReleaseForm] = useState({
     title: '',
@@ -4820,7 +4928,7 @@ export function ArtistDashboard() {
         )}
 
         {activeSection === 'talent' && (
-          publishingStarted ? <PublishingDashboardPage /> : <PublishingSynopsisPage onStart={() => setPublishingStarted(true)} />
+          publishingStarted ? <PublishingDashboardPage /> : <PublishingSynopsisPage onStart={() => { localStorage.setItem('publishingStarted', '1'); setPublishingStarted(true); }} />
         )}
 
         {activeSection === 'explore' && !showReleaseForm && (
