@@ -784,7 +784,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
     return () => clearTimeout(t);
   }, [inView]);
 
-  const bars = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 85, 95];
+  const bars = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
 
   return (
     <div
@@ -829,7 +829,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
           className="px-3 py-1.5 rounded-full text-xs font-medium"
           style={{ background: '#f0f0f0', color: '#111' }}
         >
-          Trending Up
+          No Activity
         </div>
       </div>
     </div>
@@ -940,13 +940,11 @@ function PublishingSynopsisPage() {
             opacity: vis ? 1 : 0,
             transform: vis ? 'none' : 'translateY(8px)',
             transition: 'opacity 0.5s ease, transform 0.5s ease',
-            backgroundColor: 'var(--bg-elevated)',
-            border: '1px solid var(--border-subtle)',
+            background: '#f0f0f0',
           }}
         >
-          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>An Elevate</span>
-          <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>©</span>
-          <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Service</span>
+          <span className="text-xs font-medium" style={{ color: '#111' }}>An Elevate©</span>
+          <span className="text-xs font-medium" style={{ color: '#111' }}>Service</span>
         </div>
 
         {/* Two-column layout */}
@@ -998,13 +996,7 @@ function PublishingSynopsisPage() {
                   letterSpacing: '-0.01em',
                 }}
               >
-                Register Your Works
-              </button>
-              <button
-                className="text-sm font-medium transition-all duration-200 hover:opacity-70"
-                style={{ color: 'var(--text-primary)', opacity: 0.5, textDecoration: 'underline', textUnderlineOffset: '3px' }}
-              >
-                Find out more →
+                Start Here
               </button>
             </div>
 
@@ -1016,7 +1008,7 @@ function PublishingSynopsisPage() {
                 transition: 'opacity 0.5s ease 0.5s',
               }}
             >
-              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-primary)', opacity: 0.3, letterSpacing: '0.12em' }}>Royalty Types Collected</p>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-primary)', opacity: 0.6, letterSpacing: '0.12em' }}>Royalty Types Collected</p>
               {royalties.map((r, i) => (
                 <div key={r.label}>
                   <div className="flex items-center justify-between mb-1">
@@ -1055,7 +1047,7 @@ function PublishingSynopsisPage() {
                 width: '220px',
                 height: '440px',
                 backgroundColor: 'var(--bg-card)',
-                border: '6px solid var(--border-subtle)',
+                border: '6px solid #000',
                 boxShadow: '0 32px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
               }}
             >
@@ -1072,14 +1064,14 @@ function PublishingSynopsisPage() {
 
                 {/* Balance card */}
                 <div className="rounded-xl p-3 mb-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                  <p className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Royalty Balance</p>
+                  <p className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Publishing Balance</p>
                   <p className="text-xl font-bold" style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>${countUp.toLocaleString()}</p>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>Uncollected · Est.</p>
                 </div>
 
                 {/* Bar chart */}
                 <div className="rounded-xl p-3 mb-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                  <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Monthly Royalties</p>
+                  <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Monthly Publishing Revenue</p>
                   <div className="flex items-end gap-1" style={{ height: '48px' }}>
                     {[30,45,35,60,50,70,55,80,65,90,85,95].map((h, i) => (
                       <div
@@ -1227,8 +1219,11 @@ function PublishingSynopsisPage() {
               >
                 Not claiming publishing royalties?<br />You're missing out.
               </h3>
-              <p className="text-sm leading-relaxed mb-6 max-w-lg" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
+              <p className="text-sm leading-relaxed mb-4 max-w-lg" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
                 You could be earning extra revenue whenever your music is performed live or broadcast in any kind of media. You can even claim additional publishing royalties every time your music is streamed on platforms like Spotify, Apple Music and YouTube.
+              </p>
+              <p className="text-sm leading-relaxed mb-6 max-w-lg" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
+                Usually we find that over 50% of artists either have not claimed any publishing royalties, or they live in a different country where it is not easily accessible. Elevate does all the heavy lifting for you and gets it uncovered.
               </p>
               <button
                 className="px-8 py-3.5 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
@@ -1266,6 +1261,43 @@ function PublishingSynopsisPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* ── Extra royalties we scour for ── */}
+        <div
+          className="mt-16 lg:mt-20"
+          style={{
+            opacity: vis ? 1 : 0,
+            transform: vis ? 'none' : 'translateY(16px)',
+            transition: 'opacity 0.6s ease 1.3s, transform 0.6s ease 1.3s',
+          }}
+        >
+          <h3 className="text-lg sm:text-xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>Extra royalties we scour for:</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { title: 'Mechanical Royalties', desc: 'Earned every time your song is reproduced — on-demand streams, downloads, and physical sales.' },
+              { title: 'Performance Royalties', desc: 'Generated when your music is publicly performed — on radio, TV, live venues, or streaming.' },
+              { title: 'Sync Licensing Fees', desc: 'Paid when your music is licensed for use in film, TV, ads, video games, or online content.' },
+              { title: 'Print Music Royalties', desc: 'Earned from licensed sheet music and lyric reproductions of your compositions.' },
+              { title: 'Digital Performance Royalties', desc: 'Collected from non-interactive digital broadcasts like Pandora and SiriusXM.' },
+              { title: 'Neighbouring Rights', desc: 'Performance income for master recording owners when music is played on broadcast media globally.' },
+            ].map((item, i) => (
+              <div
+                key={item.title}
+                className="rounded-xl p-5 border"
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderColor: 'var(--border-subtle)',
+                  opacity: vis ? 1 : 0,
+                  transform: vis ? 'none' : 'translateY(8px)',
+                  transition: `opacity 0.45s ease ${1.35 + i * 0.08}s, transform 0.45s ease ${1.35 + i * 0.08}s`,
+                }}
+              >
+                <p className="text-sm font-semibold mb-1.5" style={{ color: 'var(--text-primary)' }}>{item.title}</p>
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
