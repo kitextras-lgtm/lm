@@ -13,7 +13,7 @@ export function LogOutIcon({ isHovered: _isHovered = false }: { isHovered?: bool
 
       {/* Door - swings open */}
       <g className="origin-left transition-all duration-[600ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] group-hover:[transform:rotateY(-50deg)]" style={{ transformStyle: "preserve-3d" }}>
-        <rect x="14" y="10" width="20" height="28" rx="1" stroke="currentColor" strokeWidth="2" fill="var(--bg-primary)" />
+        <rect x="14" y="10" width="20" height="28" rx="1" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.08" />
         <circle cx="30" cy="26" r="2" fill="currentColor" className="opacity-70" />
       </g>
     </svg>

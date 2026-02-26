@@ -72,35 +72,40 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
       setLoadingLinks(false);
       return;
     }
+    let cancelled = false;
     const loadLinks = async () => {
       try {
+        // Fetch and show links immediately
         const res = await fetch(`${SOCIAL_LINKS_FN}?userId=${user.id}`, { headers: fnHeaders });
         const json = await res.json();
-        if (!json.success) return;
+        if (!json.success || cancelled) return;
         const fetchedLinks: SocialLink[] = json.links || [];
+        setLinks(fetchedLinks);
+        setLoadingLinks(false);
+
+        // Refresh YouTube stats silently in the background
         const hasYouTube = fetchedLinks.some(l => l.platform?.toLowerCase() === 'youtube');
         if (hasYouTube) {
-          // Refresh YouTube stats in background, then re-fetch
           try {
             await fetch(YOUTUBE_STATS_FN, {
               method: 'POST',
               headers: fnHeaders,
               body: JSON.stringify({ userId: user.id }),
             });
-            // Re-fetch with updated stats
+            if (cancelled) return;
             const res2 = await fetch(`${SOCIAL_LINKS_FN}?userId=${user.id}`, { headers: fnHeaders });
             const json2 = await res2.json();
-            if (json2.success) { setLinks(json2.links || []); return; }
-          } catch { /* fall through to use initial fetch */ }
+            if (!cancelled && json2.success) setLinks(json2.links || []);
+          } catch { /* ignore background refresh errors */ }
         }
-        setLinks(fetchedLinks);
       } catch {
         /* ignore */
       } finally {
-        setLoadingLinks(false);
+        if (!cancelled) setLoadingLinks(false);
       }
     };
     loadLinks();
+    return () => { cancelled = true; };
   }, [user.id, user.is_admin]);
 
   return (

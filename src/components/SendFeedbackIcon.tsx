@@ -29,8 +29,9 @@ export function SendFeedbackIcon({ isHovered = false }: { isHovered?: boolean })
           strokeLinejoin="round"
           fill="none"
           style={{
-            filter: isHovered ? 'drop-shadow(0 0 6px rgba(255,255,255,0.6))' : 'none',
-            transition: 'filter 0.3s ease'
+            filter: isHovered ? 'drop-shadow(0 0 6px currentColor)' : 'none',
+            opacity: isHovered ? 0.9 : 1,
+            transition: 'filter 0.3s ease, opacity 0.3s ease'
           }}
         />
         {/* Base lines */}

@@ -129,7 +129,7 @@ export function AdminDashboard() {
     try {
       const { data, error } = await supabase
         .from('release_drafts')
-        .select('*, users!release_drafts_user_id_fkey(full_name, username, email, first_name, last_name)')
+        .select('*, user:user_id(full_name, username, email, first_name, last_name)')
         .in('status', ['submitted', 'approved', 'inactive'])
         .order('updated_at', { ascending: false });
       if (error) {
@@ -1010,9 +1010,9 @@ export function AdminDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>Applications</h3>
-                          <span className="text-2xl font-bold" style={{ color: tokens.text.primary }}>{applications.filter(a => a.status === 'pending').length}</span>
+                          <span className="text-2xl font-bold" style={{ color: tokens.text.primary }}>{applications.filter(a => a.status === 'pending').length + releaseSubmissions.filter(r => r.status === 'submitted').length}</span>
                         </div>
-                        <p className="text-sm mt-0.5" style={{ color: tokens.text.primary, opacity: 0.55 }}>Pending creator applications</p>
+                        <p className="text-sm mt-0.5" style={{ color: tokens.text.primary, opacity: 0.55 }}>Pending applications</p>
                       </div>
                     </div>
                   </button>
@@ -2044,7 +2044,7 @@ export function AdminDashboard() {
                     return (
                       <div className="space-y-3">
                         {filtered.map(rel => {
-                          const u = rel.users;
+                          const u = rel.user || rel.users;
                           const displayName = u ? (`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.full_name || u.username || 'Unknown') : 'Unknown';
                           const username = u?.username;
                           const email = u?.email;
