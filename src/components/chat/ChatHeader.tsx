@@ -30,11 +30,14 @@ function PlatformIcon({ platform, className, style }: { platform: string; classN
 
 interface SocialLink {
   id: string;
+  user_id: string;
   platform: string;
   url: string;
   display_name: string;
   verified: boolean;
-  subscriber_count?: number;
+  channel_type?: string;
+  channel_description?: string;
+  follower_count?: number;
   view_count?: number;
 }
 
@@ -53,9 +56,9 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
   const [loadingLinks, setLoadingLinks] = useState(true);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const totalSubscribers = links.reduce((sum, l) => sum + (l.subscriber_count || 0), 0);
+  const totalFollowers = links.reduce((sum, l) => sum + (l.follower_count || 0), 0);
   const totalViews = links.reduce((sum, l) => sum + (l.view_count || 0), 0);
-  const hasStats = totalSubscribers > 0 || totalViews > 0;
+  const hasStats = totalFollowers > 0 || totalViews > 0;
 
   const formatCount = (n: number) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -162,15 +165,15 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                 })}
               </div>
             )}
-            {/* Subscribers & Views aggregated stats */}
+            {/* Followers & Views aggregated stats */}
             {!loadingLinks && hasStats && (
               <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${dividerColor}` }}>
                 <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)' }}>Channel Stats</p>
                 <div className="grid grid-cols-2 gap-2">
-                  {totalSubscribers > 0 && (
+                  {totalFollowers > 0 && (
                     <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                      <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalSubscribers)}</span>
-                      <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Subscribers</span>
+                      <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalFollowers)}</span>
+                      <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Followers</span>
                     </div>
                   )}
                   {totalViews > 0 && (

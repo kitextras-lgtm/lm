@@ -64,7 +64,7 @@ Deno.serve(async (req: Request) => {
         channel_type,
         channel_description,
         verified,
-        subscriber_count,
+        follower_count,
         view_count,
       } = await req.json();
       if (!userId || !linkUrl) {
@@ -105,7 +105,7 @@ Deno.serve(async (req: Request) => {
       if (channel_type !== undefined) insertData.channel_type = channel_type;
       if (channel_description !== undefined) insertData.channel_description = channel_description;
       if (verified === true) insertData.verified = true;
-      if (subscriber_count !== undefined && subscriber_count !== null) insertData.subscriber_count = Number(subscriber_count);
+      if (follower_count !== undefined && follower_count !== null) insertData.follower_count = Number(follower_count);
       if (view_count !== undefined && view_count !== null) insertData.view_count = Number(view_count);
 
       const { error } = await supabase.from('social_links').insert(insertData);
