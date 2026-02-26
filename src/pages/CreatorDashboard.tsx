@@ -2422,16 +2422,36 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 backgroundTheme={backgroundTheme}
               />
             </div>
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-              <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message Sound</h4>
-                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when a new message is received</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sounds</h3>
+          <div className="space-y-3 lg:space-y-6">
+            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message</h4>
+                  <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when you receive a new unread message or notification</p>
+                </div>
+                <ToggleSwitch
+                  isActive={newMessageSound}
+                  onToggle={handleToggleNewMessageSound}
+                  backgroundTheme={backgroundTheme}
+                />
               </div>
-              <ToggleSwitch
-                isActive={newMessageSound}
-                onToggle={handleToggleNewMessageSound}
-                backgroundTheme={backgroundTheme}
-              />
+              <button
+                onClick={() => {
+                  try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Preview Sound
+              </button>
             </div>
           </div>
         </div>

@@ -903,10 +903,10 @@ function PublishingDashboardPage() {
   const runCheck = () => {
     if (!query.trim()) return;
     const params = new URLSearchParams();
-    const roleKey = writerRole || 'Performer';
+    const roleKey = writerRole || 'Title';
+    // Row 1: primary search field
     if (roleKey === 'Writer/Composer') {
       params.set('writer', query.trim());
-      if (writers.trim()) params.set('title', writers.trim());
     } else if (roleKey === 'Publisher') {
       params.set('publisher', query.trim());
     } else if (roleKey === 'BMI Work ID') {
@@ -915,7 +915,21 @@ function PublishingDashboardPage() {
       params.set('iswc', query.trim());
     } else {
       params.set('title', query.trim());
-      if (writers.trim()) params.set('writer', writers.trim());
+    }
+    // Row 2: secondary search field
+    if (writers.trim()) {
+      const role2 = writerRoleRow2 || 'Performer';
+      if (role2 === 'Writer/Composer') {
+        params.set('writer', writers.trim());
+      } else if (role2 === 'Publisher') {
+        params.set('publisher', writers.trim());
+      } else if (role2 === 'BMI Work ID') {
+        params.set('work_id', writers.trim());
+      } else if (role2 === 'ISWC') {
+        params.set('iswc', writers.trim());
+      } else {
+        params.set('title', writers.trim());
+      }
     }
     window.open(`https://repertoire.bmi.com/search/quick?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
@@ -6969,6 +6983,7 @@ export function ArtistDashboard() {
                 {releaseStep < 5 ? (() => {
                   const checklistBlocked = releaseStep === 2 && !releaseChecklist.every(Boolean);
                   const artistBlocked = releaseStep === 1 && !rf.releaseArtists && artistNames.length > 0;
+                  const policyBlocked = releaseStep === 4 && storeDistType === 'downloads' && !policyAgreed;
 
                   const validateStep = () => {
                     const errors: Record<string, boolean> = {};
@@ -6999,9 +7014,9 @@ export function ArtistDashboard() {
                       <button
                         onClick={() => {
                           if (!validateStep()) return;
-                          if (!checklistBlocked && !artistBlocked) setReleaseStep(s => s + 1);
+                          if (!checklistBlocked && !artistBlocked && !policyBlocked) setReleaseStep(s => s + 1);
                         }}
-                        disabled={checklistBlocked || artistBlocked}
+                        disabled={checklistBlocked || artistBlocked || policyBlocked}
                         className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                       >
