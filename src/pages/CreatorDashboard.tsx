@@ -953,6 +953,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [messageNotifications, setMessageNotifications] = useState<boolean>(() => {
     try { return JSON.parse(localStorage.getItem('messageNotifications') ?? 'true'); } catch { return true; }
   });
+  const [unreadMessageBadge, setUnreadMessageBadge] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('unreadMessageBadge') ?? 'true'); } catch { return true; }
+  });
+  const [newMessageSound, setNewMessageSound] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; }
+  });
   
   // Use centralized theme from context
   const { theme: backgroundTheme, setTheme: setBackgroundTheme, flatBackground, setFlatBackground } = useTheme();
@@ -2279,7 +2285,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   };
 
   const handleToggleMessageNotifications = () => {
-    setMessageNotifications(prev => !prev);
+    setMessageNotifications(prev => {
+      const next = !prev;
+      localStorage.setItem('messageNotifications', JSON.stringify(next));
+      return next;
+    });
+  };
+  const handleToggleUnreadMessageBadge = () => {
+    setUnreadMessageBadge(prev => {
+      const next = !prev;
+      localStorage.setItem('unreadMessageBadge', JSON.stringify(next));
+      return next;
+    });
+  };
+  const handleToggleNewMessageSound = () => {
+    setNewMessageSound(prev => {
+      const next = !prev;
+      localStorage.setItem('newMessageSound', JSON.stringify(next));
+      return next;
+    });
   };
 
   const handleTogglePlatformUpdates = async () => {
@@ -2384,6 +2408,28 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <ToggleSwitch
                 isActive={messageNotifications}
                 onToggle={handleToggleMessageNotifications}
+                backgroundTheme={backgroundTheme}
+              />
+            </div>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Unread Message Badge</h4>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show badge count on messages icon when you have unread messages</p>
+              </div>
+              <ToggleSwitch
+                isActive={unreadMessageBadge}
+                onToggle={handleToggleUnreadMessageBadge}
+                backgroundTheme={backgroundTheme}
+              />
+            </div>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message Sound</h4>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when a new message is received</p>
+              </div>
+              <ToggleSwitch
+                isActive={newMessageSound}
+                onToggle={handleToggleNewMessageSound}
                 backgroundTheme={backgroundTheme}
               />
             </div>

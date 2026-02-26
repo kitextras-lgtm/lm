@@ -31,7 +31,8 @@ export function LoginPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
   const location = useLocation();
-  const isFromArtistPage = (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist');
+  const searchParams = new URLSearchParams(location.search);
+  const isFromArtistPage = (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist') || searchParams.get('source') === 'artist';
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {

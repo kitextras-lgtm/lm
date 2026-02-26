@@ -1041,7 +1041,7 @@ function PublishingDashboardPage() {
           <div className="space-y-2 mb-5">
           {/* Row 1: Search type + value */}
           <div className="flex rounded-xl overflow-visible border" style={{ borderColor: 'var(--border-subtle)' }}>
-            <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
+            <div className="flex-shrink-0 rounded-l-xl" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)', overflow: 'visible' }}>
               <CreditDropdown
                 value={writerRole}
                 options={['Title', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
@@ -1063,7 +1063,7 @@ function PublishingDashboardPage() {
 
           {/* Row 2: Writer/Composer with dropdown */}
           <div className="flex rounded-xl overflow-visible border" style={{ borderColor: 'var(--border-subtle)' }}>
-            <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
+            <div className="flex-shrink-0 rounded-l-xl" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)', overflow: 'visible' }}>
               <CreditDropdown
                 value={writerRoleRow2}
                 options={['Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
@@ -2116,7 +2116,6 @@ export function ArtistDashboard() {
   const [releaseArtistError, setReleaseArtistError] = useState(false);
   const [stepErrors, setStepErrors] = useState<Record<string, boolean>>({});
   const [showNoArtistPrompt, setShowNoArtistPrompt] = useState(false);
-  const [policyAgreed, setPolicyAgreed] = useState(false);
   const [guideSubpage, setGuideSubpage] = useState<string | null>(null);
   const [guideArticle, setGuideArticle] = useState<string | null>(null);
   const [releaseDateMode, setReleaseDateMode] = useState<'most-recent' | 'specific'>('most-recent');
@@ -2126,6 +2125,8 @@ export function ArtistDashboard() {
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const [storeDistType, setStoreDistType] = useState<'all' | 'downloads' | 'streaming' | 'custom'>('all');
   const [showAllStores, setShowAllStores] = useState(false);
+  const [policyAgreed, setPolicyAgreed] = useState(false);
+  const [showElevatePackageToS, setShowElevatePackageToS] = useState(false);
   const [origCalOpen, setOrigCalOpen] = useState(false);
   const [origCalYear, setOrigCalYear] = useState(new Date().getFullYear());
   const [origCalMonth, setOrigCalMonth] = useState(new Date().getMonth());
@@ -6732,6 +6733,7 @@ export function ArtistDashboard() {
                             key={val}
                             onClick={() => {
                             setStoreDistType(val);
+                            if (val !== 'downloads') setPolicyAgreed(false);
                             const streamingOnlyStores = ['Spotify', 'Apple Music', 'Amazon Music', 'YouTube Music', 'Tidal', 'Deezer', 'Pandora', 'SoundCloud', 'iTunes', 'Shazam', 'iHeartRadio', 'LiveOne', 'TIDAL'];
                             setRf({ stores: val === 'all' ? [...allStores] : val === 'streaming' ? streamingOnlyStores : val === 'downloads' ? [] : [] });
                           }}
@@ -6749,6 +6751,32 @@ export function ArtistDashboard() {
                         );
                       })}
                     </div>
+                    {/* Elevate Package inline agreement */}
+                    {storeDistType === 'downloads' && (
+                      <div className="animate-fade-in p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <label className="flex items-start gap-3 cursor-pointer select-none">
+                          <div
+                            onClick={() => setPolicyAgreed(v => !v)}
+                            className="w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center transition-all"
+                            style={{ backgroundColor: policyAgreed ? 'var(--text-primary)' : 'transparent', border: `2px solid ${policyAgreed ? 'var(--text-primary)' : 'var(--border-default)'}` }}
+                          >
+                            {policyAgreed && <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="var(--bg-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                          </div>
+                          <span className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                            By opting into Elevate's Package, you agree to{' '}
+                            <button
+                              type="button"
+                              onClick={() => setShowElevatePackageToS(true)}
+                              className="underline font-semibold transition-opacity hover:opacity-70"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              Elevate's Service Agreements and Policies
+                            </button>
+                            .
+                          </span>
+                        </label>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-4">
@@ -6957,6 +6985,7 @@ export function ArtistDashboard() {
                     }
                     if (releaseStep === 4) {
                       if (rf.stores.length === 0 && storeDistType !== 'downloads') errors.stores = true;
+                      if (storeDistType === 'downloads' && !policyAgreed) errors.policy = true;
                     }
                     setStepErrors(errors);
                     return Object.keys(errors).length === 0;
@@ -6992,6 +7021,57 @@ export function ArtistDashboard() {
         })()}
 
               </main>
+
+      {/* Elevate Package ToS Modal */}
+      {showElevatePackageToS && (
+        <div
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+          onClick={() => setShowElevatePackageToS(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl max-h-[85vh] rounded-2xl flex flex-col animate-fade-in"
+            style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Elevate's Service Agreements and Policies</h2>
+              <button onClick={() => setShowElevatePackageToS(false)} className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:opacity-70" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            {/* Body */}
+            <div className="overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+              <div className="space-y-2">
+                <p className="font-bold text-base">Elevate Artist Package — Service Agreements & Policies</p>
+                <p style={{ opacity: 0.6 }}>Effective upon opt-in. Please read carefully before proceeding.</p>
+              </div>
+              <div className="space-y-4">
+                <div><p className="font-semibold mb-1">1. Distribution Services</p><p style={{ opacity: 0.85 }}>By selecting Elevate's Package, you authorize Elevate to distribute your music on your behalf to all major digital streaming platforms and stores included in the package. Elevate acts as your distributor and will deliver your release according to the specifications you provide. You retain full ownership of your master recordings and compositions.</p></div>
+                <div><p className="font-semibold mb-1">2. Revenue & Royalties</p><p style={{ opacity: 0.85 }}>Streaming royalties and download revenues generated from platforms included in Elevate's Package will be collected and remitted to you per Elevate's payment schedule. Publishing royalties (if applicable through Elevate Publishing services) are handled separately. Elevate's commission rate and payment terms are outlined in your account agreement.</p></div>
+                <div><p className="font-semibold mb-1">3. Content Ownership & Licensing</p><p style={{ opacity: 0.85 }}>You confirm that you are the rightful owner of all submitted content, including master recordings, compositions, artwork, and metadata. You grant Elevate a non-exclusive, worldwide license to distribute, reproduce, and promote your content solely for the purposes of fulfilling this package's services. This license remains in effect for the duration of your distribution agreement.</p></div>
+                <div><p className="font-semibold mb-1">4. Exclusivity & Conflicts</p><p style={{ opacity: 0.85 }}>Elevate's Package is non-exclusive. You may maintain existing distribution agreements with other services; however, you are responsible for ensuring there are no conflicting exclusive arrangements on the same content. Elevate is not liable for takedowns or disputes arising from pre-existing conflicting agreements.</p></div>
+                <div><p className="font-semibold mb-1">5. Content Standards & Compliance</p><p style={{ opacity: 0.85 }}>All submitted content must comply with the content policies of the platforms to which it is distributed. Content containing explicit material must be properly flagged. Elevate reserves the right to reject or remove releases that violate platform policies, contain infringing material, or breach these terms. No refunds will be issued for releases removed due to policy violations.</p></div>
+                <div><p className="font-semibold mb-1">6. Metadata & Accuracy</p><p style={{ opacity: 0.85 }}>You are responsible for the accuracy of all submitted metadata including release title, track titles, artist names, copyright information, ISRC codes, and genre selections. Incorrect or misleading metadata may result in distribution delays or rejection. Corrections after delivery may incur processing time and cannot be guaranteed to propagate immediately.</p></div>
+                <div><p className="font-semibold mb-1">7. Takedowns & Termination</p><p style={{ opacity: 0.85 }}>You may request a takedown of your release from distribution at any time through your Elevate dashboard. Takedowns typically process within 7–14 business days. Elevate reserves the right to terminate distribution services for any account found to be in breach of these policies, with or without prior notice.</p></div>
+                <div><p className="font-semibold mb-1">8. Indemnification</p><p style={{ opacity: 0.85 }}>You agree to indemnify and hold harmless Elevate, its officers, employees, and partners from any claims, damages, or liabilities arising from your content, your use of the platform, or any breach of these terms.</p></div>
+                <div><p className="font-semibold mb-1">9. Amendments</p><p style={{ opacity: 0.85 }}>Elevate reserves the right to update these policies at any time. Continued use of Elevate's distribution services constitutes acceptance of any revised terms. Material changes will be communicated via email to your registered address.</p></div>
+              </div>
+            </div>
+            {/* Footer */}
+            <div className="flex justify-end px-6 py-4 flex-shrink-0" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+              <button
+                onClick={() => { setPolicyAgreed(true); setShowElevatePackageToS(false); }}
+                className="px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              >
+                I Agree
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Campaign Detail Modal */}
       <CampaignDetailModal 

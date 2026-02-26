@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, X, ExternalLink, Youtube, Instagram, Music2, Twitter, Twitch, Link2, CheckCircle } from 'lucide-react';
 import type { Profile } from '../../types/chat';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../DefaultAvatar';
 import { useUserProfile } from '../../contexts/UserProfileContext';
@@ -8,14 +7,26 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../lib/supabase';
 const SOCIAL_LINKS_FN = `${SUPABASE_URL}/functions/v1/social-links`;
 const fnHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` };
 
-const platformIcons: { [key: string]: React.ElementType } = {
-  YouTube: Youtube,
-  Instagram: Instagram,
-  TikTok: Music2,
-  Twitter: Twitter,
-  Twitch: Twitch,
-  Other: Link2,
-};
+function PlatformIcon({ platform, className, style }: { platform: string; className?: string; style?: React.CSSProperties }) {
+  if (platform === 'YouTube') return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+  );
+  if (platform === 'Instagram') return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+  );
+  if (platform === 'TikTok') return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.21 8.21 0 004.79 1.52V6.76a4.85 4.85 0 01-1.02-.07z"/></svg>
+  );
+  if (platform === 'Twitter' || platform === 'X') return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.766l7.73-8.835L2.25 2.25h7.11l4.261 5.638 5.623-5.638zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+  );
+  if (platform === 'Twitch') return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+  );
+  return (
+    <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+  );
+}
 
 interface SocialLink {
   id: string;
@@ -23,6 +34,8 @@ interface SocialLink {
   url: string;
   display_name: string;
   verified: boolean;
+  subscriber_count?: number;
+  view_count?: number;
 }
 
 interface UserProfilePopupProps {
@@ -39,6 +52,16 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  const totalSubscribers = links.reduce((sum, l) => sum + (l.subscriber_count || 0), 0);
+  const totalViews = links.reduce((sum, l) => sum + (l.view_count || 0), 0);
+  const hasStats = totalSubscribers > 0 || totalViews > 0;
+
+  const formatCount = (n: number) => {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(n);
+  };
 
   useEffect(() => {
     if (user.is_admin) {
@@ -69,7 +92,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
           className="absolute top-3 right-3 p-1.5 rounded-full transition-colors hover:bg-white/10 z-10"
           style={{ color: 'var(--text-primary)' }}
         >
-          <X className="w-4 h-4" />
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
 
         {/* Avatar + name section */}
@@ -113,7 +136,6 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
             ) : (
               <div className="space-y-1">
                 {links.map(link => {
-                  const Icon = platformIcons[link.platform] || Link2;
                   return (
                     <a
                       key={link.id}
@@ -123,23 +145,41 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                       className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${rowHover}`}
                     >
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
-                        <Icon className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                        <PlatformIcon platform={link.platform} className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                            {link.display_name || link.platform}
-                          </span>
-                          {link.verified && <CheckCircle className="w-3 h-3 flex-shrink-0" style={{ color: '#22C55E' }} />}
+                          <span className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{link.display_name || link.platform}</span>
+                          {link.verified && <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>}
                         </div>
                         <span className="text-xs truncate block" style={{ color: 'var(--text-primary)' }}>
                           {link.url.replace(/^https?:\/\//i, '')}
                         </span>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--text-primary)' }} />
+                      <svg className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     </a>
                   );
                 })}
+              </div>
+            )}
+            {/* Subscribers & Views aggregated stats */}
+            {!loadingLinks && hasStats && (
+              <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${dividerColor}` }}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)' }}>Channel Stats</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {totalSubscribers > 0 && (
+                    <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalSubscribers)}</span>
+                      <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Subscribers</span>
+                    </div>
+                  )}
+                  {totalViews > 0 && (
+                    <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                      <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalViews)}</span>
+                      <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Views</span>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -480,9 +520,9 @@ export function ChatHeader({ user, isTyping, onBack, showBackButton, onVideoCall
           <button
             onClick={onBack}
             className="p-1.5 lg:p-2 -ml-1 lg:-ml-2 rounded-full hover:brightness-110 transition-colors lg:hidden"
-            style={{ color: 'var(--text-secondary)' }}
+            style={{ color: 'var(--text-primary)' }}
           >
-            <ArrowLeft className="w-4 h-4 lg:w-5 lg:h-5" />
+            <svg className="w-4 h-4 lg:w-5 lg:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           </button>
         )}
         <div className="relative flex-shrink-0">
