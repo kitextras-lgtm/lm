@@ -1,10 +1,11 @@
 // Fix 21: Global Unread Count Hook
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
-export function useUnreadCount(userId: string) {
+export function useUnreadCount(userId: string, onNewMessage?: () => void) {
   const [totalUnread, setTotalUnread] = useState(0);
+  const prevTotalRef = useRef<number | null>(null);
 
   const fetchUnread = useCallback(async () => {
     if (!userId) return;
@@ -23,9 +24,16 @@ export function useUnreadCount(userId: string) {
           : conv.unread_count_admin;
         return sum + (unread || 0);
       }, 0);
-      setTotalUnread(total);
+      setTotalUnread(prev => {
+        // Fire callback only when count genuinely increases (new message arrived)
+        if (prevTotalRef.current !== null && total > prev && onNewMessage) {
+          onNewMessage();
+        }
+        prevTotalRef.current = total;
+        return total;
+      });
     }
-  }, [userId]);
+  }, [userId, onNewMessage]);
 
   // Fetch initial count
   useEffect(() => {

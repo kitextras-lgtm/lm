@@ -996,8 +996,7 @@ function PublishingDashboardPage() {
       </div>
 
       {/* PRO consent gate */}
-      {!proGateAccepted && (
-        <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+      <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <div className="max-w-xl">
             <div className="mb-5">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
@@ -1027,7 +1026,6 @@ function PublishingDashboardPage() {
               </p>
             </div>
             <button
-              onClick={() => setProGateAccepted(true)}
               className="px-7 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
               style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
             >
@@ -1035,10 +1033,8 @@ function PublishingDashboardPage() {
             </button>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Assistive Lookup — only shown after gate */}
-      {proGateAccepted && <>
       {/* Assistive Lookup card */}
       <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
         <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Assistive Lookup</p>
@@ -1050,9 +1046,9 @@ function PublishingDashboardPage() {
             <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
               <CreditDropdown
                 value={writerRole}
-                options={['Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
+                options={['Title', 'Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
                 onChange={setWriterRole}
-                placeholder="Performer"
+                placeholder="Title"
                 borderless
               />
             </div>
@@ -1072,9 +1068,9 @@ function PublishingDashboardPage() {
             <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
               <CreditDropdown
                 value={writerRoleRow2}
-                options={['Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
+                options={['Title', 'Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
                 onChange={setWriterRoleRow2}
-                placeholder="Writer/Composer"
+                placeholder="Title"
                 borderless
               />
             </div>
@@ -1226,7 +1222,6 @@ function PublishingDashboardPage() {
           </div>
         ))}
       </div>
-      </> }
     </div>
   );
 }
@@ -2107,6 +2102,12 @@ export function ArtistDashboard() {
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
   const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
+  const [newMessageSound, setNewMessageSound] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; }
+  });
+  const [unreadMessageBadge, setUnreadMessageBadge] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('unreadMessageBadge') ?? 'true'); } catch { return true; }
+  });
   const [copyrightOption, setCopyrightOption] = useState<'none' | 'upload'>('none');
   const [copyrightDocs, setCopyrightDocs] = useState<File[]>([]);
   const [uploadingTracks, setUploadingTracks] = useState<{ name: string; size: number; progress: number; done: boolean }[]>([]);
@@ -2322,10 +2323,68 @@ export function ArtistDashboard() {
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
   const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
-  const unreadCount = useUnreadCount(currentUserId || '');
+  const onNewMessageArrived = useCallback(() => {
+    const soundEnabled = (() => { try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; } })();
+    if (soundEnabled) {
+      try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+    }
+  }, []);
+  const unreadCount = useUnreadCount(currentUserId || '', onNewMessageArrived);
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
+
+  // Favicon badge effect driven by unreadMessageBadge setting
+  useEffect(() => {
+    if (!unreadMessageBadge || unreadCount === 0) {
+      const link = document.querySelector<HTMLLinkElement>('link[rel~="icon"]');
+      if (link) link.href = '/favicon.ico';
+      document.title = document.title.replace(/^\(\d+\) /, '');
+      return;
+    }
+    // Draw badge onto favicon canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = 32; canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const img = new Image();
+    img.src = '/favicon.ico';
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, 32, 32);
+      ctx.beginPath();
+      ctx.arc(24, 8, 8, 0, 2 * Math.PI);
+      ctx.fillStyle = '#EF4444';
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(unreadCount > 9 ? '9+' : String(unreadCount), 24, 8);
+      let link = document.querySelector<HTMLLinkElement>('link[rel~="icon"]');
+      if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+      link.href = canvas.toDataURL();
+    };
+    img.onerror = () => {
+      ctx.beginPath();
+      ctx.arc(24, 8, 8, 0, 2 * Math.PI);
+      ctx.fillStyle = '#EF4444';
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(unreadCount > 9 ? '9+' : String(unreadCount), 24, 8);
+      let link = document.querySelector<HTMLLinkElement>('link[rel~="icon"]');
+      if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+      link.href = canvas.toDataURL();
+    };
+    // Update page title with count prefix
+    const baseTitle = document.title.replace(/^\(\d+\) /, '');
+    document.title = `(${unreadCount}) ${baseTitle}`;
+    return () => {
+      document.title = document.title.replace(/^\(\d+\) /, '');
+    };
+  }, [unreadCount, unreadMessageBadge]);
   
   // Debug: Log badge state - this should update when conversations change
   useEffect(() => {
@@ -3708,6 +3767,22 @@ export function ArtistDashboard() {
     setMessageNotifications(prev => !prev);
   };
 
+  const handleToggleNewMessageSound = () => {
+    setNewMessageSound(prev => {
+      const next = !prev;
+      localStorage.setItem('newMessageSound', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleToggleUnreadMessageBadge = () => {
+    setUnreadMessageBadge(prev => {
+      const next = !prev;
+      localStorage.setItem('unreadMessageBadge', JSON.stringify(next));
+      return next;
+    });
+  };
+
   const handleTogglePlatformUpdates = async () => {
     const newValue = !emailPlatformUpdates;
     setEmailPlatformUpdates(newValue);
@@ -3810,6 +3885,34 @@ export function ArtistDashboard() {
               <ToggleSwitch
                 isActive={messageNotifications}
                 onToggle={handleToggleMessageNotifications}
+                backgroundTheme={backgroundTheme}
+              />
+            </div>
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Unread Message Badge</h4>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show a numbered badge on the app icon or browser tab when you have unread messages</p>
+              </div>
+              <ToggleSwitch
+                isActive={unreadMessageBadge}
+                onToggle={handleToggleUnreadMessageBadge}
+                backgroundTheme={backgroundTheme}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sounds</h3>
+          <div className="space-y-3 lg:space-y-6">
+            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <div>
+                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message</h4>
+                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when you receive a new unread message or notification</p>
+              </div>
+              <ToggleSwitch
+                isActive={newMessageSound}
+                onToggle={handleToggleNewMessageSound}
                 backgroundTheme={backgroundTheme}
               />
             </div>

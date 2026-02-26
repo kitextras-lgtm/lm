@@ -26,6 +26,7 @@ export function LoginPage() {
   const [resendSent, setResendSent] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [showToS, setShowToS] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -418,7 +419,7 @@ export function LoginPage() {
                 Terms
               </button>
               {" "}and{" "}
-              <button className="text-white underline hover:no-underline">
+              <button className="text-white underline hover:no-underline" onClick={() => setShowPrivacyPolicy(true)}>
                 Privacy Policy
               </button>
               .
@@ -534,6 +535,59 @@ export function LoginPage() {
           </>
         )}
       </div>
+      {/* Privacy Policy Modal */}
+      {showPrivacyPolicy && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setShowPrivacyPolicy(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl flex flex-col"
+            style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Privacy Policy</p>
+              <button onClick={() => setShowPrivacyPolicy(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: March 10, 2025</p>
+              <p>Elevate ("Elevate," "we," "us," or "our") operates an online marketplace located at https://sayelevate.com and related applications and services (collectively, the "Services"). Elevate provides a platform that enables Buyers to purchase digital goods, memberships, and services offered by independent Sellers.</p>
+              {[
+                { h: '1. Information We Collect', b: 'We collect information you provide directly (name, email, payment info, profile data, messages), information collected automatically (IP address, device identifiers, browser type, usage data, cookies), and information from third parties (payment processors, identity verification providers, social platforms you connect).' },
+                { h: '2. How We Use Your Information', b: 'We use your information to provide and improve the Services, process transactions, verify identity, communicate with you, personalize your experience, enforce our Terms, prevent fraud, comply with legal obligations, and send marketing communications (which you may opt out of).' },
+                { h: '3. Sharing Your Information', b: 'We may share your information with service providers who assist in operating the Services, payment processors and financial partners, identity verification providers, analytics providers, law enforcement or government agencies when required by law, and other users to the extent necessary to facilitate transactions. We do not sell your personal information.' },
+                { h: '4. Cookies and Tracking Technologies', b: 'We use cookies, web beacons, and similar technologies to operate and improve the Services, remember your preferences, analyze traffic, and serve relevant content. You may control cookies through your browser settings, though disabling them may affect functionality.' },
+                { h: '5. Data Retention', b: 'We retain your information for as long as your account is active, as needed to provide the Services, or as required by law. You may request deletion of your account and associated data, subject to legal and operational retention requirements.' },
+                { h: '6. Security', b: 'We implement reasonable technical and organizational measures to protect your information. However, no method of transmission over the internet or electronic storage is completely secure. We cannot guarantee absolute security.' },
+                { h: '7. Children\'s Privacy', b: 'The Services are not directed to individuals under the age of 18. We do not knowingly collect personal information from minors. If we become aware that a minor has provided personal information, we will delete it.' },
+                { h: '8. International Data Transfers', b: 'Your information may be transferred to and processed in countries other than your own. We take steps to ensure such transfers comply with applicable law and that your information receives adequate protection.' },
+                { h: '9. Your Rights and Choices', b: 'Depending on your jurisdiction, you may have rights to access, correct, delete, or restrict processing of your personal information, and to data portability. To exercise these rights, contact us at privacy@sayelevate.com. We will respond within applicable legal timeframes.' },
+                { h: '10. Third-Party Links', b: 'The Services may contain links to third-party websites or services. We are not responsible for the privacy practices of those third parties and encourage you to review their privacy policies.' },
+                { h: '11. Changes to This Policy', b: 'We may update this Privacy Policy from time to time. We will notify you of material changes by posting the updated policy and updating the effective date. Continued use of the Services after changes constitutes acceptance.' },
+                { h: '12. California Privacy Rights', b: 'California residents may have additional rights under the California Consumer Privacy Act (CCPA), including the right to know what personal information we collect, the right to delete it, and the right to opt out of sale. We do not sell personal information. To exercise your rights, contact privacy@sayelevate.com.' },
+              ].map(({ h, b }) => (
+                <div key={h}>
+                  <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>{h}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
+                <p className="font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.92)' }}>Contact</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Privacy / Legal: privacy@sayelevate.com<br />Support: support@sayelevate.com</p>
+              </div>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowPrivacyPolicy(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Terms of Service Modal */}
       {showToS && (
         <div
