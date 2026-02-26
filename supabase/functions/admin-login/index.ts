@@ -119,6 +119,14 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // ── Validate role data before creating session ──
+    const role = admin.admin_roles as Record<string, unknown> | null;
+
+    if (!role || !role.id) {
+      console.error('Admin role data missing for admin:', admin.id);
+      return jsonError('Admin account has no assigned role. Contact a super administrator.', 500, req);
+    }
+
     // ── Create session ──
     const sessionToken = crypto.randomUUID() + '-' + crypto.randomUUID();
     const sessionTokenHash = await hashToken(sessionToken);
@@ -166,8 +174,6 @@ Deno.serve(async (req: Request) => {
       p_success: true,
       p_error_message: null,
     });
-
-    const role = admin.admin_roles as Record<string, unknown>;
 
     return json({
       success: true,

@@ -1,4 +1,5 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { createClient } from 'npm:@supabase/supabase-js@2';
 import { handleCors, getCorsHeaders } from '../_shared/cors.ts';
 import { createServiceClient } from '../_shared/supabase-client.ts';
 import { getSupabaseEnv } from '../_shared/supabase-client.ts';
@@ -74,14 +75,33 @@ Deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  const supabaseClient = createServiceClient();
-  const { url: supabaseUrl, serviceRoleKey } = getSupabaseEnv();
-
-  const url = new URL(req.url);
-  const pathParts = url.pathname.split('/').filter(Boolean);
-  const action = pathParts[pathParts.length - 1];
-
   try {
+    const { url: supabaseUrl, serviceRoleKey } = getSupabaseEnv();
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    if (!anonKey) {
+      console.error('SUPABASE_ANON_KEY is not configured');
+      return jsonResp(500, { success: false, message: 'Server configuration error' });
+    }
+
+    // ── Verify JWT: ensure the caller is an authenticated user ──
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return jsonResp(401, { success: false, message: 'Missing Authorization header' });
+    }
+
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user: callerUser }, error: authError } = await userClient.auth.getUser();
+    if (authError || !callerUser) {
+      return jsonResp(401, { success: false, message: 'Invalid or expired token' });
+    }
+
+    const supabaseClient = createServiceClient();
+
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const action = pathParts[pathParts.length - 1];
     // ─── INIT: Validate metadata, create DB record, return signed upload URL ───
     if (action === 'init' && req.method === 'POST') {
       const { userId, uploadType, fileName, fileSize, mimeType } = await req.json();
@@ -91,6 +111,11 @@ Deno.serve(async (req: Request) => {
           success: false,
           message: 'Missing required fields: userId, uploadType, fileName, fileSize, mimeType',
         });
+      }
+
+      // Ownership check: caller must match the userId being acted on
+      if (callerUser.id !== userId) {
+        return jsonResp(403, { success: false, message: 'Cannot upload files for another user' });
       }
 
       if (!['resume', 'linkedin_pdf'].includes(uploadType)) {
@@ -191,6 +216,10 @@ Deno.serve(async (req: Request) => {
         });
       }
 
+      if (callerUser.id !== userId) {
+        return jsonResp(403, { success: false, message: 'Cannot complete uploads for another user' });
+      }
+
       const { data: upload, error: fetchError } = await supabaseClient
         .from('profile_uploads')
         .select('*')
@@ -270,6 +299,10 @@ Deno.serve(async (req: Request) => {
           success: false,
           message: 'Missing required fields: uploadId, userId',
         });
+      }
+
+      if (callerUser.id !== userId) {
+        return jsonResp(403, { success: false, message: 'Cannot delete uploads for another user' });
       }
 
       const { data: upload, error: fetchError } = await supabaseClient

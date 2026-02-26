@@ -27,11 +27,16 @@ Deno.serve(async (req: Request) => {
     const supabase = createServiceClient();
     const tokenHash = await hashToken(sessionToken);
 
-    const { data: session } = await supabase
+    const { data: session, error: sessionError } = await supabase
       .from('admin_sessions')
       .select('id, admin_id')
       .eq('session_token_hash', tokenHash)
       .maybeSingle();
+
+    if (sessionError) {
+      console.error('Session lookup failed:', sessionError);
+      return jsonError('Failed to look up session', 500, req);
+    }
 
     if (session) {
       await supabase.rpc('admin_log_action', {

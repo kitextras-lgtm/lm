@@ -49,7 +49,7 @@ export async function verifyAdminSession(
   const tokenHash = await hashToken(sessionToken);
   const supabase = createServiceClient();
 
-  const { data: session } = await supabase
+  const { data: session, error: sessionError } = await supabase
     .from('admin_sessions')
     .select(
       `
@@ -72,6 +72,11 @@ export async function verifyAdminSession(
     .eq('session_token_hash', tokenHash)
     .maybeSingle();
 
+  if (sessionError) {
+    console.error('Admin session lookup failed:', sessionError);
+    return { error: 'Session verification failed', admin: null, sessionId: null };
+  }
+
   if (!session || new Date(session.expires_at) < new Date()) {
     return { error: 'Invalid or expired session', admin: null, sessionId: null };
   }
@@ -82,9 +87,12 @@ export async function verifyAdminSession(
   }
 
   // Refresh session activity timestamp
-  await supabase.rpc('admin_update_session_activity', {
+  const { error: rpcError } = await supabase.rpc('admin_update_session_activity', {
     p_session_id: session.id,
   });
+  if (rpcError) {
+    console.error('Failed to update session activity:', rpcError);
+  }
 
   return { error: null, admin, sessionId: session.id };
 }

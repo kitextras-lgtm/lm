@@ -1,6 +1,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { handleCors, getCorsHeaders } from '../_shared/cors.ts';
 import { createServiceClient } from '../_shared/supabase-client.ts';
+import { verifyAdminSession } from '../_shared/admin-auth.ts';
 import { getValidatedFromEmail, getEmailTemplate } from '../_shared/email.ts';
 
 Deno.serve(async (req: Request) => {
@@ -16,6 +17,12 @@ Deno.serve(async (req: Request) => {
     });
 
   try {
+    // Auth guard: require a valid admin session
+    const { error: authError, admin } = await verifyAdminSession(req);
+    if (authError || !admin) {
+      return jsonResp(401, { success: false, message: authError || 'Unauthorized' });
+    }
+
     const { notificationType, subject, content } = await req.json();
 
     if (!notificationType || !subject || !content) {
@@ -101,21 +108,19 @@ Deno.serve(async (req: Request) => {
         if (emailResponse.ok) {
           results.push({
             userId: user.id,
-            email: user.email,
             success: true,
             messageId: emailData.id || null,
           });
         } else {
           results.push({
             userId: user.id,
-            email: user.email,
             success: false,
             error: emailData.message || 'Unknown error',
           });
         }
       } catch (emailError: unknown) {
         const msg = emailError instanceof Error ? emailError.message : 'Failed to send email';
-        results.push({ userId: user.id, email: user.email, success: false, error: msg });
+        results.push({ userId: user.id, success: false, error: msg });
       }
     }
 
