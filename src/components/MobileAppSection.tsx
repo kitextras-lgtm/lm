@@ -6,23 +6,23 @@ const SEARCH_WORD = 'Elevate';
 // Desktop feature slides cycling through real dashboard sections
 const DESKTOP_FEATURES = [
   {
-    label: 'Analytics',
-    desc: 'Track streams, revenue & audience in real time',
+    label: 'Brand Partnerships',
+    desc: 'Connect with top brands and manage campaign deals',
+    screen: 'partnerships',
+  },
+  {
+    label: 'Campaigns',
+    desc: 'Launch sponsored content and track performance',
+    screen: 'campaigns',
+  },
+  {
+    label: 'Earnings',
+    desc: 'Track income, payouts and revenue in real time',
     screen: 'analytics',
   },
   {
-    label: 'Release Manager',
-    desc: 'Upload, distribute and manage every release',
-    screen: 'releases',
-  },
-  {
-    label: 'Publishing',
-    desc: 'Register works and collect royalties worldwide',
-    screen: 'publishing',
-  },
-  {
     label: 'Messages',
-    desc: 'Collaborate with your team from anywhere',
+    desc: 'Collaborate directly with brands and your team',
     screen: 'messages',
   },
 ];
@@ -194,11 +194,89 @@ function MessagesScreen() {
   );
 }
 
+function PartnershipsScreen() {
+  return (
+    <div className="flex h-full overflow-hidden">
+      <div className="flex flex-col gap-1.5 py-2 px-2 flex-shrink-0" style={{ width: '44px', background: '#111', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="w-7 h-7 rounded-md mx-auto mb-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="w-6 h-6 rounded mx-auto" style={{ background: i === 1 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.04)' }} />
+        ))}
+      </div>
+      <div className="flex-1 p-3 overflow-hidden">
+        <div style={{ fontSize: '6px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '8px' }}>BRAND PARTNERSHIPS</div>
+        {[
+          { brand: 'Nike', deal: 'Sponsored Post', val: '$2,400', status: 'Active' },
+          { brand: 'Apple', deal: 'Product Review', val: '$1,800', status: 'Pending' },
+          { brand: 'Spotify', deal: 'Playlist Feature', val: '$950', status: 'Active' },
+          { brand: 'Adidas', deal: 'Campaign Series', val: '$5,200', status: 'Negotiating' },
+        ].map((r, i) => (
+          <div key={r.brand} className="flex items-center gap-2 px-2 py-1.5 rounded-lg mb-1" style={{ background: i === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="w-6 h-6 rounded-md flex-shrink-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.1)', fontSize: '5px', fontWeight: 700, color: '#fff' }}>{r.brand[0]}</div>
+            <div className="flex-1 min-w-0">
+              <div style={{ fontSize: '6px', fontWeight: 600, color: '#fff', marginBottom: '1px' }}>{r.brand}</div>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.35)' }}>{r.deal}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '6px', fontWeight: 700, color: '#fff', textAlign: 'right' }}>{r.val}</div>
+              <div style={{ fontSize: '4px', color: r.status === 'Active' ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)', textAlign: 'right' }}>{r.status}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CampaignsScreen() {
+  return (
+    <div className="flex h-full overflow-hidden">
+      <div className="flex flex-col gap-1.5 py-2 px-2 flex-shrink-0" style={{ width: '44px', background: '#111', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="w-7 h-7 rounded-md mx-auto mb-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="w-6 h-6 rounded mx-auto" style={{ background: i === 2 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.04)' }} />
+        ))}
+      </div>
+      <div className="flex-1 p-3 overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div style={{ fontSize: '6px', fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>CAMPAIGNS</div>
+          <div className="px-2 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.12)', fontSize: '5px', color: '#fff' }}>+ New</div>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 mb-2">
+          {[['Total Reach','1.2M'],['Avg. Engagement','8.4%']].map(([l,v]) => (
+            <div key={l} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.35)', marginBottom: '2px' }}>{l}</div>
+              <div style={{ fontSize: '9px', fontWeight: 700, color: '#fff' }}>{v}</div>
+            </div>
+          ))}
+        </div>
+        {[
+          { name: 'Summer Drops', progress: 72, posts: 4 },
+          { name: 'New Era Collab', progress: 45, posts: 2 },
+          { name: 'Studio Sessions', progress: 90, posts: 6 },
+        ].map(c => (
+          <div key={c.name} className="mb-1.5">
+            <div className="flex justify-between mb-0.5">
+              <div style={{ fontSize: '5.5px', color: '#fff', fontWeight: 500 }}>{c.name}</div>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.4)' }}>{c.posts} posts</div>
+            </div>
+            <div className="rounded-full overflow-hidden" style={{ height: '3px', background: 'rgba(255,255,255,0.08)' }}>
+              <div style={{ width: `${c.progress}%`, height: '100%', background: 'rgba(255,255,255,0.7)', borderRadius: '9999px' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const SCREEN_MAP: Record<string, () => JSX.Element> = {
   analytics: AnalyticsScreen,
   releases: ReleasesScreen,
   publishing: PublishingScreen,
   messages: MessagesScreen,
+  partnerships: PartnershipsScreen,
+  campaigns: CampaignsScreen,
 };
 
 // Variant-specific feature sets for each Learn page

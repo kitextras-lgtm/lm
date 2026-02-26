@@ -996,10 +996,10 @@ function PublishingDashboardPage() {
       </div>
 
       {/* PRO consent gate */}
-      <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+      {!proGateAccepted && <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <div className="max-w-xl">
             <div className="mb-5">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
             </div>
@@ -1026,27 +1026,25 @@ function PublishingDashboardPage() {
               </p>
             </div>
             <button
+              onClick={() => setProGateAccepted(true)}
               className="px-7 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
-              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-            >
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>
               I understand — proceed to check
             </button>
           </div>
-        </div>
-      </div>
+        </div>}
 
-      {/* Assistive Lookup card */}
-      <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Assistive Lookup</p>
-        <p className="text-xs mb-5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Search by title, performer, writer / composer, publisher, BMI Work ID or ISWC</p>
+      {proGateAccepted && <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Assistive Lookup</p>
+          <p className="text-xs mb-5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Search by title, performer, writer / composer, publisher, BMI Work ID or ISWC</p>
 
-        <div className="space-y-2 mb-5">
+          <div className="space-y-2 mb-5">
           {/* Row 1: Search type + value */}
           <div className="flex rounded-xl overflow-visible border" style={{ borderColor: 'var(--border-subtle)' }}>
             <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
               <CreditDropdown
                 value={writerRole}
-                options={['Title', 'Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
+                options={['Title', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
                 onChange={setWriterRole}
                 placeholder="Title"
                 borderless
@@ -1068,7 +1066,7 @@ function PublishingDashboardPage() {
             <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
               <CreditDropdown
                 value={writerRoleRow2}
-                options={['Title', 'Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
+                options={['Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
                 onChange={setWriterRoleRow2}
                 placeholder="Title"
                 borderless
@@ -1096,7 +1094,7 @@ function PublishingDashboardPage() {
           </button>
           <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Opens BMI Repertoire with your search prefilled.</p>
         </div>
-      </div>
+      </div>}
 
       {/* Searching state */}
       {checkState === 'searching' && (
