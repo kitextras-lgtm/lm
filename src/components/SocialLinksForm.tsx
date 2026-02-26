@@ -277,9 +277,10 @@ interface SocialLinksFormProps {
   userType?: 'artist' | 'creator' | 'freelancer' | 'business';
   userId?: string;
   onOpenArticle?: (articleId: string) => void;
+  onArtistAdded?: () => void;
 }
 
-export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle }: SocialLinksFormProps) {
+export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle, onArtistAdded }: SocialLinksFormProps) {
   const { t } = useTranslation();
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -290,7 +291,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
     channel_type: '',
     channel_description: '',
   });
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [linksLoaded, setLinksLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
@@ -466,7 +467,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
     <>
     <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
       <div className="flex items-center justify-end mb-5 sm:mb-6">
-        {!isAdding && (userType !== 'artist' || links.length === 0) && (
+        {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 border"
@@ -657,6 +658,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle 
                 if (slJson.success || slJson.duplicate) {
                   await loadLinks();
                   localStorage.setItem('social_links_updated', Date.now().toString());
+                  onArtistAdded?.();
                 } else {
                   console.error('Error saving artist to social_links:', slJson);
                 }

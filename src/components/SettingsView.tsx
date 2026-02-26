@@ -100,9 +100,7 @@ function SettingsMenuItem({
         ...(showBorder ? { borderColor: 'var(--border-subtle)' } : {})
       }}
     >
-      <div className="w-6 h-6 flex items-center justify-center" style={{ color: 'var(--text-primary)' }}>
-        <IconComponent isHovered={isHovered} />
-      </div>
+      <IconComponent isHovered={isHovered} />
       <div className="flex-1 min-w-0">
         <div className="text-[15px]" style={{ color: 'var(--text-primary)' }}>{displayLabel}</div>
       </div>

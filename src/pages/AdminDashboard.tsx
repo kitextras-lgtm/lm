@@ -88,9 +88,12 @@ export function AdminDashboard() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [userDetailSection, setUserDetailSection] = useState<'personal' | 'connected' | 'payment' | 'notifications'>('personal');
+  const [userDetailSection, setUserDetailSection] = useState<'personal' | 'connected' | 'payment' | 'notifications' | 'account-actions'>('personal');
   const [userSocialLinks, setUserSocialLinks] = useState<SocialLink[]>([]);
   const [userSocialLinksLoading, setUserSocialLinksLoading] = useState(false);
+  const [deleteConfirmStep, setDeleteConfirmStep] = useState<'idle' | 'confirm'>('idle');
+  const [suspendStep, setSuspendStep] = useState<'idle' | 'reason' | 'confirm'>('idle');
+  const [suspendReason, setSuspendReason] = useState('');
   const [adminProfileId, setAdminProfileId] = useState<string | null>(null);
   const adminUnreadCount = useAdminUnreadCount();
   const [userSearch, setUserSearch] = useState('');
@@ -292,6 +295,9 @@ export function AdminDashboard() {
     setSelectedUser(user);
     setUserDetailSection('personal');
     setUserSocialLinks([]);
+    setDeleteConfirmStep('idle');
+    setSuspendStep('idle');
+    setSuspendReason('');
     fetchUserSocialLinks(user.id);
   }, [fetchUserSocialLinks]);
 
@@ -2672,6 +2678,22 @@ export function AdminDashboard() {
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                     <span className="text-sm font-medium">Notifications</span>
                   </button>
+
+                  <div className="pt-2 mt-2" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
+                    <button
+                      onClick={() => { setUserDetailSection('account-actions'); setDeleteConfirmStep('idle'); setSuspendStep('idle'); setSuspendReason(''); }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                        userDetailSection === 'account-actions' ? '' : 'hover:brightness-110'
+                      }`}
+                      style={{
+                        backgroundColor: userDetailSection === 'account-actions' ? tokens.bg.active : 'transparent',
+                        color: tokens.text.primary
+                      }}
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                      <span className="text-sm font-medium">Account Actions</span>
+                    </button>
+                  </div>
                 </nav>
               </div>
 
@@ -2840,6 +2862,147 @@ export function AdminDashboard() {
                           <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>This user hasn't added any payment methods yet</p>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {userDetailSection === 'account-actions' && (
+                  <div className="space-y-6 animate-modal-in">
+                    <div>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Account Actions</h3>
+                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Perform administrative actions on this user's account.</p>
+                    </div>
+
+                    {/* Suspend section */}
+                    <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: tokens.bg.elevated }}>
+                      <div className="flex items-start gap-3">
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Suspend Account</p>
+                          <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary, opacity: 0.55 }}>Temporarily restrict this user's access to the platform. You will be prompted to provide a reason.</p>
+                        </div>
+                      </div>
+
+                      {suspendStep === 'idle' && (
+                        <button
+                          onClick={() => setSuspendStep('reason')}
+                          className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
+                          style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        >
+                          Suspend Account
+                        </button>
+                      )}
+
+                      {suspendStep === 'reason' && (
+                        <div className="space-y-3">
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Reason for suspension</label>
+                            <textarea
+                              value={suspendReason}
+                              onChange={e => setSuspendReason(e.target.value)}
+                              placeholder="e.g. Violation of community guidelines — repeated spam..."
+                              rows={3}
+                              className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
+                              style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              onFocus={e => e.target.style.borderColor = 'var(--text-primary)'}
+                              onBlur={e => e.target.style.borderColor = tokens.border.default}
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setSuspendStep('confirm')}
+                              disabled={!suspendReason.trim()}
+                              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+                              style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            >
+                              Review & Confirm
+                            </button>
+                            <button
+                              onClick={() => { setSuspendStep('idle'); setSuspendReason(''); }}
+                              className="px-4 py-2.5 rounded-lg text-sm transition-all hover:brightness-110"
+                              style={{ backgroundColor: 'transparent', color: tokens.text.primary, opacity: 0.5 }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {suspendStep === 'confirm' && (
+                        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}>
+                          <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Confirm suspension for <span style={{ opacity: 0.7 }}>{selectedUser?.email}</span></p>
+                          <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary, opacity: 0.6 }}>Reason: {suspendReason}</p>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={async () => {
+                                await supabase.from('users').update({ profile_completed: false }).eq('id', selectedUser?.id);
+                                setSuspendStep('idle');
+                                setSuspendReason('');
+                                alert(`Account suspended: ${selectedUser?.email}`);
+                              }}
+                              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
+                              style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            >
+                              Confirm Suspend
+                            </button>
+                            <button
+                              onClick={() => setSuspendStep('reason')}
+                              className="px-4 py-2.5 rounded-lg text-sm transition-all hover:brightness-110"
+                              style={{ backgroundColor: 'transparent', color: tokens.text.primary, opacity: 0.5 }}
+                            >
+                              Back
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Delete section */}
+                    <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: tokens.bg.elevated }}>
+                      <div className="flex items-start gap-3">
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Delete Account</p>
+                          <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary, opacity: 0.55 }}>Permanently delete this user and all associated data. This action cannot be undone.</p>
+                        </div>
+                      </div>
+
+                      {deleteConfirmStep === 'idle' && (
+                        <button
+                          onClick={() => setDeleteConfirmStep('confirm')}
+                          className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
+                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        >
+                          Delete Account
+                        </button>
+                      )}
+
+                      {deleteConfirmStep === 'confirm' && (
+                        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}>
+                          <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Are you sure you want to permanently delete this account?</p>
+                          <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.55 }}>User: <span style={{ opacity: 1 }}>{selectedUser?.email}</span> — This cannot be undone.</p>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={async () => {
+                                await supabase.from('users').delete().eq('id', selectedUser?.id);
+                                setSelectedUser(null);
+                                setDeleteConfirmStep('idle');
+                              }}
+                              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
+                              style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            >
+                              Yes, Delete Permanently
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmStep('idle')}
+                              className="px-4 py-2.5 rounded-lg text-sm transition-all hover:brightness-110"
+                              style={{ backgroundColor: 'transparent', color: tokens.text.primary, opacity: 0.5 }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

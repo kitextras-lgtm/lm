@@ -25,6 +25,7 @@ export function LoginPage() {
   const [devCode, setDevCode] = useState<string | null>(null);
   const [resendSent, setResendSent] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const [showToS, setShowToS] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -413,7 +414,7 @@ export function LoginPage() {
 
             <p className="text-neutral-400 text-xs text-center">
               By signing in, you agree to our{" "}
-              <button className="text-white underline hover:no-underline">
+              <button className="text-white underline hover:no-underline" onClick={() => setShowToS(true)}>
                 Terms
               </button>
               {" "}and{" "}
@@ -533,6 +534,69 @@ export function LoginPage() {
           </>
         )}
       </div>
+      {/* Terms of Service Modal */}
+      {showToS && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setShowToS(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl flex flex-col"
+            style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Terms of Service</p>
+              <button onClick={() => setShowToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 17, 2025</p>
+              <p>These Terms of Service ("Terms") govern your access to and use of the websites, applications, platforms, and services operated by Elevate ("Elevate," "we," "us," or "our"). By accessing or using the Service, you agree to these Terms and our Privacy Policy.</p>
+              {[
+                { h: '1. Acceptance of Terms', b: 'By accessing or using the Service in any manner — including creating an account, connecting financial accounts, posting content, or receiving payments — you agree to comply with all applicable laws and be bound by these Terms and the dispute resolution and arbitration provisions. Electronic communications satisfy any written requirement.' },
+                { h: '2. Changes to Terms or Service', b: 'Elevate may update these Terms at any time. Changes become effective when posted. Continued use constitutes acceptance. Elevate may modify, suspend, or discontinue any portion of the Service at any time without liability.' },
+                { h: '3.1 Account Registration', b: 'You must provide accurate and complete information when creating an account and keep it updated. You are responsible for maintaining login confidentiality and all activity conducted through your account. Notify us immediately at support@sayelevate.com if your account is compromised.' },
+                { h: '3.2 Linked Accounts & Revenue Ownership', b: 'By linking a payment account you confirm you own or control it. The owner of the first Linked Account connected with a valid payment method is deemed the owner of all associated revenue. Elevate does not mediate ownership disputes.' },
+                { h: '3.3 Identity Verification (KYC)', b: 'To receive payouts you must complete all required identity verification. Failure may result in inability to receive payouts, suspension, or termination.' },
+                { h: '4. Intellectual Property', b: 'All Elevate Content — including logos, software, design, trademarks, and code — is owned by Elevate or its licensors and protected by law. You may not copy, reproduce, distribute, modify, or commercially exploit Elevate Content without written permission.' },
+                { h: '5. Your Use of the Service', b: 'You agree not to use the Service for illegal purposes, harass or harm others, upload malicious code, scrape or reverse engineer, engage in fraud, manipulate reviews, or violate intellectual property rights. Elevate may suspend or terminate accounts for violations.' },
+                { h: '6. User Content', b: 'You retain ownership of your content. By posting, you grant Elevate a worldwide, non-exclusive, royalty-free, sublicensable, perpetual license to host, display, promote, and distribute your content. You represent you have the rights to post it. Elevate may remove content at its discretion.' },
+                { h: '7. Transactions, Buying, Selling, and Fees', b: 'Elevate facilitates transactions between users but does not guarantee product quality, delivery, or seller performance. Fees may apply and may be updated. Sellers must accurately describe products and have legal rights to sell them.' },
+                { h: '8. Elevate Balance and Payment Processing', b: 'Funds received may be reflected in your Elevate Balance held by Financial Partners. You may use your Balance to purchase products or withdraw to a linked bank account. Elevate may deduct fees, chargebacks, refunds, fines, and legal obligations. Report transaction errors within seven (7) days.' },
+                { h: '9. Force Majeure', b: 'Elevate shall not be liable for delays or failure in performance resulting from events beyond its reasonable control, including acts of God, war, government action, bank failures, Financial Partner insolvency, cybersecurity incidents, fraud investigations, or compliance reviews.' },
+                { h: '10. Payment Partner Disclaimer', b: 'Payments are processed by independent Financial Partners. Financial Partners may freeze, delay, reverse, or restrict funds. Elevate does not control Financial Partner decisions and is not liable for payment delays caused by them. Payout obligations may be suspended without liability during partner failures or regulatory issues.' },
+                { h: '11. No Fiduciary Relationship', b: 'Nothing in these Terms creates a fiduciary, escrow, trustee, agency, or financial advisory relationship. Elevate is a technology platform, not a bank, broker-dealer, investment advisor, or financial custodian.' },
+                { h: '12. No Guarantee of Earnings', b: 'Elevate makes no guarantees regarding income, profitability, sales, or business success. You acknowledge that using the Service involves business and financial risk. Elevate does not provide financial, tax, or investment advice.' },
+                { h: '13. Regulatory and Compliance Changes', b: 'Elevate may suspend, restrict, or modify features if required by law, regulation, court order, or Financial Partner policy. Elevate shall not be liable for service limitations resulting from regulatory action.' },
+                { h: '14. Communications', b: 'You consent to receive electronic communications including receipts, security notices, and policy updates. Marketing emails may be unsubscribed from. Keep contact information updated.' },
+                { h: '15. Termination', b: 'You may delete your account at any time. Elevate may suspend or terminate accounts at its discretion. Upon termination: access is revoked, fees remain due, content may be deleted, balances may be applied to obligations. You may not create a new account to evade termination.' },
+                { h: '16. Disclaimer of Warranties', b: 'The Service is provided "AS IS" and "AS AVAILABLE." Elevate disclaims all warranties, express or implied, and does not guarantee uninterrupted or error-free operation.' },
+                { h: '17. Limitation of Liability', b: 'To the fullest extent permitted by law, Elevate is not liable for indirect, incidental, consequential, or punitive damages. Total liability is limited to the greater of the amount paid in the previous 12 months or $100. Claims must be brought within one (1) year.' },
+                { h: '18. Dispute Resolution & Arbitration', b: 'Before filing legal action you must attempt informal resolution by contacting support@sayelevate.com. Unresolved disputes are subject to binding individual arbitration under the Federal Arbitration Act. Class actions and jury trials are waived.' },
+                { h: '19. Copyright (DMCA)', b: 'Copyright complaints must be sent to privacy@sayelevate.com. Elevate may remove infringing content and terminate repeat infringers.' },
+                { h: '20. Miscellaneous', b: 'New York law governs. Terms are severable. No waiver by delay. Elevate may assign Terms. No partnership created.' },
+              ].map(({ h, b }) => (
+                <div key={h}>
+                  <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>{h}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
+                <p className="font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.92)' }}>Contact</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Support: support@sayelevate.com<br />Privacy / Legal: privacy@sayelevate.com</p>
+              </div>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

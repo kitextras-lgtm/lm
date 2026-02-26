@@ -479,9 +479,7 @@ function FighterMusicCard({ onClick, backgroundTheme }: { onClick: () => void; b
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
+        <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Fighter Music</h3>
@@ -520,9 +518,7 @@ function AstaViolinaCard({ onClick, backgroundTheme }: { onClick: () => void; ba
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
+        <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Asta Violina</h3>
@@ -561,9 +557,7 @@ function NovaBeatsCard({ onClick, backgroundTheme }: { onClick: () => void; back
       onClick={onClick}
     >
       <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-5">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0" style={{ borderColor: 'var(--border-subtle)' }}>
-          <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </div>
+        <svg className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Nova Beats</h3>

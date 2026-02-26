@@ -789,7 +789,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
   return (
     <div
       ref={ref}
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border"
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onClick={onClick}
     >
@@ -797,43 +797,45 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>New Exposure</h3>
       </div>
 
-      <div
-        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}
-      >
-        <div className="text-xs mb-4" style={{ color: 'var(--text-primary)' }}>Last 30 days</div>
-      </div>
-
-      <div className="flex items-end gap-1 mb-4" style={{ height: '64px' }}>
-        {bars.map((h, i) => (
-          <div
-            key={i}
-            className="flex-1 rounded-t-sm"
-            style={{
-              height: entered ? `${h}%` : '0%',
-              backgroundColor: i >= 10 ? 'var(--text-primary)' : '#d1d5db',
-              transition: `height 0.6s cubic-bezier(0.34,1,0.64,1) ${i * 0.04}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      <div
-        className="flex items-center justify-between"
-        style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.5s, transform 0.45s ease 0.5s' }}
-      >
-        <div>
-          <div className="text-xs mb-0.5" style={{ color: 'var(--text-primary)' }}>New Exposure</div>
-          <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>—</div>
-        </div>
+      <div className="flex-grow">
         <div
-          className="px-3 py-1.5 rounded-full text-xs font-medium"
-          style={{ background: '#f0f0f0', color: '#111' }}
+          style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}
         >
-          No Activity
+          <div className="text-xs mb-4" style={{ color: 'var(--text-primary)' }}>Last 30 days</div>
+        </div>
+
+        <div className="flex items-end gap-1 mb-4" style={{ height: '64px' }}>
+          {bars.map((h, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-t-sm"
+              style={{
+                height: entered ? `${h}%` : '0%',
+                backgroundColor: i >= 10 ? 'var(--text-primary)' : '#d1d5db',
+                transition: `height 0.6s cubic-bezier(0.34,1,0.64,1) ${i * 0.04}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        <div
+          className="flex items-center justify-between"
+          style={{ opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(6px)', transition: 'opacity 0.45s ease 0.5s, transform 0.45s ease 0.5s' }}
+        >
+          <div>
+            <div className="text-xs mb-0.5" style={{ color: 'var(--text-primary)' }}>New Exposure</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>—</div>
+          </div>
+          <div
+            className="px-3 py-1.5 rounded-full text-xs font-medium"
+            style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+          >
+            No Activity
+          </div>
         </div>
       </div>
 
-      <div className="mt-4 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
+      <div className="mt-6 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
         <button
           className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
           style={{ color: 'var(--text-primary)' }}
@@ -890,6 +892,8 @@ function PublishingDashboardPage() {
   const [proGateAccepted, setProGateAccepted] = useState(false);
   const [query, setQuery] = useState('');
   const [writers, setWriters] = useState('');
+  const [writerRole, setWriterRole] = useState('');
+  const [writerRoleRow2, setWriterRoleRow2] = useState('');
   const [isrc, setIsrc] = useState('');
   const [checkState, setCheckState] = useState<'idle' | 'searching' | 'done'>('idle');
   const [result, setResult] = useState<null | { verdict: 'registered' | 'possible' | 'not_found'; confidence: number; title: string; matches: { source: string; territory: string; status: string; iswc?: string }[]; reasons: string[] }>(null);
@@ -898,18 +902,22 @@ function PublishingDashboardPage() {
 
   const runCheck = () => {
     if (!query.trim()) return;
-    setCheckState('searching');
-    setResult(null);
-    setTimeout(() => {
-      setCheckState('done');
-      setResult({
-        verdict: 'not_found',
-        confidence: 12,
-        title: query.trim(),
-        matches: [],
-        reasons: ['No ISWC or ISRC provided', 'No matching work found in connected PRO databases', 'Title search returned no high-confidence results'],
-      });
-    }, 2800);
+    const params = new URLSearchParams();
+    const roleKey = writerRole || 'Performer';
+    if (roleKey === 'Writer/Composer') {
+      params.set('writer', query.trim());
+      if (writers.trim()) params.set('title', writers.trim());
+    } else if (roleKey === 'Publisher') {
+      params.set('publisher', query.trim());
+    } else if (roleKey === 'BMI Work ID') {
+      params.set('work_id', query.trim());
+    } else if (roleKey === 'ISWC') {
+      params.set('iswc', query.trim());
+    } else {
+      params.set('title', query.trim());
+      if (writers.trim()) params.set('writer', writers.trim());
+    }
+    window.open(`https://repertoire.bmi.com/search/quick?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -943,8 +951,8 @@ function PublishingDashboardPage() {
           <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '160px', height: '160px', borderRadius: '50%', border: '1px solid var(--border-subtle)', opacity: 0.3 }} />
           <div style={{ position: 'absolute', top: '10px', right: '10px', width: '90px', height: '90px', borderRadius: '50%', border: '1px solid var(--border-subtle)', opacity: 0.2 }} />
           <div className="relative z-10">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+            <div className="mb-5">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
                 <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
               </svg>
             </div>
@@ -960,22 +968,18 @@ function PublishingDashboardPage() {
         </div>
         <div className="flex flex-col gap-4">
           <div className="rounded-2xl p-6 flex items-center gap-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
-              </svg>
-            </div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', flexShrink: 0 }}>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            </svg>
             <div>
               <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Works Registered</p>
               <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
             </div>
           </div>
           <div className="rounded-2xl p-6 flex items-center gap-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
-                <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
-              </svg>
-            </div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+            </svg>
             <div>
               <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Publishing Balance</p>
               <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
@@ -995,8 +999,8 @@ function PublishingDashboardPage() {
       {!proGateAccepted && (
         <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
           <div className="max-w-xl">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
+            <div className="mb-5">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}>
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
             </div>
@@ -1015,7 +1019,7 @@ function PublishingDashboardPage() {
               ))}
             </div>
             <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>
-              If not, you may use our service to check whether your work has been registered with a publisher.
+              If Not, follow the steps shown and check. It is still worth checking.
             </p>
             <div className="rounded-xl p-4 border mb-6" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
               <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
@@ -1033,69 +1037,68 @@ function PublishingDashboardPage() {
         </div>
       )}
 
-      {/* Search card — only shown after gate */}
+      {/* Assistive Lookup — only shown after gate */}
       {proGateAccepted && <>
-      {/* Search card */}
+      {/* Assistive Lookup card */}
       <div className="rounded-2xl p-8 border mb-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-        <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Work Details</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Song Title <span style={{ opacity: 0.4 }}>(required)</span></label>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-primary)', opacity: 0.5, letterSpacing: '0.12em' }}>Assistive Lookup</p>
+        <p className="text-xs mb-5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Search by title, performer, writer / composer, publisher, BMI Work ID or ISWC</p>
+
+        <div className="space-y-2 mb-5">
+          {/* Row 1: Search type + value */}
+          <div className="flex rounded-xl overflow-visible border" style={{ borderColor: 'var(--border-subtle)' }}>
+            <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
+              <CreditDropdown
+                value={writerRole}
+                options={['Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
+                onChange={setWriterRole}
+                placeholder="Performer"
+                borderless
+              />
+            </div>
             <input
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && runCheck()}
-              placeholder="e.g. Night Drive"
-              className={inputCls}
-              style={inputStyle}
-              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+              placeholder={writerRole === 'Writer/Composer' ? 'Name contains (optional)' : writerRole === 'Publisher' ? 'Publisher name' : writerRole === 'BMI Work ID' ? 'e.g. 123456' : writerRole === 'ISWC' ? 'e.g. T-034.524.680-1' : 'e.g. Night Drive'}
+              className="flex-1 px-4 py-3 text-sm focus:outline-none rounded-r-xl"
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: 'none' }}
             />
           </div>
-          <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Writer(s) <span style={{ opacity: 0.4 }}>(optional)</span></label>
+
+          {/* Row 2: Writer/Composer with dropdown */}
+          <div className="flex rounded-xl overflow-visible border" style={{ borderColor: 'var(--border-subtle)' }}>
+            <div className="flex-shrink-0 rounded-l-xl overflow-hidden" style={{ width: '190px', backgroundColor: 'var(--bg-elevated)', borderRight: '1px solid var(--border-subtle)' }}>
+              <CreditDropdown
+                value={writerRoleRow2}
+                options={['Performer', 'Writer/Composer', 'Publisher', 'BMI Work ID', 'ISWC']}
+                onChange={setWriterRoleRow2}
+                placeholder="Writer/Composer"
+                borderless
+              />
+            </div>
             <input
               type="text"
               value={writers}
               onChange={e => setWriters(e.target.value)}
-              placeholder="e.g. Michael Lee, Jane Smith"
-              className={inputCls}
-              style={inputStyle}
-              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+              placeholder="Name contains (optional)"
+              className="flex-1 px-4 py-3 text-sm focus:outline-none rounded-r-xl"
+              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: 'none' }}
             />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>ISRC <span style={{ opacity: 0.4 }}>(optional)</span></label>
-            <input
-              type="text"
-              value={isrc}
-              onChange={e => setIsrc(e.target.value)}
-              placeholder="e.g. USRC17607839"
-              className={inputCls}
-              style={inputStyle}
-              onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
-            />
-          </div>
-          <div className="flex items-end">
-            <button
-              onClick={runCheck}
-              disabled={!query.trim() || checkState === 'searching'}
-              className="w-full px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
-              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-            >
-              {checkState === 'searching' ? 'Checking registries…' : 'Check Registration'}
-            </button>
           </div>
         </div>
 
-        {/* How it works hint */}
-        <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
-          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>
-            We search across <strong style={{ opacity: 1 }}>ASCAP, BMI, SOCAN, PRS, APRA, SESAC</strong> and other global PRO databases. Providing a writer name or ISRC significantly improves accuracy.
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={runCheck}
+            disabled={!query.trim()}
+            className="px-7 py-3 rounded-xl text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
+            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+          >
+            Search BMI
+          </button>
+          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Opens BMI Repertoire with your search prefilled.</p>
         </div>
       </div>
 
@@ -1133,13 +1136,13 @@ function PublishingDashboardPage() {
             borderColor: 'var(--border-subtle)',
           }}>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <div className="flex-shrink-0 mt-1" style={{ color: 'var(--text-primary)' }}>
                 {result.verdict === 'registered' ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 ) : result.verdict === 'possible' ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 )}
               </div>
               <div className="flex-1">
@@ -1213,7 +1216,7 @@ function PublishingDashboardPage() {
           { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, title: 'Confidence Scoring', desc: 'Every result is scored so you know how certain the match is.' },
         ].map(card => (
           <div key={card.title} className="rounded-2xl p-5 border flex gap-4" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+            <div className="flex-shrink-0 mt-0.5" style={{ color: 'var(--text-primary)' }}>
               {card.icon}
             </div>
             <div>
@@ -1546,7 +1549,7 @@ function PublishingSynopsisPage({ onStart }: { onStart: () => void }) {
                   transition: `opacity 0.5s ease ${0.85 + i * 0.12}s, transform 0.5s ease ${0.85 + i * 0.12}s`,
                 }}
               >
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                <div className="mb-4" style={{ color: 'var(--text-primary)' }}>
                   {f.icon}
                 </div>
                 <p className="text-sm font-bold mb-2 leading-snug" style={{ color: 'var(--text-primary)' }}>{f.title}</p>
@@ -1894,11 +1897,18 @@ const LANGUAGES = [
 
 function InfoLabel({ text, tip }: { text: string; tip: string }) {
   const [show, setShow] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (!show) return;
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setShow(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [show]);
   return (
-    <div className="flex items-center gap-1.5 mb-2">
+    <div className="flex items-center gap-1.5 mb-2 cursor-pointer select-none" onClick={() => setShow(v => !v)}>
       <span style={{ color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.04em' }}>{text}</span>
-      <div className="relative flex items-center" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-        <svg className="w-3.5 h-3.5 cursor-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.85, filter: 'drop-shadow(0 0 4px currentColor)' }}>
+      <div ref={ref} className="relative flex items-center" onMouseEnter={() => setShow(true)} onMouseLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setShow(false); }}>
+        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.85, filter: 'drop-shadow(0 0 4px currentColor)' }}>
           <circle cx="12" cy="12" r="10"/>
           <line x1="12" y1="8" x2="12" y2="12"/>
           <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -1966,7 +1976,7 @@ function ReleaseDropdown({ value, options, onChange, triggerStyle }: { value: st
   );
 }
 
-function CreditDropdown({ value, options, onChange, placeholder }: { value: string; options: string[]; onChange: (v: string) => void; placeholder: string }) {
+function CreditDropdown({ value, options, onChange, placeholder, borderless }: { value: string; options: string[]; onChange: (v: string) => void; placeholder: string; borderless?: boolean }) {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -1975,28 +1985,34 @@ function CreditDropdown({ value, options, onChange, placeholder }: { value: stri
     return () => document.removeEventListener('mousedown', handler);
   }, []);
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative" style={{ minWidth: borderless ? undefined : '120px' }}>
       <button type="button" onClick={() => setOpen(v => !v)}
-        className="w-full px-4 py-3 rounded-xl text-sm flex items-center justify-between focus:outline-none transition-all"
-        style={{ backgroundColor: 'var(--bg-elevated)', color: value ? 'var(--text-primary)' : 'var(--text-primary)', border: '1px solid var(--border-subtle)', opacity: value ? 1 : 0.6 }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+        className="w-full px-4 py-3 text-sm flex items-center justify-between focus:outline-none transition-all"
+        style={{
+          backgroundColor: 'var(--bg-elevated)',
+          color: 'var(--text-primary)',
+          border: borderless ? 'none' : '1px solid var(--border-subtle)',
+          borderRadius: borderless ? undefined : '0.75rem',
+          opacity: value ? 1 : 0.7,
+        }}
+        onMouseEnter={e => { if (!borderless) e.currentTarget.style.transform = 'translateY(-1px)'; }}
+        onMouseLeave={e => { if (!borderless) e.currentTarget.style.transform = 'none'; }}
       >
-        <span style={{ color: 'var(--text-primary)', opacity: value ? 1 : 0.5 }}>{value || placeholder}</span>
-        <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
+        <span style={{ color: 'var(--text-primary)', opacity: value ? 1 : 0.6, fontWeight: 600 }}>{value || placeholder}</span>
+        <svg className={`w-3.5 h-3.5 flex-shrink-0 ml-2 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
       </button>
       {open && (
-        <div className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', maxHeight: '200px', overflowY: 'auto' }}>
+        <div className="absolute z-[200] left-0 mt-1 rounded-xl animate-fade-in" style={{ minWidth: '180px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', maxHeight: '220px', overflowY: 'auto' }}>
           {options.map(opt => (
             <button key={opt} type="button"
               onClick={() => { onChange(opt); setOpen(false); }}
-              className="w-full text-left px-4 py-2 text-sm flex items-center justify-between transition-all"
+              className="w-full text-left px-4 py-2.5 text-sm flex items-center justify-between transition-all"
               style={{ backgroundColor: value === opt ? 'var(--bg-elevated)' : 'transparent', color: 'var(--text-primary)' }}
               onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
               onMouseLeave={e => { e.currentTarget.style.backgroundColor = value === opt ? 'var(--bg-elevated)' : 'transparent'; e.currentTarget.style.transform = 'translateX(0)'; }}
             >
               <span>{opt}</span>
-              {value === opt && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>✓</span>}
+              {value === opt && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>✓</span>}
             </button>
           ))}
         </div>
@@ -5043,7 +5059,7 @@ export function ArtistDashboard() {
             <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Add New Artist</p>
           </div>
 
-          <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} onOpenArticle={handleOpenArticle} />
+          <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} onOpenArticle={handleOpenArticle} onArtistAdded={() => fetchArtistNames(currentUserId)} />
         </section>
 
         <section className="mb-8">
@@ -5065,11 +5081,11 @@ export function ArtistDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
             <div className="mb-10">
               <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Sync Opportunities</h1>
-              <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Apply to any available feature below.</p>
+              <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Apply for your tracks to be featured on Television, Movies, Ads, Games, Media, and more.</p>
             </div>
             <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                <svg width="26" height="26" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+              <div className="mb-6" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round">
                   <rect x="8" y="24" width="32" height="16" rx="2"/>
                   <line x1="12" y1="30" x2="28" y2="30"/>
                   <line x1="12" y1="36" x2="22" y2="36"/>
@@ -5110,8 +5126,8 @@ export function ArtistDashboard() {
                     setShowReleaseForm(true);
                   }}
                 >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                  <div style={{ color: 'var(--text-primary)' }}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                   </div>
                   <div className="flex-1">
                     <p className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Standard Release</p>
@@ -6567,8 +6583,8 @@ export function ArtistDashboard() {
                             key={val}
                             onClick={() => {
                             setStoreDistType(val);
-                            const elevatePackage = ['Spotify', 'Apple Music', 'Amazon Music', 'YouTube Music', 'Deezer', 'Tidal', 'Pandora', 'iHeartRadio', 'SoundCloud', 'TikTok', 'Instagram', 'Facebook'];
-                            setRf({ stores: val === 'all' ? [...allStores] : val === 'downloads' ? elevatePackage : [] });
+                            const streamingOnlyStores = ['Spotify', 'Apple Music', 'Amazon Music', 'YouTube Music', 'Tidal', 'Deezer', 'Pandora', 'SoundCloud', 'iTunes', 'Shazam', 'iHeartRadio', 'LiveOne', 'TIDAL'];
+                            setRf({ stores: val === 'all' ? [...allStores] : val === 'streaming' ? streamingOnlyStores : val === 'downloads' ? [] : [] });
                           }}
                             className="flex items-start gap-3 p-4 rounded-xl text-left transition-all hover:opacity-90"
                             style={{ backgroundColor: 'var(--bg-elevated)', border: `2px solid ${isSel ? 'var(--text-primary)' : 'var(--border-subtle)'}` }}
@@ -6784,9 +6800,9 @@ export function ArtistDashboard() {
                       <button
                         onClick={() => {
                           if (!validateStep()) return;
-                          if (!checklistBlocked) setReleaseStep(s => s + 1);
+                          if (!checklistBlocked && !artistBlocked) setReleaseStep(s => s + 1);
                         }}
-                        disabled={checklistBlocked}
+                        disabled={checklistBlocked || artistBlocked}
                         className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                       >

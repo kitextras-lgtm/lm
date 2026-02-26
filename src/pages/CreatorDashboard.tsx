@@ -931,6 +931,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [licensingSubmitted, setLicensingSubmitted] = useState(false);
   const [campaignTermsAccepted, setCampaignTermsAccepted] = useState(false);
   const [campaignTermsChecked, setCampaignTermsChecked] = useState(false);
+  const [showToSModal, setShowToSModal] = useState(false);
   const [exploreDevUnlocked, setExploreDevUnlocked] = useState(() => localStorage.getItem('elevate_dev_unlocked') === '1');
   const [exploreDevPassword, setExploreDevPassword] = useState('');
   const [exploreDevError, setExploreDevError] = useState(false);
@@ -3357,7 +3358,18 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                               <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 transition-all" style={{ backgroundColor: campaignTermsChecked ? 'var(--text-primary)' : 'transparent', border: `1px solid ${campaignTermsChecked ? 'var(--text-primary)' : 'var(--border-default)'}` }}>
                                 {campaignTermsChecked && <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>}
                               </div>
-                              <p className="text-xs" style={{ color: 'var(--text-primary)' }}>I agree to Elevate's campaign terms of service, content usage policies, and revenue sharing agreement.</p>
+                              <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
+                                I agree to Elevate's campaign{' '}
+                                <button
+                                  type="button"
+                                  onClick={e => { e.stopPropagation(); setShowToSModal(true); }}
+                                  className="underline font-semibold transition-all hover:opacity-70"
+                                  style={{ color: 'var(--text-primary)' }}
+                                >
+                                  terms of service
+                                </button>
+                                , content usage policies.
+                              </p>
                             </label>
                             <button
                               disabled={!campaignTermsChecked}
@@ -5032,6 +5044,63 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         onClose={() => setSelectedCampaign(null)} 
         backgroundTheme={backgroundTheme}
       />
+
+      {/* Terms of Service Modal */}
+      {showToSModal && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setShowToSModal(false)}
+        >
+          <div
+            className="relative w-full max-w-lg rounded-2xl p-7 shadow-2xl"
+            style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', maxHeight: '80vh', overflowY: 'auto' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Terms of Service</h2>
+              <button
+                onClick={() => setShowToSModal(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="space-y-5 text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+              <div>
+                <p className="font-semibold mb-2">1. Campaign Participation</p>
+                <p style={{ opacity: 0.7 }}>By participating in Elevate campaigns, you agree to distribute approved media content across your registered social platforms in accordance with the campaign brief provided. You must not alter, misrepresent, or use campaign assets outside the scope defined by Elevate.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-2">2. Content Usage Policies</p>
+                <p style={{ opacity: 0.7 }}>All media assets, clips, and materials provided through Elevate are licensed exclusively for use within designated campaigns. Redistribution, resale, or use outside the platform without explicit written consent from Elevate is strictly prohibited.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-2">3. Revenue Sharing</p>
+                <p style={{ opacity: 0.7 }}>Revenue earned through campaigns is calculated based on verified views, engagement metrics, and distribution reach as determined by Elevate's analytics systems. Payouts are processed in accordance with the payout schedule outlined in your campaign agreement.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-2">4. Account Conduct</p>
+                <p style={{ opacity: 0.7 }}>You are responsible for ensuring your accounts remain active and in good standing on all platforms listed in your profile. Elevate reserves the right to suspend campaign access if accounts are found to violate the platform's community guidelines.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-2">5. Termination</p>
+                <p style={{ opacity: 0.7 }}>Elevate may terminate your access to campaigns at any time for breach of these terms, fraudulent activity, or at our discretion. Pending earnings at the time of termination will be reviewed on a case-by-case basis.</p>
+              </div>
+            </div>
+            <div className="mt-7 flex justify-end">
+              <button
+                onClick={() => setShowToSModal(false)}
+                className="px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     </>
   );
