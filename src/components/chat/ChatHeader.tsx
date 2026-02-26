@@ -171,6 +171,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`flex items-center gap-3 p-2.5 rounded-xl transition-colors group ${rowHover}`}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
                         <PlatformIcon platform={link.platform} className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />

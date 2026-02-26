@@ -4593,10 +4593,54 @@ export function ArtistDashboard() {
           {/* Background Selector */}
           <div>
             <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('display.backgroundTheme')}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+
+            {/* Mobile: compact stacked list */}
+            <div className="flex flex-col gap-2 sm:hidden">
+              {([
+                { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
+                { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
+                { key: 'rose' as const, label: 'Rose', desc: 'Midnight rose', bg: '#140a12', swatch: '#3d1535' },
+                { key: 'dark' as const, label: 'Dark', desc: 'Pure black', bg: '#0a0a0a', swatch: '#1a1a1a' },
+                { key: 'white' as const, label: 'Light', desc: 'Clean white', bg: '#FFFFFF', swatch: '#e2e8f0' },
+              ]).map(({ key, label, desc, bg, swatch }) => {
+                const isSelected = backgroundTheme === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setBackgroundTheme(key)}
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border-2 transition-all duration-200 text-left"
+                    style={{
+                      backgroundColor: bg,
+                      borderColor: isSelected ? '#ffffff' : 'rgba(255,255,255,0.15)',
+                    }}
+                  >
+                    {/* Mini swatch preview */}
+                    <div className="flex gap-1 flex-shrink-0">
+                      <div className="w-6 h-8 rounded" style={{ backgroundColor: swatch }} />
+                      <div className="flex flex-col gap-1 justify-center">
+                        <div className="w-8 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.7 }} />
+                        <div className="w-5 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.5 }} />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold leading-tight" style={{ color: key === 'white' ? '#111111' : '#ffffff' }}>{label}</p>
+                      <p className="text-xs leading-tight mt-0.5" style={{ color: key === 'white' ? '#555555' : 'rgba(255,255,255,0.6)' }}>{desc}</p>
+                    </div>
+                    {isSelected && (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: key === 'white' ? '#111111' : '#ffffff' }}>
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: key === 'white' ? '#ffffff' : '#000000' }}><path d="M20 6L9 17l-5-5"/></svg>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Desktop: 5-column grid */}
+            <div className="hidden sm:grid sm:grid-cols-5 gap-4">
               {/* Navy Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#192231' }}
@@ -4604,9 +4648,7 @@ export function ArtistDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'light' 
-                      ? 'bg-white border-white' 
-                      : 'bg-white border-gray-400'
+                    backgroundTheme === 'light' ? 'bg-white border-white' : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'light' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -4621,12 +4663,12 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#CBD5E1' }}>{t('display.navyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'grey' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#222226' }}
@@ -4634,9 +4676,7 @@ export function ArtistDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'grey' 
-                      ? 'bg-white border-white' 
-                      : 'bg-white border-gray-400'
+                    backgroundTheme === 'grey' ? 'bg-white border-white' : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'grey' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -4651,12 +4691,12 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#CBD5E1' }}>{t('display.greyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
               <div
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'rose' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#140a12' }}
@@ -4664,9 +4704,7 @@ export function ArtistDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'rose'
-                      ? 'bg-white border-white'
-                      : 'bg-white border-gray-400'
+                    backgroundTheme === 'rose' ? 'bg-white border-white' : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'rose' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -4681,12 +4719,12 @@ export function ArtistDashboard() {
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>Rose</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#CBD5E1' }}>Midnight rose</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Midnight rose</p>
               </div>
 
               {/* Dark Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#0a0a0a' }}
@@ -4694,9 +4732,7 @@ export function ArtistDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'dark' 
-                      ? 'bg-white border-white' 
-                      : 'bg-white border-gray-400'
+                    backgroundTheme === 'dark' ? 'bg-white border-white' : 'bg-white border-gray-400'
                   }`}>
                     {backgroundTheme === 'dark' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -4711,12 +4747,12 @@ export function ArtistDashboard() {
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.dark')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#CBD5E1' }}>{t('display.darkDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.darkDesc')}</p>
               </div>
 
               {/* Light Option */}
               <div
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'white' ? 'border-gray-400' : 'border-gray-300'
                 }`}
                 style={{ backgroundColor: '#FFFFFF' }}
@@ -4724,9 +4760,7 @@ export function ArtistDashboard() {
               >
                 <div className="absolute top-4 right-4">
                   <div className={`w-5 h-5 rounded-full border-2 ${
-                    backgroundTheme === 'white'
-                      ? 'bg-gray-800 border-gray-800'
-                      : 'bg-gray-200 border-gray-400'
+                    backgroundTheme === 'white' ? 'bg-gray-800 border-gray-800' : 'bg-gray-200 border-gray-400'
                   }`}>
                     {backgroundTheme === 'white' && (
                       <div className="w-full h-full flex items-center justify-center">
@@ -5363,7 +5397,9 @@ export function ArtistDashboard() {
 
               {/* Draft cards — In-Progress tab */}
               {myReleasesTab === 'in-progress' && (() => {
-                const drafts = savedDrafts.filter(d => d.status === 'incomplete');
+                const getReleaseType = (trackCount: number) => trackCount >= 7 ? 'Album' : trackCount >= 4 ? 'EP' : 'Single';
+                const allDrafts = savedDrafts.filter(d => d.status === 'incomplete');
+                const drafts = releasesFilter === 'Any release type' ? allDrafts : allDrafts.filter(d => getReleaseType(d.tracks?.length ?? 0) === releasesFilter);
                 if (drafts.length === 0) return (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="mb-5">
@@ -5399,7 +5435,10 @@ export function ArtistDashboard() {
                         {/* Info */}
                         <div className="p-4">
                           <p className="font-semibold text-sm truncate mb-1" style={{ color: 'var(--text-primary)' }}>{draft.title || 'Untitled Release'}</p>
-                          <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                            {getReleaseType(draft.tracks?.length ?? 0)}
+                          </p>
+                          <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
                             {draft.tracks?.length ? `${draft.tracks.length} track${draft.tracks.length !== 1 ? 's' : ''}` : 'No tracks yet'}
                           </p>
                           <div className="flex items-center justify-between">
@@ -5455,27 +5494,109 @@ export function ArtistDashboard() {
                 </div>
               )}
 
-              {/* Complete tab */}
-              {myReleasesTab === 'complete' && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="mb-5">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              {/* Complete tab — submitted + approved */}
+              {myReleasesTab === 'complete' && (() => {
+                const getReleaseType = (trackCount: number) => trackCount >= 7 ? 'Album' : trackCount >= 4 ? 'EP' : 'Single';
+                const allDrafts = savedDrafts.filter(d => d.status === 'submitted' || d.status === 'approved');
+                const drafts = releasesFilter === 'Any release type' ? allDrafts : allDrafts.filter(d => getReleaseType(d.tracks?.length ?? 0) === releasesFilter);
+                if (drafts.length === 0) return (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="mb-5">
+                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    </div>
+                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No submitted releases</p>
+                    <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Releases you submit will appear here while they are being reviewed.</p>
                   </div>
-                  <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No completed releases</p>
-                  <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Submitted releases will appear here once processed.</p>
-                </div>
-              )}
+                );
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {drafts.map(draft => (
+                      <div
+                        key={draft.id}
+                        className="rounded-2xl overflow-hidden"
+                        style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+                      >
+                        <div className="relative aspect-square">
+                          {draft.artwork_url ? (
+                            <img src={draft.artwork_url} alt={draft.title || 'Release'} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </div>
+                          )}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            {draft.status === 'approved' ? 'APPROVED' : 'PENDING'}
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <p className="font-semibold text-sm truncate mb-1" style={{ color: 'var(--text-primary)' }}>{draft.title || 'Untitled Release'}</p>
+                          <p className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                            {getReleaseType(draft.tracks?.length ?? 0)}
+                          </p>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                            {draft.release_artists || 'No artist'}
+                          </p>
+                          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>
+                            {draft.tracks?.length ? `${draft.tracks.length} track${draft.tracks.length !== 1 ? 's' : ''}` : 'No tracks'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
 
               {/* Inactive tab */}
-              {myReleasesTab === 'inactive' && (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="mb-5">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              {myReleasesTab === 'inactive' && (() => {
+                const getReleaseType = (trackCount: number) => trackCount >= 7 ? 'Album' : trackCount >= 4 ? 'EP' : 'Single';
+                const allDrafts = savedDrafts.filter(d => d.status === 'inactive');
+                const drafts = releasesFilter === 'Any release type' ? allDrafts : allDrafts.filter(d => getReleaseType(d.tracks?.length ?? 0) === releasesFilter);
+                if (drafts.length === 0) return (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="mb-5">
+                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    </div>
+                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No inactive releases</p>
+                    <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Releases declined by Elevate will appear here.</p>
                   </div>
-                  <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No inactive releases</p>
-                  <p className="text-sm max-w-xs" style={{ color: 'var(--text-primary)' }}>Inactive releases will appear here.</p>
-                </div>
-              )}
+                );
+                return (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {drafts.map(draft => (
+                      <div
+                        key={draft.id}
+                        className="rounded-2xl overflow-hidden"
+                        style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+                      >
+                        <div className="relative aspect-square">
+                          {draft.artwork_url ? (
+                            <img src={draft.artwork_url} alt={draft.title || 'Release'} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </div>
+                          )}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            INACTIVE
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <p className="font-semibold text-sm truncate mb-1" style={{ color: 'var(--text-primary)' }}>{draft.title || 'Untitled Release'}</p>
+                          <p className="text-xs mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
+                            {getReleaseType(draft.tracks?.length ?? 0)}
+                          </p>
+                          <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                            {draft.release_artists || 'No artist'}
+                          </p>
+                          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>
+                            {draft.tracks?.length ? `${draft.tracks.length} track${draft.tracks.length !== 1 ? 's' : ''}` : 'No tracks'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         )}
@@ -6728,7 +6849,7 @@ export function ArtistDashboard() {
                     <div className="grid grid-cols-2 gap-3">
                       {([
                         { val: 'all', label: 'All stores', desc: `Select all ${allStores.length} stores.` },
-                        { val: 'downloads', label: "Elevate's Package", desc: 'Specifically curated for services we provide such as publishing and others. Includes all major streaming platforms.' },
+                        { val: 'downloads', label: "Elevate's Package", desc: 'Specifically curated for services we provide such as publishing and others.' },
                         { val: 'streaming', label: 'Streaming only stores', desc: "Only select stores which allow fans to stream your music. Your tracks will not be available for personal download." },
                         { val: 'custom', label: 'Custom selection of stores', desc: 'Choose your own mix of streaming, download and social platforms.' },
                       ] as const).map(({ val, label, desc }) => {
@@ -6921,7 +7042,23 @@ export function ArtistDashboard() {
                       disabled={!rf.releaseArtists || !policyAgreed}
                       onClick={async () => {
                         if (draftId) {
-                          await supabase.from('release_drafts').update({ status: 'submitted' }).eq('id', draftId);
+                          const uid = currentUserId || localStorage.getItem('verifiedUserId') || '';
+                          // Upload copyright docs if any
+                          let copyrightDocUrls: string[] = [];
+                          if (copyrightDocs.length > 0 && uid) {
+                            for (const doc of copyrightDocs) {
+                              const path = `${uid}/${draftId}/copyright/${doc.name}`;
+                              const { error: upErr } = await supabase.storage.from('release-audio').upload(path, doc, { upsert: true });
+                              if (!upErr) {
+                                const { data: urlData } = supabase.storage.from('release-audio').getPublicUrl(path);
+                                copyrightDocUrls.push(urlData.publicUrl);
+                              }
+                            }
+                          }
+                          await supabase.from('release_drafts').update({
+                            status: 'submitted',
+                            ...(copyrightDocUrls.length > 0 ? { copyright_doc_urls: copyrightDocUrls } : {}),
+                          }).eq('id', draftId);
                           await fetchDrafts(currentUserId);
                         }
                         setReleaseStep(1);
@@ -6931,6 +7068,8 @@ export function ArtistDashboard() {
                         setPolicyAgreed(false);
                         setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
                         setReleaseChecklist([false, false, false]);
+                        setCopyrightDocs([]);
+                        setCopyrightOption('none');
                         setShowReleaseForm(false);
                         setMyReleasesTab('complete');
                       }}
@@ -7050,19 +7189,82 @@ export function ArtistDashboard() {
             {/* Body */}
             <div className="overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
               <div className="space-y-2">
-                <p className="font-bold text-base">Elevate Artist Package — Service Agreements & Policies</p>
-                <p style={{ opacity: 0.6 }}>Effective upon opt-in. Please read carefully before proceeding.</p>
+                <p className="font-bold text-base">ELEVATE ARTIST PACKAGE SERVICE AGREEMENTS AND POLICIES</p>
+                <p style={{ opacity: 0.6 }}>Effective Date: November 10, 2025</p>
+                <p style={{ opacity: 0.85 }}>By enrolling in or accepting access to Elevate's Artist Package (the "Package"), you ("Artist," "you," or "your") agree to be bound by these Terms of Service, along with Elevate's general Terms of Service, Privacy Policy, and any applicable Service Agreements (collectively, the "Agreements").</p>
               </div>
               <div className="space-y-4">
-                <div><p className="font-semibold mb-1">1. Distribution Services</p><p style={{ opacity: 0.85 }}>By selecting Elevate's Package, you authorize Elevate to distribute your music on your behalf to all major digital streaming platforms and stores included in the package. Elevate acts as your distributor and will deliver your release according to the specifications you provide. You retain full ownership of your master recordings and compositions.</p></div>
-                <div><p className="font-semibold mb-1">2. Revenue & Royalties</p><p style={{ opacity: 0.85 }}>Streaming royalties and download revenues generated from platforms included in Elevate's Package will be collected and remitted to you per Elevate's payment schedule. Publishing royalties (if applicable through Elevate Publishing services) are handled separately. Elevate's commission rate and payment terms are outlined in your account agreement.</p></div>
-                <div><p className="font-semibold mb-1">3. Content Ownership & Licensing</p><p style={{ opacity: 0.85 }}>You confirm that you are the rightful owner of all submitted content, including master recordings, compositions, artwork, and metadata. You grant Elevate a non-exclusive, worldwide license to distribute, reproduce, and promote your content solely for the purposes of fulfilling this package's services. This license remains in effect for the duration of your distribution agreement.</p></div>
-                <div><p className="font-semibold mb-1">4. Exclusivity & Conflicts</p><p style={{ opacity: 0.85 }}>Elevate's Package is non-exclusive. You may maintain existing distribution agreements with other services; however, you are responsible for ensuring there are no conflicting exclusive arrangements on the same content. Elevate is not liable for takedowns or disputes arising from pre-existing conflicting agreements.</p></div>
-                <div><p className="font-semibold mb-1">5. Content Standards & Compliance</p><p style={{ opacity: 0.85 }}>All submitted content must comply with the content policies of the platforms to which it is distributed. Content containing explicit material must be properly flagged. Elevate reserves the right to reject or remove releases that violate platform policies, contain infringing material, or breach these terms. No refunds will be issued for releases removed due to policy violations.</p></div>
-                <div><p className="font-semibold mb-1">6. Metadata & Accuracy</p><p style={{ opacity: 0.85 }}>You are responsible for the accuracy of all submitted metadata including release title, track titles, artist names, copyright information, ISRC codes, and genre selections. Incorrect or misleading metadata may result in distribution delays or rejection. Corrections after delivery may incur processing time and cannot be guaranteed to propagate immediately.</p></div>
-                <div><p className="font-semibold mb-1">7. Takedowns & Termination</p><p style={{ opacity: 0.85 }}>You may request a takedown of your release from distribution at any time through your Elevate dashboard. Takedowns typically process within 7–14 business days. Elevate reserves the right to terminate distribution services for any account found to be in breach of these policies, with or without prior notice.</p></div>
-                <div><p className="font-semibold mb-1">8. Indemnification</p><p style={{ opacity: 0.85 }}>You agree to indemnify and hold harmless Elevate, its officers, employees, and partners from any claims, damages, or liabilities arising from your content, your use of the platform, or any breach of these terms.</p></div>
-                <div><p className="font-semibold mb-1">9. Amendments</p><p style={{ opacity: 0.85 }}>Elevate reserves the right to update these policies at any time. Continued use of Elevate's distribution services constitutes acceptance of any revised terms. Material changes will be communicated via email to your registered address.</p></div>
+                <div>
+                  <p className="font-semibold mb-1">1. Overview of the Package</p>
+                  <p style={{ opacity: 0.85 }}>Elevate's Artist Package is an invite-only offering that provides selected artists with strategic publishing, placement, marketing, and promotional services designed to increase exposure and maximize revenue opportunities.</p>
+                  <p className="mt-2" style={{ opacity: 0.85 }}>The Package may include some or all of the following services:</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">1.1 Publishing & Royalty Recovery</p>
+                  <p style={{ opacity: 0.85 }}>Elevate may utilize its industry relationships, administrative tools, and internal systems to identify, collect, and recover unclaimed or under-collected publishing royalties and related revenue streams associated with your music. This may include domestic and international revenue sources where applicable.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">1.2 Strategic Placement & Synchronization</p>
+                  <p style={{ opacity: 0.85 }}>Elevate may pitch your music for placement opportunities across film, television, video games, advertising, digital media, and branded content. Submission for placement does not guarantee acceptance or placement. All opportunities remain subject to third-party approval and licensing terms.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">1.3 Industry Pitching</p>
+                  <p style={{ opacity: 0.85 }}>Elevate may present or pitch your music directly to music supervisors, producers, brands, and other decision-makers within the entertainment industry. Elevate does not guarantee placements, approvals, or revenue outcomes.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">1.4 Marketing Support & Funding</p>
+                  <p style={{ opacity: 0.85 }}>Elevate may allocate internal marketing resources to promote selected artists through campaign initiatives funded by Elevate's internal marketing pool. These campaigns may include digital promotion, creator collaborations, audience amplification, and strategic exposure efforts. Marketing support is discretionary and subject to available allocation. Participation in the Package does not guarantee a specific marketing spend amount.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">1.5 Creator Network Promotion</p>
+                  <p style={{ opacity: 0.85 }}>Elevate maintains relationships within the creator and content ecosystem. Where appropriate, Elevate may integrate your music into content produced by creators within its network. Such placements are provided at no cost to you. All promotional expenses related to these placements are covered by Elevate. Elevate does not guarantee specific performance metrics (including streams, views, engagement, or revenue).</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">2. Exclusivity and Platform Compliance</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">2.1 YouTube Content ID Restriction</p>
+                  <p style={{ opacity: 0.85 }}>As a condition of participation in the Package, you agree that you will not register, re-register, or permit your Works to be registered in YouTube Content ID through any third-party service or distributor during the term of your participation in the Package. This ensures compliance with YouTube's policies, which prohibit duplicate Content ID registrations for the same sound recording. Duplicate registration may result in monetization conflicts, revenue disruptions, account penalties, or removal from monetization systems. If duplicate registration occurs, Elevate may suspend services until the conflict is resolved.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">2.2 No Re-Registration in Conflicting Systems</p>
+                  <p style={{ opacity: 0.85 }}>You agree not to enroll your Works in any publishing or monetization system that conflicts with Elevate's administration of those Works during the term of the Package, unless specifically notified to Elevate support in advance. You are responsible for ensuring that any prior conflicting registrations are removed or disclosed before participation. Failure to disclose conflicts may result in temporary suspension of services until resolved.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">3. Invite-Only Nature of the Package</p>
+                  <p style={{ opacity: 0.85 }}>The Elevate Artist Package is offered on an invite-only basis. Due to limited capacity in marketing allocation, creator integrations, and strategic placements, Elevate reserves the right to accept or decline participation at its discretion, limit the number of participating artists, and modify or discontinue aspects of the Package. Participation may be revoked if these Terms are violated.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">4. Confidentiality and Non-Disclosure</p>
+                  <p style={{ opacity: 0.85 }}>Certain internal processes, funding mechanisms, marketing allocations, operational strategies, and industry relationships associated with the Package are considered non-public business information. You agree not to publicly disclose internal structures, funding details, proprietary systems, or strategic operations of the Package without prior written consent, and not to share confidential communications, internal documents, or strategy discussions. You may publicly state that you are working with Elevate. However, internal mechanics of the Package remain confidential. As a condition of activation, Elevate may require execution of a separate Non-Disclosure Agreement (NDA). Continued participation may depend on compliance with that NDA.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">5. No Guarantees</p>
+                  <p style={{ opacity: 0.85 }}>Participation in the Package does not guarantee revenue outcomes, placement approvals, sync deals, marketing performance metrics, or financial return. All opportunities remain subject to third-party decisions and market conditions.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">6. Term and Termination</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">6.1 Defined Term</p>
+                  <p style={{ opacity: 0.85 }}>Participation in the Elevate Artist Package shall have a defined term of five (5) years, beginning on the Effective Date stated above. The rights granted to Elevate under this Agreement shall remain in effect for the full five-year term unless earlier terminated pursuant to this Section.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">6.2 Early Termination by Elevate</p>
+                  <p style={{ opacity: 0.85 }}>Elevate may suspend or terminate participation prior to expiration of the term if you breach these Terms, engage in fraudulent or illegal activity, violate platform policies, enroll conflicting monetization systems without disclosure, or provide materially inaccurate information. Termination may result in removal from marketing initiatives and discontinuation of administrative services.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">6.3 Early Termination by Artist</p>
+                  <p style={{ opacity: 0.85 }}>Requests for early termination must be submitted in writing. Approval of early termination is at Elevate's discretion and may require resolution of any outstanding administrative matters, monetization conflicts, or contractual obligations.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">7. Relationship of the Parties</p>
+                  <p style={{ opacity: 0.85 }}>Nothing in these Terms creates a partnership, a joint venture, an employment relationship, or a record label ownership structure. You retain ownership of your Works at all times unless otherwise agreed in writing.</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-1">8. Acceptance</p>
+                  <p style={{ opacity: 0.85 }}>By enrolling in or accepting access to Elevate's Artist Package, you confirm that you have read and understood these Terms, you agree to comply with all related Elevate Agreements, you understand the YouTube Content ID restriction, you understand the five-year commitment, and you agree to confidentiality requirements.</p>
+                </div>
               </div>
             </div>
             {/* Footer */}

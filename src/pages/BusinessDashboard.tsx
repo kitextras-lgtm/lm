@@ -854,7 +854,13 @@ export function BusinessDashboard() {
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
   const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
-  const unreadCount = useUnreadCount(currentUserId || '');
+  const onNewMessageArrived = useCallback(() => {
+    const soundEnabled = (() => { try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; } })();
+    if (soundEnabled) {
+      try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+    }
+  }, []);
+  const unreadCount = useUnreadCount(currentUserId || '', onNewMessageArrived);
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
@@ -2489,10 +2495,50 @@ export function BusinessDashboard() {
           {/* Background Selector */}
           <div>
             <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('display.backgroundTheme')}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+
+            {/* Mobile: compact stacked list */}
+            <div className="flex flex-col gap-2 sm:hidden">
+              {([
+                { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
+                { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
+                { key: 'rose' as const, label: 'Rose', desc: 'Midnight rose', bg: '#140a12', swatch: '#3d1535' },
+                { key: 'dark' as const, label: 'Dark', desc: 'Pure black', bg: '#0a0a0a', swatch: '#1a1a1a' },
+                { key: 'white' as const, label: 'Light', desc: 'Clean white', bg: '#FFFFFF', swatch: '#e2e8f0' },
+              ]).map(({ key, label, desc, bg, swatch }) => {
+                const isSelected = backgroundTheme === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setBackgroundTheme(key)}
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border-2 transition-all duration-200 text-left"
+                    style={{ backgroundColor: bg, borderColor: isSelected ? '#ffffff' : 'rgba(255,255,255,0.15)' }}
+                  >
+                    <div className="flex gap-1 flex-shrink-0">
+                      <div className="w-6 h-8 rounded" style={{ backgroundColor: swatch }} />
+                      <div className="flex flex-col gap-1 justify-center">
+                        <div className="w-8 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.7 }} />
+                        <div className="w-5 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.5 }} />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold leading-tight" style={{ color: key === 'white' ? '#111111' : '#ffffff' }}>{label}</p>
+                      <p className="text-xs leading-tight mt-0.5" style={{ color: key === 'white' ? '#555555' : 'rgba(255,255,255,0.6)' }}>{desc}</p>
+                    </div>
+                    {isSelected && (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: key === 'white' ? '#111111' : '#ffffff' }}>
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: key === 'white' ? '#ffffff' : '#000000' }}><path d="M20 6L9 17l-5-5"/></svg>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Desktop: 5-column grid */}
+            <div className="hidden sm:grid sm:grid-cols-5 gap-4">
               {/* Navy Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#192231' }}
@@ -2515,12 +2561,12 @@ export function BusinessDashboard() {
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.navyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'grey' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#222226' }}
@@ -2543,12 +2589,12 @@ export function BusinessDashboard() {
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.greyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
               <div
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'rose' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#140a12' }}
@@ -2571,12 +2617,12 @@ export function BusinessDashboard() {
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>Rose</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>Midnight rose</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Midnight rose</p>
               </div>
 
               {/* Dark Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#0a0a0a' }}
@@ -2599,12 +2645,12 @@ export function BusinessDashboard() {
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.dark')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.darkDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.darkDesc')}</p>
               </div>
 
               {/* Light Option */}
               <div
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'white' ? 'border-gray-400' : 'border-gray-300'
                 }`}
                 style={{ backgroundColor: '#FFFFFF' }}

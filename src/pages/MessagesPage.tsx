@@ -544,6 +544,12 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             conversation={selectedConversation}
             otherUser={selectedConversation.admin}
             currentUserId={currentUserId}
+            currentUserProfile={cachedProfile ? {
+              name: [cachedProfile.first_name, cachedProfile.last_name].filter(Boolean).join(' ') || cachedProfile.username || 'You',
+              avatar_url: cachedProfile.profile_picture_url || null,
+              username: cachedProfile.username,
+              user_type: cachedProfile.user_type,
+            } : undefined}
             getSenderName={getSenderName}
             onMarkAsRead={(convId) => updateConversationUnreadCount(convId, 0)}
             backgroundTheme={backgroundTheme}

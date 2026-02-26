@@ -83,6 +83,16 @@ interface Application {
 export function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [newMessageSound, setNewMessageSound] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; }
+  });
+  const handleToggleNewMessageSound = () => {
+    setNewMessageSound(prev => {
+      const next = !prev;
+      localStorage.setItem('newMessageSound', JSON.stringify(next));
+      return next;
+    });
+  };
   const { theme, setTheme, tokens, flatBackground, setFlatBackground } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -104,6 +114,62 @@ export function AdminDashboard() {
   const [declineModalId, setDeclineModalId] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState('');
   const [expandedAppId, setExpandedAppId] = useState<string | null>(null);
+
+  // Release submissions state
+  const [releaseSubmissions, setReleaseSubmissions] = useState<any[]>([]);
+  const [releaseSubmissionsLoading, setReleaseSubmissionsLoading] = useState(false);
+  const [relSubStatusFilter, setRelSubStatusFilter] = useState<'submitted' | 'approved' | 'inactive'>('submitted');
+  const [actioningRelSubId, setActioningRelSubId] = useState<string | null>(null);
+  const [declineRelSubId, setDeclineRelSubId] = useState<string | null>(null);
+  const [declineRelSubReason, setDeclineRelSubReason] = useState('');
+  const [expandedRelSubId, setExpandedRelSubId] = useState<string | null>(null);
+
+  const fetchReleaseSubmissions = useCallback(async () => {
+    setReleaseSubmissionsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('release_drafts')
+        .select('*, users!release_drafts_user_id_fkey(full_name, username, email, first_name, last_name)')
+        .in('status', ['submitted', 'approved', 'inactive'])
+        .order('updated_at', { ascending: false });
+      if (error) {
+        console.error('[AdminDashboard] fetchReleaseSubmissions error:', error);
+        // Fallback: fetch without join
+        const { data: fallback, error: fbErr } = await supabase
+          .from('release_drafts')
+          .select('*')
+          .in('status', ['submitted', 'approved', 'inactive'])
+          .order('updated_at', { ascending: false });
+        if (fbErr) console.error('[AdminDashboard] fallback fetch error:', fbErr);
+        else setReleaseSubmissions(fallback || []);
+      } else {
+        setReleaseSubmissions(data || []);
+      }
+    } catch (e) {
+      console.error('Error fetching release submissions:', e);
+    } finally {
+      setReleaseSubmissionsLoading(false);
+    }
+  }, []);
+
+  const handleReleaseSubmissionAction = async (id: string, action: 'approved' | 'inactive', _reason?: string) => {
+    setActioningRelSubId(id);
+    try {
+      const { error } = await supabase
+        .from('release_drafts')
+        .update({ status: action })
+        .eq('id', id);
+      if (!error) {
+        setReleaseSubmissions(prev => prev.map(r => r.id === id ? { ...r, status: action } : r));
+      }
+    } catch (e) {
+      console.error('Error updating release submission:', e);
+    } finally {
+      setActioningRelSubId(null);
+      setDeclineRelSubId(null);
+      setDeclineRelSubReason('');
+    }
+  };
 
   // Campaign state
   interface SongEntry { title: string; artist: string; url: string; }
@@ -459,16 +525,20 @@ export function AdminDashboard() {
   useEffect(() => {
     if (activeSection === 'applications') {
       fetchApplications();
+      fetchReleaseSubmissions();
       // Real-time subscription
       const channel = supabase
         .channel('applications-realtime')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, () => {
           fetchApplications();
         })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'release_drafts' }, () => {
+          fetchReleaseSubmissions();
+        })
         .subscribe();
       return () => { supabase.removeChannel(channel); };
     }
-  }, [activeSection, fetchApplications]);
+  }, [activeSection, fetchApplications, fetchReleaseSubmissions]);
 
   const fetchFeedback = useCallback(async () => {
     setFeedbackLoading(true);
@@ -1915,6 +1985,318 @@ export function AdminDashboard() {
                   );
                 })()}
 
+                {/* ── Release Submissions ───────────────────────────────── */}
+                <div className="mt-12">
+                  <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>Release Submissions</h2>
+                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Music distribution requests from artist accounts</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={fetchReleaseSubmissions}
+                        disabled={releaseSubmissionsLoading}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                      >
+                        <svg className={`w-3.5 h-3.5 ${releaseSubmissionsLoading ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                        Refresh
+                      </button>
+                      {(['submitted', 'approved', 'inactive'] as const).map(s => (
+                        <button
+                          key={s}
+                          onClick={() => setRelSubStatusFilter(s)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
+                          style={{
+                            backgroundColor: relSubStatusFilter === s ? tokens.bg.elevated : 'transparent',
+                            color: tokens.text.primary,
+                            border: relSubStatusFilter === s ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                          }}
+                        >
+                          {s === 'submitted' ? 'Pending' : s.charAt(0).toUpperCase() + s.slice(1)}
+                          <span className="ml-1.5 opacity-60">
+                            {releaseSubmissions.filter(r => r.status === s).length}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="h-px mb-6" style={{ backgroundColor: tokens.border.subtle }} />
+
+                  {releaseSubmissionsLoading ? (
+                    <div className="flex items-center justify-center min-h-[200px]">
+                      <AnimatedBarsLoader text="Loading..." />
+                    </div>
+                  ) : (() => {
+                    const filtered = releaseSubmissions.filter(r => r.status === relSubStatusFilter);
+                    if (filtered.length === 0) return (
+                      <div className="flex items-center justify-center min-h-[180px]">
+                        <div className="text-center px-4">
+                          <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
+                            <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                          </div>
+                          <h3 className="text-base font-bold mb-1" style={{ color: tokens.text.primary }}>No {relSubStatusFilter === 'submitted' ? 'pending' : relSubStatusFilter} releases</h3>
+                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>Release submissions will appear here once artists submit.</p>
+                        </div>
+                      </div>
+                    );
+                    return (
+                      <div className="space-y-3">
+                        {filtered.map(rel => {
+                          const u = rel.users;
+                          const displayName = u ? (`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.full_name || u.username || 'Unknown') : 'Unknown';
+                          const username = u?.username;
+                          const email = u?.email;
+                          const isExpanded = expandedRelSubId === rel.id;
+                          const isActioning = actioningRelSubId === rel.id;
+                          const isDeclining = declineRelSubId === rel.id;
+                          return (
+                            <div key={rel.id} className="rounded-xl border overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.default }}>
+                              <div className="p-5">
+                                <div className="flex items-start justify-between gap-4 flex-wrap">
+                                  <div className="flex items-start gap-4 flex-1 min-w-0">
+                                    {/* Artwork */}
+                                    <div className="w-14 h-14 rounded-xl flex-shrink-0 overflow-hidden" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                      {rel.artwork_url ? (
+                                        <img src={rel.artwork_url} alt={rel.title} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                        <span className="text-sm font-bold truncate" style={{ color: tokens.text.primary }}>{rel.title || 'Untitled Release'}</span>
+                                        <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
+                                          {rel.status === 'submitted' ? 'Pending' : rel.status.charAt(0).toUpperCase() + rel.status.slice(1)}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                                        <span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{displayName}</span>
+                                        {username && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>@{username}</span>}
+                                        {email && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>{email}</span>}
+                                      </div>
+                                      <div className="flex items-center gap-3 flex-wrap">
+                                        {(() => { const tc = rel.tracks?.length ?? 0; return <span className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>{tc >= 7 ? 'Album' : tc >= 4 ? 'EP' : 'Single'}</span>; })()}
+                                        {rel.genre && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>{rel.genre}{rel.secondary_genre ? ` · ${rel.secondary_genre}` : ''}</span>}
+                                        {rel.release_artists && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>by {rel.release_artists}</span>}
+                                        {rel.tracks?.length > 0 && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>{rel.tracks.length} track{rel.tracks.length !== 1 ? 's' : ''}</span>}
+                                      </div>
+                                      <p className="text-xs mt-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>Submitted {formatDate(rel.updated_at)}</p>
+                                    </div>
+                                  </div>
+
+                                  {/* Actions */}
+                                  <div className="flex items-center gap-2 flex-shrink-0">
+                                    <button
+                                      onClick={() => setExpandedRelSubId(isExpanded ? null : rel.id)}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:brightness-110"
+                                      style={{ backgroundColor: 'transparent', color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                    >
+                                      <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                      {isExpanded ? 'Hide' : 'Details'}
+                                    </button>
+                                    {rel.status === 'submitted' && (
+                                      <>
+                                        <button
+                                          onClick={() => handleReleaseSubmissionAction(rel.id, 'approved')}
+                                          disabled={isActioning}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                        >
+                                          {isActioning && !isDeclining ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+                                          Accept
+                                        </button>
+                                        <button
+                                          onClick={() => { setDeclineRelSubId(isDeclining ? null : rel.id); setDeclineRelSubReason(''); }}
+                                          disabled={isActioning}
+                                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                                          style={{ backgroundColor: isDeclining ? 'var(--text-primary)' : tokens.bg.elevated, color: isDeclining ? 'var(--bg-primary)' : tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                        >
+                                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                                          Decline
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Decline form */}
+                                {isDeclining && (
+                                  <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                    <p className="text-xs font-semibold mb-2" style={{ color: tokens.text.primary }}>Decline reason (optional)</p>
+                                    <textarea
+                                      value={declineRelSubReason}
+                                      onChange={e => setDeclineRelSubReason(e.target.value)}
+                                      placeholder="Reason for declining this release..."
+                                      rows={2}
+                                      className="w-full px-3 py-2 rounded-lg text-xs resize-none focus:outline-none mb-3"
+                                      style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                      onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
+                                      onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                                    />
+                                    <div className="flex gap-2">
+                                      <button
+                                        onClick={() => { setDeclineRelSubId(null); setDeclineRelSubReason(''); }}
+                                        className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
+                                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        onClick={() => handleReleaseSubmissionAction(rel.id, 'inactive', declineRelSubReason.trim() || undefined)}
+                                        disabled={isActioning}
+                                        className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                                      >
+                                        {isActioning ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : null}
+                                        Confirm Decline
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Expanded detail */}
+                                {isExpanded && (() => {
+                                  const trackCount = rel.tracks?.length ?? 0;
+                                  const releaseType = trackCount >= 7 ? 'Album' : trackCount >= 4 ? 'EP' : 'Single';
+                                  return (
+                                  <div className="mt-4 rounded-xl p-4 space-y-5" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+
+                                    {/* Cover Art + Release Info side by side */}
+                                    <div className="flex gap-4">
+                                      {/* Cover Art */}
+                                      <div className="flex-shrink-0">
+                                        <div className="w-24 h-24 rounded-xl overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                                          {rel.artwork_url ? (
+                                            <img src={rel.artwork_url} alt={rel.title} className="w-full h-full object-cover" />
+                                          ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                            </div>
+                                          )}
+                                        </div>
+                                        {rel.artwork_url && (
+                                          <a
+                                            href={rel.artwork_url}
+                                            download
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="mt-1.5 flex items-center justify-center gap-1 w-full px-2 py-1 rounded-lg text-[10px] font-medium transition-all hover:brightness-110"
+                                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                          >
+                                            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                            Download
+                                          </a>
+                                        )}
+                                      </div>
+
+                                      {/* Release Info */}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Release Info</p>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{releaseType}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Title: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{rel.title || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artists: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.release_artists || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Label: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.record_label || 'Independent'}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Primary Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.genre || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Secondary Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.secondary_genre || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Language: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.language || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Release Date: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.release_date || '-'}</span></div>
+                                          {rel.released_before && (
+                                            <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Original Release Date: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.original_release_date || '-'}</span></div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Copyright & Production */}
+                                    <div>
+                                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Copyright & Production</p>
+                                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5">
+                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>© Holder: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.copyright_holder || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>© Year: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.copyright_year || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>℗ Holder: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.production_holder || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>℗ Year: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.production_year || '-'}</span></div>
+                                      </div>
+                                    </div>
+
+                                    {/* Tracks */}
+                                    {trackCount > 0 && (
+                                      <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Tracks ({trackCount})</p>
+                                        <div className="space-y-1.5">
+                                          {rel.tracks.map((t: any, i: number) => (
+                                            <div key={i} className="flex items-start gap-3 py-1.5 px-2 rounded-lg" style={{ backgroundColor: tokens.bg.elevated }}>
+                                              <span className="text-xs w-5 text-right flex-shrink-0 mt-0.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>{i + 1}</span>
+                                              <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                  <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{t.title || 'Untitled'}</span>
+                                                  {t.featuring && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>ft. {t.featuring}</span>}
+                                                  {t.explicit && <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>E</span>}
+                                                </div>
+                                                {t.fileName && (
+                                                  <div className="flex items-center gap-1 mt-0.5">
+                                                    <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.4 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                                    <span className="text-[10px] truncate" style={{ color: tokens.text.primary, opacity: 0.45 }}>{t.fileName}</span>
+                                                  </div>
+                                                )}
+                                              </div>
+                                              {t.isrcCode && <span className="text-[10px] flex-shrink-0 mt-0.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>ISRC: {t.isrcCode}</span>}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Copyright Documentation */}
+                                    {rel.copyright_doc_urls?.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Copyright Documentation</p>
+                                        <div className="space-y-1">
+                                          {rel.copyright_doc_urls.map((docUrl: string, i: number) => (
+                                            <a
+                                              key={i}
+                                              href={docUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:brightness-110"
+                                              style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}
+                                            >
+                                              <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                              <span className="text-xs truncate flex-1" style={{ color: tokens.text.primary }}>Copyright Document {i + 1}</span>
+                                              <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.4 }}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                            </a>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Distribution Stores */}
+                                    {rel.stores?.length > 0 && (
+                                      <div>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Distribution Stores ({rel.stores.length})</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                          {rel.stores.map((s: string) => (
+                                            <span key={s} className="text-xs px-2 py-0.5 rounded-md" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>{s}</span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+
               </div>
             )}
 
@@ -2151,10 +2533,50 @@ export function AdminDashboard() {
                         {/* Background Selector */}
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
-                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+
+                          {/* Mobile: compact stacked list */}
+                          <div className="flex flex-col gap-2 sm:hidden">
+                            {([
+                              { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
+                              { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
+                              { key: 'rose' as const, label: 'Rose', desc: 'Midnight rose', bg: '#140a12', swatch: '#3d1535' },
+                              { key: 'dark' as const, label: 'Dark', desc: 'Pure black', bg: '#0a0a0a', swatch: '#1a1a1a' },
+                              { key: 'white' as const, label: 'Light', desc: 'Clean white', bg: '#FFFFFF', swatch: '#e2e8f0' },
+                            ]).map(({ key, label, desc, bg, swatch }) => {
+                              const isSelected = theme === key;
+                              return (
+                                <button
+                                  key={key}
+                                  onClick={() => setTheme(key)}
+                                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border-2 transition-all duration-200 text-left"
+                                  style={{ backgroundColor: bg, borderColor: isSelected ? '#ffffff' : 'rgba(255,255,255,0.15)' }}
+                                >
+                                  <div className="flex gap-1 flex-shrink-0">
+                                    <div className="w-6 h-8 rounded" style={{ backgroundColor: swatch }} />
+                                    <div className="flex flex-col gap-1 justify-center">
+                                      <div className="w-8 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.7 }} />
+                                      <div className="w-5 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.5 }} />
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold leading-tight" style={{ color: key === 'white' ? '#111111' : '#ffffff' }}>{label}</p>
+                                    <p className="text-xs leading-tight mt-0.5" style={{ color: key === 'white' ? '#555555' : 'rgba(255,255,255,0.6)' }}>{desc}</p>
+                                  </div>
+                                  {isSelected && (
+                                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: key === 'white' ? '#111111' : '#ffffff' }}>
+                                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: key === 'white' ? '#ffffff' : '#000000' }}><path d="M20 6L9 17l-5-5"/></svg>
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Desktop: 5-column grid */}
+                          <div className="hidden sm:grid sm:grid-cols-5 gap-4">
                             {/* Navy Option */}
                             <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'light' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#192231' }}
@@ -2162,9 +2584,7 @@ export function AdminDashboard() {
                             >
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
-                                  theme === 'light' 
-                                    ? 'bg-white border-white' 
-                                    : 'bg-white border-gray-400'
+                                  theme === 'light' ? 'bg-white border-white' : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'light' && (
                                     <div className="w-full h-full flex items-center justify-center">
@@ -2186,7 +2606,7 @@ export function AdminDashboard() {
 
                             {/* Grey Option */}
                             <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'grey' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#222226' }}
@@ -2194,9 +2614,7 @@ export function AdminDashboard() {
                             >
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
-                                  theme === 'grey' 
-                                    ? 'bg-white border-white' 
-                                    : 'bg-white border-gray-400'
+                                  theme === 'grey' ? 'bg-white border-white' : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'grey' && (
                                     <div className="w-full h-full flex items-center justify-center">
@@ -2218,7 +2636,7 @@ export function AdminDashboard() {
 
                             {/* Rose Option */}
                             <div
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'rose' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#140a12' }}
@@ -2246,7 +2664,7 @@ export function AdminDashboard() {
 
                             {/* Dark Option */}
                             <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'dark' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#0a0a0a' }}
@@ -2274,7 +2692,7 @@ export function AdminDashboard() {
 
                             {/* Light Option */}
                             <div
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'white' ? 'border-gray-400' : 'border-gray-300'
                               }`}
                               style={{ backgroundColor: '#FFFFFF' }}
@@ -2326,7 +2744,36 @@ export function AdminDashboard() {
                       </div>
                     )}
                     renderLanguages={() => <div></div>}
-                    renderNotifications={() => <div></div>}
+                    renderNotifications={() => (
+                      <div className="space-y-3 lg:space-y-8">
+                        <div>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sounds</h3>
+                          <div className="space-y-3 lg:space-y-6">
+                            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div className="flex items-center justify-between mb-3">
+                                <div>
+                                  <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Message</h4>
+                                  <p className="text-sm" style={{ color: tokens.text.primary }}>Play a sound when you receive a new unread message or notification</p>
+                                </div>
+                                <ToggleSwitch isActive={newMessageSound} onToggle={handleToggleNewMessageSound} backgroundTheme={theme} />
+                              </div>
+                              <button
+                                onClick={() => {
+                                  try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
+                                style={{ background: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                Preview Sound
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     renderSendFeedback={renderAdminFeedback}
                     renderLogOut={() => (
                       <div className="scroll-mt-6 flex gap-3">
@@ -2394,10 +2841,50 @@ export function AdminDashboard() {
                         {/* Background Selector */}
                         <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
-                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+
+                          {/* Mobile: compact stacked list */}
+                          <div className="flex flex-col gap-2 sm:hidden">
+                            {([
+                              { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
+                              { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
+                              { key: 'rose' as const, label: 'Rose', desc: 'Midnight rose', bg: '#140a12', swatch: '#3d1535' },
+                              { key: 'dark' as const, label: 'Dark', desc: 'Pure black', bg: '#0a0a0a', swatch: '#1a1a1a' },
+                              { key: 'white' as const, label: 'Light', desc: 'Clean white', bg: '#FFFFFF', swatch: '#e2e8f0' },
+                            ]).map(({ key, label, desc, bg, swatch }) => {
+                              const isSelected = theme === key;
+                              return (
+                                <button
+                                  key={key}
+                                  onClick={() => setTheme(key)}
+                                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border-2 transition-all duration-200 text-left"
+                                  style={{ backgroundColor: bg, borderColor: isSelected ? '#ffffff' : 'rgba(255,255,255,0.15)' }}
+                                >
+                                  <div className="flex gap-1 flex-shrink-0">
+                                    <div className="w-6 h-8 rounded" style={{ backgroundColor: swatch }} />
+                                    <div className="flex flex-col gap-1 justify-center">
+                                      <div className="w-8 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.7 }} />
+                                      <div className="w-5 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.5 }} />
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold leading-tight" style={{ color: key === 'white' ? '#111111' : '#ffffff' }}>{label}</p>
+                                    <p className="text-xs leading-tight mt-0.5" style={{ color: key === 'white' ? '#555555' : 'rgba(255,255,255,0.6)' }}>{desc}</p>
+                                  </div>
+                                  {isSelected && (
+                                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: key === 'white' ? '#111111' : '#ffffff' }}>
+                                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: key === 'white' ? '#ffffff' : '#000000' }}><path d="M20 6L9 17l-5-5"/></svg>
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Desktop: 5-column grid */}
+                          <div className="hidden sm:grid sm:grid-cols-5 gap-4">
                             {/* Navy Option */}
                             <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'light' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#192231' }}
@@ -2405,9 +2892,7 @@ export function AdminDashboard() {
                             >
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
-                                  theme === 'light' 
-                                    ? 'bg-white border-white' 
-                                    : 'bg-white border-gray-400'
+                                  theme === 'light' ? 'bg-white border-white' : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'light' && (
                                     <div className="w-full h-full flex items-center justify-center">
@@ -2429,7 +2914,7 @@ export function AdminDashboard() {
 
                             {/* Grey Option */}
                             <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'grey' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#222226' }}
@@ -2437,9 +2922,7 @@ export function AdminDashboard() {
                             >
                               <div className="absolute top-4 right-4">
                                 <div className={`w-5 h-5 rounded-full border-2 ${
-                                  theme === 'grey' 
-                                    ? 'bg-white border-white' 
-                                    : 'bg-white border-gray-400'
+                                  theme === 'grey' ? 'bg-white border-white' : 'bg-white border-gray-400'
                                 }`}>
                                   {theme === 'grey' && (
                                     <div className="w-full h-full flex items-center justify-center">
@@ -2461,7 +2944,7 @@ export function AdminDashboard() {
 
                             {/* Rose Option */}
                             <div
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'rose' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#140a12' }}
@@ -2489,7 +2972,7 @@ export function AdminDashboard() {
 
                             {/* Dark Option */}
                             <div 
-                              className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                              className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                                 theme === 'dark' ? 'border-white' : 'border-gray-600'
                               }`}
                               style={{ backgroundColor: '#0a0a0a' }}
@@ -2569,7 +3052,36 @@ export function AdminDashboard() {
                       </div>
                     )}
                     renderLanguages={() => <div></div>}
-                    renderNotifications={() => <div></div>}
+                    renderNotifications={() => (
+                      <div className="space-y-3 lg:space-y-8">
+                        <div>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sounds</h3>
+                          <div className="space-y-3 lg:space-y-6">
+                            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div className="flex items-center justify-between mb-3">
+                                <div>
+                                  <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Message</h4>
+                                  <p className="text-sm" style={{ color: tokens.text.primary }}>Play a sound when you receive a new unread message or notification</p>
+                                </div>
+                                <ToggleSwitch isActive={newMessageSound} onToggle={handleToggleNewMessageSound} backgroundTheme={theme} />
+                              </div>
+                              <button
+                                onClick={() => {
+                                  try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
+                                style={{ background: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                Preview Sound
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     renderSendFeedback={renderAdminFeedback}
                     renderLogOut={() => (
                       <div className="scroll-mt-6 flex gap-3">

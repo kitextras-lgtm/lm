@@ -264,8 +264,8 @@ export function ChatInput({
 
       <form 
         onSubmit={handleFormSubmit} 
-        className="flex gap-2 items-center safe-area-inset-bottom"
-        style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-sidebar)', padding: '12px 16px' }}
+        className="flex gap-2 items-center"
+        style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--bg-sidebar)', padding: '12px 16px', paddingBottom: 'max(12px, calc(12px + env(safe-area-inset-bottom)))' }}
       >
         <input
           type="file"

@@ -929,8 +929,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [detectionSubmitted, setDetectionSubmitted] = useState(false);
   const [showLicensingForm, setShowLicensingForm] = useState(false);
   const [licensingSubmitted, setLicensingSubmitted] = useState(false);
-  const [campaignTermsAccepted, setCampaignTermsAccepted] = useState(false);
-  const [campaignTermsChecked, setCampaignTermsChecked] = useState(false);
+  const [campaignTermsAccepted, setCampaignTermsAccepted] = useState(() => localStorage.getItem('campaignTermsAccepted') === '1');
+  const [campaignTermsChecked, setCampaignTermsChecked] = useState(() => localStorage.getItem('campaignTermsAccepted') === '1');
   const [showToSModal, setShowToSModal] = useState(false);
   const [exploreDevUnlocked, setExploreDevUnlocked] = useState(() => localStorage.getItem('elevate_dev_unlocked') === '1');
   const [exploreDevPassword, setExploreDevPassword] = useState('');
@@ -985,7 +985,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   // Only fetch conversations if currentUserId is available
   const { conversations, refetch: refetchConversations } = useCustomerConversations(currentUserId || '');
   const handleNavigateToMessages = useCallback(() => setActiveSection('messages'), [setActiveSection]);
-  const unreadCount = useUnreadCount(currentUserId || '');
+  const onNewMessageArrived = useCallback(() => {
+    const soundEnabled = (() => { try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; } })();
+    if (soundEnabled) {
+      try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+    }
+  }, []);
+  const unreadCount = useUnreadCount(currentUserId || '', onNewMessageArrived);
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
@@ -2751,10 +2757,50 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           {/* Background Selector */}
           <div>
             <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('display.backgroundTheme')}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+
+            {/* Mobile: compact stacked list */}
+            <div className="flex flex-col gap-2 sm:hidden">
+              {([
+                { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
+                { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
+                { key: 'rose' as const, label: 'Rose', desc: 'Midnight rose', bg: '#140a12', swatch: '#3d1535' },
+                { key: 'dark' as const, label: 'Dark', desc: 'Pure black', bg: '#0a0a0a', swatch: '#1a1a1a' },
+                { key: 'white' as const, label: 'Light', desc: 'Clean white', bg: '#FFFFFF', swatch: '#e2e8f0' },
+              ]).map(({ key, label, desc, bg, swatch }) => {
+                const isSelected = backgroundTheme === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setBackgroundTheme(key)}
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border-2 transition-all duration-200 text-left"
+                    style={{ backgroundColor: bg, borderColor: isSelected ? '#ffffff' : 'rgba(255,255,255,0.15)' }}
+                  >
+                    <div className="flex gap-1 flex-shrink-0">
+                      <div className="w-6 h-8 rounded" style={{ backgroundColor: swatch }} />
+                      <div className="flex flex-col gap-1 justify-center">
+                        <div className="w-8 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.7 }} />
+                        <div className="w-5 h-1.5 rounded-sm" style={{ backgroundColor: swatch, opacity: 0.5 }} />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold leading-tight" style={{ color: key === 'white' ? '#111111' : '#ffffff' }}>{label}</p>
+                      <p className="text-xs leading-tight mt-0.5" style={{ color: key === 'white' ? '#555555' : 'rgba(255,255,255,0.6)' }}>{desc}</p>
+                    </div>
+                    {isSelected && (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: key === 'white' ? '#111111' : '#ffffff' }}>
+                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: key === 'white' ? '#ffffff' : '#000000' }}><path d="M20 6L9 17l-5-5"/></svg>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Desktop: 5-column grid */}
+            <div className="hidden sm:grid sm:grid-cols-5 gap-4">
               {/* Navy Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'light' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#192231' }}
@@ -2777,12 +2823,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-600 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.navy')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.navyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.navyDesc')}</p>
               </div>
 
               {/* Grey Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'grey' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#222226' }}
@@ -2805,12 +2851,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-700 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.grey')}</h4>
-                <p className="text-sm" style={{ color: backgroundTheme === 'white' ? '#ffffff' : '#94A3B8' }}>{t('display.greyDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.greyDesc')}</p>
               </div>
 
               {/* Rose Option */}
               <div
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'rose' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#140a12' }}
@@ -2833,12 +2879,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 rounded w-1/2" style={{ backgroundColor: '#2E1A28' }}></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>Rose</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>Midnight rose</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>Midnight rose</p>
               </div>
 
               {/* Dark Option */}
               <div 
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'dark' ? 'border-white' : 'border-gray-600'
                 }`}
                 style={{ backgroundColor: '#0a0a0a' }}
@@ -2861,12 +2907,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="h-2 bg-gray-800 rounded w-1/2"></div>
                 </div>
                 <h4 className="font-semibold mb-1" style={{ color: '#ffffff' }}>{t('display.dark')}</h4>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>{t('display.darkDesc')}</p>
+                <p className="text-sm" style={{ color: '#CBD5E1' }}>{t('display.darkDesc')}</p>
               </div>
 
               {/* Light Option */}
               <div
-                className={`relative rounded-xl sm:rounded-2xl p-5 sm:p-7 border-2 cursor-pointer transition-all duration-200 ${
+                className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
                   backgroundTheme === 'white' ? 'border-gray-400' : 'border-gray-300'
                 }`}
                 style={{ backgroundColor: '#FFFFFF' }}
@@ -3422,26 +3468,30 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                                 </div>
                               ))}
                             </div>
-                            <label className="flex items-start gap-3 cursor-pointer mb-4" onClick={() => setCampaignTermsChecked(v => !v)}>
-                              <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 transition-all" style={{ backgroundColor: campaignTermsChecked ? 'var(--text-primary)' : 'transparent', border: `1px solid ${campaignTermsChecked ? 'var(--text-primary)' : 'var(--border-default)'}` }}>
+                            <label className="flex items-start gap-3 mb-4">
+                              <div
+                                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 mt-0.5 transition-all cursor-pointer"
+                                style={{ backgroundColor: campaignTermsChecked ? 'var(--text-primary)' : 'transparent', border: `1px solid ${campaignTermsChecked ? 'var(--text-primary)' : 'var(--border-default)'}` }}
+                                onClick={() => setCampaignTermsChecked(v => !v)}
+                              >
                                 {campaignTermsChecked && <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>}
                               </div>
                               <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
-                                I agree to Elevate's campaign{' '}
+                                I agree to Elevate's{' '}
                                 <button
                                   type="button"
                                   onClick={e => { e.stopPropagation(); setShowToSModal(true); }}
                                   className="underline font-semibold transition-all hover:opacity-70"
                                   style={{ color: 'var(--text-primary)' }}
                                 >
-                                  terms of service
+                                  Campaign Policies
                                 </button>
-                                , content usage policies.
+                                .
                               </p>
                             </label>
                             <button
                               disabled={!campaignTermsChecked}
-                              onClick={() => setCampaignTermsAccepted(true)}
+                              onClick={() => { setCampaignTermsAccepted(true); localStorage.setItem('campaignTermsAccepted', '1'); }}
                               className="px-5 py-2 rounded-full text-sm font-bold transition-all hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed"
                               style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                             >
@@ -5136,26 +5186,30 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               </button>
             </div>
             <div className="space-y-5 text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>
-              <div>
-                <p className="font-semibold mb-2">1. Campaign Participation</p>
-                <p style={{ opacity: 0.7 }}>By participating in Elevate campaigns, you agree to distribute approved media content across your registered social platforms in accordance with the campaign brief provided. You must not alter, misrepresent, or use campaign assets outside the scope defined by Elevate.</p>
+              <div className="space-y-1">
+                <p className="font-bold text-sm">ELEVATE CLIPPER TERMS OF SERVICE</p>
+                <p style={{ opacity: 0.6 }}>Effective Date: [Insert Date]</p>
+                <p style={{ opacity: 0.85 }}>These Clipper Terms of Service ("Terms") govern participation in campaigns, content creation, and use of the Elevate platform located at https://sayelevate.com (the "Platform"). By creating content for campaigns, submitting clips, or participating in any campaign hosted through Elevate, you ("Clipper," "you," or "your") agree to be bound by these Terms, Elevate's general Terms of Service, and Privacy Policy.</p>
               </div>
-              <div>
-                <p className="font-semibold mb-2">2. Content Usage Policies</p>
-                <p style={{ opacity: 0.7 }}>All media assets, clips, and materials provided through Elevate are licensed exclusively for use within designated campaigns. Redistribution, resale, or use outside the platform without explicit written consent from Elevate is strictly prohibited.</p>
-              </div>
-              <div>
-                <p className="font-semibold mb-2">3. Revenue Sharing</p>
-                <p style={{ opacity: 0.7 }}>Revenue earned through campaigns is calculated based on verified views, engagement metrics, and distribution reach as determined by Elevate's analytics systems. Payouts are processed in accordance with the payout schedule outlined in your campaign agreement.</p>
-              </div>
-              <div>
-                <p className="font-semibold mb-2">4. Account Conduct</p>
-                <p style={{ opacity: 0.7 }}>You are responsible for ensuring your accounts remain active and in good standing on all platforms listed in your profile. Elevate reserves the right to suspend campaign access if accounts are found to violate the platform's community guidelines.</p>
-              </div>
-              <div>
-                <p className="font-semibold mb-2">5. Termination</p>
-                <p style={{ opacity: 0.7 }}>Elevate may terminate your access to campaigns at any time for breach of these terms, fraudulent activity, or at our discretion. Pending earnings at the time of termination will be reviewed on a case-by-case basis.</p>
-              </div>
+              <div><p className="font-semibold mb-1">1. Participation Overview</p><p style={{ opacity: 0.85 }}>Elevate connects creators ("Clippers") with brands, artists, and clients ("Clients") to create short-form content, promotional clips, and campaign-based media ("Clipper Content"). Participation is voluntary and campaign-based. Elevate reserves the right to approve or reject participation at its discretion.</p></div>
+              <div><p className="font-semibold mb-1">2. Disclosure of Relationships</p><p style={{ opacity: 0.85 }}>You must clearly disclose your relationship with any Client in accordance with FTC guidelines and applicable advertising laws if you are being compensated, participating in an organized campaign, or receiving incentives or rewards. Misleading, hidden, or vague disclosures are prohibited.</p></div>
+              <div><p className="font-semibold mb-1">3. Honest and Accurate Statements</p><p style={{ opacity: 0.85 }}>All content must reflect your genuine opinions and actual experiences. You may only make claims that are included in official campaign materials, or are truthful, accurate, and verifiable. You may not make unsupported claims, misrepresent competitor products, imply guarantees or financial returns, or suggest guaranteed income from Elevate.</p></div>
+              <div><p className="font-semibold mb-1">4. Truthful Representation of the Platform</p><p style={{ opacity: 0.85 }}>You may discuss Elevate truthfully but may not claim guaranteed earnings, project potential income for others, publish your own earnings unless legally required, or misrepresent campaign structures. All communications regarding Elevate must be accurate and not misleading.</p></div>
+              <div><p className="font-semibold mb-1">5. Intellectual Property Compliance</p><p style={{ opacity: 0.85 }}>You may only use campaign-provided assets or content you have legal rights to use. You may not alter Client branding without permission, use copyrighted material without authorization, or use music, visuals, or trademarks outside campaign scope. Unauthorized use may result in removal or suspension.</p></div>
+              <div><p className="font-semibold mb-1">6. Promotions and Giveaways</p><p style={{ opacity: 0.85 }}>You may not independently conduct contests, sweepstakes, or giveaways involving Client products, Client branding, or Elevate branding without prior written approval from Elevate.</p></div>
+              <div><p className="font-semibold mb-1">7. Artificial Engagement Prohibited</p><p style={{ opacity: 0.85 }}>You may not artificially inflate performance metrics. Prohibited activities include bots, view farms, fake accounts, coordinated engagement rings, engagement manipulation groups, and misleading metadata or tags. All engagement must be authentic. Violation may result in forfeiture of earnings, account suspension, or permanent removal from the Platform.</p></div>
+              <div><p className="font-semibold mb-1">8. Original Content Requirement</p><p style={{ opacity: 0.85 }}>All Clipper Content must be created by you or properly authorized. You may not repost another Clipper's submission, duplicate the same content repeatedly, or steal or re-upload content.</p></div>
+              <div><p className="font-semibold mb-1">9. Prohibited Content Standards</p><p style={{ opacity: 0.85 }}>Clipper Content may not include illegal activity, drug or controlled substance promotion, violence or threats, hate speech or discrimination, harassment or bullying, sexual or explicit material involving minors, misinformation, deepfakes or impersonation, graphic or disturbing content, privacy violations, unauthorized financial advice, or intellectual property infringement. Elevate reserves full discretion to remove violating content.</p></div>
+              <div><p className="font-semibold mb-1">10. Advertising and Self-Promotion</p><p style={{ opacity: 0.85 }}>Clippers may promote their own content but may not spam campaigns, mass message users, run paid ads using Client branding without permission, or misrepresent affiliation with Elevate.</p></div>
+              <div><p className="font-semibold mb-1">11. Compensation Structure</p><p style={{ opacity: 0.85 }}>Campaigns may use a Per-View Model where payment is tied to reaching a defined, verified view threshold, or a Performance-Based (Varied) Model where compensation is determined using multiple performance indicators including engagement rate, audience quality, demographics, retention, geographic distribution, conversion behavior, brand alignment, and authenticity metrics. Elevate retains final authority in performance evaluation.</p></div>
+              <div><p className="font-semibold mb-1">12. Payment Processing & Timing</p><p style={{ opacity: 0.85 }}>Campaign payments are first made to Elevate by the applicable Client, brand, agency, or vendor. Elevate does not pre-fund campaign payments. Once funds are received and cleared, payouts are distributed to eligible Clippers via Tipalti or a designated payment processor. In some cases, payment receipt may take 60 days or longer. Elevate is not liable for third-party payment delays.</p></div>
+              <div><p className="font-semibold mb-1">13. Payment Eligibility Conditions</p><p style={{ opacity: 0.85 }}>Payment eligibility requires compliance with all campaign requirements, authentic engagement, no artificial activity, content remaining live for required duration, and successful performance verification. Participation does not guarantee payment.</p></div>
+              <div><p className="font-semibold mb-1">14. Content Removal</p><p style={{ opacity: 0.85 }}>Elevate may request removal of content that violates these Terms, creates legal or reputational risk, or conflicts with campaign requirements. You agree to remove such content promptly. Failure to comply may result in suspension or forfeiture of earnings.</p></div>
+              <div><p className="font-semibold mb-1">15. Account Suspension and Termination</p><p style={{ opacity: 0.85 }}>Elevate may suspend or terminate accounts for fraud, artificial engagement, IP violations, policy violations, or repeated misconduct. Termination may result in forfeiture of unpaid earnings related to violations.</p></div>
+              <div><p className="font-semibold mb-1">16. Independent Contractor Status</p><p style={{ opacity: 0.85 }}>Clippers are independent participants. Nothing in these Terms creates employment, partnership, agency relationship, or joint venture. You are responsible for your own taxes and legal compliance.</p></div>
+              <div><p className="font-semibold mb-1">17. Limitation of Liability</p><p style={{ opacity: 0.85 }}>To the maximum extent permitted by law, Elevate shall not be liable for indirect or consequential damages, loss of profits, vendor delays, third-party platform actions, or client payment disputes. Elevate's total liability shall not exceed the total unpaid campaign earnings owed to you at the time of dispute.</p></div>
+              <div><p className="font-semibold mb-1">18. Updates to Terms</p><p style={{ opacity: 0.85 }}>Elevate may update these Terms at any time. Continued participation constitutes acceptance of revised Terms.</p></div>
+              <div><p className="font-semibold mb-1">19. Acceptance</p><p style={{ opacity: 0.85 }}>By participating in campaigns or submitting content, you confirm that you have read these Terms, you agree to comply with all requirements, you understand compensation structures, you accept payment timing conditions, and you acknowledge Elevate's enforcement authority.</p></div>
             </div>
             <div className="mt-7 flex justify-end">
               <button

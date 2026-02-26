@@ -24,6 +24,7 @@ interface ChatWindowProps {
   conversation?: Conversation;
   otherUser?: Profile;
   currentUserId: string;
+  currentUserProfile?: { name: string; avatar_url?: string | null; username?: string; user_type?: string };
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
   backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
@@ -44,6 +45,7 @@ export const ChatWindow = memo(function ChatWindow({
   conversation,
   otherUser,
   currentUserId,
+  currentUserProfile,
   getSenderName,
   onMarkAsRead,
   backgroundTheme = 'dark',
@@ -145,6 +147,7 @@ export const ChatWindow = memo(function ChatWindow({
     conversation={conversation}
     otherUser={otherUser}
     currentUserId={currentUserId}
+    currentUserProfile={currentUserProfile}
     getSenderName={getSenderName}
     onMarkAsRead={onMarkAsRead}
     backgroundTheme={backgroundTheme}
@@ -161,6 +164,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   conversation,
   otherUser,
   currentUserId,
+  currentUserProfile,
   getSenderName,
   onMarkAsRead,
   backgroundTheme = 'dark',
@@ -173,6 +177,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   conversation: Conversation;
   otherUser: Profile;
   currentUserId: string;
+  currentUserProfile?: { name: string; avatar_url?: string | null; username?: string; user_type?: string };
   getSenderName: (senderId: string) => string;
   onMarkAsRead?: (conversationId: string) => void;
   backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white';
@@ -188,7 +193,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
     conversationId: conversation.id,
     currentUserId,
   });
-  const { uploadImage, uploading } = useImageUpload();
+  const { uploadImage, uploading: _uploading } = useImageUpload();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [replyTo, setReplyTo] = useState<ReplyTo | null>(null);
@@ -397,9 +402,6 @@ const ChatWindowContent = memo(function ChatWindowContent({
     setReplyTo(reply);
   }, []);
 
-  const handleCancelReply = useCallback(() => {
-    setReplyTo(null);
-  }, []);
 
   const handleScrollToMessage = useCallback((messageId: string) => {
     const element = document.getElementById(`message-${messageId}`);
@@ -669,6 +671,9 @@ const ChatWindowContent = memo(function ChatWindowContent({
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         user={otherUser}
+        messages={messages}
+        currentUserId={currentUserId}
+        currentUserProfile={currentUserProfile}
       />
     </div>
   );

@@ -217,23 +217,20 @@ export function ProfileView({
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
       <div className="sticky top-0 z-10 backdrop-blur-md border-b" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-subtle)' }}>
-        <div className="flex items-center gap-6 px-4 py-3">
+        <div className="relative flex items-center justify-center px-4 py-3">
           {onBack && (
             <button 
               onClick={onBack}
-              className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              className="absolute left-4 p-2 rounded-full hover:bg-white/10 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
             </button>
           )}
-          <div>
-            <h1 className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
-              {userProfile?.first_name && userProfile?.last_name 
-                ? `${userProfile.first_name} ${userProfile.last_name}`
-                : t('profile.yourProfile')}
-            </h1>
-            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>0 {t('profile.posts')}</p>
-          </div>
+          <h1 className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
+            {userProfile?.first_name && userProfile?.last_name 
+              ? `${userProfile.first_name} ${userProfile.last_name}`
+              : t('profile.yourProfile')}
+          </h1>
         </div>
       </div>
 
