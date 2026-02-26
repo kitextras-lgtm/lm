@@ -45,6 +45,11 @@ Deno.serve(async (req: Request) => {
     // ── Resolve user email (single auth API call) ──
     const userEmail = await resolveUserEmail(supabase, userId, clientEmail);
 
+    if (!userEmail) {
+      console.error('No email available for userId:', userId);
+      return jsonError('Unable to resolve user email. Profile cannot be saved without an email.', 422);
+    }
+
     // ── Upload images if base64 provided ──
     const finalProfilePictureUrl = await resolveImageUrl(
       supabase, userId, 'profile-pictures',
@@ -118,11 +123,6 @@ Deno.serve(async (req: Request) => {
     }
 
     // ── Single upsert to users table ──
-    if (!userEmail) {
-      console.error('No email available for userId:', userId);
-      return jsonError('Unable to resolve user email. Profile cannot be saved without an email.', 422);
-    }
-
     const { error: upsertError } = await supabase
       .from('users')
       .upsert(updateData, { onConflict: 'id' });
