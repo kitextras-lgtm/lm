@@ -54,6 +54,7 @@ function App() {
           <Route path="/menu" element={<MobileMenuPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/artist" element={<LoginPage forceArtist={true} />} />
           <Route path="/user-type-selection" element={<UserTypeSelectionPage />} />
           <Route path="/make-profile" element={<MakeProfilePage />} />
           <Route path="/tell-us-about-yourself" element={<TellUsAboutYourselfPage />} />

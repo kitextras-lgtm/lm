@@ -900,38 +900,29 @@ function PublishingDashboardPage() {
   const inputCls = "w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none border";
   const inputStyle = { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' };
 
+  const toBmiSearchType = (role: string) => {
+    if (role === 'Writer/Composer') return 'Writer';
+    if (role === 'Publisher') return 'Publisher';
+    if (role === 'BMI Work ID') return 'WorkID';
+    if (role === 'ISWC') return 'ISWC';
+    if (role === 'Performer') return 'Performer';
+    return 'Title';
+  };
+
   const runCheck = () => {
     if (!query.trim()) return;
     const params = new URLSearchParams();
-    const roleKey = writerRole || 'Title';
-    // Row 1: primary search field
-    if (roleKey === 'Writer/Composer') {
-      params.set('writer', query.trim());
-    } else if (roleKey === 'Publisher') {
-      params.set('publisher', query.trim());
-    } else if (roleKey === 'BMI Work ID') {
-      params.set('work_id', query.trim());
-    } else if (roleKey === 'ISWC') {
-      params.set('iswc', query.trim());
-    } else {
-      params.set('title', query.trim());
-    }
-    // Row 2: secondary search field
+    params.set('SearchForm.View_Count', '');
+    const mainRole = writerRole || 'Title';
+    params.set('SearchForm.Main_Search', toBmiSearchType(mainRole));
+    params.set('SearchForm.Main_Search_Text', query.trim());
     if (writers.trim()) {
-      const role2 = writerRoleRow2 || 'Performer';
-      if (role2 === 'Writer/Composer') {
-        params.set('writer', writers.trim());
-      } else if (role2 === 'Publisher') {
-        params.set('publisher', writers.trim());
-      } else if (role2 === 'BMI Work ID') {
-        params.set('work_id', writers.trim());
-      } else if (role2 === 'ISWC') {
-        params.set('iswc', writers.trim());
-      } else {
-        params.set('title', writers.trim());
-      }
+      const subRole = writerRoleRow2 || 'Performer';
+      params.set('SearchForm.Sub_Search', toBmiSearchType(subRole));
+      params.set('SearchForm.Sub_Search_Text', writers.trim());
     }
-    window.open(`https://repertoire.bmi.com/search/quick?${params.toString()}`, '_blank', 'noopener,noreferrer');
+    params.set('SearchForm.Search_Type', 'all');
+    window.open(`https://repertoire.bmi.com/Search/Search?${params.toString()}`, '_blank', 'noopener,noreferrer');
   };
 
   return (

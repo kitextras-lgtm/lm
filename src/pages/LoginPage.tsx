@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-export function LoginPage() {
+export function LoginPage({ forceArtist = false }: { forceArtist?: boolean }) {
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -32,7 +32,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const isFromArtistPage = (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist') || searchParams.get('source') === 'artist';
+  const isFromArtistPage = forceArtist || (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist') || searchParams.get('source') === 'artist';
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {

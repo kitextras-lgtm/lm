@@ -5,6 +5,7 @@ import { useUserProfile } from '../../contexts/UserProfileContext';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../lib/supabase';
 
 const SOCIAL_LINKS_FN = `${SUPABASE_URL}/functions/v1/social-links`;
+const YOUTUBE_STATS_FN = `${SUPABASE_URL}/functions/v1/youtube-stats`;
 const fnHeaders = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` };
 
 function PlatformIcon({ platform, className, style }: { platform: string; className?: string; style?: React.CSSProperties }) {
@@ -71,11 +72,35 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
       setLoadingLinks(false);
       return;
     }
-    fetch(`${SOCIAL_LINKS_FN}?userId=${user.id}`, { headers: fnHeaders })
-      .then(r => r.json())
-      .then(json => { if (json.success) setLinks(json.links || []); })
-      .catch(() => {})
-      .finally(() => setLoadingLinks(false));
+    const loadLinks = async () => {
+      try {
+        const res = await fetch(`${SOCIAL_LINKS_FN}?userId=${user.id}`, { headers: fnHeaders });
+        const json = await res.json();
+        if (!json.success) return;
+        const fetchedLinks: SocialLink[] = json.links || [];
+        const hasYouTube = fetchedLinks.some(l => l.platform?.toLowerCase() === 'youtube');
+        if (hasYouTube) {
+          // Refresh YouTube stats in background, then re-fetch
+          try {
+            await fetch(YOUTUBE_STATS_FN, {
+              method: 'POST',
+              headers: fnHeaders,
+              body: JSON.stringify({ userId: user.id }),
+            });
+            // Re-fetch with updated stats
+            const res2 = await fetch(`${SOCIAL_LINKS_FN}?userId=${user.id}`, { headers: fnHeaders });
+            const json2 = await res2.json();
+            if (json2.success) { setLinks(json2.links || []); return; }
+          } catch { /* fall through to use initial fetch */ }
+        }
+        setLinks(fetchedLinks);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoadingLinks(false);
+      }
+    };
+    loadLinks();
   }, [user.id, user.is_admin]);
 
   return (
