@@ -348,7 +348,7 @@ function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
         
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('home.change')}</span>
-          <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>—</span>
+          <span className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>No data yet</span>
         </div>
       </div>
 
@@ -742,11 +742,31 @@ function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.activeOpportunities')}</h3>
       </div>
       
-      <div className="flex flex-col items-center gap-3 mt-8 flex-grow">
-        <PowerWidget />
-        <div className="text-sm" style={{ color: 'var(--text-primary)' }}>
-          {t('home.status')} <span style={{ color: '#10b981' }}>{t('home.enabled')}</span>
-        </div>
+      <div className="flex flex-col gap-2 flex-grow">
+        {[
+          { type: 'Sponsorship', title: 'Brand Campaign', value: '$1,200', age: '2d ago' },
+          { type: 'Collaboration', title: 'Music Feature', value: 'Rev share', age: '5d ago' },
+        ].map((opp, i) => (
+          <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                {i === 0 ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><path d="M20 12V22H4V12"/><path d="M22 7H2V12H22V7Z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{opp.title}</p>
+                <p className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{opp.type}</p>
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0 ml-2">
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{opp.value}</p>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{opp.age}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="mt-6 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
@@ -4856,17 +4876,24 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
 
                 {/* Empty state */}
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>
-                    <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 22V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <div className="flex flex-col items-center justify-center py-16 gap-5">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--text-primary)', opacity: 0.25 }}>
+                    <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 22V7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   <div className="text-center">
                     <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No offers yet</p>
-                    <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Collaboration requests and brand sponsorships will appear here.</p>
+                    <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Collaboration requests and brand sponsorships will appear here.</p>
+                    <button
+                      className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:brightness-110"
+                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                      onClick={() => window.open('https://elevate.com/opportunities', '_blank')}
+                    >
+                      Browse opportunities
+                    </button>
                   </div>
                 </div>
 

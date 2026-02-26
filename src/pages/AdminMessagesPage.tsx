@@ -225,40 +225,25 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
           </div>
           
           {/* Tabs */}
-          <div className="flex gap-1 mb-3 p-1 rounded-lg" style={{ backgroundColor: tokens.bg.input }}>
-            <button
-              onClick={() => setActiveTab('primary')}
-              className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all"
-              style={{ 
-                backgroundColor: activeTab === 'primary' ? 'var(--bg-elevated)' : 'transparent',
-                color: 'var(--text-primary)',
-                border: activeTab === 'primary' ? '1px solid var(--text-primary)' : '1px solid transparent'
-              }}
-            >
-              Primary
-            </button>
-            <button
-              onClick={() => setActiveTab('general')}
-              className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all"
-              style={{ 
-                backgroundColor: activeTab === 'general' ? 'var(--bg-elevated)' : 'transparent',
-                color: 'var(--text-primary)',
-                border: activeTab === 'general' ? '1px solid var(--text-primary)' : '1px solid transparent'
-              }}
-            >
-              General
-            </button>
-            <button
-              onClick={() => setActiveTab('requests')}
-              className="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all"
-              style={{ 
-                backgroundColor: activeTab === 'requests' ? 'var(--bg-elevated)' : 'transparent',
-                color: 'var(--text-primary)',
-                border: activeTab === 'requests' ? '1px solid var(--text-primary)' : '1px solid transparent'
-              }}
-            >
-              Requests
-            </button>
+          <div className="flex gap-0 mb-3" style={{ borderBottom: `1px solid ${tokens.border.subtle}` }}>
+            {(['primary', 'general', 'requests'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="flex-1 px-3 py-2.5 text-sm font-medium transition-all relative"
+                style={{
+                  color: 'var(--text-primary)',
+                  opacity: activeTab === tab ? 1 : 0.4,
+                  background: 'none',
+                  border: 'none',
+                }}
+              >
+                {tab === 'primary' ? 'Primary' : tab === 'general' ? 'General' : 'Requests'}
+                {activeTab === tab && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
+                )}
+              </button>
+            ))}
           </div>
           
           {/* Account Type Filter Bubbles */}

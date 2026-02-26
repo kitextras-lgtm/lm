@@ -393,7 +393,8 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
                 isActive ? '' : 'hover:opacity-70 active:scale-[0.95]'
               }`}
               style={{ 
-                color: isActive ? 'var(--text-primary)' : 'var(--border-default)',
+                color: 'var(--text-primary)',
+                opacity: isActive ? 1 : 0.4,
                 height: '52px',
                 transform: isPressed ? 'scale(0.9)' : 'scale(1)',
                 transition: 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',

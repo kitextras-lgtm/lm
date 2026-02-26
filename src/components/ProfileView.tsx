@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { Camera, MapPin, Calendar, ArrowLeft } from 'lucide-react';
 import { DEFAULT_AVATAR_DATA_URI } from './DefaultAvatar';
 import { useTranslation } from 'react-i18next';
 
@@ -221,9 +220,11 @@ export function ProfileView({
           {onBack && (
             <button 
               onClick={onBack}
-              className="absolute left-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+              className="absolute left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:opacity-70 transition-opacity"
+              style={{ color: 'var(--text-primary)' }}
             >
-              <ArrowLeft className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              <span className="text-sm font-medium">Back</span>
             </button>
           )}
           <h1 className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
@@ -259,7 +260,7 @@ export function ProfileView({
               <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('common.uploading')}</span>
             </div>
           ) : (
-            <Camera className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
           )}
         </div>
         <input 
@@ -295,8 +296,8 @@ export function ProfileView({
                 <span className="text-xs" style={{ color: 'var(--text-primary)' }}>{t('common.uploading')}</span>
               </div>
             ) : (
-              <Camera className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
-            )}
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          )}
           </div>
           <input 
             type="file" 
@@ -335,39 +336,36 @@ export function ProfileView({
         <p className="mt-3" style={{ color: 'var(--text-primary)' }}>{userProfile?.bio || t('profile.noBio')}</p>
 
         {/* Location & Join Date */}
-        <div className="flex items-center gap-4 mt-3" style={{ color: 'var(--text-primary)' }}>
+        <div className="flex items-center gap-4 mt-3">
           {userProfile?.location && (
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>{userProfile.location}</span>
+            <div className="flex items-center gap-1.5" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span className="text-sm">{userProfile.location}</span>
             </div>
           )}
-          <div className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            <span>{formatJoinDate(userProfile?.created_at)}</span>
+          <div className="flex items-center gap-1.5" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span className="text-sm">{formatJoinDate(userProfile?.created_at)}</span>
           </div>
         </div>
 
               </div>
 
       {/* Tabs */}
-      <div className="border-b" style={{ borderColor: '#1a1a1a' }}>
-        <div className="flex">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className="flex-1 py-4 text-center hover:bg-white/5 transition-colors relative"
-            >
-              <span style={{ color: 'var(--text-primary)', fontWeight: activeTab === tab.id ? 600 : 400, opacity: activeTab === tab.id ? 1 : 0.6 }}>
-                {tab.label}
-              </span>
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 rounded-full" style={{ backgroundColor: '#FFFFFF' }} />
-              )}
-            </button>
-          ))}
-        </div>
+      <div className="flex gap-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className="flex-1 py-3.5 text-sm font-medium transition-all relative"
+            style={{ color: 'var(--text-primary)', opacity: activeTab === tab.id ? 1 : 0.4, background: 'none', border: 'none' }}
+          >
+            {tab.label}
+            {activeTab === tab.id && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Content Area */}
