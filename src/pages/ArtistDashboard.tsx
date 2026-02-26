@@ -2099,7 +2099,9 @@ export function ArtistDashboard() {
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
-  const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
+  const [messageNotifications, setMessageNotifications] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('messageNotifications') ?? 'true'); } catch { return true; }
+  });
   const [newMessageSound, setNewMessageSound] = useState<boolean>(() => {
     try { return JSON.parse(localStorage.getItem('newMessageSound') ?? 'true'); } catch { return true; }
   });
@@ -2113,6 +2115,8 @@ export function ArtistDashboard() {
   const [copiedTrackIndex, setCopiedTrackIndex] = useState<number | null>(null);
   const [releaseArtistError, setReleaseArtistError] = useState(false);
   const [stepErrors, setStepErrors] = useState<Record<string, boolean>>({});
+  const [showNoArtistPrompt, setShowNoArtistPrompt] = useState(false);
+  const [policyAgreed, setPolicyAgreed] = useState(false);
   const [guideSubpage, setGuideSubpage] = useState<string | null>(null);
   const [guideArticle, setGuideArticle] = useState<string | null>(null);
   const [releaseDateMode, setReleaseDateMode] = useState<'most-recent' | 'specific'>('most-recent');
@@ -2334,7 +2338,7 @@ export function ArtistDashboard() {
 
   // Favicon badge effect driven by unreadMessageBadge setting
   useEffect(() => {
-    if (!unreadMessageBadge || unreadCount === 0) {
+    if (!unreadMessageBadge || unreadCount === 0 || activeSection === 'messages') {
       const link = document.querySelector<HTMLLinkElement>('link[rel~="icon"]');
       if (link) link.href = '/favicon.ico';
       document.title = document.title.replace(/^\(\d+\) /, '');
@@ -3767,7 +3771,11 @@ export function ArtistDashboard() {
   };
 
   const handleToggleMessageNotifications = () => {
-    setMessageNotifications(prev => !prev);
+    setMessageNotifications(prev => {
+      const next = !prev;
+      localStorage.setItem('messageNotifications', JSON.stringify(next));
+      return next;
+    });
   };
 
   const handleToggleNewMessageSound = () => {
@@ -4907,6 +4915,33 @@ export function ArtistDashboard() {
         onClose={() => setShowFeedbackModal(false)} 
         userId={currentUserId || ''}
       />
+      {showNoArtistPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={() => setShowNoArtistPrompt(false)}>
+          <div className="w-full max-w-sm rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }} onClick={e => e.stopPropagation()}>
+            <div className="mb-4">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <h3 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Add an Artist First</h3>
+            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--text-primary)', opacity: 0.65 }}>You need to add at least one artist to your account before creating a release. Head to My Accounts to get started.</p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { setShowNoArtistPrompt(false); setActiveSection('home'); }}
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              >
+                Go to My Accounts
+              </button>
+              <button
+                onClick={() => setShowNoArtistPrompt(false)}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
+                style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <MessageToast
         userId={currentUserId || null}
         activeSection={activeSection}
@@ -5227,10 +5262,11 @@ export function ArtistDashboard() {
               <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--text-primary)', letterSpacing: '0.12em' }}>New Release</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Standard Release card */}
-                <div
+<div
                   className="group rounded-2xl p-6 flex flex-col gap-5 cursor-pointer transition-all duration-200 hover:brightness-110"
                   style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
                   onClick={() => {
+                    if (artistNames.length === 0) { setShowNoArtistPrompt(true); return; }
                     setDraftId(null);
                     setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
                     setReleaseChecklist([false, false, false]);
@@ -5248,6 +5284,7 @@ export function ArtistDashboard() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (artistNames.length === 0) { setShowNoArtistPrompt(true); return; }
                       setDraftId(null);
                       setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
                       setReleaseChecklist([false, false, false]);
@@ -6898,7 +6935,7 @@ export function ArtistDashboard() {
                       if (releaseDateMode === 'specific' && !rf.releaseDate) errors.releaseDate = true;
                     }
                     if (releaseStep === 4) {
-                      if (rf.stores.length === 0) errors.stores = true;
+                      if (rf.stores.length === 0 && storeDistType !== 'downloads') errors.stores = true;
                     }
                     setStepErrors(errors);
                     return Object.keys(errors).length === 0;
@@ -6923,26 +6960,41 @@ export function ArtistDashboard() {
                     </div>
                   );
                 })() : (
-                  <button
-                    onClick={async () => {
-                      if (draftId) {
-                        await supabase.from('release_drafts').update({ status: 'submitted' }).eq('id', draftId);
-                        await fetchDrafts(currentUserId);
-                      }
-                      setReleaseStep(1);
-                      setUploadingTracks([]);
-                      setEditingTrackIndex(null);
-                      setDraftId(null);
-                      setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
-                      setReleaseChecklist([false, false, false]);
-                      setShowReleaseForm(false);
-                      setMyReleasesTab('complete');
-                    }}
-                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110"
-                    style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                  >
-                    Submit Release
-                  </button>
+                  <div className="flex flex-col items-end gap-3">
+                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                      <div
+                        onClick={() => setPolicyAgreed(v => !v)}
+                        className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
+                        style={{ backgroundColor: policyAgreed ? 'var(--text-primary)' : 'transparent', border: `2px solid ${policyAgreed ? 'var(--text-primary)' : 'var(--border-default)'}` }}
+                      >
+                        {policyAgreed && <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="var(--bg-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                      </div>
+                      <span className="text-xs" style={{ color: 'var(--text-primary)' }}>I agree to Elevate's music distribution and services policies.</span>
+                    </label>
+                    <button
+                      onClick={async () => {
+                        if (!policyAgreed) return;
+                        if (draftId) {
+                          await supabase.from('release_drafts').update({ status: 'submitted' }).eq('id', draftId);
+                          await fetchDrafts(currentUserId);
+                        }
+                        setReleaseStep(1);
+                        setUploadingTracks([]);
+                        setEditingTrackIndex(null);
+                        setDraftId(null);
+                        setPolicyAgreed(false);
+                        setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
+                        setReleaseChecklist([false, false, false]);
+                        setShowReleaseForm(false);
+                        setMyReleasesTab('complete');
+                      }}
+                      disabled={!policyAgreed}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+                      style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                    >
+                      Submit Release
+                    </button>
+                  </div>
                 )}
               </div>
                 </div>

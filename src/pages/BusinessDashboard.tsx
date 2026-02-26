@@ -819,7 +819,9 @@ export function BusinessDashboard() {
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
-  const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
+  const [messageNotifications, setMessageNotifications] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('messageNotifications') ?? 'true'); } catch { return true; }
+  });
   
   // Use centralized theme from context
   const { theme: backgroundTheme, setTheme: setBackgroundTheme, flatBackground, setFlatBackground } = useTheme();
@@ -2009,7 +2011,11 @@ export function BusinessDashboard() {
   };
 
   const handleToggleMessageNotifications = () => {
-    setMessageNotifications(prev => !prev);
+    setMessageNotifications(prev => {
+      const next = !prev;
+      localStorage.setItem('messageNotifications', JSON.stringify(next));
+      return next;
+    });
   };
 
   const handleTogglePlatformUpdates = async () => {

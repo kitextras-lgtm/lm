@@ -950,7 +950,9 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
-  const [messageNotifications, setMessageNotifications] = useState<boolean>(true);
+  const [messageNotifications, setMessageNotifications] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('messageNotifications') ?? 'true'); } catch { return true; }
+  });
   
   // Use centralized theme from context
   const { theme: backgroundTheme, setTheme: setBackgroundTheme, flatBackground, setFlatBackground } = useTheme();
