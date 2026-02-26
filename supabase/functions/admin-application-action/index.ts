@@ -34,11 +34,16 @@ Deno.serve(async (req: Request) => {
 
     // Check permission — map the action to the correct permission verb
     const permAction = action === 'approved' ? 'approve' : 'reject';
-    const { data: hasPermission } = await supabase.rpc('admin_has_permission', {
+    const { data: hasPermission, error: permError } = await supabase.rpc('admin_has_permission', {
       p_admin_id: admin.id,
       p_resource: 'applications',
       p_action: permAction,
     });
+
+    if (permError) {
+      console.error('Permission check failed:', permError);
+      return jsonError('Permission check failed', 500, req);
+    }
 
     if (!hasPermission) {
       return jsonError('Permission denied', 403, req);

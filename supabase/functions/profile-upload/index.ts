@@ -75,30 +75,33 @@ Deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  const { url: supabaseUrl, serviceRoleKey } = getSupabaseEnv();
-  const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? serviceRoleKey;
-
-  // ── Verify JWT: ensure the caller is an authenticated user ──
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader) {
-    return jsonResp(401, { success: false, message: 'Missing Authorization header' });
-  }
-
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const { data: { user: callerUser }, error: authError } = await userClient.auth.getUser();
-  if (authError || !callerUser) {
-    return jsonResp(401, { success: false, message: 'Invalid or expired token' });
-  }
-
-  const supabaseClient = createServiceClient();
-
-  const url = new URL(req.url);
-  const pathParts = url.pathname.split('/').filter(Boolean);
-  const action = pathParts[pathParts.length - 1];
-
   try {
+    const { url: supabaseUrl, serviceRoleKey } = getSupabaseEnv();
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    if (!anonKey) {
+      console.error('SUPABASE_ANON_KEY is not configured');
+      return jsonResp(500, { success: false, message: 'Server configuration error' });
+    }
+
+    // ── Verify JWT: ensure the caller is an authenticated user ──
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return jsonResp(401, { success: false, message: 'Missing Authorization header' });
+    }
+
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user: callerUser }, error: authError } = await userClient.auth.getUser();
+    if (authError || !callerUser) {
+      return jsonResp(401, { success: false, message: 'Invalid or expired token' });
+    }
+
+    const supabaseClient = createServiceClient();
+
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const action = pathParts[pathParts.length - 1];
     // ─── INIT: Validate metadata, create DB record, return signed upload URL ───
     if (action === 'init' && req.method === 'POST') {
       const { userId, uploadType, fileName, fileSize, mimeType } = await req.json();

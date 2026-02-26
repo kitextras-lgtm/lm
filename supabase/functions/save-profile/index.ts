@@ -132,7 +132,7 @@ Deno.serve(async (req: Request) => {
         return jsonError('This username is already taken. Please choose another.');
       }
       console.error('Error saving profile:', upsertError);
-      return jsonError(upsertError.message || 'Failed to save profile', 500);
+      return jsonError('Failed to save profile', 500);
     }
 
     return json({
