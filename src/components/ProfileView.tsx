@@ -217,16 +217,6 @@ export function ProfileView({
       {/* Header */}
       <div className="sticky top-0 z-10 backdrop-blur-md border-b" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-subtle)' }}>
         <div className="relative flex items-center justify-center px-4 py-3">
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="absolute left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:opacity-70 transition-opacity"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-              <span className="text-sm font-medium">Back</span>
-            </button>
-          )}
           <h1 className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
             {userProfile?.first_name && userProfile?.last_name 
               ? `${userProfile.first_name} ${userProfile.last_name}`
@@ -352,18 +342,18 @@ export function ProfileView({
               </div>
 
       {/* Tabs */}
-      <div className="flex gap-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="flex gap-2 px-6 py-3">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className="flex-1 py-3.5 text-sm font-medium transition-all relative"
-            style={{ color: 'var(--text-primary)', opacity: activeTab === tab.id ? 1 : 0.4, background: 'none', border: 'none' }}
+            className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+            style={activeTab === tab.id
+              ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148,163,184,0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148,163,184,0.2)' }
+              : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent', opacity: 0.55 }
+            }
           >
             {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
-            )}
           </button>
         ))}
       </div>

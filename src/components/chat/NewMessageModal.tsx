@@ -195,8 +195,8 @@ export function NewMessageModal({ isOpen, onClose, onSelectUser, currentUserId, 
                 setSelectedUsers([]);
               }}
               placeholder={t('messages.searchPlaceholder')}
-              className="w-full bg-transparent text-sm focus:outline-none"
-              style={{ color: 'var(--text-primary)' }}
+              className="w-full bg-transparent text-sm outline-none"
+              style={{ color: 'var(--text-primary)', boxShadow: 'none' }}
             />
           </div>
         </div>

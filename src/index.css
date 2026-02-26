@@ -7,6 +7,14 @@ html, body, #root {
   max-width: 100vw;
 }
 
+/* White theme: boost icon visibility — opacity-50 elements become nearly invisible on light bg */
+[data-theme="white"] .opacity-50 {
+  opacity: 0.75 !important;
+}
+[data-theme="white"] .opacity-70 {
+  opacity: 0.85 !important;
+}
+
 /* ============================================
    THEME CSS VARIABLES
    These are set dynamically by ThemeContext

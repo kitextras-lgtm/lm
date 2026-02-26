@@ -93,6 +93,46 @@ export function AdminDashboard() {
       return next;
     });
   };
+  const [messageNotifications, setMessageNotifications] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('admin_messageNotifications') ?? 'true'); } catch { return true; }
+  });
+  const handleToggleMessageNotifications = () => {
+    setMessageNotifications(prev => {
+      const next = !prev;
+      localStorage.setItem('admin_messageNotifications', JSON.stringify(next));
+      return next;
+    });
+  };
+  const [unreadMessageBadge, setUnreadMessageBadge] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('admin_unreadMessageBadge') ?? 'true'); } catch { return true; }
+  });
+  const handleToggleUnreadMessageBadge = () => {
+    setUnreadMessageBadge(prev => {
+      const next = !prev;
+      localStorage.setItem('admin_unreadMessageBadge', JSON.stringify(next));
+      return next;
+    });
+  };
+  const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('admin_emailNewFeatures') ?? 'true'); } catch { return true; }
+  });
+  const handleToggleNewFeatures = () => {
+    setEmailNewFeatures(prev => {
+      const next = !prev;
+      localStorage.setItem('admin_emailNewFeatures', JSON.stringify(next));
+      return next;
+    });
+  };
+  const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('admin_emailPlatformUpdates') ?? 'true'); } catch { return true; }
+  });
+  const handleTogglePlatformUpdates = () => {
+    setEmailPlatformUpdates(prev => {
+      const next = !prev;
+      localStorage.setItem('admin_emailPlatformUpdates', JSON.stringify(next));
+      return next;
+    });
+  };
   const { theme, setTheme, tokens, flatBackground, setFlatBackground } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -128,24 +168,29 @@ export function AdminDashboard() {
   const fetchReleaseSubmissions = useCallback(async () => {
     setReleaseSubmissionsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data: drafts, error } = await supabase
         .from('release_drafts')
-        .select('*, user:user_id(full_name, username, email, first_name, last_name)')
+        .select('*')
         .in('status', ['submitted', 'approved', 'inactive'])
         .order('updated_at', { ascending: false });
       if (error) {
         console.error('[AdminDashboard] fetchReleaseSubmissions error:', error);
-        // Fallback: fetch without join
-        const { data: fallback, error: fbErr } = await supabase
-          .from('release_drafts')
-          .select('*')
-          .in('status', ['submitted', 'approved', 'inactive'])
-          .order('updated_at', { ascending: false });
-        if (fbErr) console.error('[AdminDashboard] fallback fetch error:', fbErr);
-        else setReleaseSubmissions(fallback || []);
-      } else {
-        setReleaseSubmissions(data || []);
+        setReleaseSubmissionsLoading(false);
+        return;
       }
+      if (!drafts || drafts.length === 0) { setReleaseSubmissions([]); setReleaseSubmissionsLoading(false); return; }
+
+      // Enrich with user info via separate query
+      const userIds = [...new Set(drafts.map((d: any) => d.user_id).filter(Boolean))];
+      let userMap: Record<string, any> = {};
+      if (userIds.length > 0) {
+        const { data: usersData } = await supabase
+          .from('users')
+          .select('id, full_name, username, email, first_name, last_name')
+          .in('id', userIds);
+        (usersData || []).forEach((u: any) => { userMap[u.id] = u; });
+      }
+      setReleaseSubmissions(drafts.map((d: any) => ({ ...d, user: userMap[d.user_id] || null })));
     } catch (e) {
       console.error('Error fetching release submissions:', e);
     } finally {
@@ -2863,6 +2908,25 @@ export function AdminDashboard() {
                     renderNotifications={() => (
                       <div className="space-y-3 lg:space-y-8">
                         <div>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Interface</h3>
+                          <div className="space-y-3 lg:space-y-6">
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Message Notifications</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show notification dropdown for unread messages</p>
+                              </div>
+                              <ToggleSwitch isActive={messageNotifications} onToggle={handleToggleMessageNotifications} backgroundTheme={theme} />
+                            </div>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Unread Message Badge</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show badge count on messages icon when you have unread messages</p>
+                              </div>
+                              <ToggleSwitch isActive={unreadMessageBadge} onToggle={handleToggleUnreadMessageBadge} backgroundTheme={theme} />
+                            </div>
+                          </div>
+                        </div>
+                        <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sounds</h3>
                           <div className="space-y-3 lg:space-y-6">
                             <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
@@ -2885,6 +2949,25 @@ export function AdminDashboard() {
                                 </svg>
                                 Preview Sound
                               </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Email</h3>
+                          <div className="space-y-3 lg:space-y-6">
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Features</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Get notified about new platform features and updates via email</p>
+                              </div>
+                              <ToggleSwitch isActive={emailNewFeatures} onToggle={handleToggleNewFeatures} backgroundTheme={theme} />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Platform Updates</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Receive important platform announcements and maintenance notices</p>
+                              </div>
+                              <ToggleSwitch isActive={emailPlatformUpdates} onToggle={handleTogglePlatformUpdates} backgroundTheme={theme} />
                             </div>
                           </div>
                         </div>
@@ -3171,6 +3254,25 @@ export function AdminDashboard() {
                     renderNotifications={() => (
                       <div className="space-y-3 lg:space-y-8">
                         <div>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Interface</h3>
+                          <div className="space-y-3 lg:space-y-6">
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Message Notifications</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show notification dropdown for unread messages</p>
+                              </div>
+                              <ToggleSwitch isActive={messageNotifications} onToggle={handleToggleMessageNotifications} backgroundTheme={theme} />
+                            </div>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Unread Message Badge</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show badge count on messages icon when you have unread messages</p>
+                              </div>
+                              <ToggleSwitch isActive={unreadMessageBadge} onToggle={handleToggleUnreadMessageBadge} backgroundTheme={theme} />
+                            </div>
+                          </div>
+                        </div>
+                        <div>
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sounds</h3>
                           <div className="space-y-3 lg:space-y-6">
                             <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
@@ -3193,6 +3295,25 @@ export function AdminDashboard() {
                                 </svg>
                                 Preview Sound
                               </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Email</h3>
+                          <div className="space-y-3 lg:space-y-6">
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Features</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Get notified about new platform features and updates via email</p>
+                              </div>
+                              <ToggleSwitch isActive={emailNewFeatures} onToggle={handleToggleNewFeatures} backgroundTheme={theme} />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Platform Updates</h4>
+                                <p className="text-sm" style={{ color: tokens.text.primary }}>Receive important platform announcements and maintenance notices</p>
+                              </div>
+                              <ToggleSwitch isActive={emailPlatformUpdates} onToggle={handleTogglePlatformUpdates} backgroundTheme={theme} />
                             </div>
                           </div>
                         </div>
