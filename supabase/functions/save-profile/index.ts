@@ -119,19 +119,20 @@ Deno.serve(async (req: Request) => {
 
     // ── Single upsert to users table ──
     if (!userEmail) {
-      console.warn('No email available — skipping users table update');
-    } else {
-      const { error: upsertError } = await supabase
-        .from('users')
-        .upsert(updateData, { onConflict: 'id' });
+      console.error('No email available for userId:', userId);
+      return jsonError('Unable to resolve user email. Profile cannot be saved without an email.', 422);
+    }
 
-      if (upsertError) {
-        if (upsertError.message?.includes('unique') && upsertError.message?.includes('username')) {
-          return jsonError('This username is already taken. Please choose another.');
-        }
-        console.error('Error saving profile:', upsertError);
-        return jsonError(upsertError.message || 'Failed to save profile', 500);
+    const { error: upsertError } = await supabase
+      .from('users')
+      .upsert(updateData, { onConflict: 'id' });
+
+    if (upsertError) {
+      if (upsertError.message?.includes('unique') && upsertError.message?.includes('username')) {
+        return jsonError('This username is already taken. Please choose another.');
       }
+      console.error('Error saving profile:', upsertError);
+      return jsonError(upsertError.message || 'Failed to save profile', 500);
     }
 
     return json({

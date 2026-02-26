@@ -22,17 +22,6 @@ Deno.serve(async (req: Request) => {
       return jsonError(error || 'Unauthorized', 401, req);
     }
 
-    // Check permission
-    const { data: hasPermission } = await supabase.rpc('admin_has_permission', {
-      p_admin_id: admin.id,
-      p_resource: 'applications',
-      p_action: 'approve',
-    });
-
-    if (!hasPermission) {
-      return jsonError('Permission denied', 403, req);
-    }
-
     const { applicationId, action, declineReason } = await req.json();
 
     if (!applicationId || !action) {
@@ -41,6 +30,18 @@ Deno.serve(async (req: Request) => {
 
     if (action !== 'approved' && action !== 'denied') {
       return jsonError("action must be 'approved' or 'denied'", 400, req);
+    }
+
+    // Check permission — map the action to the correct permission verb
+    const permAction = action === 'approved' ? 'approve' : 'reject';
+    const { data: hasPermission } = await supabase.rpc('admin_has_permission', {
+      p_admin_id: admin.id,
+      p_resource: 'applications',
+      p_action: permAction,
+    });
+
+    if (!hasPermission) {
+      return jsonError('Permission denied', 403, req);
     }
 
     // Fetch the application (needed for artist_account side-effect)

@@ -167,7 +167,12 @@ Deno.serve(async (req: Request) => {
       p_error_message: null,
     });
 
-    const role = admin.admin_roles as Record<string, unknown>;
+    const role = admin.admin_roles as Record<string, unknown> | null;
+
+    if (!role || !role.id) {
+      console.error('Admin role data missing for admin:', admin.id);
+      return jsonError('Admin account has no assigned role. Contact a super administrator.', 500, req);
+    }
 
     return json({
       success: true,
