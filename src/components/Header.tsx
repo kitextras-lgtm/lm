@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export function Header() {
@@ -43,6 +43,13 @@ export function Header() {
             className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group"
           >
             Benefits
+            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
+          </a>
+          <a
+            href="#download"
+            className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group"
+          >
+            Download
             <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
           </a>
           <a

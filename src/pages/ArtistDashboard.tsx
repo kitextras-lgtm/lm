@@ -957,7 +957,7 @@ function PublishingDashboardPage() {
               </svg>
             </div>
             <p className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Register a new <strong>Musical Work.</strong></p>
-            <p className="text-sm leading-relaxed mb-6 max-w-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Add & register tracks from your release library to claim publishing royalties worldwide.</p>
+            <p className="text-sm leading-relaxed mb-6 max-w-xs" style={{ color: 'var(--text-primary)' }}>Add &amp; register tracks from your release library to claim publishing royalties worldwide.</p>
             <button
               className="px-6 py-3 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
               style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
@@ -972,7 +972,7 @@ function PublishingDashboardPage() {
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
             </svg>
             <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Works Registered</p>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Works Registered</p>
               <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
             </div>
           </div>
@@ -981,7 +981,7 @@ function PublishingDashboardPage() {
               <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
             </svg>
             <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Publishing Balance</p>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-primary)' }}>Publishing Balance</p>
               <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
             </div>
           </div>
@@ -1014,16 +1014,16 @@ function PublishingDashboardPage() {
                   <div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                     <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{i + 1}</span>
                   </div>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>{q}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{q}</p>
                 </div>
               ))}
             </div>
-            <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>
+            <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-primary)' }}>
               If Not, follow the steps shown and check. It is still worth checking.
             </p>
             <div className="rounded-xl p-4 border mb-6" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
-              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
-                <strong style={{ opacity: 1 }}>Disclaimer:</strong> Please note that this tool is not 100% accurate, but it is still worth checking.
+              <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
+                <strong>Disclaimer:</strong> Please note that this tool is not 100% accurate, but it is still worth checking.
               </p>
             </div>
             <button
@@ -4362,7 +4362,7 @@ export function ArtistDashboard() {
               onMouseDown={e => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
               onMouseUp={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
             >
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+              <div className="flex-shrink-0 flex items-center justify-center" style={{ color: 'var(--text-primary)' }}>
                 {cat.icon}
               </div>
               <div className="flex-1 min-w-0">
@@ -5211,7 +5211,7 @@ export function ArtistDashboard() {
                 const drafts = savedDrafts.filter(d => d.status === 'incomplete');
                 if (drafts.length === 0) return (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    <div className="mb-5">
                       <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                     </div>
                     <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No releases in progress</p>
@@ -5270,7 +5270,7 @@ export function ArtistDashboard() {
               {deletingDraftId && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
                   <div className="w-full max-w-sm rounded-2xl p-6 animate-modal-in" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}>
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <div className="mb-4">
                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
                     </div>
                     <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Delete this draft?</h3>
@@ -5303,7 +5303,7 @@ export function ArtistDashboard() {
               {/* Complete tab */}
               {myReleasesTab === 'complete' && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="mb-5">
                     <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                   </div>
                   <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No completed releases</p>
@@ -5314,7 +5314,7 @@ export function ArtistDashboard() {
               {/* Inactive tab */}
               {myReleasesTab === 'inactive' && (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="mb-5">
                     <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                   </div>
                   <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No inactive releases</p>

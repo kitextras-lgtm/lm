@@ -36,7 +36,7 @@ export function HomePage() {
       {/* Footer */}
       <div className="py-8 md:py-10 border-t border-white/5">
         <p className="text-neutral-500 text-xs md:text-sm text-center tracking-wide">
-          © 2025 Elevate. All Rights Reserved.
+          © 2026 Elevate. All Rights Reserved.
         </p>
       </div>
     </div>
