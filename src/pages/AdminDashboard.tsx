@@ -2259,16 +2259,29 @@ export function AdminDashboard() {
                                                       </div>
                                                     )}
                                                   </div>
-                                                  {hasDetails && (
-                                                    <button
-                                                      onClick={toggleTrack}
-                                                      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium flex-shrink-0 transition-all hover:brightness-110"
-                                                      style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
-                                                    >
-                                                      <svg className={`w-3 h-3 transition-transform duration-200 ${trackExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                                                      {trackExpanded ? 'Less' : 'Details'}
-                                                    </button>
-                                                  )}
+                                                  <div className="flex items-center gap-1 flex-shrink-0">
+                                                    {t.audioUrl && (
+                                                      <a
+                                                        href={t.audioUrl}
+                                                        download={t.fileName || `${t.title || 'track'}.mp3`}
+                                                        className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all hover:brightness-110"
+                                                        style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                                        onClick={e => e.stopPropagation()}
+                                                      >
+                                                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                      </a>
+                                                    )}
+                                                    {hasDetails && (
+                                                      <button
+                                                        onClick={toggleTrack}
+                                                        className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all hover:brightness-110"
+                                                        style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                                      >
+                                                        <svg className={`w-3 h-3 transition-transform duration-200 ${trackExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                                        {trackExpanded ? 'Less' : 'Details'}
+                                                      </button>
+                                                    )}
+                                                  </div>
                                                 </div>
 
                                                 {/* Expanded track details */}

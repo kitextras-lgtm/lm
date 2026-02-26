@@ -4838,18 +4838,18 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             </div>
 
             {/* Tab bar */}
-            <div className="flex items-center gap-1 mb-8 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+            <div className="flex items-center gap-2 mb-8">
               {(['offers', 'freelance'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setDealsTab(tab)}
-                  className="px-4 py-2.5 text-sm font-medium transition-all relative"
-                  style={{ color: 'var(--text-primary)', opacity: dealsTab === tab ? 1 : 0.45 }}
+                  className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
+                  style={dealsTab === tab
+                    ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148,163,184,0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148,163,184,0.2)' }
+                    : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent', opacity: 0.55 }
+                  }
                 >
                   {tab === 'offers' ? 'Offers' : 'Freelance Requests'}
-                  {dealsTab === tab && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: 'var(--text-primary)' }} />
-                  )}
                 </button>
               ))}
             </div>
