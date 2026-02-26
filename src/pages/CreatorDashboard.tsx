@@ -719,7 +719,7 @@ function PowerWidget() {
   )
 }
 
-function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
+function ActiveOpportunitiesCard({ onViewMore, assignedCampaigns, newCampaignIds }: { onViewMore?: () => void; assignedCampaigns?: any[]; newCampaignIds?: Set<string> }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
@@ -732,6 +732,33 @@ function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
+
+  const campaigns = assignedCampaigns || [];
+  const newCount = newCampaignIds?.size ?? 0;
+  const activeCampaigns = campaigns.filter((c: any) => c.status === 'active');
+  const enrolledCount = campaigns.length;
+
+  const rows = [
+    {
+      label: t('opportunities.campaign'),
+      sublabel: activeCampaigns.length > 0 ? `${activeCampaigns.length} active` : 'Browse available',
+      count: activeCampaigns.length,
+      badge: newCount > 0 ? `${newCount} new` : null,
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+      ),
+    },
+    {
+      label: t('opportunities.enrolledCampaigns'),
+      sublabel: enrolledCount > 0 ? `${enrolledCount} enrolled` : 'None enrolled yet',
+      count: enrolledCount,
+      badge: null,
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+      ),
+    },
+  ];
+
   return (
     <div
       ref={ref}
@@ -741,36 +768,33 @@ function ActiveOpportunitiesCard({ onViewMore }: { onViewMore?: () => void }) {
       <div className="mb-4 sm:mb-5">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.activeOpportunities')}</h3>
       </div>
-      
+
       <div className="flex flex-col gap-2 flex-grow">
-        {[
-          { type: 'Sponsorship', title: 'Brand Campaign', value: '$1,200', age: '2d ago' },
-          { type: 'Collaboration', title: 'Music Feature', value: 'Rev share', age: '5d ago' },
-        ].map((opp, i) => (
+        {rows.map((row, i) => (
           <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                {i === 0 ? (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><path d="M20 12V22H4V12"/><path d="M22 7H2V12H22V7Z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                )}
+                {row.icon}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{opp.title}</p>
-                <p className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{opp.type}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{row.label}</p>
+                  {row.badge && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>{row.badge}</span>
+                  )}
+                </div>
+                <p className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{row.sublabel}</p>
               </div>
             </div>
             <div className="text-right flex-shrink-0 ml-2">
-              <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{opp.value}</p>
-              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{opp.age}</p>
+              <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{row.count}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div className="mt-6 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
-        <button 
+        <button
           className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
           style={{ color: 'var(--text-primary)' }}
           onClick={onViewMore}
@@ -3386,7 +3410,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
             <ActiveCollaborationsCard setActiveSection={setActiveSection} />
 
-            <ActiveOpportunitiesCard onViewMore={() => setHomeSubPage('opportunities')} />
+            <ActiveOpportunitiesCard onViewMore={() => setHomeSubPage('opportunities')} assignedCampaigns={assignedCampaigns} newCampaignIds={newCampaignIds} />
           </div>
         </section>
 

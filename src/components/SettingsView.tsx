@@ -63,9 +63,10 @@ const settingsMenuItems = [
   { id: 'logout', labelKey: 'settings.logOut', IconComponent: LogOutIcon },
 ];
 
-// Admin settings menu items (only Display and Log out)
+// Admin settings menu items
 const adminSettingsMenuItems = [
   { id: 'display', labelKey: 'settings.display', IconComponent: DisplayIcon },
+  { id: 'notifications', labelKey: 'settings.notifications', IconComponent: BellIcon },
   { id: 'feedback', label: 'Feedback', IconComponent: SendFeedbackIcon },
   { id: 'logout', labelKey: 'settings.logOut', IconComponent: LogOutIcon },
 ];
@@ -97,6 +98,7 @@ function SettingsMenuItem({
       className={`group flex items-center gap-4 px-4 py-4 cursor-pointer transition-colors ${showBorder ? 'border-b' : ''}`}
       style={{
         backgroundColor: isActive ? 'var(--bg-elevated)' : undefined,
+        color: 'var(--text-primary)',
         ...(showBorder ? { borderColor: 'var(--border-subtle)' } : {})
       }}
     >

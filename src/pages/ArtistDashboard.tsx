@@ -2934,6 +2934,7 @@ export function ArtistDashboard() {
         explicit: t.explicit,
         duration: t.duration,
         fileName: t.fileName,
+        audioUrl: t.audioUrl || '',
         previewStart: t.previewStart,
         addLyrics: t.addLyrics,
         lyricsText: t.lyricsText,
