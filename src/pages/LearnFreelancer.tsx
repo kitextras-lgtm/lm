@@ -584,6 +584,9 @@ export default function LearnFreelancer() {
         </div>
       </section>
 
+      {/* Mobile App Section */}
+      <MobileAppSection variant="freelancer" />
+
       {/* FAQ Section */}
       <section className="bg-black py-16 md:py-28 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
@@ -612,9 +615,6 @@ export default function LearnFreelancer() {
           </div>
         </div>
       </section>
-
-      {/* Mobile App Section */}
-      <MobileAppSection variant="freelancer" />
 
       {/* CTA */}
       <div

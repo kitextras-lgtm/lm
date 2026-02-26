@@ -810,6 +810,12 @@ export function LearnBrands() {
           ))}
         </div>
 
+      </div>
+
+      {/* Mobile App Section */}
+      <MobileAppSection variant="brands" />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* FAQ Section */}
         <div
           ref={faqRef}
@@ -834,9 +840,6 @@ export function LearnBrands() {
           </div>
         </div>
       </div>
-
-      {/* Mobile App Section */}
-      <MobileAppSection variant="brands" />
 
       {/* CTA */}
       <div

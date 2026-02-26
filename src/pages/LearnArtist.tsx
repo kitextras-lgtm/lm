@@ -557,6 +557,9 @@ export default function LearnArtist() {
         </div>
       </section>
 
+      {/* Mobile App Section */}
+      <MobileAppSection variant="artist" />
+
       {/* FAQ Section */}
       <section className="bg-black py-16 md:py-28 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
@@ -585,9 +588,6 @@ export default function LearnArtist() {
           </div>
         </div>
       </section>
-
-      {/* Mobile App Section */}
-      <MobileAppSection variant="artist" />
 
       {/* CTA */}
       <div
