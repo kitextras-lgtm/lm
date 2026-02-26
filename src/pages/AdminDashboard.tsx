@@ -123,6 +123,7 @@ export function AdminDashboard() {
   const [declineRelSubId, setDeclineRelSubId] = useState<string | null>(null);
   const [declineRelSubReason, setDeclineRelSubReason] = useState('');
   const [expandedRelSubId, setExpandedRelSubId] = useState<string | null>(null);
+  const [expandedTrackIndices, setExpandedTrackIndices] = useState<Record<string, number[]>>({});
 
   const fetchReleaseSubmissions = useCallback(async () => {
     setReleaseSubmissionsLoading(true);
@@ -2073,11 +2074,13 @@ export function AdminDashboard() {
                                           {rel.status === 'submitted' ? 'Pending' : rel.status.charAt(0).toUpperCase() + rel.status.slice(1)}
                                         </span>
                                       </div>
-                                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                                        <span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{displayName}</span>
-                                        {username && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>@{username}</span>}
-                                        {email && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>{email}</span>}
-                                      </div>
+                                      {u && (
+                                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                                          <span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{displayName}</span>
+                                          {username && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>@{username}</span>}
+                                          {email && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>{email}</span>}
+                                        </div>
+                                      )}
                                       <div className="flex items-center gap-3 flex-wrap">
                                         {(() => { const tc = rel.tracks?.length ?? 0; return <span className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>{tc >= 7 ? 'Album' : tc >= 4 ? 'EP' : 'Single'}</span>; })()}
                                         {rel.genre && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>{rel.genre}{rel.secondary_genre ? ` · ${rel.secondary_genre}` : ''}</span>}
@@ -2228,25 +2231,125 @@ export function AdminDashboard() {
                                       <div>
                                         <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Tracks ({trackCount})</p>
                                         <div className="space-y-1.5">
-                                          {rel.tracks.map((t: any, i: number) => (
-                                            <div key={i} className="flex items-start gap-3 py-1.5 px-2 rounded-lg" style={{ backgroundColor: tokens.bg.elevated }}>
-                                              <span className="text-xs w-5 text-right flex-shrink-0 mt-0.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>{i + 1}</span>
-                                              <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                  <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{t.title || 'Untitled'}</span>
-                                                  {t.featuring && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>ft. {t.featuring}</span>}
-                                                  {t.explicit && <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>E</span>}
+                                          {rel.tracks.map((t: any, i: number) => {
+                                            const trackExpanded = (expandedTrackIndices[rel.id] || []).includes(i);
+                                            const toggleTrack = () => setExpandedTrackIndices(prev => {
+                                              const cur = prev[rel.id] || [];
+                                              return { ...prev, [rel.id]: trackExpanded ? cur.filter((x: number) => x !== i) : [...cur, i] };
+                                            });
+                                            const c = t.credits || {};
+                                            const hasCredits = c.composer || c.songwriter || c.engineer || c.performer || (t.extraCredits?.length > 0);
+                                            const hasLyrics = t.addLyrics && (t.lyricsText || t.lyricsDocName);
+                                            const hasDetails = t.fileName || t.isrcCode || t.previewStart != null || hasCredits || hasLyrics;
+                                            return (
+                                              <div key={i} className="rounded-lg overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                                                {/* Track header row */}
+                                                <div className="flex items-center gap-3 px-3 py-2">
+                                                  <span className="text-xs w-5 text-right flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.4 }}>{i + 1}</span>
+                                                  <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                      <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{t.title || 'Untitled'}</span>
+                                                      {t.featuring && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>ft. {t.featuring}</span>}
+                                                      {t.explicit && <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>E</span>}
+                                                    </div>
+                                                    {t.fileName && (
+                                                      <div className="flex items-center gap-1 mt-0.5">
+                                                        <svg className="w-2.5 h-2.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.4 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                                        <span className="text-[10px] truncate" style={{ color: tokens.text.primary, opacity: 0.45 }}>{t.fileName}</span>
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                  {hasDetails && (
+                                                    <button
+                                                      onClick={toggleTrack}
+                                                      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium flex-shrink-0 transition-all hover:brightness-110"
+                                                      style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                                    >
+                                                      <svg className={`w-3 h-3 transition-transform duration-200 ${trackExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                                      {trackExpanded ? 'Less' : 'Details'}
+                                                    </button>
+                                                  )}
                                                 </div>
-                                                {t.fileName && (
-                                                  <div className="flex items-center gap-1 mt-0.5">
-                                                    <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.4 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                                                    <span className="text-[10px] truncate" style={{ color: tokens.text.primary, opacity: 0.45 }}>{t.fileName}</span>
+
+                                                {/* Expanded track details */}
+                                                {trackExpanded && (
+                                                  <div className="px-3 pb-3 pt-0 space-y-3 border-t" style={{ borderColor: tokens.border.subtle }}>
+
+                                                    {/* Track metadata grid */}
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 pt-2.5">
+                                                      {t.isrcMode === 'manual' && t.isrcCode && (
+                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>ISRC: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{t.isrcCode}</span></div>
+                                                      )}
+                                                      {t.isrcMode === 'auto' && (
+                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>ISRC: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>Auto-assigned</span></div>
+                                                      )}
+                                                      {t.previewStart != null && t.previewStart !== '' && (
+                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>Preview Start: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{typeof t.previewStart === 'number' ? `${Math.floor(t.previewStart / 60)}:${String(Math.floor(t.previewStart % 60)).padStart(2, '0')}` : t.previewStart}</span></div>
+                                                      )}
+                                                      {t.duration > 0 && (
+                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>Duration: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{Math.floor(t.duration / 60)}:{String(Math.floor(t.duration % 60)).padStart(2, '0')}</span></div>
+                                                      )}
+                                                    </div>
+
+                                                    {/* Credits */}
+                                                    {hasCredits && (
+                                                      <div>
+                                                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>Credits</p>
+                                                        <div className="space-y-1">
+                                                          {c.composer && (
+                                                            <div className="flex items-center gap-2">
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>Composer</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.composer}</span>
+                                                            </div>
+                                                          )}
+                                                          {c.songwriter && (
+                                                            <div className="flex items-center gap-2">
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.songwriterRole || 'Songwriter'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.songwriter}</span>
+                                                            </div>
+                                                          )}
+                                                          {c.engineer && (
+                                                            <div className="flex items-center gap-2">
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.engineerRole || 'Engineer'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.engineer}</span>
+                                                            </div>
+                                                          )}
+                                                          {c.performer && (
+                                                            <div className="flex items-center gap-2">
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.performerRole || 'Performer'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.performer}</span>
+                                                            </div>
+                                                          )}
+                                                          {t.extraCredits?.map((ec: any, ei: number) => ec.name && (
+                                                            <div key={ei} className="flex items-center gap-2">
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{ec.role || 'Credit'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{ec.name}</span>
+                                                            </div>
+                                                          ))}
+                                                        </div>
+                                                      </div>
+                                                    )}
+
+                                                    {/* Lyrics */}
+                                                    {hasLyrics && (
+                                                      <div>
+                                                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>Lyrics</p>
+                                                        {t.lyricsText && (
+                                                          <pre className="text-[10px] leading-relaxed whitespace-pre-wrap rounded-lg px-3 py-2 max-h-40 overflow-y-auto" style={{ color: tokens.text.primary, opacity: 0.8, backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, fontFamily: 'inherit' }}>{t.lyricsText}</pre>
+                                                        )}
+                                                        {t.lyricsDocName && (
+                                                          <div className="flex items-center gap-1.5 mt-1">
+                                                            <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                            <span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.6 }}>{t.lyricsDocName}</span>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 )}
                                               </div>
-                                              {t.isrcCode && <span className="text-[10px] flex-shrink-0 mt-0.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>ISRC: {t.isrcCode}</span>}
-                                            </div>
-                                          ))}
+                                            );
+                                          })}
                                         </div>
                                       </div>
                                     )}

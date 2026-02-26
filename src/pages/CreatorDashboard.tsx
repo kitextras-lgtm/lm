@@ -4900,8 +4900,8 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             {dealsTab === 'freelance' && (
               <div>
                 {/* Info notice */}
-                <div className="rounded-xl p-4 mb-6 flex items-start gap-3" style={{ backgroundColor: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5" style={{ color: '#93C5FD' }}>
+                <div className="rounded-xl p-4 mb-6 flex items-start gap-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/>
                     <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
                   </svg>

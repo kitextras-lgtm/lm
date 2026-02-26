@@ -889,6 +889,8 @@ function TotalSongsDistributedCard() {
 }
 
 function PublishingDashboardPage() {
+  const [activeTab, setActiveTab] = useState<'Overview' | 'My Works' | 'Sync Opportunities'>('Overview');
+  const [worksFilter, setWorksFilter] = useState<'ALL' | 'APPROVED' | 'PENDING' | 'REJECTED'>('ALL');
   const [proGateAccepted, setProGateAccepted] = useState(false);
   const [query, setQuery] = useState('');
   const [writers, setWriters] = useState('');
@@ -935,17 +937,73 @@ function PublishingDashboardPage() {
 
       {/* Tabs */}
       <div className="flex items-center gap-0 mb-10" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-        {['Overview', 'My Works', 'Sync Opportunities'].map((tab, i) => (
-          <div
+        {(['Overview', 'My Works', 'Sync Opportunities'] as const).map((tab) => (
+          <button
             key={tab}
-            className="px-4 py-3 text-sm font-semibold relative cursor-default"
-            style={{ color: 'var(--text-primary)', opacity: i === 0 ? 1 : 0.4 }}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className="px-4 py-3 text-sm font-semibold relative transition-opacity"
+            style={{ color: 'var(--text-primary)', opacity: activeTab === tab ? 1 : 0.4, background: 'none', border: 'none', cursor: 'pointer' }}
           >
             {tab}
-            {i === 0 && <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />}
-          </div>
+            {activeTab === tab && <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />}
+          </button>
         ))}
       </div>
+
+      {/* ── MY WORKS TAB ── */}
+      {activeTab === 'My Works' && (
+        <div className="animate-fade-in">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>My Works</h2>
+            <button
+              type="button"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:opacity-90 hover:scale-105"
+              style={{ backgroundColor: 'transparent', border: '2px solid var(--text-primary)', color: 'var(--text-primary)' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              Add Work
+            </button>
+          </div>
+
+          {/* Filter chips */}
+          <div className="flex items-center gap-2 mb-8">
+            {(['ALL', 'APPROVED', 'PENDING', 'REJECTED'] as const).map(f => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setWorksFilter(f)}
+                className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
+                style={{
+                  backgroundColor: worksFilter === f ? 'var(--text-primary)' : 'var(--bg-elevated)',
+                  color: worksFilter === f ? 'var(--bg-primary)' : 'var(--text-primary)',
+                  border: '1px solid var(--border-subtle)',
+                  opacity: worksFilter === f ? 1 : 0.6,
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {/* Empty state */}
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>No works registered.</p>
+          </div>
+        </div>
+      )}
+
+      {/* ── SYNC OPPORTUNITIES TAB ── */}
+      {activeTab === 'Sync Opportunities' && (
+        <div className="animate-fade-in flex flex-col items-center justify-center py-20 gap-3">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Sync opportunities coming soon.</p>
+        </div>
+      )}
+
+      {/* ── OVERVIEW TAB ── */}
+      {activeTab === 'Overview' && (
+      <div className="animate-fade-in">
 
       {/* Register + Stats row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -966,6 +1024,7 @@ function PublishingDashboardPage() {
             <button
               className="px-6 py-3 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
               style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              onClick={() => setActiveTab('My Works')}
             >
               Register Song
             </button>
@@ -1225,6 +1284,9 @@ function PublishingDashboardPage() {
           </div>
         ))}
       </div>
+      </div>
+      )}
+
     </div>
   );
 }
