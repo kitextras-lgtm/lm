@@ -201,7 +201,34 @@ const SCREEN_MAP: Record<string, () => JSX.Element> = {
   messages: MessagesScreen,
 };
 
-export function MobileAppSection() {
+// Variant-specific feature sets for each Learn page
+const VARIANT_FEATURES: Record<string, typeof DESKTOP_FEATURES> = {
+  // default / creator — same as DESKTOP_FEATURES
+  creator: DESKTOP_FEATURES,
+  artist: [
+    { label: 'Distribution', desc: 'Release music to 150+ platforms worldwide', screen: 'releases' },
+    { label: 'Publishing', desc: 'Register works and collect royalties worldwide', screen: 'publishing' },
+    { label: 'Analytics', desc: 'Track streams, revenue & audience in real time', screen: 'analytics' },
+    { label: 'Messages', desc: 'Stay connected with your team anywhere', screen: 'messages' },
+  ],
+  freelancer: [
+    { label: 'Job Board', desc: 'Browse and apply to high-quality music projects', screen: 'releases' },
+    { label: 'Earnings', desc: 'Track payments and manage your income', screen: 'analytics' },
+    { label: 'Messages', desc: 'Communicate directly with clients', screen: 'messages' },
+    { label: 'Profile', desc: 'Showcase your skills to attract top clients', screen: 'publishing' },
+  ],
+  brands: [
+    { label: 'Campaigns', desc: 'Launch and manage influencer campaigns', screen: 'releases' },
+    { label: 'Analytics', desc: 'Measure reach, engagement and ROI in real time', screen: 'analytics' },
+    { label: 'Messages', desc: 'Collaborate directly with creators', screen: 'messages' },
+    { label: 'Payments', desc: 'Pay creators securely through the platform', screen: 'publishing' },
+  ],
+};
+
+export type MobileAppSectionVariant = 'creator' | 'artist' | 'freelancer' | 'brands';
+
+export function MobileAppSection({ variant = 'creator' }: { variant?: MobileAppSectionVariant }) {
+  const features = VARIANT_FEATURES[variant] ?? DESKTOP_FEATURES;
   const { ref: sectionRef, isVisible } = useScrollAnimation(0.2);
 
   // Mobile animation state
@@ -246,7 +273,7 @@ export function MobileAppSection() {
       cycleRef.current = setInterval(() => {
         setScreenVisible(false);
         setTimeout(() => {
-          setActiveFeature(f => (f + 1) % DESKTOP_FEATURES.length);
+          setActiveFeature(f => (f + 1) % features.length);
           setScreenVisible(true);
         }, 350);
       }, 3200);
@@ -395,14 +422,14 @@ export function MobileAppSection() {
               {/* Feature label + desc cycling */}
               <div className="text-center mb-6" style={{ minHeight: '40px' }}>
                 <p className="text-sm font-semibold mb-1" style={{ color: '#000', opacity: 0.8 }}>
-                  {DESKTOP_FEATURES[activeFeature].label}
+                  {features[activeFeature].label}
                 </p>
                 <p className="text-xs" style={{ color: '#555' }}>
-                  {DESKTOP_FEATURES[activeFeature].desc}
+                  {features[activeFeature].desc}
                 </p>
                 {/* Dot indicators */}
                 <div className="flex items-center justify-center gap-1.5 mt-3">
-                  {DESKTOP_FEATURES.map((_, i) => (
+                  {features.map((_, i) => (
                     <button
                       key={i}
                       onClick={() => { setScreenVisible(false); setTimeout(() => { setActiveFeature(i); setScreenVisible(true); }, 300); }}
@@ -445,8 +472,8 @@ export function MobileAppSection() {
                         }}
                       >
                         {(() => {
-                          const Screen = SCREEN_MAP[DESKTOP_FEATURES[activeFeature].screen];
-                          return <Screen />;
+                          const Screen = SCREEN_MAP[features[activeFeature].screen];
+                          return Screen ? <Screen /> : null;
                         })()}
                       </div>
                     </div>

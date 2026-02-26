@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { MobileAppSection } from '../components/MobileAppSection';
 
 function useInView(threshold = 0.25) {
   const ref = useRef<HTMLDivElement>(null);
@@ -584,6 +585,9 @@ export default function LearnArtist() {
           </div>
         </div>
       </section>
+
+      {/* Mobile App Section */}
+      <MobileAppSection variant="artist" />
 
       {/* CTA */}
       <div

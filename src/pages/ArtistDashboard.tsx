@@ -2834,14 +2834,19 @@ export function ArtistDashboard() {
   };
 
   const fetchArtistNames = async (uid: string) => {
-    const { data } = await supabase
-      .from('social_links')
-      .select('display_name')
-      .eq('user_id', uid)
-      .eq('platform', 'Artist');
-    if (data) {
-      const names = data.map((r: any) => r.display_name).filter(Boolean);
-      setArtistNames(names);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/social-links?userId=${uid}`, {
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      });
+      const json = await res.json();
+      if (json.success && json.links) {
+        const names = (json.links as any[])
+          .filter((l: any) => l.platform === 'Artist' && l.display_name)
+          .map((l: any) => l.display_name as string);
+        setArtistNames(names);
+      }
+    } catch (e) {
+      console.error('[fetchArtistNames]', e);
     }
   };
 
@@ -3905,16 +3910,30 @@ export function ArtistDashboard() {
         <div>
           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sounds</h3>
           <div className="space-y-3 lg:space-y-6">
-            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-              <div>
-                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message</h4>
-                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when you receive a new unread message or notification</p>
+            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message</h4>
+                  <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when you receive a new unread message or notification</p>
+                </div>
+                <ToggleSwitch
+                  isActive={newMessageSound}
+                  onToggle={handleToggleNewMessageSound}
+                  backgroundTheme={backgroundTheme}
+                />
               </div>
-              <ToggleSwitch
-                isActive={newMessageSound}
-                onToggle={handleToggleNewMessageSound}
-                backgroundTheme={backgroundTheme}
-              />
+              <button
+                onClick={() => {
+                  try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Preview Sound
+              </button>
             </div>
           </div>
         </div>
@@ -5165,14 +5184,6 @@ export function ArtistDashboard() {
           <SocialLinksForm appliedTheme={appliedTheme} userType="artist" userId={currentUserId} onOpenArticle={handleOpenArticle} onArtistAdded={() => fetchArtistNames(currentUserId)} />
         </section>
 
-        <section className="mb-8">
-          <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.referralSection')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('home.referralSectionDesc')}</p>
-          </div>
-
-          <ReferralSection userType="artist" userId={currentUserId} />
-        </section>
           </div>
         )}
 

@@ -2,6 +2,7 @@ import { Header } from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { MobileAppSection } from '../components/MobileAppSection';
 
 // --- Local animation hooks ---
 function useInView(threshold = 0.25) {
@@ -833,6 +834,9 @@ export function LearnBrands() {
           </div>
         </div>
       </div>
+
+      {/* Mobile App Section */}
+      <MobileAppSection variant="brands" />
 
       {/* CTA */}
       <div

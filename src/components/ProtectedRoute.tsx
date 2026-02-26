@@ -5,13 +5,13 @@ import { AnimatedBarsLoader } from './AnimatedBarsLoader';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface ProtectedRouteProps {
-  children: React.ReactElement;
+  children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { theme, tokens } = useTheme();
+  const { tokens } = useTheme();
 
   useEffect(() => {
     const checkAuth = async () => {

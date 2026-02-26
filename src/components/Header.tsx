@@ -31,34 +31,28 @@ export function Header() {
         </div>
 
         <nav className="hidden md:flex items-center gap-10 absolute left-1/2 transform -translate-x-1/2">
-          <a
-            href="#top"
-            className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group"
-          >
-            Home
-            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
-          </a>
-          <a
-            href="#partnership"
-            className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group"
-          >
-            Benefits
-            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
-          </a>
-          <a
-            href="#download"
-            className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group"
-          >
-            Download
-            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
-          </a>
-          <a
-            href="#about"
-            className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group"
-          >
-            FAQ
-            <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
-          </a>
+          {[
+            { label: 'Home', id: 'top' },
+            { label: 'Benefits', id: 'partnership' },
+            { label: 'Download', id: 'download' },
+            { label: 'FAQ', id: 'about' },
+          ].map(({ label, id }) => (
+            <button
+              key={id}
+              onClick={() => {
+                const el = document.getElementById(id);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="text-white/60 hover:text-white text-[13px] font-medium tracking-wide cursor-pointer transition-all duration-300 ease-out relative group bg-transparent border-0 p-0"
+            >
+              {label}
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white/80 group-hover:w-full transition-all duration-300"></span>
+            </button>
+          ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-2 z-10">
