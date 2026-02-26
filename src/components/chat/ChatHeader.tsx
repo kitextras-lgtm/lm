@@ -81,10 +81,16 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
             style={{ border: '2px solid rgba(255,255,255,0.15)' }}
           />
           <h3 className="text-lg font-semibold text-center" style={{ color: 'var(--text-primary)' }}>{user.name}</h3>
+          {user.is_admin && (
+            <div className="mt-2 flex items-center gap-1.5 px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Official Support</span>
+            </div>
+          )}
           {user.username && (
             <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>@{user.username}</p>
           )}
-          {user.user_type && (
+          {!user.is_admin && user.user_type && (
             <span
               className="mt-2 px-3 py-0.5 rounded-full text-xs font-medium capitalize"
               style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}

@@ -284,6 +284,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
   const { t } = useTranslation();
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [isAdding, setIsAdding] = useState(false);
+  const [expandedArtistId, setExpandedArtistId] = useState<string | null>(null);
   const [newLink, setNewLink] = useState({
     platform: 'YouTube',
     url: '',
@@ -722,8 +723,8 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
           links.map((link) => {
             const Icon = platformIcons[link.platform] || Link2;
             return (
+              <React.Fragment key={link.id}>
               <div
-                key={link.id}
                 className="flex items-center justify-between p-3 sm:p-4 rounded-lg transition-all duration-200 hover:brightness-105"
                 style={{ backgroundColor: 'transparent' }}
               >
@@ -737,13 +738,25 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm sm:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                      {link.display_name || link.platform}
-                    </div>
-                    {link.platform !== 'Artist' && (
-                      <div className="text-xs sm:text-sm truncate" style={{ color: 'var(--text-primary)' }}>
-                        {link.url.replace(/^https?:\/\//i, '')}
-                      </div>
+                    {link.platform === 'Artist' ? (
+                      <button
+                        className="text-left w-full"
+                        onClick={() => setExpandedArtistId(expandedArtistId === link.id ? null : link.id)}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm sm:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }}>{link.display_name || link.platform}</span>
+                          <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform ${expandedArtistId === link.id ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                        </div>
+                      </button>
+                    ) : (
+                      <>
+                        <div className="text-sm sm:text-base font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                          {link.display_name || link.platform}
+                        </div>
+                        <div className="text-xs sm:text-sm truncate" style={{ color: 'var(--text-primary)' }}>
+                          {link.url.replace(/^https?:\/\//i, '')}
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -784,6 +797,31 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
                   )}
                 </div>
               </div>
+              {link.platform === 'Artist' && expandedArtistId === link.id && (
+                <div className="mt-2 mx-1 rounded-xl p-4 animate-fade-in" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="flex items-start gap-4">
+                    <div className="w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+                      {link.url && !link.url.startsWith('artist:') ? (
+                        <img src={link.url} alt={link.display_name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)' }}>
+                          <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{link.display_name || 'Artist'}</p>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+                          {link.verified ? 'Verified' : 'Pending Approval'}
+                        </span>
+                      </div>
+                      <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Artist profile · Added to your account</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              </React.Fragment>
             );
           })
         )}

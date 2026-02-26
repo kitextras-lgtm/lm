@@ -844,7 +844,7 @@ export function LearnBrands() {
       {/* CTA */}
       <div
         ref={ctaRef}
-        className={`max-w-7xl mx-auto px-4 md:px-6 pb-24 scroll-hidden${ctaVisible ? ' scroll-reveal-up' : ''}`}
+        className={`max-w-7xl mx-auto px-4 md:px-6 pt-20 md:pt-32 pb-24 scroll-hidden${ctaVisible ? ' scroll-reveal-up' : ''}`}
       >
         <div className="text-center">
           <button

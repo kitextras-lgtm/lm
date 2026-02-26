@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/config';
 
 declare global {
@@ -26,9 +26,12 @@ export function LoginPage() {
   const [resendSent, setResendSent] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [showToS, setShowToS] = useState(false);
+  const [showArtistToS, setShowArtistToS] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isFromArtistPage = (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist');
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -415,7 +418,7 @@ export function LoginPage() {
 
             <p className="text-neutral-400 text-xs text-center">
               By signing in, you agree to our{" "}
-              <button className="text-white underline hover:no-underline" onClick={() => setShowToS(true)}>
+              <button className="text-white underline hover:no-underline" onClick={() => isFromArtistPage ? setShowArtistToS(true) : setShowToS(true)}>
                 Terms
               </button>
               {" "}and{" "}
@@ -582,6 +585,72 @@ export function LoginPage() {
             </div>
             <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <button onClick={() => setShowPrivacyPolicy(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Artist Distribution Agreement Modal */}
+      {showArtistToS && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setShowArtistToS(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl flex flex-col"
+            style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Elevate Artist Distribution Agreement</p>
+              <button onClick={() => setShowArtistToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
+              <p>This Artist Distribution Agreement ("Agreement") is entered into between Elevate ("Elevate," "we," "us," or "our"), operating at https://sayelevate.com and [Artist Name / Legal Entity] ("Artist," "you," or "your"). This Agreement governs the submission and digital distribution of musical compositions, sound recordings, artwork, metadata, and related materials submitted by you for distribution and related services.</p>
+              {[
+                { h: '1. Services', b: 'Elevate provides digital music distribution and related services that may include delivery of Works to digital service providers (DSPs), metadata processing and release management, royalty collection and reporting, optional rights administration services, and additional services selected at time of purchase. Elevate operates solely as a distribution and services provider — not as the creator, publisher, or record label of the Works.' },
+                { h: '2.1 Distribution License', b: 'In exchange for applicable fees and/or revenue participation, you grant Elevate a non-exclusive, worldwide license during the term of this Agreement to reproduce, distribute, digitally transmit, publicly perform, display, promote, and make available the Works in all media formats now known or later developed. You also grant Elevate the right to use your artist name, likeness, biographical materials, artwork, and logos solely in connection with distribution and promotion. You retain full ownership of all copyrights at all times.' },
+                { h: '2.2 Optional Rights Administration Services', b: 'If you enroll in optional rights administration services (e.g., neighboring rights, performance rights, or other collection services), you grant Elevate the necessary non-exclusive rights to administer and register the Works on your behalf. This authority is administrative only and does not transfer copyright ownership.' },
+                { h: '2.3 Synchronization Rights (If Applicable)', b: 'If you opt into synchronization services, you grant Elevate a non-exclusive right to license the Works for synchronization in timed relation with audiovisual media. All synchronization placements remain subject to separate approval and agreement where required.' },
+                { h: '3. Ownership and Consents', b: 'You represent and warrant that you own or control all rights necessary to distribute the Works; the Works are original or properly licensed; all required mechanical licenses for cover songs have been secured; and all performers, producers, and contributors have granted necessary permissions. Elevate is not responsible for securing underlying rights unless expressly agreed in writing.' },
+                { h: '4.1 Service Fees', b: 'Fees are listed on sayelevate.com at time of purchase or agreed in writing. Additional services may require separate written agreement and full payment prior to commencement. Elevate is not obligated to provide services beyond those purchased.' },
+                { h: '4.2 Royalties', b: 'Royalty payments are payable only after funds are received from DSPs or licensees, may be subject to transaction or processing fees, will be paid once minimum payout thresholds are met, and require completed and verified identity and tax documentation before release. Elevate may withhold or delay payments where fraud or artificial streaming is suspected, a compliance review is pending, required documentation has not been provided, or DSP penalties or clawbacks occur.' },
+                { h: '5. Artificial Streaming & Fraud', b: 'You agree not to purchase artificial streams, followers, or engagement; use bots or automated traffic; or participate in streaming manipulation networks. If fraudulent activity is detected, royalties may be withheld, releases removed, accounts terminated, and fees forfeited. Elevate is not liable for DSP-imposed penalties resulting from artificial activity.' },
+                { h: '6. Warranties', b: 'You represent and warrant that the Works do not infringe any third-party rights; contain no defamatory, unlawful, or obscene material; contain no malicious code or harmful software; and you are not restricted from entering this Agreement.' },
+                { h: '7. Indemnification', b: 'You agree to indemnify and hold Elevate harmless from any claims, damages, losses, liabilities, or expenses (including legal fees) arising from breach of this Agreement, infringement claims, ownership disputes, fraudulent activity, or third-party claims relating to the Works. Elevate may offset amounts owed against your royalty balance.' },
+                { h: '8.1 Termination by Artist', b: 'You may terminate this Agreement with written notice, provided no outstanding balances are owed and subscription obligations are satisfied. Elevate will instruct DSPs to remove content within 30 days. Elevate is not responsible for third-party delays after removal instructions.' },
+                { h: '8.2 Termination by Elevate', b: 'Elevate may immediately terminate this Agreement if fraud or illegal conduct is suspected, artificial streaming is detected, you breach this Agreement, or you engage in threatening or abusive conduct toward Elevate staff. Termination may result in forfeiture of unpaid royalties.' },
+                { h: '8.3 Refunds', b: 'Refunds are only available if Elevate materially breaches this Agreement.' },
+                { h: '9. Content Delivery', b: 'You must provide all required materials (audio, artwork, metadata) in agreed formats. Elevate is not obligated to begin Services until all required materials are received. Elevate is not responsible for DSP delays, removal decisions, or policy enforcement.' },
+                { h: '10. Use of Support Resources', b: 'You agree to review available documentation before contacting support. Abusive or repeated misuse of support channels may result in termination.' },
+                { h: '11. Confidentiality', b: 'Each party shall keep confidential non-public information disclosed under this Agreement for two (2) years following termination.' },
+                { h: '12. Accurate Information', b: 'You must provide accurate contact and payment details. Elevate is not responsible for losses caused by incorrect payment information provided by you.' },
+                { h: '13. Privacy', b: 'Your personal data is processed in accordance with Elevate\'s Privacy Policy available at sayelevate.com.' },
+                { h: '14. Administrative Registrations', b: 'Where required for rights administration services, you authorize Elevate to act as administrative representative solely for registration and reporting purposes. Copyright ownership remains with you.' },
+                { h: '15. Fair Usage Policy', b: '"Unlimited Distribution" or similar packages are intended for individual artists. Elevate may enforce reasonable usage limits to prevent abuse or bulk-label usage.' },
+                { h: '16. Force Majeure', b: 'Neither party shall be liable for failure or delay caused by events beyond reasonable control, including acts of God, war, government action, DSP policy changes, regulatory intervention, or infrastructure outages.' },
+                { h: '17. Entire Agreement', b: 'This Agreement constitutes the entire agreement between the parties and supersedes prior discussions. If any provision is unenforceable, the remainder remains valid.' },
+                { h: '18. Governing Law & Dispute Resolution', b: 'This Agreement shall be governed in accordance with Elevate\'s Terms of Service. The parties agree to attempt good-faith resolution prior to formal legal proceedings.' },
+                { h: '19. Term', b: 'This Agreement begins on November 21, 2025 and continues for one (1) year. It automatically renews for successive one-year periods unless either party provides written notice at least thirty (30) days prior to renewal.' },
+                { h: '20. No Third-Party Rights', b: 'No third party shall acquire rights under this Agreement.' },
+              ].map(({ h, b }) => (
+                <div key={h}>
+                  <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>{h}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
+                <p className="font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.92)' }}>Contact</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Support: support@sayelevate.com<br />Privacy / Legal: privacy@sayelevate.com</p>
+              </div>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowArtistToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
                 Close
               </button>
             </div>

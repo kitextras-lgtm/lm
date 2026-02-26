@@ -6866,8 +6866,18 @@ export function ArtistDashboard() {
                     )}
                   </div>
 
-                  {/* Bottom Complete Release button */}
-                  <div className="flex flex-col items-center gap-2 pt-2">
+                  {/* Policy agreement + Complete Release button */}
+                  <div className="flex flex-col items-center gap-3 pt-2">
+                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                      <div
+                        onClick={() => setPolicyAgreed(v => !v)}
+                        className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
+                        style={{ backgroundColor: policyAgreed ? 'var(--text-primary)' : 'transparent', border: `2px solid ${policyAgreed ? 'var(--text-primary)' : 'var(--border-default)'}` }}
+                      >
+                        {policyAgreed && <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="var(--bg-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                      </div>
+                      <span className="text-xs" style={{ color: 'var(--text-primary)' }}>I agree to Elevate's music distribution and services policies.</span>
+                    </label>
                     {!rf.releaseArtists && (
                       <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(239,68,68,0.9)' }}>
                         <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -6875,15 +6885,26 @@ export function ArtistDashboard() {
                       </p>
                     )}
                     <button
-                      disabled={!rf.releaseArtists}
-                      onClick={() => { setReleaseStep(1); setUploadingTracks([]); setEditingTrackIndex(null); setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' }); }}
+                      disabled={!rf.releaseArtists || !policyAgreed}
+                      onClick={async () => {
+                        if (draftId) {
+                          await supabase.from('release_drafts').update({ status: 'submitted' }).eq('id', draftId);
+                          await fetchDrafts(currentUserId);
+                        }
+                        setReleaseStep(1);
+                        setUploadingTracks([]);
+                        setEditingTrackIndex(null);
+                        setDraftId(null);
+                        setPolicyAgreed(false);
+                        setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
+                        setReleaseChecklist([false, false, false]);
+                        setShowReleaseForm(false);
+                        setMyReleasesTab('complete');
+                      }}
                       className="flex items-center gap-2 px-8 py-3 rounded-full text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
+                      style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Complete Release
+                      Submit Release
                     </button>
                   </div>
                 </div>
@@ -6959,43 +6980,7 @@ export function ArtistDashboard() {
                       </button>
                     </div>
                   );
-                })() : (
-                  <div className="flex flex-col items-end gap-3">
-                    <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                      <div
-                        onClick={() => setPolicyAgreed(v => !v)}
-                        className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
-                        style={{ backgroundColor: policyAgreed ? 'var(--text-primary)' : 'transparent', border: `2px solid ${policyAgreed ? 'var(--text-primary)' : 'var(--border-default)'}` }}
-                      >
-                        {policyAgreed && <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2 6 5 9 10 3" stroke="var(--bg-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                      </div>
-                      <span className="text-xs" style={{ color: 'var(--text-primary)' }}>I agree to Elevate's music distribution and services policies.</span>
-                    </label>
-                    <button
-                      onClick={async () => {
-                        if (!policyAgreed) return;
-                        if (draftId) {
-                          await supabase.from('release_drafts').update({ status: 'submitted' }).eq('id', draftId);
-                          await fetchDrafts(currentUserId);
-                        }
-                        setReleaseStep(1);
-                        setUploadingTracks([]);
-                        setEditingTrackIndex(null);
-                        setDraftId(null);
-                        setPolicyAgreed(false);
-                        setReleaseForm({ title: '', copyrightHolder: '', copyrightYear: String(new Date().getFullYear()), productionHolder: '', productionYear: String(new Date().getFullYear()), recordLabel: 'Independent', releaseArtists: '', genre: '', secondaryGenre: '', language: 'English', releaseDate: '', countryRestrictions: false, releasedBefore: false, originalReleaseDate: '', stores: [], tracks: [], artworkFile: null, artworkPreview: '' });
-                        setReleaseChecklist([false, false, false]);
-                        setShowReleaseForm(false);
-                        setMyReleasesTab('complete');
-                      }}
-                      disabled={!policyAgreed}
-                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-                    >
-                      Submit Release
-                    </button>
-                  </div>
-                )}
+                })() : null}
               </div>
                 </div>
             </div>
