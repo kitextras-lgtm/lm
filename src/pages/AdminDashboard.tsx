@@ -2286,6 +2286,15 @@ export function AdminDashboard() {
                                             const hasCredits = c.composer || c.songwriter || c.engineer || c.performer || (t.extraCredits?.length > 0);
                                             const hasLyrics = t.addLyrics && (t.lyricsText || t.lyricsDocName);
                                             const hasDetails = t.fileName || t.isrcCode || t.previewStart != null || hasCredits || hasLyrics;
+                                            // Resolve audio URL: use stored url, or reconstruct from storage path
+                                            const resolvedAudioUrl = t.audioUrl || (() => {
+                                              if (t.fileName && rel.user_id && rel.id) {
+                                                const path = `${rel.user_id}/${rel.id}/${t.fileName}`;
+                                                const { data } = supabase.storage.from('release-audio').getPublicUrl(path);
+                                                return data?.publicUrl || '';
+                                              }
+                                              return '';
+                                            })();
                                             return (
                                               <div key={i} className="rounded-lg overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
                                                 {/* Track header row */}
@@ -2305,10 +2314,12 @@ export function AdminDashboard() {
                                                     )}
                                                   </div>
                                                   <div className="flex items-center gap-1 flex-shrink-0">
-                                                    {t.audioUrl && (
+                                                    {resolvedAudioUrl && (
                                                       <a
-                                                        href={t.audioUrl}
+                                                        href={resolvedAudioUrl}
                                                         download={t.fileName || `${t.title || 'track'}.mp3`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                         className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all hover:brightness-110"
                                                         style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
                                                         onClick={e => e.stopPropagation()}

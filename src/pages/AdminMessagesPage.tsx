@@ -203,6 +203,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
               backgroundTheme={theme}
               onBack={() => setShowSidebar(true)}
               showBackButton={true}
+              enableSpellCheck={true}
             />
           )}
         </div>
@@ -328,6 +329,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
             currentUserId={selectedConversation.admin_id || currentAdminId}
             getSenderName={getSenderName}
             backgroundTheme={theme}
+            enableSpellCheck={true}
           />
         ) : showChatSkeleton ? (
           <ChatWindowSkeleton backgroundTheme={theme} />

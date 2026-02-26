@@ -39,6 +39,7 @@ interface ChatWindowProps {
   isRequest?: boolean;
   onAcceptRequest?: () => Promise<void>;
   onDenyRequest?: () => Promise<void>;
+  enableSpellCheck?: boolean;
 }
 
 export const ChatWindow = memo(function ChatWindow({
@@ -60,6 +61,7 @@ export const ChatWindow = memo(function ChatWindow({
   onDenyRequest,
   onSendPendingMessage,
   onCancelPending,
+  enableSpellCheck = false,
 }: ChatWindowProps) {
   // Instagram/X pattern: Handle pending conversation state (no DB conversation yet)
   const { t } = useTranslation();
@@ -131,6 +133,7 @@ export const ChatWindow = memo(function ChatWindow({
             onTyping={() => {}}
             disabled={false}
             otherUserName={pendingRecipient.username}
+            enableSpellCheck={enableSpellCheck}
           />
         </div>
       </div>
@@ -664,6 +667,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
             replyTo={replyTo}
             onCancelReply={() => setReplyTo(null)}
             otherUserName={otherUser?.username || ''}
+            enableSpellCheck={enableSpellCheck}
           />
 
       {/* Info Drawer */}

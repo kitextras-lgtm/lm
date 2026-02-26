@@ -21,6 +21,7 @@ interface ChatInputProps {
   initialDraft?: string;
   onDraftChange?: (conversationId: string, content: string) => void;
   onDraftClear?: (conversationId: string) => void;
+  enableSpellCheck?: boolean;
 }
 
 export function ChatInput({ 
@@ -34,6 +35,7 @@ export function ChatInput({
   initialDraft = '',
   onDraftChange,
   onDraftClear,
+  enableSpellCheck = false,
 }: ChatInputProps) {
   const { t } = useTranslation();
   // Fix 22: Initialize with draft if provided
@@ -299,6 +301,9 @@ export function ChatInput({
           rows={1}
           maxLength={5000}
           aria-label="Message input"
+          spellCheck={enableSpellCheck}
+          autoCorrect={enableSpellCheck ? 'on' : 'off'}
+          autoCapitalize={enableSpellCheck ? 'sentences' : 'off'}
           className="flex-1 px-4 py-2 text-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed resize-none overflow-y-auto"
           style={{ 
             minHeight: '32px',
