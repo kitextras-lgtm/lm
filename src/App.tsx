@@ -39,6 +39,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(module =
 const LearnArtist = lazy(() => import('./pages/LearnArtist'));
 const LearnFreelancer = lazy(() => import('./pages/LearnFreelancer'));
 const LearnBrands = lazy(() => import('./pages/LearnBrands').then(module => ({ default: module.LearnBrands })));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage').then(module => ({ default: module.TermsOfServicePage })));
 
 function App() {
   return (
@@ -205,7 +206,8 @@ function App() {
           <Route path="/learn/artist" element={<LearnArtist />} />
           <Route path="/learn/freelancer" element={<LearnFreelancer />} />
           <Route path="/learn/brands" element={<LearnBrands />} />
-          
+          <Route path="/terms" element={<TermsOfServicePage />} />
+
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route 

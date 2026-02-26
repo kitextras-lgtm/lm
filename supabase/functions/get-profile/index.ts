@@ -1,50 +1,23 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
-
-function getCorsHeaders(req: Request) {
-  const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") || "*";
-  const origin = req.headers.get("Origin") || "";
-  const resolvedOrigin = allowedOrigin === "*" ? "*" : (origin === allowedOrigin ? origin : allowedOrigin);
-  return {
-    "Access-Control-Allow-Origin": resolvedOrigin,
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-  };
-}
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { handleCors } from '../_shared/cors.ts';
+import { json, jsonError } from '../_shared/response.ts';
+import { createServiceClient } from '../_shared/supabase-client.ts';
 
 Deno.serve(async (req: Request) => {
-  const corsHeaders = getCorsHeaders(req);
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 200,
-      headers: corsHeaders,
-    });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const url = new URL(req.url);
     const userId = url.searchParams.get('userId');
 
     if (!userId) {
-      return new Response(
-        JSON.stringify({ success: false, message: 'User ID required' }),
-        {
-          status: 400,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      return jsonError('User ID required', 400, req);
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabase = createServiceClient();
 
-    // Fetch user data from users table
-    const { data: userData, error: userError } = await supabaseClient
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -52,56 +25,17 @@ Deno.serve(async (req: Request) => {
 
     if (userError) {
       console.error('Error fetching user data:', userError);
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          message: userError.message || 'Failed to fetch user data' 
-        }),
-        {
-          status: 500,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      return jsonError(userError.message || 'Failed to fetch user data', 500, req);
     }
 
-    console.log('✅ Fetched user data from users table');
-    console.log('User data keys:', userData ? Object.keys(userData) : 'null');
-    console.log('Profile picture URL:', userData?.profile_picture_url);
-    console.log('Banner URL:', userData?.banner_url);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        profile: userData,  // Primary data from users table
-        user: userData      // For backwards compatibility
-      }),
-      {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-  } catch (err: any) {
-    console.error('Error in get-profile:', err);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        message: err.message || 'Failed to fetch profile' 
-      }),
-      {
-        status: 500,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    return json({
+      success: true,
+      profile: userData,
+      user: userData,
+    }, 200, req);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Error in get-profile:', message);
+    return jsonError(message || 'Failed to fetch profile', 500, req);
   }
 });
-
-
-

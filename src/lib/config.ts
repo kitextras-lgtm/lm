@@ -1,14 +1,12 @@
 /**
  * Centralized configuration for the application
- * 
- * This file provides a single source of truth for all configuration values.
+ *
  * All other files should import from here instead of accessing import.meta.env directly.
- * 
- * To update Supabase credentials:
- * 1. Update the .env file in the project root
- * 2. Restart the dev server
- * 
- * If .env is not set, fallback values are used (for development only)
+ *
+ * To update credentials:
+ * 1. Copy .env.example to .env (if you haven't already)
+ * 2. Fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+ * 3. Restart the dev server
  */
 
 // Supabase Configuration — no hardcoded fallbacks (security requirement)
@@ -26,13 +24,3 @@ if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'undefined') {
 
 // ASR (Speech-to-Text) Service
 export const ASR_SERVICE_URL = import.meta.env.VITE_ASR_SERVICE_URL || 'http://localhost:8000';
-
-// Log config status in development
-if (import.meta.env.DEV) {
-  console.log('🔧 Config loaded:', {
-    supabaseUrl: SUPABASE_URL?.substring(0, 30) + '...',
-    hasAnonKey: !!SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 10,
-    asrServiceUrl: ASR_SERVICE_URL,
-  });
-}
-
