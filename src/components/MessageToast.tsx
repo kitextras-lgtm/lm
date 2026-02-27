@@ -19,9 +19,12 @@ interface MessageToastProps {
   onNavigateToMessages: () => void;
   theme?: Theme;
   enabled?: boolean;
+  playSound?: boolean;
+  showFaviconBadge?: boolean;
+  unreadCount?: number;
 }
 
-export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark', enabled = true }: MessageToastProps) {
+export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark', enabled = true, playSound = false, showFaviconBadge = false, unreadCount = 0 }: MessageToastProps) {
   const t = themeTokens[theme];
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [dismissingIds, setDismissingIds] = useState<Set<string>>(new Set());
@@ -30,9 +33,81 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
   const seenMessageIds = useRef<Set<string>>(new Set());
   // Use a ref so the realtime callback always reads the latest value (avoids stale closure)
   const enabledRef = useRef(enabled);
+  const playSoundRef = useRef(playSound);
   useEffect(() => { enabledRef.current = enabled; }, [enabled]);
+  useEffect(() => { playSoundRef.current = playSound; }, [playSound]);
   // Also clear any visible toasts immediately when disabled
   useEffect(() => { if (!enabled) { setToasts([]); setDismissingIds(new Set()); } }, [enabled]);
+
+  // Favicon badge effect
+  const faviconLinkRef = useRef<HTMLLinkElement | null>(null);
+  useEffect(() => {
+    if (!showFaviconBadge) {
+      // Restore original favicon
+      const link = faviconLinkRef.current || (document.querySelector("link[rel~='icon']") as HTMLLinkElement | null);
+      if (link) link.href = '/favicon.ico';
+      return;
+    }
+    if (unreadCount <= 0) {
+      const link = faviconLinkRef.current || (document.querySelector("link[rel~='icon']") as HTMLLinkElement | null);
+      if (link) link.href = '/favicon.ico';
+      return;
+    }
+    // Draw badge on canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const img = new Image();
+    img.src = '/favicon.ico';
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, 32, 32);
+      // Badge circle
+      const badgeSize = 13;
+      const x = 32 - badgeSize;
+      const y = 0;
+      ctx.beginPath();
+      ctx.arc(x, y + badgeSize, badgeSize / 1.3, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+      // Badge count
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(unreadCount > 99 ? '99+' : String(unreadCount), x, y + badgeSize);
+      // Apply to favicon
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = canvas.toDataURL('image/png');
+      faviconLinkRef.current = link;
+    };
+    img.onerror = () => {
+      // Fallback: draw plain red circle if favicon fails to load
+      ctx.beginPath();
+      ctx.arc(16, 16, 16, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(unreadCount > 99 ? '99+' : String(unreadCount), 16, 16);
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = canvas.toDataURL('image/png');
+      faviconLinkRef.current = link;
+    };
+  }, [showFaviconBadge, unreadCount]);
 
   const dismissToast = useCallback((id: string) => {
     // Clear auto-dismiss timer
@@ -103,6 +178,15 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
           if (!conv) return;
 
           seenMessageIds.current.add(msg.id);
+
+          // Play notification sound if enabled
+          if (playSoundRef.current) {
+            try {
+              const audio = new Audio('/elevate notification ping v1.wav');
+              audio.volume = 0.7;
+              audio.play().catch(() => {});
+            } catch {}
+          }
 
           // Fetch sender info — try unified_users first (covers all user types + avatar)
           let senderName = 'Someone';

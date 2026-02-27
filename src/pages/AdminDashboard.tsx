@@ -342,12 +342,20 @@ export function AdminDashboard() {
 
   useEffect(() => {
     const fetchAdminProfileId = async () => {
-      if (admin && !adminProfileId) {
-        const profileId = await getAdminId();
-        if (profileId) {
-          setAdminProfileId(profileId);
-        }
+      if (!admin) return;
+      // Try profiles table first
+      const profileId = await getAdminId();
+      if (profileId) {
+        setAdminProfileId(profileId);
+        return;
       }
+      // Fallback: use the supabase auth session user ID
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.id) {
+          setAdminProfileId(user.id);
+        }
+      } catch {}
     };
     fetchAdminProfileId();
   }, [admin]);
@@ -994,6 +1002,10 @@ export function AdminDashboard() {
       activeSection={activeSection}
       onNavigateToMessages={() => setActiveSection('messages')}
       theme={theme}
+      enabled={messageNotifications}
+      playSound={newMessageSound}
+      showFaviconBadge={unreadMessageBadge}
+      unreadCount={adminUnreadCount}
     />
     <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: tokens.bg.primary }}>
       {/* Left Sidebar - Desktop Only */}

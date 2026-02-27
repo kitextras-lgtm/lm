@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton } from '../components/chat';
 import { useAdminConversations, usePresence, useProfile } from '../hooks/useChat';
 import { supabase } from '../lib/supabase';
@@ -86,51 +86,61 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
     debouncedSearch(searchQuery);
   }, [searchQuery, debouncedSearch]);
 
+  const hasInitializedRef = useRef(false);
+
   useEffect(() => {
+    // Wait until loading is done
+    if (loading || !currentAdminId) return;
+
+    // Only run auto-select once
+    if (hasInitializedRef.current) {
+      setInitializing(false);
+      return;
+    }
+
     const initializeConversation = async () => {
-      if (!loading && currentAdminId) {
-        const isMobile = window.innerWidth < 1024;
-        
-        if (conversations.length > 0) {
-          // Try to restore last conversation from localStorage
-          const lastConvId = localStorage.getItem(`lastConversation_${currentAdminId}`);
-          if (lastConvId) {
-            const lastConv = conversations.find(c => c.id === lastConvId);
-            if (lastConv) {
-              setSelectedConversation(lastConv);
-              // Mark conversation as read if it has unread messages
-              if (lastConv.unread_count_admin > 0) {
-                const { error } = await supabase
-                  .from('conversations')
-                  .update({ unread_count_admin: 0 })
-                  .eq('id', lastConv.id);
-                if (error) console.error('Error marking conversation as read:', error);
-              }
-              setInitializing(false);
-              return;
-            }
-          }
-          
-          // No last conversation found, select first conversation (desktop only)
-          if (!isMobile) {
-            const firstConv = conversations[0];
-            setSelectedConversation(firstConv);
-            // Mark first conversation as read if it has unread messages
-            if (firstConv.unread_count_admin > 0) {
+      const isMobile = window.innerWidth < 1024;
+
+      if (conversations.length > 0) {
+        // Try to restore last conversation from localStorage
+        const lastConvId = localStorage.getItem(`lastConversation_${currentAdminId}`);
+        if (lastConvId) {
+          const lastConv = conversations.find(c => c.id === lastConvId);
+          if (lastConv) {
+            setSelectedConversation(lastConv);
+            if (lastConv.unread_count_admin > 0) {
               const { error } = await supabase
                 .from('conversations')
                 .update({ unread_count_admin: 0 })
-                .eq('id', firstConv.id);
+                .eq('id', lastConv.id);
               if (error) console.error('Error marking conversation as read:', error);
             }
+            hasInitializedRef.current = true;
+            setInitializing(false);
+            return;
           }
         }
-        setInitializing(false);
+
+        // No last conversation found — select first on desktop
+        if (!isMobile) {
+          const firstConv = conversations[0];
+          setSelectedConversation(firstConv);
+          if (firstConv.unread_count_admin > 0) {
+            const { error } = await supabase
+              .from('conversations')
+              .update({ unread_count_admin: 0 })
+              .eq('id', firstConv.id);
+            if (error) console.error('Error marking conversation as read:', error);
+          }
+        }
       }
+
+      hasInitializedRef.current = true;
+      setInitializing(false);
     };
 
     initializeConversation();
-  }, [currentAdminId, loading, conversations.length]);
+  }, [currentAdminId, loading, conversations]);
 
   const filteredConversations = useMemo(
     () =>
