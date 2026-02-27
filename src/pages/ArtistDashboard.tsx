@@ -765,7 +765,7 @@ function PowerWidgetDischarged({ }: PowerWidgetDischargedProps) {
   )
 }
 
-function FighterMusicCard({ onClick }: { onClick?: () => void }) {
+function FighterMusicCard({ onClick, onViewMore }: { onClick?: () => void; onViewMore?: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   const [entered, setEntered] = useState(false);
@@ -839,7 +839,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
         <button
           className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
           style={{ color: 'var(--text-primary)' }}
-          onClick={e => { e.stopPropagation(); onClick?.(); }}
+          onClick={e => { e.stopPropagation(); (onViewMore ?? onClick)?.(); }}
         >
           <span>View more</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -866,7 +866,7 @@ function TotalSongsDistributedCard({ onViewMore }: { onViewMore?: () => void }) 
   return (
     <div
       ref={ref}
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 transition-all duration-200 hover:brightness-105 cursor-pointer border"
+      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s, filter 0.2s' }}
     >
       <div className="mb-6 sm:mb-8">
@@ -2098,6 +2098,8 @@ export function ArtistDashboard() {
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [homeSubPage, setHomeSubPage] = useState<'main' | 'analytics' | 'exposure'>('main');
+  const [analyticsView, setAnalyticsView] = useState<'weekly' | 'monthly' | 'lifetime'>('weekly');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(false);
   const [releaseStep, setReleaseStep] = useState(1);
@@ -5306,14 +5308,237 @@ export function ArtistDashboard() {
         )}
 
         
-        {activeSection === 'home' && (
+        {activeSection === 'home' && homeSubPage === 'analytics' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            {/* Back button */}
+            <div className="mb-6">
+              <button
+                onClick={() => setHomeSubPage('main')}
+                className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                <span>Back</span>
+              </button>
+            </div>
+
+            <section className="mb-10 sm:mb-20">
+              <div className="mb-5 sm:mb-7">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>Revenue Analytics</h2>
+                  <div className="flex items-center gap-1 p-1 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    {(['weekly', 'monthly', 'lifetime'] as const).map(v => (
+                      <button key={v} onClick={() => setAnalyticsView(v)}
+                        className="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+                        style={{ backgroundColor: analyticsView === v ? 'var(--text-primary)' : 'transparent', color: analyticsView === v ? 'var(--bg-primary)' : 'var(--text-primary)', opacity: analyticsView === v ? 1 : 0.5 }}
+                      >
+                        {v.charAt(0).toUpperCase() + v.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue Sources — Donut Chart */}
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h3 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Revenue Sources</h3>
+                  <div className="flex flex-col items-center">
+                    <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                      <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#E8DFD0" strokeWidth="12"
+                          strokeDasharray={`${48 * 2.51} ${100 * 2.51}`} strokeDashoffset="0" className="donut-segment"
+                          style={{ animation: 'donutGrow 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards', opacity: 0 }} />
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#93C5FD" strokeWidth="12"
+                          strokeDasharray={`${32 * 2.51} ${100 * 2.51}`} strokeDashoffset={`${-48 * 2.51}`} className="donut-segment"
+                          style={{ animation: 'donutGrow2 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards', opacity: 0 }} />
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6B7280" strokeWidth="12"
+                          strokeDasharray={`${13 * 2.51} ${100 * 2.51}`} strokeDashoffset={`${-(48 + 32) * 2.51}`} className="donut-segment"
+                          style={{ animation: 'donutGrow3 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards', opacity: 0 }} />
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#4B5563" strokeWidth="12"
+                          strokeDasharray={`${7 * 2.51} ${100 * 2.51}`} strokeDashoffset={`${-(48 + 32 + 13) * 2.51}`} className="donut-segment"
+                          style={{ animation: 'donutGrow4 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards', opacity: 0 }} />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mt-6 w-full">
+                      {[
+                        { label: 'Streaming', pct: 48, color: '#E8DFD0' },
+                        { label: 'Downloads', pct: 32, color: '#93C5FD' },
+                        { label: 'Sync / Licensing', pct: 13, color: '#6B7280' },
+                        { label: 'Other', pct: 7, color: '#4B5563' },
+                      ].map(({ label, pct, color }) => (
+                        <div key={label} className="flex items-center justify-between py-2.5 px-3 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                            <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                          </div>
+                          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{pct}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <style>{`
+                    @keyframes donutGrow { 0% { stroke-dasharray: 0 251; opacity: 0; } 50% { opacity: 1; } 100% { stroke-dasharray: ${48 * 2.51} 251; opacity: 1; } }
+                    @keyframes donutGrow2 { 0% { stroke-dasharray: 0 251; opacity: 0; } 50% { opacity: 1; } 100% { stroke-dasharray: ${32 * 2.51} 251; opacity: 1; } }
+                    @keyframes donutGrow3 { 0% { stroke-dasharray: 0 251; opacity: 0; } 50% { opacity: 1; } 100% { stroke-dasharray: ${13 * 2.51} 251; opacity: 1; } }
+                    @keyframes donutGrow4 { 0% { stroke-dasharray: 0 251; opacity: 0; } 50% { opacity: 1; } 100% { stroke-dasharray: ${7 * 2.51} 251; opacity: 1; } }
+                    .donut-segment { transform-origin: center; transition: all 0.3s ease-out; }
+                    .donut-segment:hover { filter: brightness(1.1); }
+                  `}</style>
+                </div>
+
+                {/* Revenue Over Time — Bar Chart */}
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Revenue Over Time</h3>
+                  </div>
+                  <div className="flex items-center justify-between mb-6">
+                    <p className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                    <span className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</span>
+                  </div>
+                  <div className="flex gap-4 h-56">
+                    <div className="flex flex-col justify-between text-right py-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>
+                      {[analyticsView === 'weekly' ? ['10K','8K','6K','4K','2K','0'] : analyticsView === 'monthly' ? ['50K','40K','30K','20K','10K','0'] : ['100K','80K','60K','40K','20K','0']][0].map(l => (
+                        <span key={l} className="text-xs">{l}</span>
+                      ))}
+                    </div>
+                    <div className="flex-1 flex items-end justify-between gap-2">
+                      {(analyticsView === 'weekly'
+                        ? [{l:'Sat',v:2400},{l:'Sun',v:5800},{l:'Mon',v:3200},{l:'Tue',v:7200},{l:'Wed',v:4800},{l:'Thu',v:5600},{l:'Fri',v:3600}]
+                        : analyticsView === 'monthly'
+                        ? [{l:'Wk 1',v:12000},{l:'Wk 2',v:18000},{l:'Wk 3',v:15000},{l:'Wk 4',v:22000}]
+                        : [{l:'Jan',v:18000},{l:'Feb',v:22000},{l:'Mar',v:28000},{l:'Apr',v:35000},{l:'May',v:42000},{l:'Jun',v:48000},{l:'Jul',v:55000},{l:'Aug',v:62000},{l:'Sep',v:70000},{l:'Oct',v:78000},{l:'Nov',v:85000},{l:'Dec',v:95000}]
+                      ).map((item, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                          <div className="w-full rounded-t-sm hover:opacity-80 transition-opacity"
+                            style={{ backgroundColor: 'var(--text-primary)', height: `${(item.v / (analyticsView === 'weekly' ? 10000 : analyticsView === 'monthly' ? 50000 : 100000)) * 100}%`, minHeight: '4px' }} />
+                          <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{item.l}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Artist-specific metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mt-6">
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Total Streams</h4>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+                  <p className="text-sm mt-2" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</p>
+                </div>
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Royalties Earned</h4>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                  <p className="text-sm mt-2" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</p>
+                </div>
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Sync Revenue</h4>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                  <p className="text-sm mt-2" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeSection === 'home' && homeSubPage === 'exposure' && (
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+            {/* Back button */}
+            <div className="mb-6">
+              <button
+                onClick={() => setHomeSubPage('main')}
+                className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                <span>Back</span>
+              </button>
+            </div>
+
+            <section className="mb-10 sm:mb-20">
+              <div className="mb-5 sm:mb-7">
+                <h2 className="text-xl sm:text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>New Exposure</h2>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Track how new listeners are discovering your music</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Discovery Channels */}
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h3 className="text-lg font-semibold mb-6" style={{ color: 'var(--text-primary)' }}>Discovery Channels</h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Algorithmic Playlists', pct: 42 },
+                      { label: 'Editorial Playlists', pct: 28 },
+                      { label: 'Artist Radio', pct: 18 },
+                      { label: 'Search', pct: 12 },
+                    ].map(({ label, pct }) => (
+                      <div key={label}>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{pct}%</span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                          <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: 'var(--text-primary)', opacity: 0.7, transition: 'width 0.8s cubic-bezier(0.34,1,0.64,1)' }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* New Listeners Over Time */}
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>New Listeners</h3>
+                  <p className="text-3xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>0</p>
+                  <div className="flex gap-3 h-48">
+                    <div className="flex flex-col justify-between text-right py-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>
+                      {['500','400','300','200','100','0'].map(l => <span key={l} className="text-xs">{l}</span>)}
+                    </div>
+                    <div className="flex-1 flex items-end justify-between gap-2">
+                      {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day, i) => (
+                        <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
+                          <div className="w-full rounded-t-sm" style={{ backgroundColor: 'var(--text-primary)', height: '4px', opacity: 0.25 }} />
+                          <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{day}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Exposure metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mt-6">
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>New Listeners (30d)</h4>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+                  <p className="text-sm mt-2" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</p>
+                </div>
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Playlist Additions</h4>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>0</p>
+                  <p className="text-sm mt-2" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</p>
+                </div>
+                <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                  <h4 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Save Rate</h4>
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>0%</p>
+                  <p className="text-sm mt-2" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>—</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeSection === 'home' && homeSubPage === 'main' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <AnnouncementBanner userId={currentUserId} userType="artist" />
         <section className="mb-10 sm:mb-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-            <RevenueAnalyticsCard />
+            <RevenueAnalyticsCard onViewMore={() => setHomeSubPage('analytics')} />
 
-            <FighterMusicCard />
+            <FighterMusicCard onViewMore={() => setHomeSubPage('exposure')} />
 
             <TotalSongsDistributedCard onViewMore={() => { setActiveSection('explore'); setMyReleasesTab('complete'); }} />
           </div>
@@ -5351,7 +5576,7 @@ export function ArtistDashboard() {
                   onClick={() => {
                     const newIds = [...dismissedApprovedReleaseIds, rel.id];
                     setDismissedApprovedReleaseIds(newIds);
-                    localStorage.setItem(`dismissedApprovedReleaseIds_${currentUserId}`, JSON.stringify(newIds));
+                    localStorage.setItem(`dismissedApprovedReleaseIds_${currentUserId || cachedUserId}`, JSON.stringify(newIds));
                   }}
                   className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:brightness-110"
                   style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
@@ -5389,7 +5614,7 @@ export function ArtistDashboard() {
                 onClick={() => {
                   const newIds = [...dismissedDeclineIds, app.id];
                   setDismissedDeclineIds(newIds);
-                  localStorage.setItem(`dismissedDeclineIds_${currentUserId}`, JSON.stringify(newIds));
+                  localStorage.setItem(`dismissedDeclineIds_${currentUserId || cachedUserId}`, JSON.stringify(newIds));
                 }}
                 className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:brightness-110"
                 style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
