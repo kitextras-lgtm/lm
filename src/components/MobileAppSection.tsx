@@ -390,6 +390,51 @@ function FreelancerProfileScreen() {
   );
 }
 
+function BrandPayoutsScreen() {
+  return (
+    <div className="flex h-full overflow-hidden">
+      <div className="flex flex-col gap-1.5 py-2 px-2 flex-shrink-0" style={{ width: '44px', background: '#111', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="w-7 h-7 rounded-md mx-auto mb-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="w-6 h-6 rounded mx-auto" style={{ background: i === 4 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.04)' }} />
+        ))}
+      </div>
+      <div className="flex-1 p-3 overflow-hidden">
+        <div style={{ fontSize: '6px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>PAYMENTS</div>
+        <div className="grid grid-cols-2 gap-1.5 mb-2.5">
+          {[['Paid Out','$18,400'],['Pending','$3,200']].map(([l,v]) => (
+            <div key={l} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.35)', marginBottom: '2px' }}>{l}</div>
+              <div style={{ fontSize: '9px', fontWeight: 700, color: '#fff' }}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-lg p-2 mb-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontSize: '5px', color: 'rgba(255,255,255,0.3)', marginBottom: '5px' }}>Recent Payouts</div>
+          {[
+            { creator: '@nova.creates', campaign: 'Summer Drops', amount: '$840' },
+            { creator: '@jayvisuals', campaign: 'New Era Collab', amount: '$1,200' },
+            { creator: '@ren.clips', campaign: 'Studio Sessions', amount: '$560' },
+          ].map(t => (
+            <div key={t.creator} className="flex items-center gap-1.5 mb-1">
+              <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: 'rgba(255,255,255,0.12)' }} />
+              <div className="flex-1 min-w-0">
+                <div style={{ fontSize: '5.5px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.creator}</div>
+                <div style={{ fontSize: '4px', color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.campaign}</div>
+              </div>
+              <div style={{ fontSize: '6px', fontWeight: 700, color: '#fff' }}>{t.amount}</div>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-between px-2 py-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ fontSize: '5px', color: 'rgba(255,255,255,0.5)' }}>Next payout cycle</div>
+          <div style={{ fontSize: '5.5px', fontWeight: 700, color: '#fff' }}>Mar 1, 2026</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const SCREEN_MAP: Record<string, () => JSX.Element> = {
   analytics: AnalyticsScreen,
   releases: ReleasesScreen,
@@ -398,6 +443,7 @@ const SCREEN_MAP: Record<string, () => JSX.Element> = {
   partnerships: PartnershipsScreen,
   campaigns: CampaignsScreen,
   jobboard: JobBoardScreen,
+  brand_payouts: BrandPayoutsScreen,
   freelancer_earnings: FreelancerEarningsScreen,
   freelancer_profile: FreelancerProfileScreen,
 };
@@ -422,7 +468,7 @@ const VARIANT_FEATURES: Record<string, typeof DESKTOP_FEATURES> = {
     { label: 'Campaigns', desc: 'Launch and manage influencer campaigns', screen: 'releases' },
     { label: 'Analytics', desc: 'Measure reach, engagement and ROI in real time', screen: 'analytics' },
     { label: 'Messages', desc: 'Collaborate directly with creators', screen: 'messages' },
-    { label: 'Payments', desc: 'Pay creators securely through the platform', screen: 'publishing' },
+    { label: 'Payments', desc: 'Pay creators securely through the platform', screen: 'brand_payouts' },
   ],
 };
 

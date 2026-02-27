@@ -274,6 +274,11 @@ export function AdminDashboard() {
   const [payTypeDropdownOpen, setPayTypeDropdownOpen] = useState(false);
   const [reassigningCampaignId, setReassigningCampaignId] = useState<string | null>(null);
   const [expandedCampaignId, setExpandedCampaignId] = useState<string | null>(null);
+  const [reassignDropdownOpen, setReassignDropdownOpen] = useState<string | null>(null);
+  const [reassignUserSearch, setReassignUserSearch] = useState('');
+  const reassignDropdownRef = useRef<HTMLDivElement>(null);
+  const [reassignMode, setReassignMode] = useState<'all' | 'specific'>('all');
+  const [reassignSelectedUserIds, setReassignSelectedUserIds] = useState<string[]>([]);
 
   // Feedback state
   interface FeedbackEntry {
@@ -501,6 +506,28 @@ export function AdminDashboard() {
       }
     } catch (e) {
       console.error('Error reassigning campaign:', e);
+    } finally {
+      setReassigningCampaignId(null);
+    }
+  };
+
+  const handleReassignToUser = async (campaign: Campaign, userId: string) => {
+    setReassigningCampaignId(campaign.id);
+    setReassignDropdownOpen(null);
+    try {
+      // Check if already assigned
+      const { data: existing } = await supabase
+        .from('user_campaigns')
+        .select('id')
+        .eq('campaign_id', campaign.id)
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (!existing) {
+        const { error } = await supabase.from('user_campaigns').insert({ campaign_id: campaign.id, user_id: userId });
+        if (error) throw error;
+      }
+    } catch (e) {
+      console.error('Error assigning campaign to user:', e);
     } finally {
       setReassigningCampaignId(null);
     }
@@ -1074,116 +1101,103 @@ export function AdminDashboard() {
         {/* Messages Section - Full width */}
         {activeSection === 'messages' && (
           <div className="animate-fade-in flex-1 flex flex-col min-h-0 overflow-hidden h-[calc(100vh-80px)] lg:h-screen">
-            {adminProfileId ? (
+            {adminProfileId && (
               <AdminMessagesPage currentAdminId={adminProfileId} />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: tokens.text.primary, opacity: 0.4, animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: tokens.text.primary, opacity: 0.4, animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: tokens.text.primary, opacity: 0.4, animationDelay: '300ms' }} />
-                </div>
-              </div>
             )}
           </div>
         )}
 
         {/* Other sections inside wrapper */}
         {activeSection !== 'messages' && (
-          <div className="px-4 sm:px-8 py-6 sm:py-12">
-            {/* Notification Bell - top right floating */}
-            <div className="fixed top-4 right-4 z-50" ref={notifDropdownRef}>
-              <button
-                onClick={() => setNotifDropdownOpen(prev => !prev)}
-                className="relative flex items-center justify-center w-10 h-10 rounded-full transition-all hover:brightness-110"
-                style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                  <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                </svg>
-                {adminUnreadCount > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
-                    style={{ backgroundColor: tokens.text.primary, color: tokens.bg.primary }}
-                  >
-                    {adminUnreadCount > 99 ? '99+' : adminUnreadCount}
-                  </span>
-                )}
-              </button>
-
-              {notifDropdownOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden animate-fade-in"
-                  style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}
-                >
-                  <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: tokens.border.subtle }}>
-                    <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Notifications</p>
-                    {adminUnreadCount > 0 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary }}>
-                        {adminUnreadCount} unread
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-                    {notifConversations.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-10 px-4 gap-2">
-                        <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}>
-                          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                          <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                        </svg>
-                        <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>No new notifications</p>
-                        <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>You're all caught up!</p>
-                      </div>
-                    ) : (
-                      notifConversations.map((conv: any) => (
-                        <button
-                          key={conv.id}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:brightness-110"
-                          style={{ borderBottom: `1px solid ${tokens.border.subtle}`, backgroundColor: 'transparent' }}
-                          onClick={() => {
-                            setNotifDropdownOpen(false);
-                            setActiveSection('messages');
-                          }}
-                        >
-                          <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: tokens.bg.elevated }}>
-                            {conv.customer?.avatar_url ? (
-                              <img src={conv.customer.avatar_url} alt={conv.customer?.name || ''} className="w-full h-full object-cover" />
-                            ) : (
-                              <span style={{ color: tokens.text.primary }}>{(conv.customer?.name || '?').charAt(0).toUpperCase()}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{conv.customer?.name || 'Unknown user'}</p>
-                            <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>
-                              {conv.unread_count_admin} unread message{conv.unread_count_admin !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.text.primary }} />
-                        </button>
-                      ))
-                    )}
-                  </div>
-
-                  {notifConversations.length > 0 && (
-                    <div className="px-4 py-3 border-t" style={{ borderColor: tokens.border.subtle }}>
-                      <button
-                        className="w-full text-center text-sm font-medium transition-all hover:opacity-80"
-                        style={{ color: tokens.text.primary }}
-                        onClick={() => { setNotifDropdownOpen(false); setActiveSection('messages'); }}
-                      >
-                        View all messages
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+          <div className="px-4 sm:px-8 pb-6 sm:pb-12 pt-0 lg:pt-8">
             {activeSection === 'home' && (
               <div className="animate-fade-in">
                 <div className="mb-8">
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2" style={{ color: tokens.text.primary }}>Welcome back, Super Admin</h1>
+                  <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: tokens.text.primary }}>Welcome back, Super Admin</h1>
+                    <div ref={notifDropdownRef} className="relative">
+                      <button
+                        onClick={() => setNotifDropdownOpen(prev => !prev)}
+                        className="relative flex items-center justify-center w-10 h-10 rounded-full transition-all hover:brightness-110"
+                        style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                      >
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                          <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                        </svg>
+                        {adminUnreadCount > 0 && (
+                          <span
+                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
+                            style={{ backgroundColor: tokens.text.primary, color: tokens.bg.primary }}
+                          >
+                            {adminUnreadCount > 99 ? '99+' : adminUnreadCount}
+                          </span>
+                        )}
+                      </button>
+                      {notifDropdownOpen && (
+                        <div
+                          className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50"
+                          style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}
+                        >
+                          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: tokens.border.subtle }}>
+                            <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Notifications</p>
+                            {adminUnreadCount > 0 && (
+                              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary }}>
+                                {adminUnreadCount} unread
+                              </span>
+                            )}
+                          </div>
+                          <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                            {notifConversations.length === 0 ? (
+                              <div className="flex flex-col items-center justify-center py-10 px-4 gap-2">
+                                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}>
+                                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                  <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                                </svg>
+                                <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>No new notifications</p>
+                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>You're all caught up!</p>
+                              </div>
+                            ) : (
+                              notifConversations.map((conv: any) => (
+                                <button
+                                  key={conv.id}
+                                  className="w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:brightness-110"
+                                  style={{ borderBottom: `1px solid ${tokens.border.subtle}`, backgroundColor: tokens.bg.card }}
+                                  onClick={() => { setNotifDropdownOpen(false); setActiveSection('messages'); }}
+                                >
+                                  <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: tokens.bg.elevated }}>
+                                    {conv.customer?.avatar_url ? (
+                                      <img src={conv.customer.avatar_url} alt={conv.customer?.name || ''} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <span style={{ color: tokens.text.primary }}>{(conv.customer?.name || '?').charAt(0).toUpperCase()}</span>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{conv.customer?.name || 'Unknown user'}</p>
+                                    <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>
+                                      {conv.unread_count_admin} unread message{conv.unread_count_admin !== 1 ? 's' : ''}
+                                    </p>
+                                  </div>
+                                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.text.primary }} />
+                                </button>
+                              ))
+                            )}
+                          </div>
+                          {notifConversations.length > 0 && (
+                            <div className="px-4 py-3 border-t" style={{ borderColor: tokens.border.subtle }}>
+                              <button
+                                className="w-full text-center text-sm font-medium transition-all hover:opacity-80"
+                                style={{ color: tokens.text.primary }}
+                                onClick={() => { setNotifDropdownOpen(false); setActiveSection('messages'); }}
+                              >
+                                View all messages
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <p className="text-base" style={{ color: tokens.text.primary }}>Manage your platform from here</p>
                 </div>
                 {/* Quick Nav Cards */}
@@ -1454,7 +1468,7 @@ export function AdminDashboard() {
                       </div>
 
                       {/* Pay type + Payout + Ends at */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className={`grid grid-cols-1 gap-4 ${campaignForm.pay_type === 'Varied' ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
                         <div className="relative">
                           <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Pay Type</label>
                           <button
@@ -1487,6 +1501,7 @@ export function AdminDashboard() {
                             </div>
                           )}
                         </div>
+                        {campaignForm.pay_type !== 'Varied' && (
                         <div>
                           <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Payout</label>
                           <input
@@ -1500,6 +1515,7 @@ export function AdminDashboard() {
                             onBlur={(e) => e.target.style.borderColor = tokens.border.default}
                           />
                         </div>
+                        )}
                         <div>
                           <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Ends At</label>
                           <input
@@ -1794,15 +1810,160 @@ export function AdminDashboard() {
                               </div>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleReassignCampaign(c); }}
-                                disabled={reassigningCampaignId === c.id}
-                                title="Reassign to all creators"
-                                className="flex items-center gap-1 px-2 h-7 rounded-lg text-xs font-medium transition-all hover:brightness-110 disabled:opacity-50"
-                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
-                              >
-                                {reassigningCampaignId === c.id ? <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : 'Reassign'}
-                              </button>
+                              {/* Assign dropdown */}
+                              <div className="relative" ref={reassignDropdownOpen === c.id ? reassignDropdownRef : null}>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (reassignDropdownOpen === c.id) {
+                                      setReassignDropdownOpen(null);
+                                    } else {
+                                      setReassignDropdownOpen(c.id);
+                                      setReassignUserSearch('');
+                                      setReassignMode('all');
+                                      setReassignSelectedUserIds([]);
+                                    }
+                                  }}
+                                  disabled={reassigningCampaignId === c.id}
+                                  title="Assign campaign"
+                                  className="flex items-center gap-1 px-2 h-7 rounded-lg text-xs font-medium transition-all hover:brightness-110 disabled:opacity-50"
+                                  style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                >
+                                  {reassigningCampaignId === c.id
+                                    ? <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
+                                    : <>
+                                        Assign
+                                        <svg className={`w-3 h-3 transition-transform duration-150 ${reassignDropdownOpen === c.id ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                      </>
+                                  }
+                                </button>
+                                {reassignDropdownOpen === c.id && (
+                                  <div
+                                    className="absolute right-0 top-9 z-50 rounded-2xl shadow-2xl animate-fade-in"
+                                    style={{ width: '300px', backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <div className="px-4 py-3 border-b" style={{ borderColor: tokens.border.subtle }}>
+                                      <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Assign Campaign</p>
+                                      <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.name}</p>
+                                    </div>
+                                    <div className="px-4 py-3">
+                                      {/* Assign To toggle */}
+                                      <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary }}>Assign To</label>
+                                      <div className="flex gap-2 mb-3">
+                                        <button
+                                          type="button"
+                                          onClick={() => { setReassignMode('all'); setReassignSelectedUserIds([]); }}
+                                          className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
+                                          style={{
+                                            backgroundColor: reassignMode === 'all' ? tokens.bg.elevated : 'transparent',
+                                            color: tokens.text.primary,
+                                            border: reassignMode === 'all' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                                          }}
+                                        >
+                                          All Creators
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => setReassignMode('specific')}
+                                          className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
+                                          style={{
+                                            backgroundColor: reassignMode === 'specific' ? tokens.bg.elevated : 'transparent',
+                                            color: tokens.text.primary,
+                                            border: reassignMode === 'specific' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                                          }}
+                                        >
+                                          Specific Users
+                                        </button>
+                                      </div>
+
+                                      {/* All Creators summary */}
+                                      {reassignMode === 'all' && (() => {
+                                        const creatorCount = users.filter(u => u.user_type === 'creator').length;
+                                        return (
+                                          <div className="rounded-lg px-3 py-2.5 mb-3" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                                            <p className="text-xs" style={{ color: tokens.text.primary }}>
+                                              This campaign will be assigned to <span className="font-semibold">{creatorCount} creator{creatorCount !== 1 ? 's' : ''}</span> on the platform.
+                                            </p>
+                                          </div>
+                                        );
+                                      })()}
+
+                                      {/* Specific Users picker */}
+                                      {reassignMode === 'specific' && (() => {
+                                        const creatorUsers = users.filter(u => u.user_type === 'creator');
+                                        const q = reassignUserSearch.toLowerCase().trim();
+                                        const filtered = creatorUsers.filter(u =>
+                                          !q ||
+                                          (u.full_name?.toLowerCase().includes(q)) ||
+                                          (u.username?.toLowerCase().includes(q)) ||
+                                          (u.email?.toLowerCase().includes(q))
+                                        );
+                                        return (
+                                          <div className="mb-3">
+                                            <div className="relative mb-2">
+                                              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.45 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                                              <input
+                                                type="text"
+                                                value={reassignUserSearch}
+                                                onChange={e => setReassignUserSearch(e.target.value)}
+                                                placeholder="Search creators..."
+                                                className="w-full pl-7 pr-2 py-1.5 rounded-lg text-xs focus:outline-none"
+                                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                              />
+                                            </div>
+                                            <div className="max-h-36 overflow-y-auto rounded-lg" style={{ border: `1px solid ${tokens.border.subtle}`, scrollbarWidth: 'thin' }}>
+                                              {filtered.length === 0 ? (
+                                                <p className="px-3 py-2 text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>No creators found</p>
+                                              ) : filtered.slice(0, 20).map(u => {
+                                                const isSelected = reassignSelectedUserIds.includes(u.id);
+                                                return (
+                                                  <button
+                                                    key={u.id}
+                                                    className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition-all hover:brightness-110"
+                                                    style={{ color: tokens.text.primary, backgroundColor: isSelected ? tokens.bg.elevated : 'transparent', borderBottom: `1px solid ${tokens.border.subtle}` }}
+                                                    onClick={() => setReassignSelectedUserIds(prev =>
+                                                      isSelected ? prev.filter(id => id !== u.id) : [...prev, u.id]
+                                                    )}
+                                                  >
+                                                    <div className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: tokens.bg.active }}>
+                                                      {(u.full_name || u.username || u.email || '?').charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <span className="flex-1 truncate">{u.full_name || u.username || u.email}</span>
+                                                    {isSelected && (
+                                                      <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M20 6L9 17l-5-5"/></svg>
+                                                    )}
+                                                  </button>
+                                                );
+                                              })}
+                                            </div>
+                                            {reassignSelectedUserIds.length > 0 && (
+                                              <p className="text-xs mt-1.5" style={{ color: tokens.text.primary, opacity: 0.55 }}>{reassignSelectedUserIds.length} selected</p>
+                                            )}
+                                          </div>
+                                        );
+                                      })()}
+
+                                      {/* Confirm button */}
+                                      <button
+                                        className="w-full py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-40"
+                                        style={{ backgroundColor: tokens.text.primary, color: tokens.bg.primary }}
+                                        disabled={reassignMode === 'specific' && reassignSelectedUserIds.length === 0}
+                                        onClick={() => {
+                                          if (reassignMode === 'all') {
+                                            handleReassignCampaign(c);
+                                          } else {
+                                            reassignSelectedUserIds.forEach(uid => handleReassignToUser(c, uid));
+                                          }
+                                          setReassignDropdownOpen(null);
+                                        }}
+                                      >
+                                        Confirm Assignment
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}
                                 disabled={deletingCampaignId === c.id}

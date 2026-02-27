@@ -267,8 +267,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  const showConversationSkeletons = loading && conversations.length === 0;
-  const showChatSkeleton = initializing && !selectedConversation;
+  const showConversationSkeletons = false;
+  const showChatSkeleton = false;
 
   if (isMobile && showChatOnMobile && selectedConversation) {
     return (

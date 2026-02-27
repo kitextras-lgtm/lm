@@ -16,6 +16,7 @@ import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { MessageToast } from '../components/MessageToast';
+import { NotificationBell, type AppNotification } from '../components/NotificationPanel';
 import { CollapsibleSidebar } from '../components/CollapsibleSidebar';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import ContentDetectionForm from '../components/ContentDetectionForm';
@@ -198,8 +199,9 @@ interface CampaignData {
   requiredHashtags?: string[];
 }
 
-function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | null; onClose: () => void; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white' }) {
+function CampaignDetailModal({ campaign, onClose, onJoin }: { campaign: CampaignData | null; onClose: () => void; onJoin?: (campaign: CampaignData) => void; backgroundTheme?: 'light' | 'grey' | 'dark' | 'rose' | 'white' }) {
   const [showFullRules, setShowFullRules] = useState(false);
+  const [joined, setJoined] = useState(false);
 
   if (!campaign) return null;
 
@@ -305,12 +307,23 @@ function CampaignDetailModal({ campaign, onClose }: { campaign: CampaignData | n
         
         {/* Join button */}
         <div className="px-7 pb-7">
-          <button
-            className="w-full py-4 rounded-xl text-black font-semibold text-base transition-all hover:opacity-90"
-            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
-          >
-            Join campaign
-          </button>
+          {joined ? (
+            <div className="w-full py-4 rounded-xl text-center font-semibold text-base" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
+              ✓ Enrolled in campaign
+            </div>
+          ) : (
+            <button
+              className="w-full py-4 rounded-xl font-semibold text-base transition-all hover:opacity-90"
+              style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              onClick={() => {
+                setJoined(true);
+                onJoin?.(campaign);
+                setTimeout(onClose, 900);
+              }}
+            >
+              Join campaign
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -719,7 +732,216 @@ function PowerWidget() {
   )
 }
 
-function ActiveOpportunitiesCard({ onViewMore, assignedCampaigns, newCampaignIds }: { onViewMore?: () => void; assignedCampaigns?: any[]; newCampaignIds?: Set<string> }) {
+type SubmittedPost = { url: string; platform: 'instagram' | 'tiktok' | 'youtube'; submittedAt: string };
+
+function EnrolledCampaignCard({ campaign }: { campaign: CampaignData }) {
+  const [tab, setTab] = useState<'directions' | 'posts' | 'submit'>('directions');
+  const [submitUrl, setSubmitUrl] = useState('');
+  const [submitPlatform, setSubmitPlatform] = useState<'instagram' | 'tiktok' | 'youtube'>(
+    campaign.platforms.includes('instagram') ? 'instagram' : campaign.platforms.includes('tiktok') ? 'tiktok' : 'youtube'
+  );
+  const [submittedPosts, setSubmittedPosts] = useState<SubmittedPost[]>([]);
+
+  const handleSubmit = () => {
+    if (!submitUrl.trim()) return;
+    setSubmittedPosts(prev => [...prev, { url: submitUrl.trim(), platform: submitPlatform, submittedAt: 'Just now' }]);
+    setSubmitUrl('');
+  };
+
+  return (
+    <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+      {/* Card header */}
+      <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3">
+        <div className="flex items-center justify-between mb-1">
+          <h4 className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{campaign.name}</h4>
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>Enrolled</span>
+        </div>
+        {campaign.description && <p className="text-xs sm:text-sm line-clamp-1 mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{campaign.description}</p>}
+        {/* Platform icons */}
+        <div className="flex items-center gap-1.5 mb-3">
+          {campaign.platforms.includes('instagram') && <div className="w-4 h-4"><InstagramIconAnimated isHovered={true} /></div>}
+          {campaign.platforms.includes('tiktok') && <div className="w-4 h-4"><TikTokIcon isHovered={true} /></div>}
+          {campaign.platforms.includes('youtube') && <div className="w-4 h-4"><YouTubeIcon isHovered={true} /></div>}
+        </div>
+        {/* Tabs */}
+        <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+          {(['directions', 'posts', 'submit'] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className="flex-1 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all"
+              style={{
+                backgroundColor: tab === t ? 'var(--bg-card)' : 'transparent',
+                color: 'var(--text-primary)',
+                opacity: tab === t ? 1 : 0.55,
+                border: tab === t ? '1px solid var(--border-subtle)' : '1px solid transparent',
+              }}
+            >
+              {t === 'directions' ? 'Directions' : t === 'posts' ? 'My Posts' : 'Submit Post'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab content */}
+      {tab === 'directions' && (
+        <div className="px-4 sm:px-5 pb-4 sm:pb-5">
+          <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+            <div className="flex gap-3 mb-3">
+              <div className="flex-1 text-center py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Ends</p>
+                <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>{campaign.endsIn}</p>
+              </div>
+              <div className="flex-1 text-center py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Pay Type</p>
+                <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>{campaign.payType || '—'}</p>
+              </div>
+              <div className="flex-1 text-center py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Language</p>
+                <p className="text-sm font-semibold mt-0.5" style={{ color: 'var(--text-primary)' }}>{campaign.language}</p>
+              </div>
+            </div>
+            {campaign.description && (
+              <p className="text-sm mb-3" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>{campaign.description}</p>
+            )}
+            {campaign.rules.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>RULES</p>
+                {campaign.rules.map((rule, i) => (
+                  <p key={i} className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>• {rule}</p>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {tab === 'posts' && (
+        <div className="px-4 sm:px-5 pb-4 sm:pb-5">
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>Campaign Views</p>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Total views from all approved clips will appear here.</p>
+            </div>
+            <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>Earnings</p>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Reach 5,000 views on a post to qualify for payouts.</p>
+            </div>
+          </div>
+          <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Approved posts keep earning for up to 7 days after the campaign ends, or until the budget runs out.</p>
+          {/* Table header */}
+          <div className="grid grid-cols-5 gap-1 px-2 py-1.5 rounded-lg mb-1 text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', opacity: 0.55 }}>
+            <span className="col-span-2">Post</span>
+            <span>Status</span>
+            <span>Views</span>
+            <span>Earned</span>
+          </div>
+          {submittedPosts.length === 0 ? (
+            <div className="rounded-xl py-10 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg className="w-7 h-7 mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>No posts yet</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Submit a post to start tracking your performance.</p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {submittedPosts.map((post, i) => (
+                <div key={i} className="grid grid-cols-5 gap-1 items-center px-2 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="col-span-2 flex items-center gap-1.5 min-w-0">
+                    <div className="w-4 h-4 flex-shrink-0">
+                      {post.platform === 'instagram' && <InstagramIconAnimated isHovered={true} />}
+                      {post.platform === 'tiktok' && <TikTokIcon isHovered={true} />}
+                      {post.platform === 'youtube' && <YouTubeIcon isHovered={true} />}
+                    </div>
+                    <span className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{post.url.replace(/^https?:\/\//, '')}</span>
+                  </div>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Pending</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>—</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>—</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === 'submit' && (
+        <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3">
+          {/* Platform selector */}
+          <div className="flex gap-2">
+            {(['instagram', 'tiktok', 'youtube'] as const).filter(p => campaign.platforms.includes(p)).map(p => (
+              <button
+                key={p}
+                onClick={() => setSubmitPlatform(p)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: submitPlatform === p ? 'var(--text-primary)' : 'var(--bg-elevated)',
+                  color: submitPlatform === p ? 'var(--bg-primary)' : 'var(--text-primary)',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <div className="w-3.5 h-3.5">
+                  {p === 'instagram' && <InstagramIconAnimated isHovered={submitPlatform === p} />}
+                  {p === 'tiktok' && <TikTokIcon isHovered={submitPlatform === p} />}
+                  {p === 'youtube' && <YouTubeIcon isHovered={submitPlatform === p} />}
+                </div>
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </button>
+            ))}
+          </div>
+          <input
+            type="url"
+            value={submitUrl}
+            onChange={e => setSubmitUrl(e.target.value)}
+            placeholder="https://..."
+            className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all"
+            style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+            onFocus={e => (e.target.style.borderColor = 'var(--text-primary)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--border-subtle)')}
+          />
+          <button
+            disabled={!submitUrl.trim()}
+            onClick={handleSubmit}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
+            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+          >
+            Submit
+          </button>
+
+          {/* Submitted posts list */}
+          {submittedPosts.length > 0 && (
+            <div className="pt-2 space-y-2">
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>SUBMITTED</p>
+              {submittedPosts.map((post, i) => (
+                <div key={i} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="w-4 h-4 flex-shrink-0">
+                    {post.platform === 'instagram' && <InstagramIconAnimated isHovered={true} />}
+                    {post.platform === 'tiktok' && <TikTokIcon isHovered={true} />}
+                    {post.platform === 'youtube' && <YouTubeIcon isHovered={true} />}
+                  </div>
+                  <span className="flex-1 text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>{post.url.replace(/^https?:\/\//, '')}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: 0.6 }}>Pending</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EnrolledCampaignsList({ enrolledCampaigns }: { enrolledCampaigns: CampaignData[] }) {
+  return (
+    <div className="space-y-2 mt-2">
+      {enrolledCampaigns.map(c => (
+        <EnrolledCampaignCard key={c.id} campaign={c} />
+      ))}
+    </div>
+  );
+}
+
+function ActiveOpportunitiesCard({ onViewMore, onViewCampaigns, onViewEnrolled, assignedCampaigns, newCampaignIds, enrolledCampaignIds }: { onViewMore?: () => void; onViewCampaigns?: () => void; onViewEnrolled?: () => void; assignedCampaigns?: any[]; newCampaignIds?: Set<string>; enrolledCampaignIds?: Set<string> }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
@@ -736,7 +958,7 @@ function ActiveOpportunitiesCard({ onViewMore, assignedCampaigns, newCampaignIds
   const campaigns = assignedCampaigns || [];
   const newCount = newCampaignIds?.size ?? 0;
   const activeCampaigns = campaigns.filter((c: any) => c.status === 'active');
-  const enrolledCount = campaigns.length;
+  const enrolledCount = enrolledCampaignIds?.size ?? 0;
 
   const rows = [
     {
@@ -771,7 +993,7 @@ function ActiveOpportunitiesCard({ onViewMore, assignedCampaigns, newCampaignIds
 
       <div className="flex flex-col gap-2 flex-grow">
         {rows.map((row, i) => (
-          <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+          <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }} onClick={i === 0 ? onViewCampaigns : onViewEnrolled}>
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
                 {row.icon}
@@ -967,8 +1189,12 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   });
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [assignedCampaigns, setAssignedCampaigns] = useState<any[]>([]);
+  const [enrolledCampaigns, setEnrolledCampaigns] = useState<CampaignData[]>(() => {
+    try { return JSON.parse(localStorage.getItem('enrolledCampaigns') || '[]'); } catch { return []; }
+  });
   const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [newCampaignIds, setNewCampaignIds] = useState<Set<string>>(new Set());
+  const [campaignNotifications, setCampaignNotifications] = useState<AppNotification[]>([]);
   const [showDetectionForm, setShowDetectionForm] = useState(false);
   const [detectionSubmitted, setDetectionSubmitted] = useState(false);
   const [showLicensingForm, setShowLicensingForm] = useState(false);
@@ -1103,6 +1329,13 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     }
   }, [userProfile?.profile_picture_url, cachedProfilePic]);
 
+  // Reset homeSubPage when leaving home section so logo click and re-entry always shows main
+  useEffect(() => {
+    if (activeSection !== 'home') {
+      setHomeSubPage('main');
+    }
+  }, [activeSection]);
+
   // Refetch conversations when navigating back to home to ensure badge count is up to date
   useEffect(() => {
     if (currentUserId && activeSection !== 'messages') {
@@ -1142,6 +1375,46 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       }
     };
     fetchAssignedCampaigns();
+  }, [currentUserId]);
+
+  // Real-time subscription: re-fetch campaigns whenever a row is inserted into user_campaigns for this user
+  useEffect(() => {
+    if (!currentUserId) return;
+    const channel = supabase
+      .channel(`user_campaigns_${currentUserId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'user_campaigns', filter: `user_id=eq.${currentUserId}` },
+        async (payload) => {
+          // Fetch the full campaign row
+          const { data } = await supabase
+            .from('campaigns')
+            .select('*')
+            .eq('id', payload.new.campaign_id)
+            .single();
+          if (!data) return;
+          setAssignedCampaigns(prev => {
+            if (prev.some(c => c.id === data.id)) return prev;
+            return [...prev, data];
+          });
+          setNewCampaignIds(prev => new Set([...prev, data.id as string]));
+          // Add a bell notification
+          setCampaignNotifications(prev => [
+            {
+              id: `campaign_${data.id}`,
+              type: 'campaign_assigned',
+              title: 'New campaign assigned',
+              body: `You've been added to "${data.title || data.name || 'a new campaign'}". Check your opportunities.`,
+              timestamp: new Date().toISOString(),
+              read: false,
+              action: { label: 'View Campaigns', onClick: () => setHomeSubPage('opportunities') },
+            },
+            ...prev,
+          ]);
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [currentUserId]);
 
   // Debug: Log when formData changes
@@ -2068,6 +2341,42 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
 
   const renderPayoutMethods = () => (
     <div ref={payoutRef} className="scroll-mt-6">
+      {/* Desktop notice banner */}
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl mb-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.6 }}><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>This payment portal is optimized for desktop. Mobile access may have limited functionality.</p>
+      </div>
+
+      {/* Warning notices */}
+      <div className="space-y-3 mb-6">
+        {/* International users */}
+        <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+            <span className="font-semibold">Note for International Users: </span>
+            <span style={{ opacity: 0.8 }}>If you are located outside North America, additional identity verification may be required to comply with applicable financial regulations.</span>
+          </p>
+        </div>
+
+        {/* Service restrictions */}
+        <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+            <span className="font-semibold">Restricted Regions: </span>
+            <span style={{ opacity: 0.8 }}>Payment services are unavailable to individuals or entities based in the following countries and regions: Iran, Syria, North Korea, Russia, Ukraine, Cuba, Sudan, and Crimea.</span>
+          </p>
+        </div>
+
+        {/* 2FA issues */}
+        <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.7 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+            <span className="font-semibold">Verification Issues: </span>
+            <span style={{ opacity: 0.8 }}>Users in Bangladesh, Pakistan, and China may experience difficulties with two-factor authentication SMS codes. If you encounter this, try using a landline number or a different mobile carrier.</span>
+          </p>
+        </div>
+      </div>
+
       {/* Tipalti Status at the top */}
       <div className="flex items-center gap-2 mb-6">
         <div className={`w-2 h-2 rounded-full ${isTipaltiConnected ? 'bg-green-500' : 'bg-gray-500'}`}></div>
@@ -3169,6 +3478,10 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         onNavigateToMessages={handleNavigateToMessages}
         theme={backgroundTheme}
         enabled={messageNotifications}
+        onNotification={(notif) => setCampaignNotifications(prev => {
+          if (prev.some(n => n.id === notif.id)) return prev;
+          return [{ ...notif, type: 'message' as const, read: false }, ...prev];
+        })}
       />
       <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />
@@ -3203,7 +3516,6 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             color: 'var(--text-primary)'
           }}
         >
-
         {activeSection === 'profile' && (
           <ProfileView
             userProfile={userProfile}
@@ -3415,16 +3727,30 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                 </div>
                 <AnnouncementBanner userId={currentUserId} userType="creator" />
         <section className="mb-10 sm:mb-20">
-          <div className="mb-5 sm:mb-7">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.overview')}</h2>
+          <div className="mb-5 sm:mb-7 flex items-center justify-between">
+            <h2 className="heading-entrance text-xl sm:text-2xl font-semibold mb-0 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.overview')}</h2>
+            <div className="hidden lg:block">
+              <NotificationBell
+                userId={currentUserId || ''}
+                notifications={campaignNotifications}
+                onDismiss={(id) => setCampaignNotifications(prev => prev.filter(n => n.id !== id))}
+                onDismissAll={() => setCampaignNotifications([])}
+              />
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
             <RevenueAnalyticsCard onViewMore={() => setHomeSubPage('analytics')} />
 
             <ActiveCollaborationsCard setActiveSection={setActiveSection} />
 
-            <ActiveOpportunitiesCard onViewMore={() => setHomeSubPage('opportunities')} assignedCampaigns={assignedCampaigns} newCampaignIds={newCampaignIds} />
+            <ActiveOpportunitiesCard
+              onViewMore={() => setHomeSubPage('opportunities')}
+              onViewCampaigns={() => { setHomeSubPage('opportunities'); setTimeout(() => setExpandedOppsCard('campaigns'), 50); }}
+              onViewEnrolled={() => { setHomeSubPage('opportunities'); setTimeout(() => setExpandedOppsCard('enrolled'), 50); }}
+              assignedCampaigns={assignedCampaigns}
+              newCampaignIds={newCampaignIds}
+            />
           </div>
         </section>
 
@@ -3481,25 +3807,25 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           setNewCampaignIds(new Set());
                         }
                       }}
-                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      className="w-full flex items-center justify-between px-5 py-4 sm:py-5 transition-all hover:brightness-110"
                       style={{ backgroundColor: 'var(--bg-card)' }}
                     >
                       <div className="flex items-center gap-3">
-                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                        <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                         <div className="text-left">
-                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: campaignTermsAccepted ? 1 : 0.5 }}>{campaignTermsAccepted ? 'Active' : 'Not active'}</p>
+                          <p className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.campaign')}</p>
+                          <p className="text-xs sm:text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: campaignTermsAccepted ? 1 : 0.5 }}>{campaignTermsAccepted ? 'Active' : 'Not active'}</p>
                         </div>
                         {newCampaignIds.size > 0 && (
-                          <span className="flex items-center justify-center text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[20px]" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)', fontSize: '10px' }}>
+                          <span className="flex items-center justify-center text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[20px]" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>
                             {newCampaignIds.size} new
                           </span>
                         )}
                       </div>
-                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                      <svg className={`w-5 h-5 transition-transform duration-200 ${expandedOppsCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     {expandedOppsCard === 'campaigns' && (
-                      <div className="px-5 pb-5 pt-2" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                      <div className="px-5 sm:px-7 pb-6 sm:pb-8 pt-3 sm:pt-4" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
                         {campaignsLoading ? (
                           <div className="flex items-center justify-center py-10">
                             <div className="flex items-center gap-3">
@@ -3510,19 +3836,19 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </div>
                         ) : !campaignTermsAccepted ? (
                           <>
-                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)' }}>Clip and distribute our talent and media across social platforms and get paid for doing so.</p>
-                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)' }}>We provide structured access to content and media assets that can be edited, reformatted, and distributed across digital channels. Revenue is shared based on performance and distribution.</p>
-                            <p className="text-xs mb-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Built for creators who understand virality and attention.</p>
-                            <p className="text-xs mb-4" style={{ color: 'var(--text-primary)' }}>Start now and earn your share of the revenue pool.</p>
-                            <div className="space-y-2 mb-5">
+                            <p className="text-sm mb-3" style={{ color: 'var(--text-primary)' }}>Clip and distribute our talent and media across social platforms and get paid for doing so.</p>
+                            <p className="text-sm mb-3" style={{ color: 'var(--text-primary)' }}>We provide structured access to content and media assets that can be edited, reformatted, and distributed across digital channels. Revenue is shared based on performance and distribution.</p>
+                            <p className="text-sm mb-3 font-semibold" style={{ color: 'var(--text-primary)' }}>Built for creators who understand virality and attention.</p>
+                            <p className="text-sm mb-4" style={{ color: 'var(--text-primary)' }}>Start now and earn your share of the revenue pool.</p>
+                            <div className="space-y-2.5 mb-5">
                               {[
                                 { step: '1', text: 'Get access to exclusive media assets from our talent roster' },
                                 { step: '2', text: 'Edit, clip, and distribute content across your channels' },
                                 { step: '3', text: 'Earn revenue based on views, engagement, and distribution reach' },
                               ].map(({ step, text }) => (
                                 <div key={step} className="flex items-start gap-3">
-                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
-                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)' }}>{text}</p>
+                                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                                  <p className="text-sm pt-0.5" style={{ color: 'var(--text-primary)' }}>{text}</p>
                                 </div>
                               ))}
                             </div>
@@ -3534,7 +3860,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                               >
                                 {campaignTermsChecked && <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>}
                               </div>
-                              <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
+                              <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
                                 I agree to Elevate's{' '}
                                 <button
                                   type="button"
@@ -3598,25 +3924,29 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'enrolled' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
                     <button
                       onClick={() => setExpandedOppsCard(expandedOppsCard === 'enrolled' ? null : 'enrolled')}
-                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      className="w-full flex items-center justify-between px-5 py-4 sm:py-5 transition-all hover:brightness-110"
                       style={{ backgroundColor: 'var(--bg-card)' }}
                     >
                       <div className="flex items-center gap-3">
-                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                         <div className="text-left">
-                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.enrolledCampaigns')}</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>0 enrolled</p>
+                          <p className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('opportunities.enrolledCampaigns')}</p>
+                          <p className="text-xs sm:text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{enrolledCampaigns.length > 0 ? `${enrolledCampaigns.length} enrolled` : '0 enrolled'}</p>
                         </div>
                       </div>
-                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'enrolled' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                      <svg className={`w-5 h-5 transition-transform duration-200 ${expandedOppsCard === 'enrolled' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     {expandedOppsCard === 'enrolled' && (
-                      <div className="px-5 pb-5 pt-2" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
-                        <div className="text-center py-10">
-                          <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
-                          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('opportunities.noEnrolledCampaigns')}</p>
-                          <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{t('opportunities.browseOpportunities')}</p>
-                        </div>
+                      <div className="px-5 sm:px-7 pb-6 sm:pb-8 pt-3 sm:pt-4" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                        {enrolledCampaigns.length === 0 ? (
+                          <div className="text-center py-10">
+                            <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('opportunities.noEnrolledCampaigns')}</p>
+                            <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{t('opportunities.browseOpportunities')}</p>
+                          </div>
+                        ) : (
+                          <EnrolledCampaignsList enrolledCampaigns={enrolledCampaigns} />
+                        )}
                       </div>
                     )}
                   </div>
@@ -3625,20 +3955,20 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'detection' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
                     <button
                       onClick={() => setExpandedOppsCard(expandedOppsCard === 'detection' ? null : 'detection')}
-                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      className="w-full flex items-center justify-between px-5 py-4 sm:py-5 transition-all hover:brightness-110"
                       style={{ backgroundColor: 'var(--bg-card)' }}
                     >
                       <div className="flex items-center gap-3">
-                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                         <div className="text-left">
-                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Content Detection</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: detectionSubmitted ? 1 : 0.5 }}>{detectionSubmitted ? 'Active' : 'Not active'}</p>
+                          <p className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Content Detection</p>
+                          <p className="text-xs sm:text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: detectionSubmitted ? 1 : 0.5 }}>{detectionSubmitted ? 'Active' : 'Not active'}</p>
                         </div>
                       </div>
-                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'detection' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                      <svg className={`w-5 h-5 transition-transform duration-200 ${expandedOppsCard === 'detection' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     {expandedOppsCard === 'detection' && (
-                      <div className="px-5 pb-5 pt-3" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                      <div className="px-5 sm:px-7 pb-6 sm:pb-8 pt-3 sm:pt-4" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
                         {detectionSubmitted ? (
                           <div className="text-center py-6">
                             <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
@@ -3649,18 +3979,18 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </div>
                         ) : (
                           <>
-                            <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
-                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Some use case scenarios are Youtubers, Live Streamers, Movie Studios.</p>
+                            <p className="text-sm mb-2" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>We scan platforms for unauthorized copies of your content and automatically claim and monetize them on your behalf.</p>
+                            <p className="text-sm mb-3" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Some use case scenarios are Youtubers, Live Streamers, Movie Studios.</p>
                             <div className="rounded-lg px-4 py-3 mb-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-                              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.9 }}>Disclaimer</p>
-                              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>We only accept high volume clients that have content susceptible to being stolen.</p>
+                              <p className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>Disclaimer</p>
+                              <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>We only accept high volume clients that have content susceptible to being stolen.</p>
                             </div>
-                            <p className="text-xs mb-4" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>If you think you are a good fit, apply below.</p>
-                            <div className="space-y-2 mb-4">
+                            <p className="text-sm mb-4" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>If you think you are a good fit, apply below.</p>
+                            <div className="space-y-2.5 mb-4">
                               {[{ step: '1', text: 'We scan platforms for unauthorized copies of your content' }, { step: '2', text: 'Detected reuploads are automatically claimed on your behalf' }, { step: '3', text: 'Revenue from those views flows directly to your account' }].map(({ step, text }) => (
                                 <div key={step} className="flex items-start gap-3">
-                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
-                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                                  <p className="text-sm pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>{text}</p>
                                 </div>
                               ))}
                             </div>
@@ -3691,20 +4021,20 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                   <div className="rounded-xl overflow-hidden" style={{ border: expandedOppsCard === 'licensing' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)' }}>
                     <button
                       onClick={() => setExpandedOppsCard(expandedOppsCard === 'licensing' ? null : 'licensing')}
-                      className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
+                      className="w-full flex items-center justify-between px-5 py-4 sm:py-5 transition-all hover:brightness-110"
                       style={{ backgroundColor: 'var(--bg-card)' }}
                     >
                       <div className="flex items-center gap-3">
-                        <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
+                        <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12h6M9 16h6M9 8h6M5 3h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>
                         <div className="text-left">
-                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Licensing</p>
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: licensingSubmitted ? 1 : 0.5 }}>{licensingSubmitted ? 'Active' : 'Not active'}</p>
+                          <p className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Licensing</p>
+                          <p className="text-xs sm:text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: licensingSubmitted ? 1 : 0.5 }}>{licensingSubmitted ? 'Active' : 'Not active'}</p>
                         </div>
                       </div>
-                      <svg className={`w-4 h-4 transition-transform duration-200 ${expandedOppsCard === 'licensing' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                      <svg className={`w-5 h-5 transition-transform duration-200 ${expandedOppsCard === 'licensing' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     {expandedOppsCard === 'licensing' && (
-                      <div className="px-5 pb-5 pt-4" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                      <div className="px-5 sm:px-7 pb-6 sm:pb-8 pt-3 sm:pt-4" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
                         {licensingSubmitted ? (
                           <div className="py-6 text-center">
                             <svg className="w-8 h-8 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
@@ -3713,16 +4043,16 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                           </div>
                         ) : (
                           <>
-                            <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Turn your content into a recurring revenue stream. Elevate handles licensing negotiations, brand sync deals, and platform monetization on your behalf — so you can focus on creating.</p>
-                            <div className="space-y-2 mb-4">
+                            <p className="text-sm mb-3" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>Turn your content into a recurring revenue stream. Elevate handles licensing negotiations, brand sync deals, and platform monetization on your behalf — so you can focus on creating.</p>
+                            <div className="space-y-2.5 mb-4">
                               {[
                                 { step: '1', text: 'We represent your catalog to brands, agencies, and platforms looking for licensed content' },
                                 { step: '2', text: 'Sync and licensing deals are negotiated by our team and require your approval before closing' },
                                 { step: '3', text: 'Revenue from licensing deals is paid out monthly, directly to your connected payout account' },
                               ].map(({ step, text }) => (
                                 <div key={step} className="flex items-start gap-3">
-                                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
-                                  <p className="text-xs pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{text}</p>
+                                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{step}</div>
+                                  <p className="text-sm pt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.8 }}>{text}</p>
                                 </div>
                               ))}
                             </div>
@@ -5224,7 +5554,17 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       {/* Campaign Detail Modal */}
       <CampaignDetailModal 
         campaign={selectedCampaign} 
-        onClose={() => setSelectedCampaign(null)} 
+        onClose={() => setSelectedCampaign(null)}
+        onJoin={(campaign) => {
+          setEnrolledCampaigns(prev => {
+            if (prev.some(c => c.id === campaign.id)) return prev;
+            const updated = [...prev, campaign];
+            localStorage.setItem('enrolledCampaigns', JSON.stringify(updated));
+            return updated;
+          });
+          setHomeSubPage('opportunities');
+          setTimeout(() => setExpandedOppsCard('enrolled'), 50);
+        }}
         backgroundTheme={backgroundTheme}
       />
 

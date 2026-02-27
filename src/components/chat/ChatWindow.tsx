@@ -212,24 +212,8 @@ const ChatWindowContent = memo(function ChatWindowContent({
   const shouldAutoScrollRef = useRef(true);
 
   // Track content readiness for smooth transition
-  // Show content immediately if we have cached messages (instant loading)
-  const [contentReady, setContentReady] = useState(() => {
-    // Check if we have cached messages - if so, show content immediately
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem(`messages_cache_${conversation.id}`);
-      if (cached) {
-        try {
-          const data = JSON.parse(cached);
-          if (data.messages && data.messages.length > 0) {
-            return true; // Show content immediately from cache
-          }
-        } catch (e) {
-          // Ignore parse errors
-        }
-      }
-    }
-    return false;
-  });
+  // Always start ready to avoid blank-flash jump on re-navigation
+  const [contentReady, setContentReady] = useState(true);
   const imagesLoadedRef = useRef<Record<string, boolean>>({});
 
   // Get messages with images that need to load
@@ -257,7 +241,8 @@ const ChatWindowContent = memo(function ChatWindowContent({
         // Ignore parse errors
       }
     }
-    setContentReady(false);
+    // Don't reset to false — keep showing previous content to avoid jump
+    setContentReady(true);
   }, [conversation.id]);
 
   // Mark content as ready when messages are available (don't wait for images)

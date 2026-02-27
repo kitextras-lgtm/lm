@@ -22,6 +22,7 @@ import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { MessageToast } from '../components/MessageToast';
+import { NotificationBell, type AppNotification } from '../components/NotificationPanel';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -2899,7 +2900,6 @@ export function BusinessDashboard() {
             color: 'var(--text-primary)'
           }}
         >
-
         {activeSection === 'profile' && (
           <ProfileView
             userProfile={userProfile}
@@ -3072,8 +3072,18 @@ export function BusinessDashboard() {
             <AnnouncementBanner userId={currentUserId} userType="business" />
         <section className="mb-10 sm:mb-20">
           <div className="mb-5 sm:mb-7">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.overview')}</h2>
-            <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Campaigns available for you</p>
+            <div className="flex items-center justify-between">
+              <h2 className="heading-entrance text-2xl sm:text-3xl font-bold mb-0 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('home.overview')}</h2>
+              <div className="hidden lg:block">
+                <NotificationBell
+                  userId={currentUserId || ''}
+                  notifications={[] as AppNotification[]}
+                  onDismiss={() => {}}
+                  onDismissAll={() => {}}
+                />
+              </div>
+            </div>
+            <p className="text-sm sm:text-base mt-1" style={{ color: 'var(--text-primary)' }}>Campaigns available for you</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">

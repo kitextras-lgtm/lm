@@ -197,7 +197,7 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
   const showConversationSkeletons = loading && conversations.length === 0;
-  const showChatSkeleton = initializing && !selectedConversation;
+  const showChatSkeleton = false;
 
   if (isMobile && selectedConversation) {
     return (
@@ -235,30 +235,32 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
             <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Manage customer conversations</p>
           </div>
           
-          {/* Tabs */}
-          <div className="flex gap-0 mb-3" style={{ borderBottom: `1px solid ${tokens.border.subtle}` }}>
-            {(['primary', 'general', 'requests'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className="flex-1 px-3 py-2.5 text-sm font-medium transition-all relative"
-                style={{
-                  color: 'var(--text-primary)',
-                  opacity: activeTab === tab ? 1 : 0.4,
-                  background: 'none',
-                  border: 'none',
-                }}
-              >
-                {tab === 'primary' ? 'Primary' : tab === 'general' ? 'General' : 'Requests'}
-                {activeTab === tab && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
-                )}
-              </button>
-            ))}
+          {/* Tabs + Search on same row */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex gap-0 flex-1" style={{ borderBottom: `1px solid ${tokens.border.subtle}` }}>
+              {(['primary', 'general', 'requests'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className="flex-1 px-2 py-2 text-xs font-medium transition-all relative whitespace-nowrap"
+                  style={{
+                    color: 'var(--text-primary)',
+                    opacity: activeTab === tab ? 1 : 0.4,
+                    background: 'none',
+                    border: 'none',
+                  }}
+                >
+                  {tab === 'primary' ? 'Primary' : tab === 'general' ? 'General' : 'Requests'}
+                  {activeTab === tab && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-          
-          {/* Account Type Filter Bubbles */}
-          <div className="flex gap-1.5 flex-wrap mb-3">
+
+          {/* Account Type Filter Chips - wrap so all are visible */}
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {(['all', 'artist', 'creator', 'freelancer', 'business'] as const).map((type) => {
               const labels: Record<string, string> = { all: 'All', artist: 'Artists', creator: 'Creators', freelancer: 'Freelancers', business: 'Brands' };
               const isActive = activeTypeFilter === type;
@@ -266,14 +268,15 @@ export function AdminMessagesPage({ currentAdminId }: AdminMessagesPageProps) {
                 <button
                   key={type}
                   onClick={() => setActiveTypeFilter(type)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all flex-shrink-0"
                   style={{
                     backgroundColor: isActive ? 'var(--bg-elevated)' : 'transparent',
                     border: isActive ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
                     color: 'var(--text-primary)',
+                    opacity: isActive ? 1 : 0.65,
                   }}
                 >
-                  {type !== 'all' && <AccountTypeIcon userType={type} size={10} />}
+                  {type !== 'all' && <AccountTypeIcon userType={type} size={9} />}
                   {labels[type]}
                 </button>
               );

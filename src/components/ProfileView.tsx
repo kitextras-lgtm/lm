@@ -342,18 +342,26 @@ export function ProfileView({
               </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 px-6 py-3">
+      <div className="flex px-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-            style={activeTab === tab.id
-              ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148,163,184,0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148,163,184,0.2)' }
-              : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent', opacity: 0.55 }
-            }
+            className="px-4 py-3 text-sm font-medium transition-all duration-200 relative"
+            style={{
+              color: 'var(--text-primary)',
+              opacity: activeTab === tab.id ? 1 : 0.5,
+              background: 'none',
+              border: 'none',
+            }}
           >
             {tab.label}
+            {activeTab === tab.id && (
+              <span
+                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                style={{ backgroundColor: 'var(--text-primary)' }}
+              />
+            )}
           </button>
         ))}
       </div>

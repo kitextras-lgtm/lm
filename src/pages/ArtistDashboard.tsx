@@ -21,6 +21,7 @@ import { useUserProfile } from '../contexts/UserProfileContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnnouncementBanner } from '../components/AnnouncementBanner';
 import { MessageToast } from '../components/MessageToast';
+import { NotificationBell, type AppNotification } from '../components/NotificationPanel';
 import { TalentIcon } from '../components/TalentIcon';
 import { PuzzleDealIcon } from '../components/PuzzleDealIcon';
 import { MoreIcon } from '../components/MoreIcon';
@@ -482,8 +483,8 @@ function RevenueAnalyticsCard({ onViewMore }: { onViewMore?: () => void }) {
   return (
     <div
       ref={ref}
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease, transform 0.45s ease, filter 0.2s' }}
+      className="card-lift rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 cursor-pointer border flex flex-col h-full"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1)' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>{t('home.monthlyRecurringRevenue')}</h3>
@@ -789,7 +790,7 @@ function FighterMusicCard({ onClick, onViewMore }: { onClick?: () => void; onVie
   return (
     <div
       ref={ref}
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
+      className="card-lift rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 cursor-pointer border flex flex-col h-full"
       style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
       onClick={onClick}
     >
@@ -866,8 +867,8 @@ function TotalSongsDistributedCard({ onViewMore }: { onViewMore?: () => void }) 
   return (
     <div
       ref={ref}
-      className="rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 transition-all duration-200 hover:brightness-105 cursor-pointer border flex flex-col h-full"
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s ease 0.08s, transform 0.45s ease 0.08s, filter 0.2s' }}
+      className="card-lift rounded-xl sm:rounded-2xl p-5 sm:p-7 pb-3 sm:pb-4 cursor-pointer border flex flex-col h-full"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)', opacity: entered ? 1 : 0, transform: entered ? 'none' : 'translateY(12px)', transition: 'opacity 0.45s cubic-bezier(0.16,1,0.3,1) 0.08s, transform 0.45s cubic-bezier(0.16,1,0.3,1) 0.08s' }}
     >
       <div className="mb-6 sm:mb-8">
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Total Songs Distributed</h3>
@@ -2099,6 +2100,7 @@ export function ArtistDashboard() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [homeSubPage, setHomeSubPage] = useState<'main' | 'analytics' | 'exposure'>('main');
+  const [exposureLoading, setExposureLoading] = useState(false);
   const [analyticsView, setAnalyticsView] = useState<'weekly' | 'monthly' | 'lifetime'>('weekly');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(false);
@@ -2496,18 +2498,71 @@ export function ArtistDashboard() {
     return () => document.removeEventListener('mousedown', handler);
   }, [origCalOpen]);
 
-  // Load user-scoped dismissed notification IDs once userId is known
+  // Load user-scoped dismissed notification IDs once ANY userId is known.
+  // We watch both cachedUserId (instant, from cache) and currentUserId (from full auth flow)
+  // so the IDs are correctly loaded regardless of which path resolves first.
+  const effectiveUserId = currentUserId || cachedUserId;
+
+  // Build notification list for the bell panel from existing artist-specific notifications
+  const panelNotifications = useMemo<AppNotification[]>(() => {
+    const notifs: AppNotification[] = [];
+    approvedReleaseDrafts
+      .filter(r => !dismissedApprovedReleaseIds.includes(r.id))
+      .forEach(r => notifs.push({
+        id: r.id,
+        type: 'approved_release',
+        title: `Release approved`,
+        body: `"${r.title || 'Untitled'}" has been reviewed and approved. View it in My Releases.`,
+        timestamp: r.updated_at,
+        read: false,
+        action: { label: 'View Release', onClick: () => { setActiveSection('explore'); setMyReleasesTab('complete'); } },
+      }));
+    declinedArtistApps
+      .filter(a => !dismissedDeclineIds.includes(a.id))
+      .forEach(a => notifs.push({
+        id: a.id,
+        type: 'declined_application',
+        title: `Artist application declined`,
+        body: a.decline_reason || `Your ${a.category || 'artist account'} application was not approved.`,
+        timestamp: a.created_at,
+        read: false,
+      }));
+    return notifs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [approvedReleaseDrafts, dismissedApprovedReleaseIds, declinedArtistApps, dismissedDeclineIds]);
+
+  const handleDismissNotif = useCallback((id: string) => {
+    // Check which list this belongs to
+    if (approvedReleaseDrafts.some(r => r.id === id)) {
+      const newIds = [...dismissedApprovedReleaseIds, id];
+      setDismissedApprovedReleaseIds(newIds);
+      localStorage.setItem(`dismissedApprovedReleaseIds_${effectiveUserId}`, JSON.stringify(newIds));
+    } else {
+      const newIds = [...dismissedDeclineIds, id];
+      setDismissedDeclineIds(newIds);
+      localStorage.setItem(`dismissedDeclineIds_${effectiveUserId}`, JSON.stringify(newIds));
+    }
+  }, [approvedReleaseDrafts, dismissedApprovedReleaseIds, dismissedDeclineIds, effectiveUserId]);
+
+  const handleDismissAllNotifs = useCallback(() => {
+    const approvedIds = approvedReleaseDrafts.map(r => r.id);
+    const declineIds = declinedArtistApps.map(a => a.id);
+    setDismissedApprovedReleaseIds(approvedIds);
+    setDismissedDeclineIds(declineIds);
+    localStorage.setItem(`dismissedApprovedReleaseIds_${effectiveUserId}`, JSON.stringify(approvedIds));
+    localStorage.setItem(`dismissedDeclineIds_${effectiveUserId}`, JSON.stringify(declineIds));
+  }, [approvedReleaseDrafts, declinedArtistApps, effectiveUserId]);
+
   useEffect(() => {
-    if (!cachedUserId) return;
+    if (!effectiveUserId) return;
     try {
-      const declineIds = JSON.parse(localStorage.getItem(`dismissedDeclineIds_${cachedUserId}`) || '[]');
+      const declineIds = JSON.parse(localStorage.getItem(`dismissedDeclineIds_${effectiveUserId}`) || '[]');
       setDismissedDeclineIds(declineIds);
     } catch {}
     try {
-      const approvedIds = JSON.parse(localStorage.getItem(`dismissedApprovedReleaseIds_${cachedUserId}`) || '[]');
+      const approvedIds = JSON.parse(localStorage.getItem(`dismissedApprovedReleaseIds_${effectiveUserId}`) || '[]');
       setDismissedApprovedReleaseIds(approvedIds);
     } catch {}
-  }, [cachedUserId]);
+  }, [effectiveUserId]);
 
   // INSTANT: Initialize from cached profile immediately (like Twitter/Instagram)
   useEffect(() => {
@@ -5132,7 +5187,6 @@ export function ArtistDashboard() {
             color: 'var(--text-primary)'
           }}
         >
-
         {activeSection === 'profile' && (
           <ProfileView
             userProfile={userProfile}
@@ -5481,8 +5535,13 @@ export function ArtistDashboard() {
                           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>{label}</span>
                           <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{pct}%</span>
                         </div>
-                        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                        <div className="h-2 rounded-full overflow-hidden relative" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                           <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: 'var(--text-primary)', opacity: 0.7, transition: 'width 0.8s cubic-bezier(0.34,1,0.64,1)' }} />
+                          {exposureLoading && (
+                            <div className="absolute inset-0 rounded-full overflow-hidden">
+                              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.18) 60%, transparent 100%)', backgroundSize: '200% 100%', animation: 'shimmerSlide 1.1s ease-in-out infinite' }} />
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -5500,7 +5559,11 @@ export function ArtistDashboard() {
                     <div className="flex-1 flex items-end justify-between gap-2">
                       {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day, i) => (
                         <div key={day} className="flex-1 flex flex-col items-center gap-1.5">
-                          <div className="w-full rounded-t-sm" style={{ backgroundColor: 'var(--text-primary)', height: '4px', opacity: 0.25 }} />
+                          <div className="w-full rounded-t-sm relative overflow-hidden" style={{ backgroundColor: 'var(--text-primary)', height: '4px', opacity: exposureLoading ? 1 : 0.25 }}>
+                            {exposureLoading && (
+                              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)', backgroundSize: '200% 100%', animation: `shimmerSlide ${0.9 + i * 0.08}s ease-in-out infinite` }} />
+                            )}
+                          </div>
                           <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{day}</span>
                         </div>
                       ))}
@@ -5535,10 +5598,21 @@ export function ArtistDashboard() {
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <AnnouncementBanner userId={currentUserId} userType="artist" />
         <section className="mb-10 sm:mb-20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          <div className="mb-5 sm:mb-7 flex items-center justify-between">
+            <h2 className="heading-entrance text-xl sm:text-2xl font-semibold mb-0 tracking-tight" style={{ color: 'var(--text-primary)' }}>Overview</h2>
+            <div className="hidden lg:block">
+              <NotificationBell
+                userId={effectiveUserId || ''}
+                notifications={panelNotifications}
+                onDismiss={handleDismissNotif}
+                onDismissAll={handleDismissAllNotifs}
+              />
+            </div>
+          </div>
+          <div className="stagger-children grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
             <RevenueAnalyticsCard onViewMore={() => setHomeSubPage('analytics')} />
 
-            <FighterMusicCard onViewMore={() => setHomeSubPage('exposure')} />
+            <FighterMusicCard onViewMore={() => { setExposureLoading(true); setHomeSubPage('exposure'); setTimeout(() => setExposureLoading(false), 900); }} />
 
             <TotalSongsDistributedCard onViewMore={() => { setActiveSection('explore'); setMyReleasesTab('complete'); }} />
           </div>

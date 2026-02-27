@@ -22,9 +22,10 @@ interface MessageToastProps {
   playSound?: boolean;
   showFaviconBadge?: boolean;
   unreadCount?: number;
+  onNotification?: (notif: { id: string; title: string; body: string; timestamp: string; action?: { label: string; onClick: () => void } }) => void;
 }
 
-export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark', enabled = true, playSound = false, showFaviconBadge = false, unreadCount = 0 }: MessageToastProps) {
+export function MessageToast({ userId, activeSection, onNavigateToMessages, theme = 'dark', enabled = true, playSound = false, showFaviconBadge = false, unreadCount = 0, onNotification }: MessageToastProps) {
   const t = themeTokens[theme];
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [dismissingIds, setDismissingIds] = useState<Set<string>>(new Set());
@@ -180,11 +181,18 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
           // If this is a request conversation where the current user is the recipient:
           // - Only show a notification for the very first message ("wants to message you")
           // - Suppress all subsequent messages until the request is accepted
+          // - Once accepted (is_request becomes false), toasts flow through normally
           const isRecipientOfRequest = conv.is_request === true && conv.admin_id === userId;
           if (isRecipientOfRequest) {
             const count = conv.message_count ?? 0;
             // If more than 1 message already exists, this is a subsequent message — suppress entirely
             if (count > 1) return;
+          }
+
+          // If this message was already "seen" during the request phase but the request is now accepted,
+          // remove it from seenMessageIds so the new (post-acceptance) message is not silently dropped.
+          if (!isRecipientOfRequest && seenMessageIds.current.has(msg.id)) {
+            seenMessageIds.current.delete(msg.id);
           }
 
           seenMessageIds.current.add(msg.id);
@@ -239,6 +247,17 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
             content: isRecipientOfRequest ? `${senderName} wants to message you` : (msg.type === 'image' ? '📷 Photo' : msg.content),
             timestamp: Date.now(),
           };
+
+          // Push to bell notification dropdown if callback provided
+          if (onNotification) {
+            onNotification({
+              id: `msg_${msg.id}`,
+              title: senderName,
+              body: toast.content,
+              timestamp: new Date().toISOString(),
+              action: { label: 'View', onClick: onNavigateToMessages },
+            });
+          }
 
           // Replace any existing toast — only show 1 at a time
           setToasts([toast]);
