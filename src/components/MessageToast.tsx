@@ -170,12 +170,22 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
           // Verify this message belongs to a conversation the user is part of
           const { data: conv } = await supabase
             .from('conversations')
-            .select('id, customer_id, admin_id')
+            .select('id, customer_id, admin_id, is_request, message_count')
             .eq('id', msg.conversation_id)
             .or(`customer_id.eq.${userId},admin_id.eq.${userId}`)
             .maybeSingle();
 
           if (!conv) return;
+
+          // If this is a request conversation where the current user is the recipient:
+          // - Only show a notification for the very first message ("wants to message you")
+          // - Suppress all subsequent messages until the request is accepted
+          const isRecipientOfRequest = conv.is_request === true && conv.admin_id === userId;
+          if (isRecipientOfRequest) {
+            const count = conv.message_count ?? 0;
+            // If more than 1 message already exists, this is a subsequent message — suppress entirely
+            if (count > 1) return;
+          }
 
           seenMessageIds.current.add(msg.id);
 
@@ -226,7 +236,7 @@ export function MessageToast({ userId, activeSection, onNavigateToMessages, them
             conversationId: msg.conversation_id,
             senderName,
             senderAvatar,
-            content: msg.type === 'image' ? '📷 Photo' : msg.content,
+            content: isRecipientOfRequest ? `${senderName} wants to message you` : (msg.type === 'image' ? '📷 Photo' : msg.content),
             timestamp: Date.now(),
           };
 

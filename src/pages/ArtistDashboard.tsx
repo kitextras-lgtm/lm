@@ -2170,13 +2170,9 @@ export function ArtistDashboard() {
   });
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [declinedArtistApps, setDeclinedArtistApps] = useState<{ id: string; category: string | null; decline_reason: string | null; created_at: string }[]>([]);
-  const [dismissedDeclineIds, setDismissedDeclineIds] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('dismissedDeclineIds') || '[]'); } catch { return []; }
-  });
+  const [dismissedDeclineIds, setDismissedDeclineIds] = useState<string[]>([]);
   const [approvedReleaseDrafts, setApprovedReleaseDrafts] = useState<{ id: string; title: string | null; updated_at: string }[]>([]);
-  const [dismissedApprovedReleaseIds, setDismissedApprovedReleaseIds] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('dismissedApprovedReleaseIds') || '[]'); } catch { return []; }
-  });
+  const [dismissedApprovedReleaseIds, setDismissedApprovedReleaseIds] = useState<string[]>([]);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -2497,6 +2493,19 @@ export function ArtistDashboard() {
     if (origCalOpen) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [origCalOpen]);
+
+  // Load user-scoped dismissed notification IDs once userId is known
+  useEffect(() => {
+    if (!cachedUserId) return;
+    try {
+      const declineIds = JSON.parse(localStorage.getItem(`dismissedDeclineIds_${cachedUserId}`) || '[]');
+      setDismissedDeclineIds(declineIds);
+    } catch {}
+    try {
+      const approvedIds = JSON.parse(localStorage.getItem(`dismissedApprovedReleaseIds_${cachedUserId}`) || '[]');
+      setDismissedApprovedReleaseIds(approvedIds);
+    } catch {}
+  }, [cachedUserId]);
 
   // INSTANT: Initialize from cached profile immediately (like Twitter/Instagram)
   useEffect(() => {
@@ -5342,7 +5351,7 @@ export function ArtistDashboard() {
                   onClick={() => {
                     const newIds = [...dismissedApprovedReleaseIds, rel.id];
                     setDismissedApprovedReleaseIds(newIds);
-                    localStorage.setItem('dismissedApprovedReleaseIds', JSON.stringify(newIds));
+                    localStorage.setItem(`dismissedApprovedReleaseIds_${currentUserId}`, JSON.stringify(newIds));
                   }}
                   className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:brightness-110"
                   style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
@@ -5380,7 +5389,7 @@ export function ArtistDashboard() {
                 onClick={() => {
                   const newIds = [...dismissedDeclineIds, app.id];
                   setDismissedDeclineIds(newIds);
-                  localStorage.setItem('dismissedDeclineIds', JSON.stringify(newIds));
+                  localStorage.setItem(`dismissedDeclineIds_${currentUserId}`, JSON.stringify(newIds));
                 }}
                 className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:brightness-110"
                 style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}

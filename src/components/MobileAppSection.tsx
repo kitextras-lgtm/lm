@@ -270,6 +270,126 @@ function CampaignsScreen() {
   );
 }
 
+function JobBoardScreen() {
+  return (
+    <div className="flex h-full overflow-hidden">
+      <div className="flex flex-col gap-1.5 py-2 px-2 flex-shrink-0" style={{ width: '44px', background: '#111', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="w-7 h-7 rounded-md mx-auto mb-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="w-6 h-6 rounded mx-auto" style={{ background: i === 1 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.04)' }} />
+        ))}
+      </div>
+      <div className="flex-1 p-3 overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div style={{ fontSize: '6px', fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>JOB BOARD</div>
+          <div className="px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.1)', fontSize: '4.5px', color: 'rgba(255,255,255,0.6)' }}>12 new</div>
+        </div>
+        {[
+          { client: 'Marcus J.', role: 'Video Editor', budget: '$3,800', tag: 'Featured' },
+          { client: 'Aura Studio', role: 'Creative Director', budget: '$11,500', tag: 'Urgent' },
+          { client: 'Derek Osei', role: 'Brand Identity', budget: '$6,200', tag: '' },
+          { client: 'Nova Media', role: 'Thumbnail Design', budget: '$850', tag: '' },
+        ].map((r, i) => (
+          <div key={r.client} className="flex items-center gap-2 px-2 py-1.5 rounded-lg mb-1" style={{ background: i === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="w-6 h-6 rounded-md flex-shrink-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.1)', fontSize: '5.5px', fontWeight: 700, color: '#fff' }}>{r.client[0]}</div>
+            <div className="flex-1 min-w-0">
+              <div style={{ fontSize: '6px', fontWeight: 600, color: '#fff', marginBottom: '1px' }}>{r.client}</div>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.35)' }}>{r.role}</div>
+            </div>
+            <div className="text-right">
+              <div style={{ fontSize: '6px', fontWeight: 700, color: '#fff' }}>{r.budget}</div>
+              {r.tag && <div className="px-1 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.1)', fontSize: '4px', color: 'rgba(255,255,255,0.6)', marginTop: '1px' }}>{r.tag}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FreelancerEarningsScreen() {
+  return (
+    <div className="flex h-full overflow-hidden">
+      <div className="flex flex-col gap-1.5 py-2 px-2 flex-shrink-0" style={{ width: '44px', background: '#111', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="w-7 h-7 rounded-md mx-auto mb-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="w-6 h-6 rounded mx-auto" style={{ background: i === 2 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.04)' }} />
+        ))}
+      </div>
+      <div className="flex-1 p-3 overflow-hidden">
+        <div className="text-[6px] font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>EARNINGS</div>
+        <div className="grid grid-cols-2 gap-1.5 mb-2.5">
+          {[['Available','$3,240'],['Lifetime','$28,450']].map(([l,v]) => (
+            <div key={l} className="rounded-lg p-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.4)', marginBottom: '3px' }}>{l}</div>
+              <div style={{ fontSize: '9px', fontWeight: 700, color: '#fff', lineHeight: 1 }}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-lg p-2 mb-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontSize: '5px', color: 'rgba(255,255,255,0.3)', marginBottom: '5px' }}>Recent Payments</div>
+          {[
+            { desc: 'Brand Identity Project', amount: '+$4,500' },
+            { desc: 'UI/UX Consultation', amount: '+$1,200' },
+            { desc: 'Logo Design Package', amount: '+$2,800' },
+          ].map(t => (
+            <div key={t.desc} className="flex items-center justify-between mb-1">
+              <div style={{ fontSize: '5px', color: 'rgba(255,255,255,0.5)' }}>{t.desc}</div>
+              <div style={{ fontSize: '5.5px', fontWeight: 700, color: '#fff' }}>{t.amount}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FreelancerProfileScreen() {
+  return (
+    <div className="flex h-full overflow-hidden">
+      <div className="flex flex-col gap-1.5 py-2 px-2 flex-shrink-0" style={{ width: '44px', background: '#111', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="w-7 h-7 rounded-md mx-auto mb-1" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="w-6 h-6 rounded mx-auto" style={{ background: i === 5 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.04)' }} />
+        ))}
+      </div>
+      <div className="flex-1 p-3 overflow-hidden">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-9 h-9 rounded-full flex-shrink-0" style={{ background: 'rgba(255,255,255,0.15)' }} />
+          <div>
+            <div style={{ fontSize: '7px', fontWeight: 700, color: '#fff' }}>Your Profile</div>
+            <div className="flex items-center gap-0.5 mt-0.5">
+              {[1,2,3,4,5].map(s => (
+                <svg key={s} width="6" height="6" viewBox="0 0 20 20" fill="rgba(255,255,255,0.8)">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              ))}
+              <span style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.6)', marginLeft: '2px' }}>5.0</span>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-1 mb-2.5">
+          {[['Projects','47'],['Reviews','43'],['Repeat','89%']].map(([l,v]) => (
+            <div key={l} className="rounded-lg p-1.5 text-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ fontSize: '8px', fontWeight: 700, color: '#fff' }}>{v}</div>
+              <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.35)' }}>{l}</div>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-1 mb-2">
+          {['UI/UX Design','Branding','Motion','Figma'].map(skill => (
+            <div key={skill} className="px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.08)', fontSize: '4.5px', color: 'rgba(255,255,255,0.7)' }}>{skill}</div>
+          ))}
+        </div>
+        <div className="rounded-lg p-1.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontSize: '5px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>"Exceptional work and communication"</div>
+          <div style={{ fontSize: '4.5px', color: 'rgba(255,255,255,0.25)' }}>— Recent client review</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const SCREEN_MAP: Record<string, () => JSX.Element> = {
   analytics: AnalyticsScreen,
   releases: ReleasesScreen,
@@ -277,6 +397,9 @@ const SCREEN_MAP: Record<string, () => JSX.Element> = {
   messages: MessagesScreen,
   partnerships: PartnershipsScreen,
   campaigns: CampaignsScreen,
+  jobboard: JobBoardScreen,
+  freelancer_earnings: FreelancerEarningsScreen,
+  freelancer_profile: FreelancerProfileScreen,
 };
 
 // Variant-specific feature sets for each Learn page
@@ -290,10 +413,10 @@ const VARIANT_FEATURES: Record<string, typeof DESKTOP_FEATURES> = {
     { label: 'Messages', desc: 'Stay connected with your team anywhere', screen: 'messages' },
   ],
   freelancer: [
-    { label: 'Job Board', desc: 'Browse and apply to high-quality music projects', screen: 'releases' },
-    { label: 'Earnings', desc: 'Track payments and manage your income', screen: 'analytics' },
+    { label: 'Job Board', desc: 'Browse and apply to high-quality projects worldwide', screen: 'jobboard' },
+    { label: 'Earnings', desc: 'Track payments and manage your income', screen: 'freelancer_earnings' },
     { label: 'Messages', desc: 'Communicate directly with clients', screen: 'messages' },
-    { label: 'Profile', desc: 'Showcase your skills to attract top clients', screen: 'publishing' },
+    { label: 'Profile', desc: 'Showcase your skills to attract top clients', screen: 'freelancer_profile' },
   ],
   brands: [
     { label: 'Campaigns', desc: 'Launch and manage influencer campaigns', screen: 'releases' },

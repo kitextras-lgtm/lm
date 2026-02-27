@@ -619,31 +619,175 @@ export function LoginPage({ forceArtist = false, forceSource }: { forceArtist?: 
             </div>
             <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
               <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
-              <p>This Artist Distribution Agreement ("Agreement") is entered into between Elevate ("Elevate," "we," "us," or "our"), operating at https://sayelevate.com and [Artist Name / Legal Entity] ("Artist," "you," or "your"). This Agreement governs the submission and digital distribution of musical compositions, sound recordings, artwork, metadata, and related materials submitted by you for distribution and related services.</p>
+              <p style={{ color: 'rgba(255,255,255,0.6)' }}>This Artist Distribution Agreement ("Agreement") is entered into between <span style={{ color: 'rgba(255,255,255,0.85)' }}>Elevate</span> ("Elevate," "we," "us," or "our"), operating at https://sayelevate.com and <span style={{ color: 'rgba(255,255,255,0.85)' }}>[Artist Name / Legal Entity]</span> ("Artist," "you," or "your"). This Agreement governs the submission and digital distribution of musical compositions, sound recordings, artwork, metadata, and related materials (collectively, the "Works") submitted by you for distribution and related services (the "Services").</p>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>1. Services</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate provides digital music distribution and related services that may include:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Delivery of Works to digital service providers (DSPs)', 'Metadata processing and release management', 'Royalty collection and reporting', 'Optional rights administration services', 'Additional services selected at time of purchase'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Services are those listed on sayelevate.com at the time of purchase or otherwise agreed in writing. Elevate operates solely as a distribution and services provider. Elevate is not the creator, publisher, or record label of the Works.</p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>2. Grant of Rights</p>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>2.1 Distribution License</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>In exchange for applicable fees and/or revenue participation, you grant Elevate a non-exclusive, worldwide license during the term of this Agreement to:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Reproduce', 'Distribute', 'Digitally transmit', 'Publicly perform', 'Display', 'Promote', 'Make available'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>the Works in all media formats now known or later developed for the purpose of digital distribution, monetization, and promotion. You also grant Elevate the right to use:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Your artist name', 'Likeness', 'Biographical materials', 'Artwork', 'Logos and trademarks'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>solely in connection with distribution and promotion of the Works. You retain full ownership of all copyrights at all times.</p>
+              </div>
+
+              <div>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>2.2 Optional Rights Administration Services</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>If you enroll in optional rights administration services (e.g., neighboring rights, performance rights, or other collection services), you grant Elevate the necessary non-exclusive rights to administer and register the Works on your behalf. This authority is administrative only and does not transfer copyright ownership.</p>
+              </div>
+
+              <div>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>2.3 Synchronization Rights (If Applicable)</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>If you opt into synchronization services, you grant Elevate a non-exclusive right to license the Works for synchronization in timed relation with audiovisual media (e.g., games, advertising, film, television). All synchronization placements remain subject to separate approval and agreement where required.</p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>3. Ownership and Consents</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>You represent and warrant that:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['You own or control all rights necessary to distribute the Works.', 'The Works are original or properly licensed.', 'All required mechanical licenses for cover songs have been secured.', 'All performers, producers, and contributors have granted necessary permissions.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate is not responsible for securing underlying rights unless expressly agreed in writing.</p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>4. Fees and Payments</p>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>4.1 Service Fees</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Fees are listed on sayelevate.com at time of purchase or agreed in writing. Additional services may require separate written agreement and full payment prior to commencement. Elevate is not obligated to provide services beyond those purchased.</p>
+              </div>
+
+              <div>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>4.2 Royalties</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>Royalty payments:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Are payable only after funds are received from DSPs or licensees.', 'May be subject to transaction or processing fees.', 'Will be paid once minimum payout thresholds are met.', 'Require completed and verified identity and tax documentation before release.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate may withhold or delay payments where:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Fraud or artificial streaming is suspected.', 'A compliance review is pending.', 'Required documentation has not been provided.', 'DSP penalties or clawbacks occur.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Fraudulent activity may result in forfeiture of unpaid royalties.</p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>5. Artificial Streaming &amp; Fraud</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>You agree not to:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Purchase artificial streams, followers, or engagement.', 'Use bots or automated traffic.', 'Participate in streaming manipulation networks.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>If fraudulent activity is detected:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Royalties may be withheld.', 'Releases may be removed.', 'Accounts may be terminated.', 'Fees may be forfeited.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate is not liable for DSP-imposed penalties resulting from artificial activity.</p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>6. Warranties</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>You represent and warrant that:</p>
+                <ul className="space-y-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['The Works do not infringe any third-party rights.', 'The Works contain no defamatory, unlawful, or obscene material.', 'The Works contain no malicious code or harmful software.', 'You are not restricted from entering this Agreement.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>7. Indemnification</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>You agree to indemnify and hold Elevate harmless from any claims, damages, losses, liabilities, or expenses (including legal fees) arising from:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Breach of this Agreement.', 'Infringement claims.', 'Ownership disputes.', 'Fraudulent activity.', 'Third-party claims relating to the Works.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate may offset amounts owed against your royalty balance.</p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>8. Termination</p>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>8.1 Termination by Artist</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>You may terminate this Agreement with written notice, provided:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['No outstanding balances are owed.', 'Subscription obligations are satisfied.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate will instruct DSPs to remove content within 30 days. Elevate is not responsible for third-party delays after removal instructions.</p>
+              </div>
+
+              <div>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>8.2 Termination by Elevate</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>Elevate may immediately terminate this Agreement if:</p>
+                <ul className="space-y-1 mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Fraud or illegal conduct is suspected.', 'Artificial streaming is detected.', 'You breach this Agreement.', 'You engage in threatening or abusive conduct toward Elevate staff.'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Termination may result in forfeiture of unpaid royalties.</p>
+              </div>
+
+              <div>
+                <p className="font-medium mb-1.5" style={{ color: 'rgba(255,255,255,0.8)' }}>8.3 Refunds</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Refunds are only available if Elevate materially breaches this Agreement.</p>
+              </div>
+
               {[
-                { h: '1. Services', b: 'Elevate provides digital music distribution and related services that may include delivery of Works to digital service providers (DSPs), metadata processing and release management, royalty collection and reporting, optional rights administration services, and additional services selected at time of purchase. Elevate operates solely as a distribution and services provider — not as the creator, publisher, or record label of the Works.' },
-                { h: '2.1 Distribution License', b: 'In exchange for applicable fees and/or revenue participation, you grant Elevate a non-exclusive, worldwide license during the term of this Agreement to reproduce, distribute, digitally transmit, publicly perform, display, promote, and make available the Works in all media formats now known or later developed. You also grant Elevate the right to use your artist name, likeness, biographical materials, artwork, and logos solely in connection with distribution and promotion. You retain full ownership of all copyrights at all times.' },
-                { h: '2.2 Optional Rights Administration Services', b: 'If you enroll in optional rights administration services (e.g., neighboring rights, performance rights, or other collection services), you grant Elevate the necessary non-exclusive rights to administer and register the Works on your behalf. This authority is administrative only and does not transfer copyright ownership.' },
-                { h: '2.3 Synchronization Rights (If Applicable)', b: 'If you opt into synchronization services, you grant Elevate a non-exclusive right to license the Works for synchronization in timed relation with audiovisual media. All synchronization placements remain subject to separate approval and agreement where required.' },
-                { h: '3. Ownership and Consents', b: 'You represent and warrant that you own or control all rights necessary to distribute the Works; the Works are original or properly licensed; all required mechanical licenses for cover songs have been secured; and all performers, producers, and contributors have granted necessary permissions. Elevate is not responsible for securing underlying rights unless expressly agreed in writing.' },
-                { h: '4.1 Service Fees', b: 'Fees are listed on sayelevate.com at time of purchase or agreed in writing. Additional services may require separate written agreement and full payment prior to commencement. Elevate is not obligated to provide services beyond those purchased.' },
-                { h: '4.2 Royalties', b: 'Royalty payments are payable only after funds are received from DSPs or licensees, may be subject to transaction or processing fees, will be paid once minimum payout thresholds are met, and require completed and verified identity and tax documentation before release. Elevate may withhold or delay payments where fraud or artificial streaming is suspected, a compliance review is pending, required documentation has not been provided, or DSP penalties or clawbacks occur.' },
-                { h: '5. Artificial Streaming & Fraud', b: 'You agree not to purchase artificial streams, followers, or engagement; use bots or automated traffic; or participate in streaming manipulation networks. If fraudulent activity is detected, royalties may be withheld, releases removed, accounts terminated, and fees forfeited. Elevate is not liable for DSP-imposed penalties resulting from artificial activity.' },
-                { h: '6. Warranties', b: 'You represent and warrant that the Works do not infringe any third-party rights; contain no defamatory, unlawful, or obscene material; contain no malicious code or harmful software; and you are not restricted from entering this Agreement.' },
-                { h: '7. Indemnification', b: 'You agree to indemnify and hold Elevate harmless from any claims, damages, losses, liabilities, or expenses (including legal fees) arising from breach of this Agreement, infringement claims, ownership disputes, fraudulent activity, or third-party claims relating to the Works. Elevate may offset amounts owed against your royalty balance.' },
-                { h: '8.1 Termination by Artist', b: 'You may terminate this Agreement with written notice, provided no outstanding balances are owed and subscription obligations are satisfied. Elevate will instruct DSPs to remove content within 30 days. Elevate is not responsible for third-party delays after removal instructions.' },
-                { h: '8.2 Termination by Elevate', b: 'Elevate may immediately terminate this Agreement if fraud or illegal conduct is suspected, artificial streaming is detected, you breach this Agreement, or you engage in threatening or abusive conduct toward Elevate staff. Termination may result in forfeiture of unpaid royalties.' },
-                { h: '8.3 Refunds', b: 'Refunds are only available if Elevate materially breaches this Agreement.' },
                 { h: '9. Content Delivery', b: 'You must provide all required materials (audio, artwork, metadata) in agreed formats. Elevate is not obligated to begin Services until all required materials are received. Elevate is not responsible for DSP delays, removal decisions, or policy enforcement.' },
                 { h: '10. Use of Support Resources', b: 'You agree to review available documentation before contacting support. Abusive or repeated misuse of support channels may result in termination.' },
                 { h: '11. Confidentiality', b: 'Each party shall keep confidential non-public information disclosed under this Agreement for two (2) years following termination.' },
                 { h: '12. Accurate Information', b: 'You must provide accurate contact and payment details. Elevate is not responsible for losses caused by incorrect payment information provided by you.' },
-                { h: '13. Privacy', b: 'Your personal data is processed in accordance with Elevate\'s Privacy Policy available at sayelevate.com.' },
+                { h: '13. Privacy', b: "Your personal data is processed in accordance with Elevate's Privacy Policy available at sayelevate.com." },
                 { h: '14. Administrative Registrations', b: 'Where required for rights administration services, you authorize Elevate to act as administrative representative solely for registration and reporting purposes. Copyright ownership remains with you.' },
                 { h: '15. Fair Usage Policy', b: '"Unlimited Distribution" or similar packages are intended for individual artists. Elevate may enforce reasonable usage limits to prevent abuse or bulk-label usage.' },
-                { h: '16. Force Majeure', b: 'Neither party shall be liable for failure or delay caused by events beyond reasonable control, including acts of God, war, government action, DSP policy changes, regulatory intervention, or infrastructure outages.' },
+              ].map(({ h, b }) => (
+                <div key={h}>
+                  <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>{h}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
+                </div>
+              ))}
+
+              <div>
+                <p className="font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.92)' }}>16. Force Majeure</p>
+                <p className="mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>Neither party shall be liable for failure or delay caused by events beyond reasonable control, including:</p>
+                <ul className="space-y-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {['Acts of God', 'War', 'Government action', 'DSP policy changes', 'Regulatory intervention', 'Infrastructure outages'].map(item => (
+                    <li key={item} className="flex items-start gap-2"><span style={{ opacity: 0.5, flexShrink: 0 }}>•</span><span>{item}</span></li>
+                  ))}
+                </ul>
+              </div>
+
+              {[
                 { h: '17. Entire Agreement', b: 'This Agreement constitutes the entire agreement between the parties and supersedes prior discussions. If any provision is unenforceable, the remainder remains valid.' },
-                { h: '18. Governing Law & Dispute Resolution', b: 'This Agreement shall be governed in accordance with Elevate\'s Terms of Service. The parties agree to attempt good-faith resolution prior to formal legal proceedings.' },
+                { h: '18. Governing Law & Dispute Resolution', b: "This Agreement shall be governed in accordance with Elevate's Terms of Service. The parties agree to attempt good-faith resolution prior to formal legal proceedings." },
                 { h: '19. Term', b: 'This Agreement begins on November 21, 2025 and continues for one (1) year. It automatically renews for successive one-year periods unless either party provides written notice at least thirty (30) days prior to renewal.' },
                 { h: '20. No Third-Party Rights', b: 'No third party shall acquire rights under this Agreement.' },
               ].map(({ h, b }) => (
@@ -652,6 +796,7 @@ export function LoginPage({ forceArtist = false, forceSource }: { forceArtist?: 
                   <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
                 </div>
               ))}
+
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
                 <p className="font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.92)' }}>Contact</p>
                 <p style={{ color: 'rgba(255,255,255,0.6)' }}>Support: support@sayelevate.com<br />Privacy / Legal: privacy@sayelevate.com</p>

@@ -815,6 +815,33 @@ export function BusinessDashboard() {
     email: ''
   });
   const [currentUserId, setCurrentUserId] = useState<string>('');
+
+  // Talent filter states
+  const [locationFilterOpen, setLocationFilterOpen] = useState(false);
+  const [talentTypeFilterOpen, setTalentTypeFilterOpen] = useState(false);
+  const [categoryFilterOpen, setCategoryFilterOpen] = useState(false);
+  const [successRateFilterOpen, setSuccessRateFilterOpen] = useState(false);
+  const [socialMediaFilterOpen, setSocialMediaFilterOpen] = useState(false);
+  const [skillsFilterOpen, setSkillsFilterOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  // Selected filters state
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedTalentTypes, setSelectedTalentTypes] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSuccessRate, setSelectedSuccessRate] = useState<string>('');
+  const [selectedSocialMedia, setSelectedSocialMedia] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+
+  // Talent dev gate state
+  const [exploreDevUnlocked, setExploreDevUnlocked] = useState(() => localStorage.getItem('elevate_dev_unlocked') === '1');
+  const [talentLockActivated, setTalentLockActivated] = useState(false);
+  const [talentLockHolding, setTalentLockHolding] = useState(false);
+  const talentLockTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [talentDevPassword, setTalentDevPassword] = useState('');
+  const [talentDevError, setTalentDevError] = useState(false);
+  const handleDevUnlock = () => { localStorage.setItem('elevate_dev_unlocked', '1'); setExploreDevUnlocked(true); };
+
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -3079,18 +3106,372 @@ export function BusinessDashboard() {
         )}
 
         {activeSection === 'talent' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8 relative">
+            {/* Dev Password Gate Overlay */}
+            {!exploreDevUnlocked && (() => {
+              const glassColors: Record<string, string> = {
+                dark: 'rgba(15,15,20,0.55)',
+                grey: 'rgba(30,32,38,0.55)',
+                light: 'rgba(220,225,235,0.55)',
+                rose: 'rgba(40,18,22,0.55)',
+                white: 'rgba(240,242,248,0.55)',
+              };
+              const glassBg = glassColors[appliedTheme] || glassColors.dark;
+              return (
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
+                <div
+                  className="mb-5 cursor-pointer select-none"
+                  style={{ animation: 'float 3s ease-in-out infinite', WebkitUserSelect: 'none' }}
+                  onMouseDown={() => {
+                    setTalentLockHolding(true);
+                    talentLockTimerRef.current = setTimeout(() => { setTalentLockActivated(true); setTalentLockHolding(false); }, 3000);
+                  }}
+                  onMouseUp={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                  onMouseLeave={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                  onTouchStart={e => { e.preventDefault(); setTalentLockHolding(true); talentLockTimerRef.current = setTimeout(() => { setTalentLockActivated(true); setTalentLockHolding(false); }, 3000); }}
+                  onTouchEnd={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                  onTouchCancel={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
+                >
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3))${talentLockHolding ? ' drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
+                    <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill={talentLockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
+                  </svg>
+                  {talentLockHolding && (
+                    <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ width: '56px', backgroundColor: 'rgba(255,255,255,0.2)' }}>
+                      <div className="h-full rounded-full" style={{ backgroundColor: 'white', animation: 'lockFill 3s linear forwards' }} />
+                    </div>
+                  )}
+                </div>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
+                <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
+                {talentLockActivated && (
+                <div className="w-full max-w-xs" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
+                  <input
+                    type="password"
+                    placeholder="Enter password"
+                    autoFocus
+                    value={talentDevPassword}
+                    onChange={e => { setTalentDevPassword(e.target.value); setTalentDevError(false); }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        if (talentDevPassword === 'master100') {
+                          handleDevUnlock();
+                          setTalentDevError(false);
+                        } else {
+                          setTalentDevError(true);
+                        }
+                      }
+                    }}
+                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
+                    style={{
+                      backgroundColor: glassBg,
+                      border: `1px solid ${talentDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
+                      color: 'white',
+                      backdropFilter: 'blur(12px)',
+                    }}
+                    onFocus={e => { if (!talentDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
+                    onBlur={e => { if (!talentDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
+                  />
+                  {talentDevError && (
+                    <p className="text-xs mt-2 text-center" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
+                  )}
+                </div>
+                )}
+              </div>
+              );
+            })()}
+            <div className={exploreDevUnlocked ? '' : 'blur-[18px] pointer-events-none select-none'} style={exploreDevUnlocked ? {} : { backdropFilter: 'blur(18px)' }}>
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>Discover Talent</h2>
-                <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>Find and connect with talented creators</p>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('talent.discoverTitle')}</h2>
+                <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>{t('talent.discoverDesc')}</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                <FighterMusicCard onClick={() => setSelectedCampaign(CAMPAIGNS[0])} backgroundTheme={backgroundTheme} />
-                <AstaViolinaCard onClick={() => setSelectedCampaign(CAMPAIGNS[1])} backgroundTheme={backgroundTheme} />
+              {/* Search Bar */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 relative">
+                  <svg
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+                    style={{ color: 'var(--text-primary)' }}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder={t('talent.searchTalent')}
+                    className="w-full pl-12 pr-4 py-3 rounded-xl text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 border"
+                    style={{
+                      backgroundColor: 'var(--bg-card)',
+                      borderColor: searchFocused ? 'var(--text-primary)' : 'var(--border-subtle)',
+                      color: 'var(--text-primary)'
+                    }}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-6">
+                {/* Left Sidebar Filters */}
+                <div className="hidden lg:block w-56 flex-shrink-0">
+                  {/* Active Filters */}
+                  {(selectedLocations.length > 0 || selectedTalentTypes.length > 0 || selectedCategories.length > 0 || selectedSuccessRate || selectedSkills.length > 0) && (
+                    <div className="mb-4">
+                      <div className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>{t('talent.activeFilters')}</div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedLocations.map((loc) => (
+                          <div key={`location-${loc}`} className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            <span>{loc}</span>
+                            <button onClick={() => setSelectedLocations(selectedLocations.filter(l => l !== loc))} className="ml-1 text-xs hover:opacity-70" style={{ color: 'var(--text-primary)' }}>×</button>
+                          </div>
+                        ))}
+                        {selectedTalentTypes.map((type) => (
+                          <div key={`type-${type}`} className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            <span>{type}</span>
+                            <button onClick={() => setSelectedTalentTypes(selectedTalentTypes.filter(tt => tt !== type))} className="ml-1 text-xs hover:opacity-70" style={{ color: 'var(--text-primary)' }}>×</button>
+                          </div>
+                        ))}
+                        {selectedCategories.map((category) => (
+                          <div key={`category-${category}`} className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            <span>{category}</span>
+                            <button onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== category))} className="ml-1 text-xs hover:opacity-70" style={{ color: 'var(--text-primary)' }}>×</button>
+                          </div>
+                        ))}
+                        {selectedSkills.map((skill) => (
+                          <div key={`skill-${skill}`} className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            <span>{skill}</span>
+                            <button onClick={() => setSelectedSkills(selectedSkills.filter(s => s !== skill))} className="ml-1 text-xs hover:opacity-70" style={{ color: 'var(--text-primary)' }}>×</button>
+                          </div>
+                        ))}
+                        {selectedSuccessRate && (
+                          <div className="flex items-center gap-1 px-3 py-1 rounded-full text-xs border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}>
+                            <span>{selectedSuccessRate}</span>
+                            <button onClick={() => setSelectedSuccessRate('')} className="ml-1 text-xs hover:opacity-70" style={{ color: 'var(--text-primary)' }}>×</button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {/* Location Filter */}
+                    <div>
+                      <button type="button" className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: locationFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)', transform: locationFilterOpen ? 'translateY(-1px)' : 'none' }}
+                        onClick={() => setLocationFilterOpen(!locationFilterOpen)}>
+                        <span className="font-medium transition-all duration-200">{t('talent.location')}</span>
+                        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${locationFilterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      {locationFilterOpen && (
+                        <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border p-2" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                          {[{key: 'unitedStates', label: t('countries.unitedStates')}, {key: 'unitedKingdom', label: t('countries.unitedKingdom')}, {key: 'canada', label: t('countries.canada')}, {key: 'australia', label: t('countries.australia')}, {key: 'germany', label: t('countries.germany')}, {key: 'france', label: t('countries.france')}, {key: 'spain', label: t('countries.spain')}, {key: 'italy', label: t('countries.italy')}, {key: 'netherlands', label: t('countries.netherlands')}, {key: 'sweden', label: t('countries.sweden')}, {key: 'japan', label: t('countries.japan')}, {key: 'southKorea', label: t('countries.southKorea')}, {key: 'china', label: t('countries.china')}, {key: 'india', label: t('countries.india')}, {key: 'brazil', label: t('countries.brazil')}, {key: 'mexico', label: t('countries.mexico')}, {key: 'argentina', label: t('countries.argentina')}, {key: 'chile', label: t('countries.chile')}, {key: 'southAfrica', label: t('countries.southAfrica')}, {key: 'egypt', label: t('countries.egypt')}, {key: 'nigeria', label: t('countries.nigeria')}, {key: 'kenya', label: t('countries.kenya')}, {key: 'morocco', label: t('countries.morocco')}, {key: 'russia', label: t('countries.russia')}, {key: 'poland', label: t('countries.poland')}, {key: 'ukraine', label: t('countries.ukraine')}, {key: 'turkey', label: t('countries.turkey')}, {key: 'saudiArabia', label: t('countries.saudiArabia')}, {key: 'uae', label: t('countries.uae')}, {key: 'israel', label: t('countries.israel')}, {key: 'thailand', label: t('countries.thailand')}, {key: 'vietnam', label: t('countries.vietnam')}, {key: 'philippines', label: t('countries.philippines')}, {key: 'singapore', label: t('countries.singapore')}, {key: 'malaysia', label: t('countries.malaysia')}, {key: 'indonesia', label: t('countries.indonesia')}, {key: 'newZealand', label: t('countries.newZealand')}].map(({key, label}) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                              <input type="checkbox" className="rounded border-gray-400 bg-transparent" checked={selectedLocations.includes(key)} onChange={(e) => { if (e.target.checked) { setSelectedLocations([...selectedLocations, key]); } else { setSelectedLocations(selectedLocations.filter(l => l !== key)); } }} />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Talent Type Filter */}
+                    <div>
+                      <button type="button" className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: talentTypeFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)', transform: talentTypeFilterOpen ? 'translateY(-1px)' : 'none' }}
+                        onClick={() => setTalentTypeFilterOpen(!talentTypeFilterOpen)}>
+                        <span className="font-medium transition-all duration-200">{t('talent.talentType')}</span>
+                        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${talentTypeFilterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      {talentTypeFilterOpen && (
+                        <div className="mt-2 rounded-lg border p-2" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                          {[{key: 'creator', label: t('talentFilters.creator')}, {key: 'brand', label: t('talentFilters.brand')}, {key: 'freelancer', label: t('talentFilters.freelancer')}].map(({key, label}) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                              <input type="checkbox" className="rounded border-gray-400 bg-transparent" checked={selectedTalentTypes.includes(key)} onChange={(e) => { if (e.target.checked) { setSelectedTalentTypes([...selectedTalentTypes, key]); } else { setSelectedTalentTypes(selectedTalentTypes.filter(tt => tt !== key)); } }} />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Category Filter */}
+                    <div>
+                      <button type="button" className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: categoryFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)', transform: categoryFilterOpen ? 'translateY(-1px)' : 'none' }}
+                        onClick={() => setCategoryFilterOpen(!categoryFilterOpen)}>
+                        <span className="font-medium transition-all duration-200">{t('talent.category')}</span>
+                        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${categoryFilterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      {categoryFilterOpen && (
+                        <div className="mt-2 rounded-lg border p-2" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                          {[{key: 'gaming', label: t('talentFilters.gaming')}, {key: 'music', label: t('talentFilters.music')}, {key: 'vlogs', label: t('talentFilters.vlogs')}, {key: 'education', label: t('talentFilters.education')}, {key: 'comedy', label: t('talentFilters.comedy')}, {key: 'sports', label: t('talentFilters.sports')}, {key: 'travel', label: t('talentFilters.travel')}, {key: 'food', label: t('talentFilters.food')}, {key: 'fashion', label: t('talentFilters.fashion')}, {key: 'beauty', label: t('talentFilters.beauty')}, {key: 'technology', label: t('talentFilters.technology')}, {key: 'art', label: t('talentFilters.art')}, {key: 'dance', label: t('talentFilters.dance')}, {key: 'fitness', label: t('talentFilters.fitness')}, {key: 'lifestyle', label: t('talentFilters.lifestyle')}].map(({key, label}) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                              <input type="checkbox" className="rounded border-gray-400 bg-transparent" checked={selectedCategories.includes(key)} onChange={(e) => { if (e.target.checked) { setSelectedCategories([...selectedCategories, key]); } else { setSelectedCategories(selectedCategories.filter(c => c !== key)); } }} />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Success Rate Filter */}
+                    <div>
+                      <button type="button" className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: successRateFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)', transform: successRateFilterOpen ? 'translateY(-1px)' : 'none' }}
+                        onClick={() => setSuccessRateFilterOpen(!successRateFilterOpen)}>
+                        <span className="font-medium transition-all duration-200">{t('talent.successRate')}</span>
+                        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${successRateFilterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      {successRateFilterOpen && (
+                        <div className="mt-2 rounded-lg border p-2" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                          {[{key: 'any', label: t('talentFilters.anyPercent')}, {key: '80up', label: t('talentFilters.eightyUp')}, {key: '90up', label: t('talentFilters.ninetyUp')}].map(({key, label}) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                              <input type="radio" name="successRateBusiness" className="rounded border-gray-400 bg-transparent" checked={selectedSuccessRate === key} onChange={() => setSelectedSuccessRate(key)} />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Social Media Filter */}
+                    <div>
+                      <button type="button" className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: socialMediaFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)', transform: socialMediaFilterOpen ? 'translateY(-1px)' : 'none' }}
+                        onClick={() => setSocialMediaFilterOpen(!socialMediaFilterOpen)}>
+                        <span className="font-medium transition-all duration-200">{t('talent.socialMedia')}</span>
+                        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${socialMediaFilterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      {socialMediaFilterOpen && (
+                        <div className="mt-2 rounded-lg border p-2" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                          {[{key: 'youtube', label: t('platforms.youtube')}, {key: 'instagram', label: t('platforms.instagram')}, {key: 'tiktok', label: t('platforms.tiktok')}, {key: 'twitter', label: t('platforms.twitter')}, {key: 'linkedin', label: t('platforms.linkedin')}, {key: 'twitch', label: t('platforms.twitch')}].map(({key, label}) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                              <input type="checkbox" className="rounded border-gray-400 bg-transparent" checked={selectedSocialMedia.includes(key)} onChange={(e) => { if (e.target.checked) { setSelectedSocialMedia([...selectedSocialMedia, key]); } else { setSelectedSocialMedia(selectedSocialMedia.filter(s => s !== key)); } }} />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Skills Filter */}
+                    <div>
+                      <button type="button" className="w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between group border"
+                        style={{ backgroundColor: 'var(--bg-elevated)', borderColor: skillsFilterOpen ? 'var(--text-primary)' : 'var(--border-subtle)', color: 'var(--text-primary)', transform: skillsFilterOpen ? 'translateY(-1px)' : 'none' }}
+                        onClick={() => setSkillsFilterOpen(!skillsFilterOpen)}>
+                        <span className="font-medium transition-all duration-200">{t('talent.skills')}</span>
+                        <svg className={`w-4 h-4 transition-all duration-200 group-hover:scale-110 ${skillsFilterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      {skillsFilterOpen && (
+                        <div className="mt-2 rounded-lg border p-2" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+                          {[{key: 'videoEditing', label: t('talentFilters.videoEditing')}, {key: 'photography', label: t('talentFilters.photography')}, {key: 'contentWriting', label: t('talentFilters.contentWriting')}, {key: 'graphicDesign', label: t('talentFilters.graphicDesign')}, {key: 'animation', label: t('talentFilters.animation')}, {key: 'voiceOver', label: t('talentFilters.voiceOver')}, {key: 'musicProduction', label: t('talentFilters.musicProduction')}, {key: 'dance', label: t('talentFilters.danceSkill')}, {key: 'acting', label: t('talentFilters.acting')}, {key: 'comedy', label: t('talentFilters.comedySkill')}, {key: 'publicSpeaking', label: t('talentFilters.publicSpeaking')}, {key: 'modeling', label: t('talentFilters.modeling')}, {key: 'cooking', label: t('talentFilters.cooking')}, {key: 'fitnessTraining', label: t('talentFilters.fitnessTraining')}, {key: 'makeupArtistry', label: t('talentFilters.makeupArtistry')}].map(({key, label}) => (
+                            <label key={key} className="flex items-center gap-2 py-1.5 px-2 text-xs rounded-md cursor-pointer transition-all duration-200 hover:bg-white/5" style={{ color: 'var(--text-primary)' }}>
+                              <input type="checkbox" className="rounded border-gray-400 bg-transparent" checked={selectedSkills.includes(key)} onChange={(e) => { if (e.target.checked) { setSelectedSkills([...selectedSkills, key]); } else { setSelectedSkills(selectedSkills.filter(s => s !== key)); } }} />
+                              <span>{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Talent Cards */}
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                      {t('talent.suggested')}
+                    </button>
+                  </div>
+
+                  {/* Talent Card 1 */}
+                  <div className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Shawn Grows</h4>
+                        </div>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.natureBlogger')}</p>
+                        <p className="text-xs mb-3"><a href="https://youtube.com/c/example" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" style={{ color: 'var(--text-muted)' }}>youtube.com/c/example</a></p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>📍 California, USA</p>
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                          {[t('talentCards.nature'), 'YouTube', 'TikTok', 'Instagram'].map((skill, i) => (
+                            <span key={i} className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}>{skill}</span>
+                          ))}
+                        </div>
+                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.natureBloggerDesc')}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:brightness-110" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </button>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>{t('talent.seeProfile')}</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Talent Card 2 */}
+                  <div className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Sarah K.</h4>
+                        </div>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.creativeDesigner')}</p>
+                        <p className="text-xs mb-3"><a href="https://youtube.com/c/example" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" style={{ color: 'var(--text-muted)' }}>youtube.com/c/example</a></p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>📍 London, UK</p>
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                          {[t('talentCards.design'), t('talentCards.branding'), t('talentCards.uiux'), t('talentCards.figma')].map((skill, i) => (
+                            <span key={i} className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}>{skill}</span>
+                          ))}
+                        </div>
+                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.creativeDesignerDesc')}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:brightness-110" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </button>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>{t('talent.seeProfile')}</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Talent Card 3 */}
+                  <div className="rounded-2xl p-5 border transition-all duration-200 hover:shadow-lg cursor-pointer" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Alex T.</h4>
+                        </div>
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.musicProducer')}</p>
+                        <p className="text-xs mb-3"><a href="https://youtube.com/c/example" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" style={{ color: 'var(--text-muted)' }}>youtube.com/c/example</a></p>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>📍 Berlin, Germany</p>
+                        <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                          {[t('explore.music'), t('talentCards.audio'), t('talentCards.production'), t('talentCards.mixing')].map((skill, i) => (
+                            <span key={i} className="px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}>{skill}</span>
+                          ))}
+                        </div>
+                        <p className="text-sm line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{t('talentCards.musicProducerDesc')}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <button className="w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-200 hover:brightness-110" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }}>
+                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </button>
+                        <button className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:brightness-110" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>{t('talent.seeProfile')}</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
+            </div>
           </div>
         )}
 
