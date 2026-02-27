@@ -159,6 +159,7 @@ export const ChatWindow = memo(function ChatWindow({
     isRequest={isRequest}
     onAcceptRequest={onAcceptRequest}
     onDenyRequest={onDenyRequest}
+    enableSpellCheck={enableSpellCheck}
   />;
 });
 
@@ -176,6 +177,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   isRequest = false,
   onAcceptRequest,
   onDenyRequest,
+  enableSpellCheck = false,
 }: {
   conversation: Conversation;
   otherUser: Profile;
@@ -189,6 +191,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
   isRequest?: boolean;
   onAcceptRequest?: () => Promise<void>;
   onDenyRequest?: () => Promise<void>;
+  enableSpellCheck?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = getTheme(backgroundTheme);
