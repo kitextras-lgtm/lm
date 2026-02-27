@@ -13,16 +13,21 @@ export function useUnreadCount(userId: string, onNewMessage?: () => void) {
     // Get all conversations where user is either customer or admin
     const { data, error } = await supabase
       .from('conversations')
-      .select('customer_id, admin_id, unread_count_customer, unread_count_admin')
+      .select('customer_id, admin_id, unread_count_customer, unread_count_admin, is_request')
       .or(`customer_id.eq.${userId},admin_id.eq.${userId}`);
 
     if (!error && data) {
       const total = data.reduce((sum, conv) => {
         // Determine which unread count applies to this user
-        const unread = conv.customer_id === userId
+        const raw = conv.customer_id === userId
           ? conv.unread_count_customer
           : conv.unread_count_admin;
-        return sum + (unread || 0);
+        // For unaccepted request conversations where this user is the recipient,
+        // cap contribution to 1 so the badge never exceeds 1 per request and
+        // subsequent messages don't trigger the ping sound.
+        const isRecipientOfRequest = conv.is_request === true && conv.admin_id === userId;
+        const unread = isRecipientOfRequest ? Math.min(raw || 0, 1) : (raw || 0);
+        return sum + unread;
       }, 0);
       setTotalUnread(prev => {
         // Fire callback only when count genuinely increases (new message arrived)

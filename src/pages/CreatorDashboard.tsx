@@ -989,7 +989,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   const [talentDevError, setTalentDevError] = useState(false);
   const handleDevUnlock = () => { localStorage.setItem('elevate_dev_unlocked', '1'); setExploreDevUnlocked(true); };
   const [dealsTab, setDealsTab] = useState<'offers' | 'freelance'>('offers');
-  const [dealsFilter, setDealsFilter] = useState<'all' | 'collab' | 'sponsorship'>('all');
+  const [dealsFilter, setDealsFilter] = useState<'all' | 'sent' | 'collab' | 'sponsorship'>('all');
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -4897,7 +4897,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               <div>
                 {/* Sub-filter */}
                 <div className="flex items-center gap-2 mb-6">
-                  {(['all', 'collab', 'sponsorship'] as const).map(f => (
+                  {(['all', 'sent', 'collab', 'sponsorship'] as const).map(f => (
                     <button
                       key={f}
                       onClick={() => setDealsFilter(f)}
@@ -4908,7 +4908,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
                         border: `1px solid ${dealsFilter === f ? 'transparent' : 'var(--border-subtle)'}`,
                       }}
                     >
-                      {f === 'all' ? 'All' : f === 'collab' ? 'Collaborations' : 'Sponsorships'}
+                      {f === 'all' ? 'All' : f === 'sent' ? 'Sent' : f === 'collab' ? 'Collaborations' : 'Sponsorships'}
                     </button>
                   ))}
                 </div>

@@ -3106,82 +3106,7 @@ export function BusinessDashboard() {
         )}
 
         {activeSection === 'talent' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8 relative">
-            {/* Dev Password Gate Overlay */}
-            {!exploreDevUnlocked && (() => {
-              const glassColors: Record<string, string> = {
-                dark: 'rgba(15,15,20,0.55)',
-                grey: 'rgba(30,32,38,0.55)',
-                light: 'rgba(220,225,235,0.55)',
-                rose: 'rgba(40,18,22,0.55)',
-                white: 'rgba(240,242,248,0.55)',
-              };
-              const glassBg = glassColors[appliedTheme] || glassColors.dark;
-              return (
-              <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
-                <div
-                  className="mb-5 cursor-pointer select-none"
-                  style={{ animation: 'float 3s ease-in-out infinite', WebkitUserSelect: 'none' }}
-                  onMouseDown={() => {
-                    setTalentLockHolding(true);
-                    talentLockTimerRef.current = setTimeout(() => { setTalentLockActivated(true); setTalentLockHolding(false); }, 3000);
-                  }}
-                  onMouseUp={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
-                  onMouseLeave={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
-                  onTouchStart={e => { e.preventDefault(); setTalentLockHolding(true); talentLockTimerRef.current = setTimeout(() => { setTalentLockActivated(true); setTalentLockHolding(false); }, 3000); }}
-                  onTouchEnd={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
-                  onTouchCancel={() => { setTalentLockHolding(false); if (talentLockTimerRef.current) { clearTimeout(talentLockTimerRef.current); talentLockTimerRef.current = null; } }}
-                >
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="text-white" style={{ filter: `drop-shadow(0 4px 6px rgba(0,0,0,0.3))${talentLockHolding ? ' drop-shadow(0 0 8px rgba(255,255,255,0.4))' : ''}`, transition: 'filter 0.2s ease' }}>
-                    <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill={talentLockActivated ? '#ef4444' : 'currentColor'} style={{ transition: 'fill 0.3s ease' }}/>
-                  </svg>
-                  {talentLockHolding && (
-                    <div className="mt-2 h-0.5 rounded-full overflow-hidden" style={{ width: '56px', backgroundColor: 'rgba(255,255,255,0.2)' }}>
-                      <div className="h-full rounded-full" style={{ backgroundColor: 'white', animation: 'lockFill 3s linear forwards' }} />
-                    </div>
-                  )}
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{t('explore.comingSoon')}</h1>
-                <p className="text-lg text-white mb-8" style={{ opacity: 0.85, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>{t('explore.comingSoonDesc')}</p>
-                {talentLockActivated && (
-                <div className="w-full max-w-xs" style={{ animation: 'fadeInUp 0.3s ease forwards' }}>
-                  <input
-                    type="password"
-                    placeholder="Enter password"
-                    autoFocus
-                    value={talentDevPassword}
-                    onChange={e => { setTalentDevPassword(e.target.value); setTalentDevError(false); }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') {
-                        if (talentDevPassword === 'master100') {
-                          handleDevUnlock();
-                          setTalentDevError(false);
-                        } else {
-                          setTalentDevError(true);
-                        }
-                      }
-                    }}
-                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
-                    style={{
-                      backgroundColor: glassBg,
-                      border: `1px solid ${talentDevError ? 'rgba(239,68,68,0.8)' : 'rgba(255,255,255,0.25)'}`,
-                      color: 'white',
-                      backdropFilter: 'blur(12px)',
-                    }}
-                    onFocus={e => { if (!talentDevError) e.target.style.borderColor = 'rgba(255,255,255,0.6)'; }}
-                    onBlur={e => { if (!talentDevError) e.target.style.borderColor = 'rgba(255,255,255,0.25)'; }}
-                  />
-                  {talentDevError && (
-                    <p className="text-xs mt-2 text-center" style={{ color: 'rgba(239,68,68,0.9)' }}>Incorrect password. Try again.</p>
-                  )}
-                </div>
-                )}
-              </div>
-              );
-            })()}
-            <div className={exploreDevUnlocked ? '' : 'blur-[18px] pointer-events-none select-none'} style={exploreDevUnlocked ? {} : { backdropFilter: 'blur(18px)' }}>
+          <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             <section className="mb-10 sm:mb-20">
               <div className="mb-5 sm:mb-7">
                 <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2 tracking-tight" style={{ color: 'var(--text-primary)' }}>{t('talent.discoverTitle')}</h2>
@@ -3471,7 +3396,6 @@ export function BusinessDashboard() {
                 </div>
               </div>
             </section>
-            </div>
           </div>
         )}
 
