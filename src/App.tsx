@@ -53,8 +53,13 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MobileMenuPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signup/artist" element={<SignupPage />} />
+          <Route path="/signup/freelancer" element={<SignupPage />} />
+          <Route path="/signup/brands" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/artist" element={<LoginPage forceArtist={true} />} />
+          <Route path="/login/freelancer" element={<LoginPage forceSource="freelancer" />} />
+          <Route path="/login/brands" element={<LoginPage forceSource="brand" />} />
           <Route path="/user-type-selection" element={<UserTypeSelectionPage />} />
           <Route path="/make-profile" element={<MakeProfilePage />} />
           <Route path="/tell-us-about-yourself" element={<TellUsAboutYourselfPage />} />

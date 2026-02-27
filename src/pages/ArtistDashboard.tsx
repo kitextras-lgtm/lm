@@ -851,7 +851,7 @@ function FighterMusicCard({ onClick }: { onClick?: () => void }) {
   );
 }
 
-function TotalSongsDistributedCard() {
+function TotalSongsDistributedCard({ onViewMore }: { onViewMore?: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
   useEffect(() => {
@@ -873,7 +873,7 @@ function TotalSongsDistributedCard() {
         <h3 className="font-semibold text-base sm:text-lg truncate" style={{ color: 'var(--text-primary)' }}>Total Songs Distributed</h3>
       </div>
 
-      <div className="space-y-6 sm:space-y-8">
+      <div className="space-y-6 sm:space-y-8 flex-grow">
         <div className="flex items-center justify-between">
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Total Songs</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>0</span>
@@ -883,6 +883,17 @@ function TotalSongsDistributedCard() {
           <span className="text-sm" style={{ color: 'var(--text-primary)' }}>This Month</span>
           <span className="font-semibold text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>—</span>
         </div>
+      </div>
+
+      <div className="mt-6 pt-4 border-t flex items-center justify-end" style={{ borderColor: 'var(--border-subtle)' }}>
+        <button
+          onClick={(e) => { e.stopPropagation(); if (onViewMore) onViewMore(); }}
+          className="flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:opacity-80"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          <span>View More</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        </button>
       </div>
     </div>
   );
@@ -2162,6 +2173,10 @@ export function ArtistDashboard() {
   const [dismissedDeclineIds, setDismissedDeclineIds] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('dismissedDeclineIds') || '[]'); } catch { return []; }
   });
+  const [approvedReleaseDrafts, setApprovedReleaseDrafts] = useState<{ id: string; title: string | null; updated_at: string }[]>([]);
+  const [dismissedApprovedReleaseIds, setDismissedApprovedReleaseIds] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('dismissedApprovedReleaseIds') || '[]'); } catch { return []; }
+  });
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [emailNewFeatures, setEmailNewFeatures] = useState<boolean>(true);
   const [emailPlatformUpdates, setEmailPlatformUpdates] = useState<boolean>(true);
@@ -2546,6 +2561,27 @@ export function ArtistDashboard() {
       .eq('application_type', 'artist_account')
       .eq('status', 'denied')
       .then(({ data }) => { if (data) setDeclinedArtistApps(data); });
+  }, [currentUserId]);
+
+  // Fetch approved release drafts for notification banner (with real-time updates)
+  useEffect(() => {
+    if (!currentUserId) return;
+    const fetchApproved = () => {
+      supabase
+        .from('release_drafts')
+        .select('id, title, updated_at')
+        .eq('user_id', currentUserId)
+        .eq('status', 'approved')
+        .then(({ data }) => { if (data) setApprovedReleaseDrafts(data); });
+    };
+    fetchApproved();
+    const channel = supabase
+      .channel(`approved-releases-${currentUserId}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'release_drafts', filter: `user_id=eq.${currentUserId}` }, () => {
+        fetchApproved();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, [currentUserId]);
 
   // Refetch conversations when navigating back to home to ensure badge count is up to date
@@ -5270,9 +5306,53 @@ export function ArtistDashboard() {
 
             <FighterMusicCard />
 
-            <TotalSongsDistributedCard />
+            <TotalSongsDistributedCard onViewMore={() => { setActiveSection('explore'); setMyReleasesTab('complete'); }} />
           </div>
         </section>
+
+        {/* Approved release draft notifications */}
+        {approvedReleaseDrafts.filter(r => !dismissedApprovedReleaseIds.includes(r.id)).map(rel => (
+          <div key={rel.id} className="mb-6 rounded-2xl p-5 border animate-fade-in" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="flex-shrink-0 mt-0.5">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+                    Your release <span className="font-bold">{rel.title || 'Untitled'}</span> has been accepted
+                  </p>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>
+                    Great news! Your release submission has been reviewed and approved. You can view it in My Releases.
+                  </p>
+                  <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
+                    {new Date(rel.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={() => { setActiveSection('explore'); setMyReleasesTab('complete'); }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
+                  style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+                >
+                  View Release
+                </button>
+                <button
+                  onClick={() => {
+                    const newIds = [...dismissedApprovedReleaseIds, rel.id];
+                    setDismissedApprovedReleaseIds(newIds);
+                    localStorage.setItem('dismissedApprovedReleaseIds', JSON.stringify(newIds));
+                  }}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:brightness-110"
+                  style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
 
         {/* Declined artist application notifications */}
         {declinedArtistApps.filter(a => !dismissedDeclineIds.includes(a.id)).map(app => (

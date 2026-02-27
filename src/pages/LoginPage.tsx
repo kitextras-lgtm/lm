@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-export function LoginPage({ forceArtist = false }: { forceArtist?: boolean }) {
+export function LoginPage({ forceArtist = false, forceSource }: { forceArtist?: boolean; forceSource?: 'artist' | 'brand' | 'freelancer' }) {
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -27,12 +27,19 @@ export function LoginPage({ forceArtist = false }: { forceArtist?: boolean }) {
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [showToS, setShowToS] = useState(false);
   const [showArtistToS, setShowArtistToS] = useState(false);
+  const [showFreelancerToS, setShowFreelancerToS] = useState(false);
+  const [showBrandToS, setShowBrandToS] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const isFromArtistPage = forceArtist || (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist') || searchParams.get('source') === 'artist';
+  const sourceParam = forceSource || searchParams.get('source') as 'artist' | 'brand' | 'freelancer' | null;
+  const isFromArtistPage = forceArtist || sourceParam === 'artist' || (location.state as any)?.from === '/learn/artist' || document.referrer.includes('/learn/artist');
+  const isFromBrandPage = sourceParam === 'brand';
+  const isFromFreelancerPage = sourceParam === 'freelancer';
+  const backPath = isFromArtistPage ? '/learn/artist' : isFromBrandPage ? '/learn/brands' : isFromFreelancerPage ? '/learn/freelancer' : '/';
+  const backLabel = (isFromArtistPage || isFromBrandPage || isFromFreelancerPage) ? 'Back' : 'Home';
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -288,13 +295,13 @@ export function LoginPage({ forceArtist = false }: { forceArtist?: boolean }) {
       }}
     >
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate(backPath)}
         className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
       >
         <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="text-xs font-medium">Home</span>
+        <span className="text-xs font-medium">{backLabel}</span>
       </button>
       {!isMobile && (
         <div
@@ -419,7 +426,7 @@ export function LoginPage({ forceArtist = false }: { forceArtist?: boolean }) {
 
             <p className="text-neutral-400 text-xs text-center">
               By signing in, you agree to our{" "}
-              <button className="text-white underline hover:no-underline" onClick={() => isFromArtistPage ? setShowArtistToS(true) : setShowToS(true)}>
+              <button className="text-white underline hover:no-underline" onClick={() => isFromArtistPage ? setShowArtistToS(true) : isFromFreelancerPage ? setShowFreelancerToS(true) : isFromBrandPage ? setShowBrandToS(true) : setShowToS(true)}>
                 Terms
               </button>
               {" "}and{" "}
@@ -652,6 +659,110 @@ export function LoginPage({ forceArtist = false }: { forceArtist?: boolean }) {
             </div>
             <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <button onClick={() => setShowArtistToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Freelancer Terms of Service Modal */}
+      {showFreelancerToS && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setShowFreelancerToS(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl flex flex-col"
+            style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Elevate Freelancer Agreement</p>
+              <button onClick={() => setShowFreelancerToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
+              <p>This Freelancer Agreement ("Agreement") is entered into between Elevate ("Elevate," "we," "us," or "our") and the independent contractor ("Freelancer," "you," or "your") accessing services through the Elevate platform. This Agreement governs your participation as a service provider on the Elevate marketplace.</p>
+              {[
+                { h: '1. Independent Contractor Status', b: 'You are an independent contractor, not an employee, agent, or partner of Elevate. You are solely responsible for determining how to complete services, setting your own schedule, and providing your own tools and equipment. Elevate does not control the manner or means by which you perform services.' },
+                { h: '2. Services and Scope', b: 'As a Freelancer, you may offer creative, technical, or professional services to clients through the Elevate platform. You are responsible for accurately describing your services, qualifications, and deliverables. You agree to complete services as described and in a professional manner.' },
+                { h: '3. Fees and Payments', b: 'Elevate may collect a service fee from transactions completed through the platform. Payment terms are established at the time of service agreement. Elevate facilitates payments but is not responsible for disputes arising from service quality or delivery timelines.' },
+                { h: '4. Intellectual Property', b: 'Unless otherwise agreed in writing with a client, work product created for clients may be subject to assignment of intellectual property rights as specified in individual service agreements. You retain ownership of your background IP and tools not created specifically for a client.' },
+                { h: '5. Confidentiality', b: 'You agree to maintain the confidentiality of client information and any non-public information disclosed during the course of services. This obligation survives termination of this Agreement.' },
+                { h: '6. Conduct and Professional Standards', b: 'You agree to conduct yourself professionally, communicate clearly with clients, deliver work on agreed timelines, and refrain from discriminatory, harassing, or fraudulent behavior. Violations may result in account suspension or termination.' },
+                { h: '7. Taxes', b: 'You are solely responsible for all taxes arising from your freelance income, including self-employment taxes. Elevate may issue tax documentation as required by law but does not withhold taxes on your behalf.' },
+                { h: '8. Warranties and Representations', b: 'You represent that you have the legal right to offer the services listed, that your work will not infringe third-party intellectual property rights, and that all information in your profile is accurate and not misleading.' },
+                { h: '9. Limitation of Liability', b: 'Elevate is not liable for disputes between freelancers and clients. To the fullest extent permitted by law, Elevate\'s liability is limited to amounts received through the platform in the previous 12 months.' },
+                { h: '10. Termination', b: 'Either party may terminate this Agreement at any time. Upon termination, you must complete or properly close any active engagements. Elevate may withhold payment for incomplete or disputed work.' },
+                { h: '11. Governing Law', b: 'This Agreement is governed by the laws applicable under Elevate\'s Terms of Service. Disputes are subject to binding arbitration.' },
+              ].map(({ h, b }) => (
+                <div key={h}>
+                  <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>{h}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
+                <p className="font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.92)' }}>Contact</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Support: support@sayelevate.com<br />Privacy / Legal: privacy@sayelevate.com</p>
+              </div>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowFreelancerToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Brand / Business Terms of Service Modal */}
+      {showBrandToS && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+          onClick={() => setShowBrandToS(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-2xl flex flex-col"
+            style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Elevate Brand Partnership Agreement</p>
+              <button onClick={() => setShowBrandToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
+              <p>This Brand Partnership Agreement ("Agreement") governs the relationship between Elevate ("Elevate," "we," "us," or "our") and any brand, business, or corporate entity ("Brand," "you," or "your") accessing the Elevate platform for the purpose of connecting with creators and talent.</p>
+              {[
+                { h: '1. Platform Access', b: 'Elevate grants you access to its creator marketplace to discover, contact, and engage with independent creators, artists, and freelancers. Access is subject to your compliance with this Agreement and all applicable Elevate policies.' },
+                { h: '2. Brand Responsibilities', b: 'You are responsible for clearly communicating campaign requirements, deliverables, timelines, and compensation to creators. You must ensure all partnership terms comply with applicable advertising, endorsement, and consumer protection laws.' },
+                { h: '3. Payments and Fees', b: 'Brands agree to pay creators in accordance with agreed terms. Elevate may charge platform fees for facilitating connections and managing campaigns. All fees are disclosed at time of engagement. Late or missed payments may result in account suspension.' },
+                { h: '4. Content and Intellectual Property', b: 'Content created by creators in partnership with your brand remains subject to any licensing terms agreed upon in individual creator agreements. You must not use creator content beyond the agreed scope without written permission. Elevate does not transfer or warrant any IP rights.' },
+                { h: '5. Compliance with Laws', b: 'You agree to comply with FTC guidelines on endorsements and testimonials, all applicable data privacy laws, anti-spam regulations, and any platform-specific content policies. You are solely responsible for ensuring your campaigns comply with all relevant laws.' },
+                { h: '6. Prohibited Conduct', b: 'You may not use the platform to promote illegal products or services, engage in deceptive advertising, harass or pressure creators, or circumvent Elevate\'s payment systems. Violations may result in immediate termination and legal action.' },
+                { h: '7. Indemnification', b: 'You agree to indemnify and hold Elevate harmless from any claims arising from your campaigns, use of creator content beyond agreed terms, violations of law, or misrepresentations made to creators.' },
+                { h: '8. Confidentiality', b: 'Both parties agree to maintain confidentiality of non-public information shared in connection with brand campaigns for a period of two (2) years following termination.' },
+                { h: '9. Limitation of Liability', b: 'Elevate is not liable for campaign outcomes, creator performance, or third-party platform algorithm changes. Elevate\'s liability is limited to amounts paid to Elevate in the previous 12 months.' },
+                { h: '10. Termination', b: 'Either party may terminate this Agreement with written notice. Outstanding obligations, including payment of creators for completed work, survive termination.' },
+                { h: '11. Governing Law', b: 'This Agreement is governed by the laws applicable under Elevate\'s Terms of Service. Disputes are subject to binding arbitration.' },
+              ].map(({ h, b }) => (
+                <div key={h}>
+                  <p className="font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.92)' }}>{h}</p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)' }}>{b}</p>
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1rem' }}>
+                <p className="font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.92)' }}>Contact</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)' }}>Support: support@sayelevate.com<br />Privacy / Legal: privacy@sayelevate.com</p>
+              </div>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowBrandToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>
                 Close
               </button>
             </div>

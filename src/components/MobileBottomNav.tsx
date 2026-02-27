@@ -345,19 +345,19 @@ export function MobileBottomNav({ activeSection, setActiveSection, unreadCount =
             <AdminDataIconSVG />
           </div>
         );
-      case 'users':
+      case 'admin-users':
         return (
           <div className="messages-icon-wrapper">
             <AdminUsersIconSVG />
           </div>
         );
-      case 'alerts':
+      case 'admin-alerts':
         return (
           <div className="messages-icon-wrapper">
             <AdminAlertsIconSVG />
           </div>
         );
-      case 'messages':
+      case 'admin-messages':
         return (
           <div className="messages-icon-wrapper">
             <AdminMessagesIconSVG />

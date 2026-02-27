@@ -26,7 +26,13 @@ export function SignupPage() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [fromArtistPage, setFromArtistPage] = useState(false);
   const [fromFreelancerPage, setFromFreelancerPage] = useState(false);
+  const [fromBrandPage, setFromBrandPage] = useState(false);
   const [isContinuation, setIsContinuation] = useState(false);
+  const [showToS, setShowToS] = useState(false);
+  const [showFreelancerToS, setShowFreelancerToS] = useState(false);
+  const [showBrandToS, setShowBrandToS] = useState(false);
+  const [showArtistToS, setShowArtistToS] = useState(false);
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -51,13 +57,14 @@ export function SignupPage() {
     
     if (source === 'artist') {
       setFromArtistPage(true);
-      // Store in localStorage for other parts of the flow
       localStorage.setItem('signupSource', 'artist');
     } else if (source === 'freelancer') {
       setFromFreelancerPage(true);
       localStorage.setItem('signupSource', 'freelancer');
+    } else if (source === 'brand') {
+      setFromBrandPage(true);
+      localStorage.setItem('signupSource', 'brand');
     } else {
-      // Also check localStorage as fallback
       const signupSource = localStorage.getItem('signupSource');
       const sessionSource = sessionStorage.getItem('signupSource');
       
@@ -65,6 +72,8 @@ export function SignupPage() {
         setFromArtistPage(true);
       } else if (signupSource === 'freelancer' || sessionSource === 'freelancer') {
         setFromFreelancerPage(true);
+      } else if (signupSource === 'brand' || sessionSource === 'brand') {
+        setFromBrandPage(true);
       }
     }
   }, [searchParams]);
@@ -231,12 +240,14 @@ export function SignupPage() {
       // No need to call signInWithOtp - user is already created by verify-otp Edge Function
       console.log('✅ Navigating to /make-profile');
       if (fromArtistPage) {
-        // Clear the flag so UserTypeSelectionPage doesn't redirect back to make-profile
         localStorage.removeItem('signupSource');
         navigate('/make-profile', { state: { userType: 'artist' } });
       } else if (fromFreelancerPage) {
         localStorage.removeItem('signupSource');
         navigate('/make-profile', { state: { userType: 'freelancer' } });
+      } else if (fromBrandPage) {
+        localStorage.removeItem('signupSource');
+        navigate('/make-profile', { state: { userType: 'business' } });
       } else {
         navigate('/make-profile');
       }
@@ -313,13 +324,13 @@ export function SignupPage() {
         }}
       >
         <button
-          onClick={() => navigate(fromArtistPage ? '/learn/artist' : fromFreelancerPage ? '/learn/freelancer' : '/')}
+          onClick={() => navigate(fromArtistPage ? '/learn/artist' : fromFreelancerPage ? '/learn/freelancer' : fromBrandPage ? '/learn/brands' : '/')}
           className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
         >
           <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="text-xs font-medium">{(fromArtistPage || fromFreelancerPage) ? 'Back' : 'Home'}</span>
+          <span className="text-xs font-medium">{(fromArtistPage || fromFreelancerPage || fromBrandPage) ? 'Back' : 'Home'}</span>
         </button>
 
         {!isMobile && (
@@ -450,13 +461,13 @@ export function SignupPage() {
       }}
     >
       <button
-        onClick={() => navigate(fromArtistPage ? '/learn/artist' : fromFreelancerPage ? '/learn/freelancer' : '/')}
+        onClick={() => navigate(fromArtistPage ? '/learn/artist' : fromFreelancerPage ? '/learn/freelancer' : fromBrandPage ? '/learn/brands' : '/')}
         className="fixed top-6 left-6 z-50 flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors group"
       >
         <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        <span className="text-xs font-medium">{(fromArtistPage || fromFreelancerPage) ? 'Back' : 'Home'}</span>
+        <span className="text-xs font-medium">{(fromArtistPage || fromFreelancerPage || fromBrandPage) ? 'Back' : 'Home'}</span>
       </button>
       {!isMobile && (
         <div
@@ -588,16 +599,107 @@ export function SignupPage() {
 
         <p className="text-neutral-400 text-xs text-center">
           By signing up, you agree to our{" "}
-          <button className="text-white underline hover:no-underline">
+          <button className="text-white underline hover:no-underline" onClick={() => fromArtistPage ? setShowArtistToS(true) : fromFreelancerPage ? setShowFreelancerToS(true) : fromBrandPage ? setShowBrandToS(true) : setShowToS(true)}>
             Terms
           </button>
           {" "}and{" "}
-          <button className="text-white underline hover:no-underline">
+          <button className="text-white underline hover:no-underline" onClick={() => setShowPrivacyPolicy(true)}>
             Privacy Policy
           </button>
           .
         </p>
       </div>
+
+      {/* General Terms of Service Modal */}
+      {showToS && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }} onClick={() => setShowToS(false)}>
+          <div className="relative w-full max-w-2xl rounded-2xl flex flex-col" style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Terms of Service</p>
+              <button onClick={() => setShowToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 17, 2025</p>
+              <p>These Terms of Service govern your access to and use of the websites, applications, platforms, and services operated by Elevate. By accessing or using the Service, you agree to these Terms and our Privacy Policy.</p>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Artist ToS Modal */}
+      {showArtistToS && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }} onClick={() => setShowArtistToS(false)}>
+          <div className="relative w-full max-w-2xl rounded-2xl flex flex-col" style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Elevate Artist Distribution Agreement</p>
+              <button onClick={() => setShowArtistToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
+              <p>This Artist Distribution Agreement governs the submission and digital distribution of musical compositions, sound recordings, artwork, metadata, and related materials submitted by you for distribution and related services through Elevate.</p>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowArtistToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Freelancer ToS Modal */}
+      {showFreelancerToS && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }} onClick={() => setShowFreelancerToS(false)}>
+          <div className="relative w-full max-w-2xl rounded-2xl flex flex-col" style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Elevate Freelancer Agreement</p>
+              <button onClick={() => setShowFreelancerToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
+              <p>This Freelancer Agreement governs your participation as an independent service provider on the Elevate marketplace. You are an independent contractor, not an employee, agent, or partner of Elevate.</p>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowFreelancerToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Brand ToS Modal */}
+      {showBrandToS && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }} onClick={() => setShowBrandToS(false)}>
+          <div className="relative w-full max-w-2xl rounded-2xl flex flex-col" style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Elevate Brand Partnership Agreement</p>
+              <button onClick={() => setShowBrandToS(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 21, 2025</p>
+              <p>This Brand Partnership Agreement governs the relationship between Elevate and any brand, business, or corporate entity accessing the Elevate platform for the purpose of connecting with creators and talent.</p>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowBrandToS(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Privacy Policy Modal */}
+      {showPrivacyPolicy && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }} onClick={() => setShowPrivacyPolicy(false)}>
+          <div className="relative w-full max-w-2xl rounded-2xl flex flex-col" style={{ backgroundColor: '#0d0d12', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)', maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-base font-semibold text-white">Privacy Policy</p>
+              <button onClick={() => setShowPrivacyPolicy(false)} className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:brightness-125" style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)', scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.12) transparent' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Effective Date: November 17, 2025</p>
+              <p>Elevate respects your privacy. This Privacy Policy explains how we collect, use, and protect your personal information when you use our platform and services.</p>
+            </div>
+            <div className="flex-shrink-0 px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <button onClick={() => setShowPrivacyPolicy(false)} className="w-full h-10 rounded-xl text-sm font-semibold transition-all hover:brightness-110" style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)' }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
