@@ -164,6 +164,9 @@ export function AdminDashboard() {
   const [declineRelSubReason, setDeclineRelSubReason] = useState('');
   const [expandedRelSubId, setExpandedRelSubId] = useState<string | null>(null);
   const [expandedTrackIndices, setExpandedTrackIndices] = useState<Record<string, number[]>>({});
+  const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+  const [notifConversations, setNotifConversations] = useState<any[]>([]);
+  const notifDropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchReleaseSubmissions = useCallback(async () => {
     setReleaseSubmissionsLoading(true);
@@ -838,6 +841,40 @@ export function AdminDashboard() {
     }
   };
 
+  // Close notification dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target as Node)) {
+        setNotifDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Fetch unread conversations for notification dropdown
+  useEffect(() => {
+    if (!notifDropdownOpen || !adminProfileId) return;
+    const fetchNotifConvs = async () => {
+      const { data: adminProfiles } = await supabase.from('profiles').select('id').eq('is_admin', true);
+      const adminIds = (adminProfiles || []).map((p: any) => p.id);
+      if (adminIds.length === 0 && adminProfileId) adminIds.push(adminProfileId);
+      const { data: convs } = await supabase
+        .from('conversations')
+        .select('id, customer_id, unread_count_admin, last_message_at')
+        .in('admin_id', adminIds)
+        .gt('unread_count_admin', 0)
+        .order('last_message_at', { ascending: false })
+        .limit(10);
+      if (!convs || convs.length === 0) { setNotifConversations([]); return; }
+      const customerIds = [...new Set(convs.map((c: any) => c.customer_id))];
+      const { data: profiles } = await supabase.from('profiles').select('id, name, avatar_url').in('id', customerIds);
+      const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+      setNotifConversations(convs.map((c: any) => ({ ...c, customer: profileMap.get(c.customer_id) || null })));
+    };
+    fetchNotifConvs();
+  }, [notifDropdownOpen, adminProfileId]);
+
   useEffect(() => {
     if (activeSection !== 'users' && activeSection !== 'applications' && activeSection !== 'home') {
       fetchingUsersRef.current = false;
@@ -1054,6 +1091,95 @@ export function AdminDashboard() {
         {/* Other sections inside wrapper */}
         {activeSection !== 'messages' && (
           <div className="px-4 sm:px-8 py-6 sm:py-12">
+            {/* Notification Bell - top right floating */}
+            <div className="fixed top-4 right-4 z-50" ref={notifDropdownRef}>
+              <button
+                onClick={() => setNotifDropdownOpen(prev => !prev)}
+                className="relative flex items-center justify-center w-10 h-10 rounded-full transition-all hover:brightness-110"
+                style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                </svg>
+                {adminUnreadCount > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
+                    style={{ backgroundColor: tokens.text.primary, color: tokens.bg.primary }}
+                  >
+                    {adminUnreadCount > 99 ? '99+' : adminUnreadCount}
+                  </span>
+                )}
+              </button>
+
+              {notifDropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden animate-fade-in"
+                  style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}
+                >
+                  <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: tokens.border.subtle }}>
+                    <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Notifications</p>
+                    {adminUnreadCount > 0 && (
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary }}>
+                        {adminUnreadCount} unread
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                    {notifConversations.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-10 px-4 gap-2">
+                        <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}>
+                          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                          <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                        </svg>
+                        <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>No new notifications</p>
+                        <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>You're all caught up!</p>
+                      </div>
+                    ) : (
+                      notifConversations.map((conv: any) => (
+                        <button
+                          key={conv.id}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:brightness-110"
+                          style={{ borderBottom: `1px solid ${tokens.border.subtle}`, backgroundColor: 'transparent' }}
+                          onClick={() => {
+                            setNotifDropdownOpen(false);
+                            setActiveSection('messages');
+                          }}
+                        >
+                          <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: tokens.bg.elevated }}>
+                            {conv.customer?.avatar_url ? (
+                              <img src={conv.customer.avatar_url} alt={conv.customer?.name || ''} className="w-full h-full object-cover" />
+                            ) : (
+                              <span style={{ color: tokens.text.primary }}>{(conv.customer?.name || '?').charAt(0).toUpperCase()}</span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{conv.customer?.name || 'Unknown user'}</p>
+                            <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>
+                              {conv.unread_count_admin} unread message{conv.unread_count_admin !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.text.primary }} />
+                        </button>
+                      ))
+                    )}
+                  </div>
+
+                  {notifConversations.length > 0 && (
+                    <div className="px-4 py-3 border-t" style={{ borderColor: tokens.border.subtle }}>
+                      <button
+                        className="w-full text-center text-sm font-medium transition-all hover:opacity-80"
+                        style={{ color: tokens.text.primary }}
+                        onClick={() => { setNotifDropdownOpen(false); setActiveSection('messages'); }}
+                      >
+                        View all messages
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             {activeSection === 'home' && (
               <div className="animate-fade-in">
                 <div className="mb-8">
@@ -2327,17 +2453,29 @@ export function AdminDashboard() {
                                                   </div>
                                                   <div className="flex items-center gap-1 flex-shrink-0">
                                                     {resolvedAudioUrl && (
-                                                      <a
-                                                        href={resolvedAudioUrl}
-                                                        download={t.fileName || `${t.title || 'track'}.mp3`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
+                                                      <button
                                                         className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all hover:brightness-110"
                                                         style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
-                                                        onClick={e => e.stopPropagation()}
+                                                        onClick={async (e) => {
+                                                          e.stopPropagation();
+                                                          try {
+                                                            const res = await fetch(resolvedAudioUrl);
+                                                            const blob = await res.blob();
+                                                            const blobUrl = URL.createObjectURL(blob);
+                                                            const a = document.createElement('a');
+                                                            a.href = blobUrl;
+                                                            a.download = t.fileName || `${t.title || 'track'}.mp3`;
+                                                            document.body.appendChild(a);
+                                                            a.click();
+                                                            document.body.removeChild(a);
+                                                            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+                                                          } catch {
+                                                            window.open(resolvedAudioUrl, '_blank');
+                                                          }
+                                                        }}
                                                       >
                                                         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                                      </a>
+                                                      </button>
                                                     )}
                                                     {hasDetails && (
                                                       <button

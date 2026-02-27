@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Send, AlertTriangle, Users, User, X, Search, Palette, Music, AlertCircle, Bell, ChevronRight, ChevronDown, Network, MapPin, Globe, Plus, Info } from 'lucide-react';
+import { Send, AlertTriangle, Users, User, X, Search, Palette, Music, AlertCircle, Bell, ChevronRight, ChevronDown, Network, MapPin, Globe, Plus } from 'lucide-react';
 import { SuggestionIcon, BugReportIcon, FeatureRequestIcon, OtherIcon } from '../components/FeedbackIcons';
 import { SocialLinksForm } from '../components/SocialLinksForm';
 import { ReferralSection } from '../components/ReferralSection';
@@ -3239,75 +3239,89 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         {activeSection === 'earnings' && (
           <div className="animate-fade-in pb-20 lg:pb-0 px-4 lg:px-8 pt-4 lg:pt-8">
             {/* Summary Cards Section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8">
               {/* Available Balance Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 flex flex-col border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.availableBalance')}</h3>
-                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div className="mt-auto">
-                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</div>
+                  <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
                 </div>
+              </div>
+
+              {/* Pending Balance Card */}
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Pending balance</h3>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
+              </div>
+
+              {/* Lifetime Earnings Card */}
+              <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Lifetime earnings</h3>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
 
               {/* Affiliate Earnings Card */}
               <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-sm sm:text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{t('earnings.affiliateEarnings')}</h3>
-                  <Info className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</div>
+                <div className="text-3xl sm:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>0.00</div>
               </div>
             </div>
 
-            {/* Transactions Section */}
+            {/* Transaction History Section */}
             <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{t('earnings.transactions')}</h3>
-                  <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('earnings.updatedEvery')}</p>
-                </div>
-                <button className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-80" style={{ color: 'var(--text-primary)' }}>
-                  {t('earnings.viewAll')}
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
               {/* Tabs */}
-              <div className="flex gap-4 mb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
-                <button 
+              <div className="flex gap-2 mb-6">
+                <button
                   onClick={() => setEarningsTab('available')}
-                  className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
-                  style={{ 
-                    color: earningsTab === 'available' ? 'var(--text-primary)' : 'var(--text-primary)',
-                    borderColor: earningsTab === 'available' ? 'var(--text-primary)' : 'transparent'
-                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+                  style={{ backgroundColor: earningsTab === 'available' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'available' ? 'var(--text-primary)' : '#CBD5E1', border: earningsTab === 'available' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
-                  {t('earnings.latest')}
+                  Available
                 </button>
-                <button 
+                <button
                   onClick={() => setEarningsTab('pending')}
-                  className="pb-3 text-sm font-medium transition-all duration-200 border-b-2" 
-                  style={{ 
-                    color: earningsTab === 'pending' ? 'var(--text-primary)' : 'var(--text-primary)',
-                    borderColor: earningsTab === 'pending' ? 'var(--text-primary)' : 'transparent'
-                  }}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105"
+                  style={{ backgroundColor: earningsTab === 'pending' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'pending' ? 'var(--text-primary)' : '#CBD5E1', border: earningsTab === 'pending' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
                 >
-                  {t('earnings.upcoming')}
+                  Pending
+                </button>
+                <button
+                  onClick={() => setEarningsTab('paidout')}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-105"
+                  style={{ backgroundColor: earningsTab === 'paidout' ? 'var(--bg-elevated)' : 'transparent', color: earningsTab === 'paidout' ? 'var(--text-primary)' : '#CBD5E1', border: earningsTab === 'paidout' ? '1.5px solid rgba(148, 163, 184, 0.3)' : '1px solid transparent' }}
+                >
+                  Paid out
                 </button>
               </div>
 
-              {/* Transaction List */}
-              <div className="py-10 flex flex-col items-center justify-center gap-3">
-                <svg className="w-8 h-8" style={{ color: 'var(--text-primary)', opacity: 0.3 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-                </svg>
-                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No transactions yet</p>
-                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Your transaction history will appear here.</p>
+              {/* Table Headers */}
+              <div className="hidden sm:grid grid-cols-4 gap-4 pb-4 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Date</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Clip</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Campaign/Description</div>
+                <div className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>Amount</div>
+              </div>
+
+              {/* Empty State */}
+              <div className="flex flex-col items-center justify-center py-12 sm:py-16">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>
+                  {earningsTab === 'available' && 'No available earnings'}
+                  {earningsTab === 'pending' && 'No pending earnings'}
+                  {earningsTab === 'paidout' && 'No paid out earnings'}
+                </h3>
+                <p className="text-sm sm:text-base text-center" style={{ color: 'var(--text-primary)' }}>Submit clips to campaigns and start earning!</p>
               </div>
             </div>
           </div>
@@ -4862,18 +4876,18 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             </div>
 
             {/* Tab bar */}
-            <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-0 mb-8 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               {(['offers', 'freelance'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setDealsTab(tab)}
-                  className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
-                  style={dealsTab === tab
-                    ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148,163,184,0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148,163,184,0.2)' }
-                    : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent', opacity: 0.55 }
-                  }
+                  className="px-4 py-3 text-sm font-semibold relative transition-opacity"
+                  style={{ color: 'var(--text-primary)', opacity: dealsTab === tab ? 1 : 0.4, background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   {tab === 'offers' ? 'Offers' : 'Freelance Requests'}
+                  {dealsTab === tab && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5" style={{ backgroundColor: 'var(--text-primary)' }} />
+                  )}
                 </button>
               ))}
             </div>
