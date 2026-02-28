@@ -725,8 +725,8 @@ export function SettingsPage() {
   );
 
   return (
-    <div className="h-screen text-white overflow-hidden flex flex-col" style={{ backgroundColor: '#111111' }}>
-      <header className="flex-shrink-0 h-16 z-50" style={{ backgroundColor: '#111111', borderBottom: '1px solid #1a1a1a' }}>
+    <div className="h-screen text-theme-primary overflow-hidden flex flex-col" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <header className="flex-shrink-0 h-16 z-50" style={{ backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button

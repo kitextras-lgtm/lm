@@ -2296,7 +2296,7 @@ export function BusinessDashboard() {
       <div className="scroll-mt-6">
         <div className="px-1 pb-6">
           <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>How can we help?</h3>
-          <p className="text-sm" style={{ color: '#CBD5E1' }}>Browse guides and tutorials to get the most out of Elevate.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Browse guides and tutorials to get the most out of Elevate.</p>
         </div>
         <div className="relative mb-6">
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'var(--text-primary)', opacity: 0.5 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -2565,7 +2565,7 @@ export function BusinessDashboard() {
             </div>
 
             {/* Desktop: 5-column grid */}
-            <div className="hidden sm:grid sm:grid-cols-5 gap-4">
+            <div data-theme-card-text className="hidden sm:grid sm:grid-cols-5 gap-4">
               {/* Navy Option */}
               <div 
                 className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -2870,7 +2870,7 @@ export function BusinessDashboard() {
         theme={backgroundTheme}
         enabled={messageNotifications}
       />
-      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="min-h-screen text-theme-primary flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />
         
         {/* Left Sidebar - Desktop Only */}

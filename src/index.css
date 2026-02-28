@@ -35,6 +35,10 @@ html, body, #root {
   --text-primary: #F8FAFC;
   --text-secondary: #9CA3AF;
   --text-muted: #64748B;
+  --text-accent: #22C55E;
+  --text-danger: #EF4444;
+  --text-warning: #FBBF24;
+  --text-info: #3B82F6;
 
   /* Border colors */
   --border-subtle: #1a1a1a;
@@ -60,6 +64,10 @@ html, body, #root {
 .text-theme-primary { color: var(--text-primary); }
 .text-theme-secondary { color: var(--text-secondary); }
 .text-theme-muted { color: var(--text-muted); }
+.text-theme-accent { color: var(--text-accent); }
+.text-theme-danger { color: var(--text-danger); }
+.text-theme-warning { color: var(--text-warning); }
+.text-theme-info { color: var(--text-info); }
 
 .border-theme-subtle { border-color: var(--border-subtle); }
 .border-theme-default { border-color: var(--border-default); }
@@ -170,6 +178,41 @@ html, body, #root {
   color: #374151 !important;
 }
 
+/* ── Hardcoded #F8FAFC (near-white) text → dark on white ── */
+[data-theme="white"] [style*="color: #F8FAFC"],
+[data-theme="white"] [style*="color: rgb(248, 250, 252)"] {
+  color: #0F172A !important;
+}
+
+/* ── Hardcoded #ffffff / #FFFFFF text → dark on white ── */
+[data-theme="white"] [style*="color: #ffffff"],
+[data-theme="white"] [style*="color: #FFFFFF"],
+[data-theme="white"] [style*="color: rgb(255, 255, 255)"] {
+  color: #0F172A !important;
+}
+/* Exception: theme preview cards keep white text */
+[data-theme="white"] [data-theme-card-text] [style*="color: #ffffff"],
+[data-theme="white"] [data-theme-card-text] [style*="color: #FFFFFF"],
+[data-theme="white"] [data-theme-card-text] [style*="color: rgb(255, 255, 255)"] {
+  color: #ffffff !important;
+}
+[data-theme="white"] [data-theme-card-text] [style*="color: #CBD5E1"] {
+  color: #CBD5E1 !important;
+}
+
+/* ── Hardcoded #22C55E / #22c55e green accent → higher-contrast on white ── */
+[data-theme="white"] [style*="color: #22C55E"],
+[data-theme="white"] [style*="color: #22c55e"],
+[data-theme="white"] [style*="color: rgb(34, 197, 94)"] {
+  color: #16A34A !important;
+}
+
+/* ── Hardcoded #3B82F6 blue info → higher-contrast on white ── */
+[data-theme="white"] [style*="color: #3B82F6"],
+[data-theme="white"] [style*="color: rgb(59, 130, 246)"] {
+  color: #2563EB !important;
+}
+
 /* ── Hardcoded #64748B background (typing dots etc.) → visible on white ── */
 [data-theme="white"] [style*="background-color: rgb(100, 116, 139)"],
 [data-theme="white"] [style*="background-color:#64748B"],
@@ -201,6 +244,17 @@ html, body, #root {
 [data-theme="white"] .placeholder\:text-slate-400::placeholder {
   color: #6B7280 !important;
 }
+
+/* ── Accent/status Tailwind classes → higher-contrast on white ── */
+[data-theme="white"] .text-green-400,
+[data-theme="white"] .text-green-500 { color: #16A34A !important; }
+[data-theme="white"] .bg-green-500   { background-color: #16A34A !important; }
+[data-theme="white"] .text-red-400,
+[data-theme="white"] .text-red-500   { color: #DC2626 !important; }
+[data-theme="white"] .text-yellow-300,
+[data-theme="white"] .text-yellow-400 { color: #D97706 !important; }
+[data-theme="white"] .text-blue-400  { color: #2563EB !important; }
+[data-theme="white"] .bg-gray-500    { background-color: #6B7280 !important; }
 
 /* NOTE: #ffffff text override intentionally removed — too broad, breaks theme cards & message bubbles */
 
