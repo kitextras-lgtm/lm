@@ -267,8 +267,10 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
-  const showConversationSkeletons = false;
-  const showChatSkeleton = false;
+  // Show skeletons while loading/initializing with no cached data to prevent
+  // flashing "No conversations" or "Select conversation" empty states
+  const showConversationSkeletons = (loading || initializing) && conversations.length === 0;
+  const showChatSkeleton = initializing;
 
   if (isMobile && showChatOnMobile && selectedConversation) {
     return (
