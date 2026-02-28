@@ -1336,22 +1336,10 @@ spline-viewer > * {
   }
 }
 
-/* Chat content fade-in transition - prevents flicker when loading */
+/* Chat content fade-in — used for image load transitions */
 @keyframes chatContentFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.chat-content-ready {
-  animation: chatContentFadeIn 0.15s ease-in forwards;
-}
-
-.chat-content-loading {
-  opacity: 0;
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Chat message image placeholder - maintains dimensions before load */
