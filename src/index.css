@@ -70,13 +70,20 @@ html, body, #root {
    hardcoded white/black and break on light bg
    ============================================ */
 
-/* Focus rings: white in dark themes → dark in white theme */
+/* ── Focus rings: boost Tailwind ring-white/* classes to full opacity ── */
+/* All themes except white: white at 100% on focus */
+.focus\:ring-white\/10:focus,
+.focus\:ring-white\/20:focus {
+  --tw-ring-color: rgba(255, 255, 255, 1) !important;
+}
+
+/* White theme: black at 100% on focus */
 [data-theme="white"] .focus\:ring-white\/10:focus,
 [data-theme="white"] .focus\:ring-white\/20:focus {
-  --tw-ring-color: rgba(15, 23, 42, 0.4) !important;
+  --tw-ring-color: rgba(15, 23, 42, 1) !important;
 }
 [data-theme="white"] .focus\:ring-white:focus {
-  --tw-ring-color: rgba(15, 23, 42, 0.3) !important;
+  --tw-ring-color: rgba(15, 23, 42, 1) !important;
 }
 
 /* Hover backgrounds: white/5 tint → dark/5 tint */
@@ -103,12 +110,12 @@ html, body, #root {
   border-color: rgba(15, 23, 42, 0.18) !important;
 }
 
-/* ── Input / textarea focus: strong dark ring ── */
+/* ── Input / textarea focus: black ring on white theme ── */
 [data-theme="white"] input:focus,
 [data-theme="white"] textarea:focus,
 [data-theme="white"] select:focus {
   border-color: #0F172A !important;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.25) !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 1) !important;
   outline: none !important;
 }
 
@@ -118,7 +125,7 @@ html, body, #root {
 [data-theme="white"] textarea[style*="border-color: rgb(255, 255, 255)"],
 [data-theme="white"] textarea[style*="border-color: white"] {
   border-color: #0F172A !important;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.25) !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 1) !important;
 }
 
 /* ── Placeholder text: too light on white bg ── */
@@ -258,12 +265,12 @@ html, body, #root {
 [data-theme="white"] .text-white\/80 { color: rgba(15, 23, 42, 0.8) !important; }
 [data-theme="white"] .text-white\/90 { color: rgba(15, 23, 42, 0.9) !important; }
 
-/* ── focus:ring-white/10 and focus:ring-white/20 → dark ring on white ── */
+/* ── focus:ring-white/10 and focus:ring-white/20 → black ring on white ── */
 [data-theme="white"] .focus\:ring-white\/10:focus,
 [data-theme="white"] .focus\:ring-white\/20:focus,
 [data-theme="white"] .focus-within\:ring-white\/10:focus-within,
 [data-theme="white"] .focus-within\:ring-white\/20:focus-within {
-  --tw-ring-color: rgba(15, 23, 42, 0.15) !important;
+  --tw-ring-color: rgba(15, 23, 42, 1) !important;
 }
 
 /* ── hover:border-slate-500/40 → dark border on white ── */
@@ -316,7 +323,7 @@ html, body, #root {
 [data-theme="white"] textarea:focus,
 [data-theme="white"] select:focus {
   border-color: #0F172A !important;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 1) !important;
   outline: none !important;
 }
 
@@ -1444,4 +1451,65 @@ spline-viewer > * {
 }
 .heading-entrance {
   animation: headingSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ============================================
+   GLOBAL FOCUS RING
+   Spec: white at 100% opacity on focus,
+         50% opacity on hover.
+         White theme: black at same opacities.
+   ============================================ */
+
+/* ── All themes except white: white focus ring ── */
+
+/* Form inputs — focus (clicked / tabbed) */
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 1);
+  outline: none;
+}
+
+/* Form inputs — hover (50% opacity) */
+input:hover:not(:focus),
+textarea:hover:not(:focus),
+select:hover:not(:focus) {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Buttons, links, toggles, tabs, and other interactive elements
+   — only show on keyboard navigation (focus-visible) */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="switch"]:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 1);
+  outline-offset: 2px;
+}
+
+/* ── White theme: black instead of white ── */
+
+[data-theme="white"] input:focus,
+[data-theme="white"] textarea:focus,
+[data-theme="white"] select:focus {
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 1);
+  outline: none;
+}
+
+[data-theme="white"] input:hover:not(:focus),
+[data-theme="white"] textarea:hover:not(:focus),
+[data-theme="white"] select:hover:not(:focus) {
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.5);
+}
+
+[data-theme="white"] button:focus-visible,
+[data-theme="white"] a:focus-visible,
+[data-theme="white"] [role="button"]:focus-visible,
+[data-theme="white"] [role="tab"]:focus-visible,
+[data-theme="white"] [role="switch"]:focus-visible,
+[data-theme="white"] [tabindex="0"]:focus-visible {
+  outline: 2px solid rgba(15, 23, 42, 1);
+  outline-offset: 2px;
 }
