@@ -3018,7 +3018,7 @@ export function AdminDashboard() {
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Background Theme</h3>
 
                           {/* Mobile: compact stacked list */}
-                          <div className="flex flex-col gap-2 sm:hidden">
+                          <div data-theme-card-text className="flex flex-col gap-2 sm:hidden">
                             {([
                               { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
                               { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
@@ -3364,7 +3364,7 @@ export function AdminDashboard() {
                           <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Background Theme</h3>
 
                           {/* Mobile: compact stacked list */}
-                          <div className="flex flex-col gap-2 sm:hidden">
+                          <div data-theme-card-text className="flex flex-col gap-2 sm:hidden">
                             {([
                               { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
                               { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },

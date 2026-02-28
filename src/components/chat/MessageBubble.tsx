@@ -132,6 +132,7 @@ export const MessageBubble = memo(function MessageBubble({ message, isOwn, onRep
             )}
 
             <div
+              data-chat-bubble
               className={`relative rounded-2xl overflow-hidden transition-all duration-200 min-w-[2.5rem] ${
                 message.type === 'image' && !message.content ? 'p-0' : ''
               }`}
