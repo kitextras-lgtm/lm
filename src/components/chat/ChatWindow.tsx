@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChatHeader } from './ChatHeader';
 import { ChatInput } from './ChatInput';
@@ -280,18 +280,22 @@ const ChatWindowContent = memo(function ChatWindowContent({
     // The message will be filtered out in the useChat hook
   }, [currentUserId]);
 
-  // Scroll to bottom after messages finish rendering
-  // Uses bottom anchor ref (messagesEndRef) instead of scrollTop math
-  useEffect(() => {
-    if (!loading && messages.length > 0 && messagesEndRef.current && shouldAutoScrollRef.current && contentReady) {
-      // Scroll happens after render, using bottom anchor ref
-      messagesEndRef.current.scrollIntoView({ behavior: isInitialLoadRef.current ? 'instant' : 'smooth' });
-
+  // Scroll to bottom BEFORE the browser paints (useLayoutEffect) so the user
+  // never sees a single frame of messages at scroll-top-0.  For initial load
+  // this fires while the skeleton still covers the view; for cached messages
+  // (skeleton already invisible) it fires before the first paint entirely.
+  useLayoutEffect(() => {
+    if (!loading && messages.length > 0 && messagesContainerRef.current && shouldAutoScrollRef.current) {
       if (isInitialLoadRef.current) {
+        // Synchronous scroll — no animation, happens before paint
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         isInitialLoadRef.current = false;
+      } else {
+        // Smooth scroll for subsequent new messages
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
     }
-  }, [loading, messages.length, conversation.id, contentReady]);
+  }, [loading, messages.length, conversation.id]);
 
   // Mark as read when conversation is opened (only once per conversation)
   useEffect(() => {
