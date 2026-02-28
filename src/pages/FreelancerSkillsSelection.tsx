@@ -138,7 +138,6 @@ export default function FreelancerSkillsSelection() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -172,7 +171,6 @@ export default function FreelancerSkillsSelection() {
         <p
           className="text-base mb-10"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#cccccc',
           }}
         >
@@ -184,7 +182,6 @@ export default function FreelancerSkillsSelection() {
           <label
             className="block text-sm font-medium mb-3"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: '#ffffff',
             }}
           >
@@ -205,8 +202,7 @@ export default function FreelancerSkillsSelection() {
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 color: '#ffffff',
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              }}
+                }}
             />
 
             {/* Dropdown Results */}
@@ -229,7 +225,6 @@ export default function FreelancerSkillsSelection() {
                     style={{
                       backgroundColor: 'transparent',
                       color: '#ffffff',
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       borderBottom: index < searchResults.length - 1 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
                     }}
                     onMouseEnter={(e) => {
@@ -249,7 +244,6 @@ export default function FreelancerSkillsSelection() {
           <p
             className="text-sm mt-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
               textAlign: 'right',
             }}
@@ -262,7 +256,6 @@ export default function FreelancerSkillsSelection() {
             <p
               className="text-sm mt-2 flex items-center gap-2"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: '#ef4444',
               }}
             >
@@ -281,7 +274,6 @@ export default function FreelancerSkillsSelection() {
                   style={{
                     backgroundColor: 'rgba(148, 163, 184, 0.2)',
                     border: '1px solid rgba(148, 163, 184, 0.4)',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -308,7 +300,6 @@ export default function FreelancerSkillsSelection() {
             <h2
               className="text-sm font-medium mb-3"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: 'var(--text-primary)',
               }}
             >
@@ -325,7 +316,6 @@ export default function FreelancerSkillsSelection() {
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: selectedSkills.length >= 15 ? '#666666' : '#ffffff',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     cursor: selectedSkills.length >= 15 ? 'not-allowed' : 'pointer',
                     opacity: selectedSkills.length >= 15 ? 0.5 : 1,
                   }}
@@ -354,8 +344,7 @@ export default function FreelancerSkillsSelection() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
             }}
@@ -373,7 +362,6 @@ export default function FreelancerSkillsSelection() {
             style={{
               backgroundColor: selectedSkills.length > 0 ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
               color: selectedSkills.length > 0 ? '#000000' : '#666666',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               cursor: selectedSkills.length > 0 ? 'pointer' : 'not-allowed',
             }}
           >

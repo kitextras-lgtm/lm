@@ -113,7 +113,7 @@ function SimpleDropdown({ label, value, options, onChange }: { label: string; va
                 }}
               >
                 {opt}
-                {value === opt && <span style={{ color: '#CBD5E1' }}>✓</span>}
+                {value === opt && <span style={{ color: 'var(--text-secondary)' }}>✓</span>}
               </button>
             ))}
           </div>

@@ -360,7 +360,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
         {/* Title */}
         <h2
           className="text-3xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Add your resume
         </h2>
@@ -368,7 +368,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
         {/* Subtitle */}
         <p
           className="text-base mb-8"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
+          style={{ color: '#cccccc' }}
         >
           Use a PDF, Word doc, or rich text file – make sure it's 5MB or less.
         </p>
@@ -415,7 +415,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
 
               <p
                 className="text-base"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
+                style={{ color: '#cccccc' }}
               >
                 Drag and drop or{' '}
                 <span className="font-medium underline" style={{ color: 'var(--text-primary)' }}>
@@ -437,13 +437,13 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
                 <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
                 <span
                   className="text-sm truncate flex-1"
-                  style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+                  style={{ color: '#ffffff' }}
                 >
                   {selectedFile.name}
                 </span>
                 <span
                   className="text-xs flex-shrink-0"
-                  style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'var(--text-primary)' }}
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   {uploadProgress}%
                 </span>
@@ -469,7 +469,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
               <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--text-primary)', borderTopColor: 'transparent' }} />
               <span
                 className="text-sm"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
+                style={{ color: '#cccccc' }}
               >
                 Validating file...
               </span>
@@ -487,7 +487,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
               <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <span
                 className="text-sm truncate flex-1"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+                style={{ color: '#ffffff' }}
               >
                 {selectedFile?.name || restoredFileName}
               </span>
@@ -515,7 +515,7 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
               <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#ef4444' }} />
               <span
                 className="text-sm flex-1"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#fca5a5' }}
+                style={{ color: '#fca5a5' }}
               >
                 {errorMessage}
               </span>
@@ -548,7 +548,6 @@ export default function ResumeUploadModal({ onClose }: ResumeUploadModalProps) {
             style={{
               backgroundColor: uploadState === 'ready' ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
               color: uploadState === 'ready' ? '#000000' : '#666666',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               cursor: uploadState === 'ready' ? 'pointer' : 'not-allowed',
             }}
           >

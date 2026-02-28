@@ -333,7 +333,6 @@ export function LoginPage({ forceArtist = false, forceSource }: { forceArtist?: 
             <p 
               className="text-base mb-6"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: 'rgb(204, 204, 204)',
                 fontWeight: 400
               }}

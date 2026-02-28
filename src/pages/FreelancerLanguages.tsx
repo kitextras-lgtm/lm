@@ -139,7 +139,6 @@ export default function FreelancerLanguages() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -159,7 +158,7 @@ export default function FreelancerLanguages() {
         {/* Title */}
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Let's add your languages
         </h1>
@@ -167,7 +166,6 @@ export default function FreelancerLanguages() {
         <p
           className="text-lg mb-12"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: 'var(--text-primary)',
           }}
         >
@@ -213,7 +211,6 @@ export default function FreelancerLanguages() {
               <span
                 className="text-base font-medium"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -265,7 +262,6 @@ export default function FreelancerLanguages() {
                     <h3
                       className="text-lg font-semibold mb-1 truncate"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: '#ffffff',
                       }}
                     >
@@ -274,7 +270,6 @@ export default function FreelancerLanguages() {
                     <p
                       className="text-sm truncate"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                       }}
                     >
@@ -306,7 +301,6 @@ export default function FreelancerLanguages() {
             onClick={handleBack}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
@@ -321,8 +315,7 @@ export default function FreelancerLanguages() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Next, add portfolio
           </button>
@@ -348,7 +341,6 @@ export default function FreelancerLanguages() {
               <h2
                 className="text-2xl font-semibold"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -370,7 +362,6 @@ export default function FreelancerLanguages() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -383,7 +374,6 @@ export default function FreelancerLanguages() {
                   placeholder="e.g. English, Spanish, French"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -395,7 +385,6 @@ export default function FreelancerLanguages() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -417,7 +406,6 @@ export default function FreelancerLanguages() {
                 onClick={handleCloseModal}
                 className="flex-1 px-6 py-3 rounded-lg font-medium text-base transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -432,8 +420,7 @@ export default function FreelancerLanguages() {
                 style={{
                   backgroundColor: '#ffffff',
                   color: '#000000',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                }}
+                  }}
               >
                 Save
               </button>

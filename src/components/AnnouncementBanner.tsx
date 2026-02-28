@@ -199,13 +199,13 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
       <div
         className="rounded-xl px-4 py-3 border relative"
         style={{
-          backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.1)' : '#111111',
+          backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-primary)',
           borderColor: isSerious ? 'rgba(239, 68, 68, 0.4)' : '#2f2f2f',
         }}
       >
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold mb-1 flex items-center gap-1.5" style={{ color: isSerious ? '#ef4444' : '#F8FAFC' }}>
+            <h3 className="text-sm font-semibold mb-1 flex items-center gap-1.5" style={{ color: isSerious ? '#ef4444' : 'var(--text-primary)' }}>
               {isSerious && <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#ef4444' }} />}
               {latestAnnouncement.title}
             </h3>
@@ -217,7 +217,7 @@ export function AnnouncementBanner({ userId, userType = 'creator' }: Announcemen
             onClick={() => handleDismiss(latestAnnouncement.id)}
             className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200 hover:brightness-110"
             style={{
-              backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.2)' : '#0f0f13',
+              backgroundColor: isSerious ? 'rgba(239, 68, 68, 0.2)' : 'var(--bg-elevated)',
               color: isSerious ? '#ef4444' : 'var(--text-primary)',
             }}
             aria-label="Dismiss announcement"

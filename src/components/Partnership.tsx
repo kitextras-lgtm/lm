@@ -1145,7 +1145,6 @@ function FeatureSection({ feature, index }: { feature: FeatureItem; index: numbe
           <span
             className="text-xs font-medium"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: '#999',
             }}
           >
@@ -1156,7 +1155,6 @@ function FeatureSection({ feature, index }: { feature: FeatureItem; index: numbe
         <h3
           className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 leading-tight whitespace-pre-line"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#ffffff',
             letterSpacing: '-0.02em',
           }}
@@ -1167,7 +1165,6 @@ function FeatureSection({ feature, index }: { feature: FeatureItem; index: numbe
         <p
           className="text-base leading-relaxed max-w-md"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: 'rgb(204, 204, 204)',
             fontWeight: 400,
           }}

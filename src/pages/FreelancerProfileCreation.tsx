@@ -24,7 +24,6 @@ export function FreelancerProfileCreation() {
             <p
               className="text-sm mb-2"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: 'var(--text-primary)',
               }}
             >
@@ -58,7 +57,6 @@ export function FreelancerProfileCreation() {
           <p
             className="text-base mb-12"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: '#cccccc',
             }}
           >
@@ -76,8 +74,7 @@ export function FreelancerProfileCreation() {
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  }}
+                    }}
                 >
                   <Linkedin className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                   <span
@@ -98,8 +95,7 @@ export function FreelancerProfileCreation() {
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  }}
+                    }}
                 >
                   <Upload className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
                   <span
@@ -123,8 +119,7 @@ export function FreelancerProfileCreation() {
                 backgroundColor: 'transparent',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 color: '#ffffff',
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              }}
+                }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
               }}

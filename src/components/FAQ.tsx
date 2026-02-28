@@ -77,7 +77,6 @@ export function FAQ() {
                 <h3 
                   className="text-base md:text-xl pr-3 md:pr-4 leading-tight"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                     fontWeight: 500
                   }}
@@ -107,7 +106,6 @@ export function FAQ() {
                       <p 
                         className="text-base leading-relaxed"
                         style={{
-                          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                           color: 'rgb(204, 204, 204)',
                           fontWeight: 400
                         }}

@@ -59,7 +59,6 @@ export default function FreelancerPhotoLocation() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -79,7 +78,7 @@ export default function FreelancerPhotoLocation() {
         {/* Title */}
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           A few last details, then you can check and publish your profile.
         </h1>
@@ -87,7 +86,6 @@ export default function FreelancerPhotoLocation() {
         <p
           className="text-base mb-12"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: 'var(--text-primary)',
           }}
         >
@@ -114,7 +112,6 @@ export default function FreelancerPhotoLocation() {
               htmlFor="photo-upload"
               className="px-4 py-2 rounded-lg font-medium text-sm cursor-pointer transition-all duration-200 hover:brightness-110 flex items-center gap-2"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 color: '#ffffff',
@@ -139,7 +136,6 @@ export default function FreelancerPhotoLocation() {
               <label
                 className="block text-sm font-medium mb-2"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -152,7 +148,6 @@ export default function FreelancerPhotoLocation() {
                 placeholder="mm/dd/yyyy"
                 className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -165,7 +160,6 @@ export default function FreelancerPhotoLocation() {
               <label
                 className="block text-sm font-medium mb-2"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -176,7 +170,6 @@ export default function FreelancerPhotoLocation() {
                 onChange={(e) => setCountry(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg text-base outline-none appearance-none transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -200,7 +193,6 @@ export default function FreelancerPhotoLocation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -213,7 +205,6 @@ export default function FreelancerPhotoLocation() {
                   placeholder="Enter street address"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -224,7 +215,6 @@ export default function FreelancerPhotoLocation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -237,7 +227,6 @@ export default function FreelancerPhotoLocation() {
                   placeholder="Apt/Suite (Optional)"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -252,7 +241,6 @@ export default function FreelancerPhotoLocation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -265,7 +253,6 @@ export default function FreelancerPhotoLocation() {
                   placeholder="Enter city"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -276,7 +263,6 @@ export default function FreelancerPhotoLocation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -289,7 +275,6 @@ export default function FreelancerPhotoLocation() {
                   placeholder="Enter state/province"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -300,7 +285,6 @@ export default function FreelancerPhotoLocation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -313,7 +297,6 @@ export default function FreelancerPhotoLocation() {
                   placeholder="Enter ZIP/Postal code"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -327,7 +310,6 @@ export default function FreelancerPhotoLocation() {
               <label
                 className="block text-sm font-medium mb-2"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -339,7 +321,6 @@ export default function FreelancerPhotoLocation() {
                   onChange={(e) => setPhoneCountryCode(e.target.value)}
                   className="w-24 px-3 py-3 rounded-lg text-base outline-none appearance-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -358,7 +339,6 @@ export default function FreelancerPhotoLocation() {
                   placeholder="Enter number"
                   className="flex-1 px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -375,7 +355,6 @@ export default function FreelancerPhotoLocation() {
             onClick={handleBack}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
@@ -390,8 +369,7 @@ export default function FreelancerPhotoLocation() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Review your profile
           </button>

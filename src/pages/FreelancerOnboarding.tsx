@@ -148,7 +148,6 @@ export function FreelancerOnboarding() {
                   <p
                     className="text-base md:text-lg"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: '#ffffff',
                       fontWeight: 400,
                     }}
@@ -164,7 +163,6 @@ export function FreelancerOnboarding() {
                   <p
                     className="text-base md:text-lg"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: '#ffffff',
                       fontWeight: 400,
                     }}
@@ -180,7 +178,6 @@ export function FreelancerOnboarding() {
                   <p
                     className="text-base md:text-lg"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: '#ffffff',
                       fontWeight: 400,
                     }}
@@ -199,15 +196,13 @@ export function FreelancerOnboarding() {
                 style={{
                   backgroundColor: '#ffffff',
                   color: '#000000',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                }}
+                  }}
               >
                 Get started
               </button>
               <p
                 className="mt-6 text-sm"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#cccccc',
                 }}
               >
@@ -263,7 +258,6 @@ export function FreelancerOnboarding() {
               <h3
                 className="text-xl font-semibold mb-1"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -272,7 +266,6 @@ export function FreelancerOnboarding() {
               <p
                 className="text-sm"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#cccccc',
                 }}
               >
@@ -287,7 +280,6 @@ export function FreelancerOnboarding() {
                 <span
                   className="text-sm font-medium"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -297,7 +289,6 @@ export function FreelancerOnboarding() {
               <div
                 className="text-sm font-medium"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -317,7 +308,6 @@ export function FreelancerOnboarding() {
                 <span
                   className="text-sm font-medium"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -330,7 +320,6 @@ export function FreelancerOnboarding() {
             <blockquote
               className="text-center text-base leading-relaxed"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: '#ffffff',
               }}
             >
