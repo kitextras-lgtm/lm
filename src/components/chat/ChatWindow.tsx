@@ -211,9 +211,9 @@ const ChatWindowContent = memo(function ChatWindowContent({
   const isInitialLoadRef = useRef(true);
   const shouldAutoScrollRef = useRef(true);
 
-  // Track content readiness for smooth transition
-  // Always start ready to avoid blank-flash jump on re-navigation
-  const [contentReady, setContentReady] = useState(true);
+  // Track content readiness for smooth skeleton-to-content transition
+  // Start ready if we already have cached messages (loading=false), otherwise show skeleton
+  const [contentReady, setContentReady] = useState(!loading);
   const imagesLoadedRef = useRef<Record<string, boolean>>({});
 
   // Get messages with images that need to load
@@ -223,26 +223,11 @@ const ChatWindowContent = memo(function ChatWindowContent({
   );
 
   // Reset flags when conversation changes
+  // (component remounts on conversation change via key prop, so this is the mount effect)
   useEffect(() => {
     isInitialLoadRef.current = true;
     shouldAutoScrollRef.current = true;
     imagesLoadedRef.current = {};
-    
-    // Check if we have cached messages for the new conversation
-    const cached = localStorage.getItem(`messages_cache_${conversation.id}`);
-    if (cached) {
-      try {
-        const data = JSON.parse(cached);
-        if (data.messages && data.messages.length > 0) {
-          setContentReady(true); // Show content immediately from cache
-          return;
-        }
-      } catch (e) {
-        // Ignore parse errors
-      }
-    }
-    // Don't reset to false — keep showing previous content to avoid jump
-    setContentReady(true);
   }, [conversation.id]);
 
   // Mark content as ready when messages are available (don't wait for images)
@@ -421,17 +406,16 @@ const ChatWindowContent = memo(function ChatWindowContent({
 
       {/* Messages area wrapper with relative positioning for skeleton overlay */}
       <div className="flex-1 min-h-0 relative">
-        {/* Skeleton overlay - stays visible until content is fully ready */}
-        {!contentReady && (
-          <div 
-            className="absolute inset-0 z-10 flex flex-col"
-            style={{ 
-              backgroundColor: theme.background,
-              transition: 'opacity 150ms ease-out',
-              opacity: 1,
-              pointerEvents: 'none'
-            }}
-          >
+        {/* Skeleton overlay - fades out smoothly when content is ready */}
+        <div
+          className="absolute inset-0 z-10 flex flex-col"
+          style={{
+            backgroundColor: theme.background,
+            transition: 'opacity 200ms ease-out',
+            opacity: contentReady ? 0 : 1,
+            pointerEvents: 'none',
+          }}
+        >
           {/* Skeleton messages area */}
           <div className="flex-1 py-2 lg:py-4 flex flex-col justify-end animate-pulse">
             <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-4">
@@ -484,8 +468,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
               </div>
             </div>
           </div>
-          </div>
-        )}
+        </div>
 
         <div
           ref={messagesContainerRef}
@@ -576,7 +559,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
               </div>
             </div>
           ) : (
-            <div className={`space-y-0.5 lg:space-y-1 px-2 lg:px-2 ${contentReady ? 'chat-content-ready' : 'chat-content-loading'}`}>
+            <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-2">
               {messages.map((message, index) => {
                 const previousMessage = index > 0 ? messages[index - 1] : null;
                 const currentDate = new Date(message.created_at);
