@@ -887,8 +887,8 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
 
           {verifyResult === 'success' && (
             <div className="flex items-center gap-2 p-3 rounded-lg mb-4" style={{ backgroundColor: '#22C55E10', border: '1px solid #22C55E40' }}>
-              <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#22C55E' }} />
-              <p className="text-sm font-medium" style={{ color: '#22C55E' }}>Verified! This link is now exclusively yours.</p>
+              <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-accent)' }} />
+              <p className="text-sm font-medium" style={{ color: 'var(--text-accent)' }}>Verified! This link is now exclusively yours.</p>
             </div>
           )}
 

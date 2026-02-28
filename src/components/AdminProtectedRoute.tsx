@@ -21,7 +21,7 @@ export function AdminProtectedRoute({ children, requiredPermission }: AdminProte
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#111111' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <AnimatedBarsLoader text="Loading dashboard..." />
       </div>
     );
@@ -35,7 +35,7 @@ export function AdminProtectedRoute({ children, requiredPermission }: AdminProte
   if (requiredPermission) {
     if (!hasPermission(requiredPermission.resource, requiredPermission.action)) {
       return (
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#111111' }}>
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
           <div className="text-white text-center">
             <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
             <p className="text-gray-400">You don't have permission to access this page.</p>

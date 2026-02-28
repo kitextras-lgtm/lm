@@ -112,11 +112,11 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
     >
       <div
         className="relative w-full h-full sm:h-auto sm:max-w-2xl sm:mx-4 sm:my-8 sm:rounded-2xl shadow-2xl animate-modal-in flex flex-col"
-        style={{ backgroundColor: '#111111', border: 'none' }}
+        style={{ backgroundColor: 'var(--bg-primary)', border: 'none' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b flex-shrink-0" style={{ borderColor: 'rgba(75, 85, 99, 0.25)', backgroundColor: '#111111' }}>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b flex-shrink-0" style={{ borderColor: 'rgba(75, 85, 99, 0.25)', backgroundColor: 'var(--bg-primary)' }}>
           <h2 className="text-lg sm:text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             Give Feedback
           </h2>
@@ -220,8 +220,8 @@ export function FeedbackModal({ isOpen, onClose, userId }: FeedbackModalProps) {
               disabled={!feedback.trim() || isSubmitting || submitStatus === 'success'}
               className="flex-1 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-105"
               style={{
-                backgroundColor: submitStatus === 'success' ? '#22C55E' : '#F8FAFC',
-                color: submitStatus === 'success' ? '#FFFFFF' : '#111111',
+                backgroundColor: submitStatus === 'success' ? 'var(--text-accent)' : 'var(--text-primary)',
+                color: submitStatus === 'success' ? '#FFFFFF' : 'var(--bg-primary)',
               }}
             >
               {isSubmitting ? 'Submitting...' : submitStatus === 'success' ? 'Submitted!' : 'Submit Feedback'}

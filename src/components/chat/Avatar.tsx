@@ -121,7 +121,7 @@ export function Avatar({ src, name, size = 'md', isOnline, showOnlineIndicator =
         <span
           className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-2 rounded-full z-10`}
           style={{
-            borderColor: '#111111',
+            borderColor: 'var(--bg-primary)',
             backgroundColor: isOnline ? '#10b981' : '#64748B'
           }}
         />
