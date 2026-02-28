@@ -211,9 +211,9 @@ const ChatWindowContent = memo(function ChatWindowContent({
   const isInitialLoadRef = useRef(true);
   const shouldAutoScrollRef = useRef(true);
 
-  // Track content readiness for smooth transition
-  // Always start ready to avoid blank-flash jump on re-navigation
-  const [contentReady, setContentReady] = useState(true);
+  // Track content readiness for smooth skeleton-to-content transition
+  // Start ready if we already have cached messages (loading=false), otherwise show skeleton
+  const [contentReady, setContentReady] = useState(!loading);
   const imagesLoadedRef = useRef<Record<string, boolean>>({});
 
   // Get messages with images that need to load
@@ -223,26 +223,11 @@ const ChatWindowContent = memo(function ChatWindowContent({
   );
 
   // Reset flags when conversation changes
+  // (component remounts on conversation change via key prop, so this is the mount effect)
   useEffect(() => {
     isInitialLoadRef.current = true;
     shouldAutoScrollRef.current = true;
     imagesLoadedRef.current = {};
-    
-    // Check if we have cached messages for the new conversation
-    const cached = localStorage.getItem(`messages_cache_${conversation.id}`);
-    if (cached) {
-      try {
-        const data = JSON.parse(cached);
-        if (data.messages && data.messages.length > 0) {
-          setContentReady(true); // Show content immediately from cache
-          return;
-        }
-      } catch (e) {
-        // Ignore parse errors
-      }
-    }
-    // Don't reset to false — keep showing previous content to avoid jump
-    setContentReady(true);
   }, [conversation.id]);
 
   // Mark content as ready when messages are available (don't wait for images)
@@ -419,82 +404,73 @@ const ChatWindowContent = memo(function ChatWindowContent({
         showBackButton={showBackButton}
       />
 
-      {/* Messages area wrapper with relative positioning for skeleton overlay */}
-      <div className="flex-1 min-h-0 relative">
-        {/* Skeleton overlay - stays visible until content is fully ready */}
-        {!contentReady && (
-          <div 
-            className="absolute inset-0 z-10 flex flex-col"
-            style={{ 
-              backgroundColor: theme.background,
-              transition: 'opacity 150ms ease-out',
-              opacity: 1,
-              pointerEvents: 'none'
-            }}
-          >
-          {/* Skeleton messages area */}
+      {/* Messages area wrapper — position:relative + overflow:hidden prevents
+           any child (skeleton or messages) from bleeding outside the chat column */}
+      <div className="flex-1 min-h-0 relative overflow-hidden">
+        {/* Skeleton overlay — fades out when content is ready.
+             Always rendered (not conditional) so the opacity transition works. */}
+        <div
+          className="absolute inset-0 z-10 flex flex-col"
+          style={{
+            backgroundColor: theme.background,
+            transition: 'opacity 200ms ease-out',
+            opacity: contentReady ? 0 : 1,
+            pointerEvents: 'none',
+          }}
+        >
+          {/* Skeleton messages — realistic widths, alternating left/right */}
           <div className="flex-1 py-2 lg:py-4 flex flex-col justify-end animate-pulse">
-            <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-4">
-              {/* Received message skeleton */}
+            <div className="space-y-1 lg:space-y-1.5 px-2 lg:px-4">
+              {/* Received (left) — short greeting */}
               <div className="flex justify-start px-2 lg:px-4 py-0.5">
-                <div className="flex items-center gap-1.5 lg:gap-2 max-w-[85%] lg:max-w-[70%]">
-                  <div className="flex flex-col gap-1">
-                    <div
-                      className="rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: theme.skeletonSecondary, minHeight: '2.5rem', width: '180px' }}
-                    />
-                    <div
-                      className="h-3 rounded px-1"
-                      style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
-                    />
-                  </div>
+                <div className="flex flex-col gap-1" style={{ width: '45%', minWidth: '120px', maxWidth: '260px' }}>
+                  <div className="rounded-2xl" style={{ backgroundColor: theme.skeletonSecondary, height: '2.5rem' }} />
+                  <div className="h-3 rounded" style={{ backgroundColor: theme.skeletonLight, width: '40px' }} />
                 </div>
               </div>
 
-              {/* Sent message skeleton */}
+              {/* Sent (right) — medium reply */}
               <div className="flex justify-end px-2 lg:px-4 py-0.5">
-                <div className="flex items-center gap-1.5 lg:gap-2 max-w-[85%] lg:max-w-[70%] flex-row-reverse">
-                  <div className="flex flex-col gap-1">
-                    <div
-                      className="rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: theme.skeletonPrimary, minHeight: '2.5rem', width: '140px' }}
-                    />
-                    <div
-                      className="h-3 rounded px-1 ml-auto"
-                      style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
-                    />
-                  </div>
+                <div className="flex flex-col gap-1 items-end" style={{ width: '55%', minWidth: '140px', maxWidth: '300px' }}>
+                  <div className="rounded-2xl w-full" style={{ backgroundColor: theme.skeletonPrimary, height: '2.5rem' }} />
+                  <div className="h-3 rounded" style={{ backgroundColor: theme.skeletonLight, width: '40px' }} />
                 </div>
               </div>
 
-              {/* Received message with longer content */}
+              {/* Received (left) — longer message */}
               <div className="flex justify-start px-2 lg:px-4 py-0.5">
-                <div className="flex items-center gap-1.5 lg:gap-2 max-w-[85%] lg:max-w-[70%]">
-                  <div className="flex flex-col gap-1">
-                    <div
-                      className="rounded-2xl px-4 py-3"
-                      style={{ backgroundColor: theme.skeletonSecondary, minHeight: '3.5rem', width: '220px' }}
-                    />
-                    <div
-                      className="h-3 rounded px-1"
-                      style={{ backgroundColor: theme.skeletonLight, width: '40px' }}
-                    />
-                  </div>
+                <div className="flex flex-col gap-1" style={{ width: '65%', minWidth: '160px', maxWidth: '340px' }}>
+                  <div className="rounded-2xl" style={{ backgroundColor: theme.skeletonSecondary, height: '3.25rem' }} />
+                  <div className="h-3 rounded" style={{ backgroundColor: theme.skeletonLight, width: '40px' }} />
+                </div>
+              </div>
+
+              {/* Sent (right) — short reply */}
+              <div className="flex justify-end px-2 lg:px-4 py-0.5">
+                <div className="flex flex-col gap-1 items-end" style={{ width: '35%', minWidth: '100px', maxWidth: '200px' }}>
+                  <div className="rounded-2xl w-full" style={{ backgroundColor: theme.skeletonPrimary, height: '2.5rem' }} />
+                  <div className="h-3 rounded" style={{ backgroundColor: theme.skeletonLight, width: '40px' }} />
+                </div>
+              </div>
+
+              {/* Received (left) — medium follow-up */}
+              <div className="flex justify-start px-2 lg:px-4 py-0.5">
+                <div className="flex flex-col gap-1" style={{ width: '50%', minWidth: '130px', maxWidth: '280px' }}>
+                  <div className="rounded-2xl" style={{ backgroundColor: theme.skeletonSecondary, height: '2.5rem' }} />
+                  <div className="h-3 rounded" style={{ backgroundColor: theme.skeletonLight, width: '40px' }} />
                 </div>
               </div>
             </div>
           </div>
-          </div>
-        )}
+        </div>
 
         <div
           ref={messagesContainerRef}
-          className="absolute inset-0 overflow-y-auto"
-          style={{ 
-            backgroundColor: 'var(--bg-primary)', 
-            scrollbarWidth: 'thin', 
-            scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', 
-            overflowY: 'auto',
+          className="absolute inset-0 overflow-y-auto overflow-x-hidden"
+          style={{
+            backgroundColor: 'var(--bg-primary)',
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent',
             WebkitOverflowScrolling: 'touch'
           }}
           onScroll={() => {
@@ -576,7 +552,7 @@ const ChatWindowContent = memo(function ChatWindowContent({
               </div>
             </div>
           ) : (
-            <div className={`space-y-0.5 lg:space-y-1 px-2 lg:px-2 ${contentReady ? 'chat-content-ready' : 'chat-content-loading'}`}>
+            <div className="space-y-0.5 lg:space-y-1 px-2 lg:px-2">
               {messages.map((message, index) => {
                 const previousMessage = index > 0 ? messages[index - 1] : null;
                 const currentDate = new Date(message.created_at);
