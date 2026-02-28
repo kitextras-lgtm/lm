@@ -3445,17 +3445,26 @@ export function ArtistDashboard() {
 
   // ──────────────────────────────────────────────────────────────────────────
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     clearProfileCache(); // Clear cached profile state
-    // Clear all localStorage except theme
+    // Save theme + dismissed notification state before clearing
     const theme = localStorage.getItem('theme');
     const backgroundTheme = localStorage.getItem('backgroundTheme');
     const appliedTheme = localStorage.getItem('appliedTheme');
+    const preserved: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('dismissedApprovedReleaseIds_') || key.startsWith('dismissedDeclineIds_') || key.startsWith('dismissed_announcements_'))) {
+        preserved[key] = localStorage.getItem(key) || '';
+      }
+    }
+    await supabase.auth.signOut();
     localStorage.clear();
     // Restore theme settings
     if (theme) localStorage.setItem('theme', theme);
     if (backgroundTheme) localStorage.setItem('backgroundTheme', backgroundTheme);
     if (appliedTheme) localStorage.setItem('appliedTheme', appliedTheme);
+    for (const [k, v] of Object.entries(preserved)) localStorage.setItem(k, v);
     navigate('/');
   };
 
@@ -5028,7 +5037,7 @@ export function ArtistDashboard() {
             <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>{t('display.backgroundTheme')}</h3>
 
             {/* Mobile: compact stacked list */}
-            <div className="flex flex-col gap-2 sm:hidden">
+            <div data-theme-card-text className="flex flex-col gap-2 sm:hidden">
               {([
                 { key: 'light' as const, label: 'Navy', desc: 'Navy blue', bg: '#192231', swatch: '#1e3a5f' },
                 { key: 'grey' as const, label: 'Grey', desc: 'Dim background', bg: '#222226', swatch: '#3a3a3e' },
