@@ -6,19 +6,28 @@ export function Header() {
   const location = useLocation();
   const [isArtistPage, setIsArtistPage] = useState(false);
   const [isFreelancerPage, setIsFreelancerPage] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setIsArtistPage(location.pathname === '/learn/artist');
     setIsFreelancerPage(location.pathname === '/learn/freelancer');
   }, [location.pathname]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setVisible(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <header
-      className="sticky top-0 w-full z-[9999] border-b border-white/5 backdrop-blur-xl"
+      className="fixed top-0 w-full z-[9999] border-b border-white/5 backdrop-blur-xl transition-transform duration-300 ease-out"
       style={{
         WebkitFontSmoothing: 'antialiased',
-        position: 'sticky',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)'
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        transform: visible ? 'translateY(0)' : 'translateY(-100%)',
       }}
     >
       <div className="h-16 md:h-20 px-6 md:px-8 flex items-center justify-between relative max-w-[1600px] mx-auto">

@@ -819,24 +819,11 @@ function EnrolledCampaignCard({ campaign }: { campaign: CampaignData }) {
 
       {tab === 'posts' && (
         <div className="px-4 sm:px-5 pb-4 sm:pb-5">
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>Campaign Views</p>
-              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Total views from all approved clips will appear here.</p>
-            </div>
-            <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-              <p className="text-xs font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>Earnings</p>
-              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Reach 5,000 views on a post to qualify for payouts.</p>
-            </div>
-          </div>
-          <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Approved posts keep earning for up to 7 days after the campaign ends, or until the budget runs out.</p>
           {/* Table header */}
-          <div className="grid grid-cols-5 gap-1 px-2 py-1.5 rounded-lg mb-1 text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', opacity: 0.55 }}>
-            <span className="col-span-2">Post</span>
-            <span>Status</span>
-            <span>Views</span>
-            <span>Earned</span>
+          <div className="grid grid-cols-3 gap-1 px-2 py-1.5 rounded-lg mb-1 text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', opacity: 0.55 }}>
+            <span>Account</span>
+            <span>Post</span>
+            <span>Date</span>
           </div>
           {submittedPosts.length === 0 ? (
             <div className="rounded-xl py-10 text-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
@@ -847,18 +834,17 @@ function EnrolledCampaignCard({ campaign }: { campaign: CampaignData }) {
           ) : (
             <div className="space-y-1">
               {submittedPosts.map((post, i) => (
-                <div key={i} className="grid grid-cols-5 gap-1 items-center px-2 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                  <div className="col-span-2 flex items-center gap-1.5 min-w-0">
+                <div key={i} className="grid grid-cols-3 gap-1 items-center px-2 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                  <div className="flex items-center gap-1.5 min-w-0">
                     <div className="w-4 h-4 flex-shrink-0">
                       {post.platform === 'instagram' && <InstagramIconAnimated isHovered={true} />}
                       {post.platform === 'tiktok' && <TikTokIcon isHovered={true} />}
                       {post.platform === 'youtube' && <YouTubeIcon isHovered={true} />}
                     </div>
-                    <span className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{post.url.replace(/^https?:\/\//, '')}</span>
+                    <span className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>{post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}</span>
                   </div>
-                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Pending</span>
-                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>—</span>
-                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>—</span>
+                  <span className="text-xs truncate" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{post.url.replace(/^https?:\/\//, '')}</span>
+                  <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{post.submittedAt}</span>
                 </div>
               ))}
             </div>
@@ -868,28 +854,6 @@ function EnrolledCampaignCard({ campaign }: { campaign: CampaignData }) {
 
       {tab === 'submit' && (
         <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3">
-          {/* Platform selector */}
-          <div className="flex gap-2">
-            {(['instagram', 'tiktok', 'youtube'] as const).filter(p => campaign.platforms.includes(p)).map(p => (
-              <button
-                key={p}
-                onClick={() => setSubmitPlatform(p)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                style={{
-                  backgroundColor: submitPlatform === p ? 'var(--text-primary)' : 'var(--bg-elevated)',
-                  color: submitPlatform === p ? 'var(--bg-primary)' : 'var(--text-primary)',
-                  border: '1px solid var(--border-subtle)',
-                }}
-              >
-                <div className="w-3.5 h-3.5">
-                  {p === 'instagram' && <InstagramIconAnimated isHovered={submitPlatform === p} />}
-                  {p === 'tiktok' && <TikTokIcon isHovered={submitPlatform === p} />}
-                  {p === 'youtube' && <YouTubeIcon isHovered={submitPlatform === p} />}
-                </div>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
-              </button>
-            ))}
-          </div>
           <input
             type="url"
             value={submitUrl}
@@ -1190,9 +1154,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
   });
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [assignedCampaigns, setAssignedCampaigns] = useState<any[]>([]);
-  const [enrolledCampaigns, setEnrolledCampaigns] = useState<CampaignData[]>(() => {
-    try { return JSON.parse(localStorage.getItem('enrolledCampaigns') || '[]'); } catch { return []; }
-  });
+  const [enrolledCampaigns, setEnrolledCampaigns] = useState<CampaignData[]>([]);
   const [campaignsLoading, setCampaignsLoading] = useState(false);
   const [newCampaignIds, setNewCampaignIds] = useState<Set<string>>(new Set());
   const [campaignNotifications, setCampaignNotifications] = useState<AppNotification[]>([]);
@@ -1349,7 +1311,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     }
   }, [activeSection, currentUserId, refetchConversations]);
 
-  // Fetch campaigns assigned to this creator
+  // Fetch campaigns assigned to this creator (and restore enrolled state)
   useEffect(() => {
     if (!currentUserId) return;
     const fetchAssignedCampaigns = async () => {
@@ -1357,13 +1319,20 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       try {
         const { data, error } = await supabase
           .from('user_campaigns')
-          .select('campaign_id, campaigns(*)')
+          .select('campaign_id, enrolled, campaigns(*)')
           .eq('user_id', currentUserId);
         if (error) throw error;
-        const campaigns = (data || [])
-          .map((row: any) => row.campaigns)
-          .filter(Boolean);
+        const rows = data || [];
+        const campaigns = rows.map((row: any) => row.campaigns).filter(Boolean);
         setAssignedCampaigns(campaigns);
+        // Restore enrolled campaigns from DB (rows where enrolled = true)
+        const dbEnrolled = rows
+          .filter((row: any) => row.enrolled)
+          .map((row: any) => row.campaigns)
+          .filter(Boolean) as CampaignData[];
+        if (dbEnrolled.length > 0) {
+          setEnrolledCampaigns(dbEnrolled);
+        }
         // Track new campaigns via localStorage
         const seenKey = `seen_campaigns_${currentUserId}`;
         const seen: string[] = JSON.parse(localStorage.getItem(seenKey) || '[]');
@@ -3746,6 +3715,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
               onViewEnrolled={() => { setHomeSubPage('opportunities'); setTimeout(() => setExpandedOppsCard('enrolled'), 50); }}
               assignedCampaigns={assignedCampaigns}
               newCampaignIds={newCampaignIds}
+              enrolledCampaignIds={new Set(enrolledCampaigns.map(c => c.id))}
             />
           </div>
         </section>
@@ -5551,13 +5521,21 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
       <CampaignDetailModal 
         campaign={selectedCampaign} 
         onClose={() => setSelectedCampaign(null)}
-        onJoin={(campaign) => {
+        onJoin={async (campaign) => {
           setEnrolledCampaigns(prev => {
             if (prev.some(c => c.id === campaign.id)) return prev;
-            const updated = [...prev, campaign];
-            localStorage.setItem('enrolledCampaigns', JSON.stringify(updated));
-            return updated;
+            return [...prev, campaign];
           });
+          // Persist enrollment to Supabase
+          if (currentUserId) {
+            try {
+              await supabase
+                .from('user_campaigns')
+                .upsert({ user_id: currentUserId, campaign_id: campaign.id, enrolled: true }, { onConflict: 'user_id,campaign_id' });
+            } catch (e) {
+              console.error('[Campaigns] Error persisting enrollment:', e);
+            }
+          }
           setHomeSubPage('opportunities');
           setTimeout(() => setExpandedOppsCard('enrolled'), 50);
         }}

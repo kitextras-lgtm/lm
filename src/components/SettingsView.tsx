@@ -130,17 +130,16 @@ export function SettingsView({
   setGuideSubpage: externalSetGuideSubpage,
   setGuideArticle: externalSetGuideArticle
 }: SettingsViewProps) {
-  // If external guide state is provided, we're in guides mode
-  const shouldShowGuides = externalGuideSubpage !== undefined || externalGuideArticle !== undefined;
+  // If external guide state is provided with an actual value, we're in guides mode
+  const shouldShowGuides = externalGuideSubpage != null || externalGuideArticle != null;
   const [activeSection, setActiveSection] = useState<string | null>(shouldShowGuides ? 'guides' : (userType === 'admin' ? 'display' : 'personal'));
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileDetailView, setMobileDetailView] = useState<string | null>(null);
   const { t } = useTranslation();
   
-  // Update activeSection when external guide state changes
+  // Update activeSection when external guide state changes to a non-null value
   useEffect(() => {
-    const shouldShowGuides = externalGuideSubpage !== undefined || externalGuideArticle !== undefined;
-    if (shouldShowGuides) {
+    if (externalGuideSubpage != null || externalGuideArticle != null) {
       setActiveSection('guides');
     }
   }, [externalGuideSubpage, externalGuideArticle]);

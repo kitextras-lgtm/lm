@@ -2110,91 +2110,50 @@ interface SyncOpportunity {
   moods: string[];
 }
 
-const SYNC_OPPORTUNITIES: SyncOpportunity[] = [
-  {
-    id: '1',
-    title: 'Drama Series — Emotional Score Tracks',
-    company: 'Netflix Original Productions',
-    category: 'Film & TV',
-    status: 'Featured',
-    budget: '$2,000 – $8,000',
-    deadline: 'Mar 15, 2026',
-    description: 'Seeking introspective, emotionally rich instrumental tracks for a limited drama series. Cinematic builds, sparse piano, and ambient textures preferred.',
-    genres: ['Cinematic', 'Ambient', 'Neo-Classical'],
-    moods: ['Emotional', 'Tense', 'Reflective'],
-  },
-  {
-    id: '2',
-    title: 'Global Sportswear Campaign',
-    company: 'Elevate Brand Collective',
-    category: 'Advertising',
-    status: 'Closing Soon',
-    budget: '$5,000 – $15,000',
-    deadline: 'Mar 8, 2026',
-    description: 'High-energy tracks needed for a global athletic brand campaign. Think powerful beats, driving rhythms, anthemic feel. No vocals or clear lyrical content.',
-    genres: ['Hip-Hop', 'Electronic', 'Rock'],
-    moods: ['Energetic', 'Powerful', 'Motivating'],
-  },
-  {
-    id: '3',
-    title: 'Open World RPG Soundtrack',
-    company: 'Horizon Game Studios',
-    category: 'Games',
-    status: 'Open',
-    budget: '$1,500 – $6,000',
-    deadline: 'Apr 2, 2026',
-    description: 'Looking for atmospheric, loopable background music for an open-world RPG. Tracks should be 2–5 min, mix seamlessly, and work at low volume.',
-    genres: ['Orchestral', 'Folk', 'World'],
-    moods: ['Mysterious', 'Adventurous', 'Calm'],
-  },
-  {
-    id: '4',
-    title: 'Documentary — Social Justice Theme',
-    company: 'Sundance Film Fund',
-    category: 'Film & TV',
-    status: 'Open',
-    budget: '$800 – $3,000',
-    deadline: 'Apr 20, 2026',
-    description: 'Indie documentary on civil rights movements needs authentic, raw music. Acoustic, folk, soul, and spoken word-adjacent tracks are ideal.',
-    genres: ['Folk', 'Soul', 'Acoustic'],
-    moods: ['Hopeful', 'Serious', 'Inspiring'],
-  },
-  {
-    id: '5',
-    title: 'Action-Thriller Movie Trailer',
-    company: 'Summit Pictures',
-    category: 'Trailers',
-    status: 'Closing Soon',
-    budget: '$3,000 – $10,000',
-    deadline: 'Mar 11, 2026',
-    description: 'Need a high-impact, cinematic track for a major action-thriller trailer. Should build to a climax around the 1:30 mark with strong low-end presence.',
-    genres: ['Cinematic', 'Electronic', 'Orchestral'],
-    moods: ['Intense', 'Dramatic', 'Suspenseful'],
-  },
-  {
-    id: '6',
-    title: 'Streaming Platform Discovery Playlist',
-    company: 'Spotify Editorial',
-    category: 'Streaming',
-    status: 'Open',
-    budget: 'Royalty-based',
-    deadline: 'Rolling',
-    description: 'Curating fresh indie-pop and alt-R&B tracks for new editorial playlists. Strong songwriting, unique voice, and professional quality required.',
-    genres: ['Indie Pop', 'Alt-R&B', 'Bedroom Pop'],
-    moods: ['Chill', 'Uplifting', 'Groovy'],
-  },
-];
-
 const CATEGORY_FILTERS: SyncCategory[] = ['All', 'Film & TV', 'Advertising', 'Games', 'Streaming', 'Trailers'];
 
-function SyncOpportunitiesPage() {
+function SyncOpportunitiesPage({ userId }: { userId: string }) {
   const [activeCategory, setActiveCategory] = useState<SyncCategory>('All');
   const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [opportunities, setOpportunities] = useState<SyncOpportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) return;
+    const fetchOpps = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('sync_opportunities')
+          .select('*')
+          .or(`assigned_user_ids.cs.{${userId}},assign_to.eq.all`);
+        if (!error && data) {
+          setOpportunities(data.map((row: any) => ({
+            id: row.id,
+            title: row.title,
+            company: row.company || '',
+            category: row.category || 'Film & TV',
+            status: row.status || 'Open',
+            budget: row.budget || '',
+            deadline: row.deadline || 'Rolling',
+            description: row.description || '',
+            genres: row.genres || [],
+            moods: row.moods || [],
+          })));
+        }
+      } catch (e) {
+        console.error('[SyncOpportunities] fetch error:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOpps();
+  }, [userId]);
 
   const filtered = activeCategory === 'All'
-    ? SYNC_OPPORTUNITIES
-    : SYNC_OPPORTUNITIES.filter(o => o.category === activeCategory);
+    ? opportunities
+    : opportunities.filter(o => o.category === activeCategory);
 
   const statusOrder: Record<SyncStatus, number> = { Featured: 0, 'Closing Soon': 1, Open: 2 };
   const sorted = [...filtered].sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
@@ -2210,8 +2169,8 @@ function SyncOpportunitiesPage() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-4 mb-8">
         {[
-          { label: 'Open Opportunities', value: SYNC_OPPORTUNITIES.filter(o => o.status !== 'Closing Soon').length.toString() },
-          { label: 'Closing Soon', value: SYNC_OPPORTUNITIES.filter(o => o.status === 'Closing Soon').length.toString() },
+          { label: 'Open Opportunities', value: loading ? '—' : opportunities.filter(o => o.status !== 'Closing Soon').length.toString() },
+          { label: 'Closing Soon', value: loading ? '—' : opportunities.filter(o => o.status === 'Closing Soon').length.toString() },
           { label: 'My Applications', value: appliedIds.size.toString() },
         ].map(({ label, value }) => (
           <div key={label} className="rounded-xl p-4 sm:p-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
@@ -2221,6 +2180,27 @@ function SyncOpportunitiesPage() {
         ))}
       </div>
 
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin mb-4" style={{ borderColor: 'var(--text-primary)', borderTopColor: 'transparent' }} />
+          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Loading opportunities...</p>
+        </div>
+      ) : opportunities.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="mb-5" style={{ color: 'var(--text-primary)', opacity: 0.3 }}>
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <rect x="8" y="24" width="32" height="16" rx="2"/>
+              <path d="M8 24V16C8 14.9 8.9 14 10 14H38C39.1 14 40 14.9 40 16V24"/>
+              <line x1="14" y1="14" x2="20" y2="24"/>
+              <line x1="22" y1="14" x2="28" y2="24"/>
+              <line x1="30" y1="14" x2="36" y2="24"/>
+            </svg>
+          </div>
+          <p className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>None Available</p>
+          <p className="text-sm max-w-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>There are no sync opportunities assigned to you yet. Check back soon or contact your manager.</p>
+        </div>
+      ) : (
+        <>
       {/* Category filters */}
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
         {CATEGORY_FILTERS.map(cat => (
@@ -2356,6 +2336,8 @@ function SyncOpportunitiesPage() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
@@ -5984,7 +5966,7 @@ export function ArtistDashboard() {
         )}
 
         {activeSection === 'deals' && (
-          <SyncOpportunitiesPage />
+          <SyncOpportunitiesPage userId={currentUserId || ''} />
         )}
 
         {activeSection === 'explore' && !showReleaseForm && (
