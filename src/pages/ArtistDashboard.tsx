@@ -4463,7 +4463,7 @@ export function ArtistDashboard() {
     <div className="scroll-mt-6">
       {feedbackSubmitted && (
         <div className="mb-5 flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: 'var(--text-primary)' }}>
-          <svg className="w-5 h-5 flex-shrink-0" style={{ color: '#22C55E' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          <svg className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-accent)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           Thanks! Your feedback has been submitted and will help shape the product roadmap.
         </div>
       )}
@@ -5070,7 +5070,7 @@ export function ArtistDashboard() {
             </div>
 
             {/* Desktop: 5-column grid */}
-            <div className="hidden sm:grid sm:grid-cols-5 gap-4">
+            <div data-theme-card-text className="hidden sm:grid sm:grid-cols-5 gap-4">
               {/* Navy Option */}
               <div 
                 className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -5422,7 +5422,7 @@ export function ArtistDashboard() {
         theme={backgroundTheme}
         enabled={messageNotifications}
       />
-      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="min-h-screen text-theme-primary flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />
         
         {/* Left Sidebar - Desktop Only */}
@@ -7666,7 +7666,7 @@ export function ArtistDashboard() {
                       {/* Metadata */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-xl font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>{rf.title || 'Untitled'}</h3>
-                        <p className="text-sm mb-4" style={{ color: '#3B82F6' }}>{rf.releaseArtists || '[Untitled]'}</p>
+                        <p className="text-sm mb-4" style={{ color: 'var(--text-info)' }}>{rf.releaseArtists || '[Untitled]'}</p>
 
                         <div className="grid grid-cols-2 gap-x-8 gap-y-1.5 text-sm">
                           <div><span className="font-semibold" style={{ color: 'var(--text-primary)' }}>Release Type: </span><span style={{ color: 'var(--text-primary)' }}>{rf.tracks.length >= 7 ? 'Album' : rf.tracks.length >= 4 ? 'EP' : rf.tracks.length >= 1 ? 'Single' : '—'}</span></div>

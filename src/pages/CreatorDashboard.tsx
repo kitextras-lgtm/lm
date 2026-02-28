@@ -3146,7 +3146,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
             </div>
 
             {/* Desktop: 5-column grid */}
-            <div className="hidden sm:grid sm:grid-cols-5 gap-4">
+            <div data-theme-card-text className="hidden sm:grid sm:grid-cols-5 gap-4">
               {/* Navy Option */}
               <div 
                 className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -3479,7 +3479,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           return [{ ...notif, type: 'message' as const, read: false }, ...prev];
         })}
       />
-      <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="min-h-screen text-theme-primary flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DoorTransition showTransition={false} />
         
         {/* Left Sidebar - Desktop Only */}

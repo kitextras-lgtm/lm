@@ -133,7 +133,7 @@ export function AdminDashboard() {
       return next;
     });
   };
-  const { theme, setTheme, tokens, flatBackground, setFlatBackground } = useTheme();
+  const { theme, setTheme, flatBackground, setFlatBackground } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
@@ -712,21 +712,21 @@ export function AdminDashboard() {
               key={s.label}
               onClick={() => s.filter !== null ? setFeedbackStatusFilter(s.filter) : undefined}
               className="rounded-xl p-4 border text-left transition-all"
-              style={{ backgroundColor: tokens.bg.elevated, borderColor: s.filter !== null && feedbackStatusFilter === s.filter ? tokens.border.default : tokens.border.subtle, cursor: s.filter !== null ? 'pointer' : 'default' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = tokens.border.default; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = s.filter !== null && feedbackStatusFilter === s.filter ? tokens.border.default : tokens.border.subtle; }}
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: s.filter !== null && feedbackStatusFilter === s.filter ? 'var(--border-default)' : 'var(--border-subtle)', cursor: s.filter !== null ? 'pointer' : 'default' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-default)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = s.filter !== null && feedbackStatusFilter === s.filter ? 'var(--border-default)' : 'var(--border-subtle)'; }}
               onMouseDown={e => { e.currentTarget.style.borderColor = 'var(--text-primary)'; }}
-              onMouseUp={e => { e.currentTarget.style.borderColor = tokens.border.default; }}
+              onMouseUp={e => { e.currentTarget.style.borderColor = 'var(--border-default)'; }}
             >
-              <p className="text-2xl font-bold mb-0.5" style={{ color: tokens.text.primary }}>{s.value}</p>
-              <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>{s.label}</p>
+              <p className="text-2xl font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>{s.value}</p>
+              <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{s.label}</p>
             </button>
           ))}
         </div>
 
         {/* Status tabs + category filter row */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
-          <div className="flex gap-1 p-1 rounded-xl flex-shrink-0" style={{ backgroundColor: tokens.bg.input }}>
+          <div className="flex gap-1 p-1 rounded-xl flex-shrink-0" style={{ backgroundColor: 'var(--bg-input)' }}>
             {['pending', 'reviewed', 'resolved', 'closed', 'all'].map(st => (
               <button
                 key={st}
@@ -734,7 +734,7 @@ export function AdminDashboard() {
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                 style={{
                   backgroundColor: feedbackStatusFilter === st ? 'var(--bg-elevated)' : 'transparent',
-                  color: tokens.text.primary,
+                  color: 'var(--text-primary)',
                   border: feedbackStatusFilter === st ? '1px solid var(--text-primary)' : '1px solid transparent',
                 }}
               >
@@ -753,8 +753,8 @@ export function AdminDashboard() {
                 className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
                 style={{
                   backgroundColor: feedbackCategoryFilter === cat ? 'var(--bg-elevated)' : 'transparent',
-                  color: tokens.text.primary,
-                  border: `1px solid ${feedbackCategoryFilter === cat ? 'var(--text-primary)' : tokens.border.subtle}`,
+                  color: 'var(--text-primary)',
+                  border: `1px solid ${feedbackCategoryFilter === cat ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
                 }}
               >
                 {cat === 'all' ? 'All Types' : categoryLabels[cat]}
@@ -770,45 +770,45 @@ export function AdminDashboard() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
-              <svg className="w-6 h-6" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <svg className="w-6 h-6" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             </div>
-            <p className="font-semibold" style={{ color: tokens.text.primary }}>No {feedbackStatusFilter !== 'all' ? feedbackStatusFilter : ''} feedback</p>
-            <p className="text-sm mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>{feedbackStatusFilter === 'pending' ? 'All caught up — no pending items.' : 'Try adjusting your filters'}</p>
+            <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>No {feedbackStatusFilter !== 'all' ? feedbackStatusFilter : ''} feedback</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{feedbackStatusFilter === 'pending' ? 'All caught up — no pending items.' : 'Try adjusting your filters'}</p>
           </div>
         ) : (
           <div className="space-y-3">
             {filtered.map(f => (
-              <div key={f.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.subtle }}>
+              <div key={f.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
                 <div className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                        <span className="px-2 py-0.5 rounded-md text-xs font-semibold" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
+                        <span className="px-2 py-0.5 rounded-md text-xs font-semibold" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                           {categoryLabels[f.category] || f.category}
                         </span>
-                        <span className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>
+                        <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>
                           {f.username ? `@${f.username}` : f.user_email || f.user_id.slice(0, 8)}
                         </span>
-                        <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.35 }}>
+                        <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.35 }}>
                           {new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <p className="text-sm leading-relaxed" style={{ color: tokens.text.primary }}>{f.content}</p>
+                      <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>{f.content}</p>
                       {f.media_url && (
                         <div className="mt-3">
                           {f.media_url.match(/\.(mp4|mov|webm|ogg)$/i) ? (
-                            <video src={f.media_url} controls className="max-h-52 rounded-xl" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                            <video src={f.media_url} controls className="max-h-52 rounded-xl" style={{ border: '1px solid var(--border-subtle)' }} />
                           ) : (
                             <a href={f.media_url} target="_blank" rel="noopener noreferrer">
-                              <img src={f.media_url} alt="Attached media" className="max-h-52 rounded-xl object-cover transition-all hover:brightness-110" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                              <img src={f.media_url} alt="Attached media" className="max-h-52 rounded-xl object-cover transition-all hover:brightness-110" style={{ border: '1px solid var(--border-subtle)' }} />
                             </a>
                           )}
                         </div>
                       )}
                     </div>
                     <div className="flex-shrink-0 flex flex-col gap-1.5">
-                      <span className="px-2.5 py-1 rounded-lg text-xs font-semibold text-center" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-semibold text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                         {f.status.charAt(0).toUpperCase() + f.status.slice(1)}
                       </span>
                       {['pending', 'reviewed', 'resolved', 'closed'].filter(s => s !== f.status).map(s => (
@@ -817,7 +817,7 @@ export function AdminDashboard() {
                           onClick={() => handleFeedbackStatusUpdate(f.id, s)}
                           disabled={updatingFeedbackId === f.id}
                           className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all hover:brightness-110 text-left"
-                          style={{ backgroundColor: 'transparent', border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary, opacity: updatingFeedbackId === f.id ? 0.4 : 0.7 }}
+                          style={{ backgroundColor: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: updatingFeedbackId === f.id ? 0.4 : 0.7 }}
                         >
                           → {s.charAt(0).toUpperCase() + s.slice(1)}
                         </button>
@@ -1049,7 +1049,7 @@ export function AdminDashboard() {
 
   if (isLoading && !admin) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: tokens.bg.primary }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <AnimatedBarsLoader text="Loading dashboard..." />
       </div>
     );
@@ -1071,7 +1071,7 @@ export function AdminDashboard() {
       showFaviconBadge={unreadMessageBadge}
       unreadCount={adminUnreadCount}
     />
-    <div className="min-h-screen text-white flex transition-colors duration-300" style={{ backgroundColor: tokens.bg.primary }}>
+    <div className="min-h-screen text-theme-primary flex transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Left Sidebar - Desktop Only */}
       <CollapsibleSidebar
         activeSection={activeSection}
@@ -1096,7 +1096,7 @@ export function AdminDashboard() {
       {/* Main Content Area */}
       <main 
         className={`flex-1 min-h-screen pb-20 lg:pb-0 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[240px]'}`}
-        style={{ backgroundColor: tokens.bg.primary }}
+        style={{ backgroundColor: 'var(--bg-primary)' }}
       >
         {/* Messages Section - Full width */}
         {activeSection === 'messages' && (
@@ -1114,12 +1114,12 @@ export function AdminDashboard() {
               <div className="animate-fade-in">
                 <div className="mb-8">
                   <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: tokens.text.primary }}>Welcome back, Super Admin</h1>
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Welcome back, Super Admin</h1>
                     <div ref={notifDropdownRef} className="relative">
                       <button
                         onClick={() => setNotifDropdownOpen(prev => !prev)}
                         className="relative flex items-center justify-center w-10 h-10 rounded-full transition-all hover:brightness-110"
-                        style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                        style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
                       >
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -1128,7 +1128,7 @@ export function AdminDashboard() {
                         {adminUnreadCount > 0 && (
                           <span
                             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
-                            style={{ backgroundColor: tokens.text.primary, color: tokens.bg.primary }}
+                            style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                           >
                             {adminUnreadCount > 99 ? '99+' : adminUnreadCount}
                           </span>
@@ -1137,12 +1137,12 @@ export function AdminDashboard() {
                       {notifDropdownOpen && (
                         <div
                           className="absolute right-0 mt-2 w-80 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-50"
-                          style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-default)' }}
                         >
-                          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: tokens.border.subtle }}>
-                            <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Notifications</p>
+                          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--border-subtle)' }}>
+                            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Notifications</p>
                             {adminUnreadCount > 0 && (
-                              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary }}>
+                              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}>
                                 {adminUnreadCount} unread
                               </span>
                             )}
@@ -1150,44 +1150,44 @@ export function AdminDashboard() {
                           <div className="max-h-80 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
                             {notifConversations.length === 0 ? (
                               <div className="flex flex-col items-center justify-center py-10 px-4 gap-2">
-                                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}>
+                                <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}>
                                   <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                                   <path d="M13.73 21a2 2 0 01-3.46 0"/>
                                 </svg>
-                                <p className="text-sm font-medium" style={{ color: tokens.text.primary }}>No new notifications</p>
-                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>You're all caught up!</p>
+                                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No new notifications</p>
+                                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>You're all caught up!</p>
                               </div>
                             ) : (
                               notifConversations.map((conv: any) => (
                                 <button
                                   key={conv.id}
                                   className="w-full flex items-center gap-3 px-4 py-3 text-left transition-all hover:brightness-110"
-                                  style={{ borderBottom: `1px solid ${tokens.border.subtle}`, backgroundColor: tokens.bg.card }}
+                                  style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-card)' }}
                                   onClick={() => { setNotifDropdownOpen(false); setActiveSection('messages'); }}
                                 >
-                                  <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: tokens.bg.elevated }}>
+                                  <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-sm font-semibold" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                                     {conv.customer?.avatar_url ? (
                                       <img src={conv.customer.avatar_url} alt={conv.customer?.name || ''} className="w-full h-full object-cover" />
                                     ) : (
-                                      <span style={{ color: tokens.text.primary }}>{(conv.customer?.name || '?').charAt(0).toUpperCase()}</span>
+                                      <span style={{ color: 'var(--text-primary)' }}>{(conv.customer?.name || '?').charAt(0).toUpperCase()}</span>
                                     )}
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{conv.customer?.name || 'Unknown user'}</p>
-                                    <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>
+                                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{conv.customer?.name || 'Unknown user'}</p>
+                                    <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
                                       {conv.unread_count_admin} unread message{conv.unread_count_admin !== 1 ? 's' : ''}
                                     </p>
                                   </div>
-                                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tokens.text.primary }} />
+                                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--text-primary)' }} />
                                 </button>
                               ))
                             )}
                           </div>
                           {notifConversations.length > 0 && (
-                            <div className="px-4 py-3 border-t" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
                               <button
                                 className="w-full text-center text-sm font-medium transition-all hover:opacity-80"
-                                style={{ color: tokens.text.primary }}
+                                style={{ color: 'var(--text-primary)' }}
                                 onClick={() => { setNotifDropdownOpen(false); setActiveSection('messages'); }}
                               >
                                 View all messages
@@ -1198,31 +1198,31 @@ export function AdminDashboard() {
                       )}
                     </div>
                   </div>
-                  <p className="text-base" style={{ color: tokens.text.primary }}>Manage your platform from here</p>
+                  <p className="text-base" style={{ color: 'var(--text-primary)' }}>Manage your platform from here</p>
                 </div>
                 {/* Quick Nav Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                  <button onClick={() => setActiveSection('applications')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, opacity: 1, transform: 'none', animation: 'adminCardIn 0.45s ease both' }}>
+                  <button onClick={() => setActiveSection('applications')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', opacity: 1, transform: 'none', animation: 'adminCardIn 0.45s ease both' }}>
                     <div className="flex items-center gap-4">
-                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>Applications</h3>
-                          <span className="text-2xl font-bold" style={{ color: tokens.text.primary }}>{applications.filter(a => a.status === 'pending').length + releaseSubmissions.filter(r => r.status === 'submitted').length}</span>
+                          <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Applications</h3>
+                          <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{applications.filter(a => a.status === 'pending').length + releaseSubmissions.filter(r => r.status === 'submitted').length}</span>
                         </div>
-                        <p className="text-sm mt-0.5" style={{ color: tokens.text.primary, opacity: 0.55 }}>Pending applications</p>
+                        <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Pending applications</p>
                       </div>
                     </div>
                   </button>
-                  <button onClick={() => setActiveSection('users')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: `1px solid ${tokens.border.subtle}`, animation: 'adminCardIn 0.45s ease 0.08s both' }}>
+                  <button onClick={() => setActiveSection('users')} className="rounded-xl p-5 text-left transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', animation: 'adminCardIn 0.45s ease 0.08s both' }}>
                     <div className="flex items-center gap-4">
-                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>Users</h3>
-                          <span className="text-2xl font-bold" style={{ color: tokens.text.primary }}>{users.length}</span>
+                          <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Users</h3>
+                          <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{users.length}</span>
                         </div>
-                        <p className="text-sm mt-0.5" style={{ color: tokens.text.primary, opacity: 0.55 }}>Registered platform users</p>
+                        <p className="text-sm mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Registered platform users</p>
                       </div>
                     </div>
                   </button>
@@ -1231,31 +1231,31 @@ export function AdminDashboard() {
                 {/* Service Cards */}
                 <style>{`@keyframes adminCardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }`}</style>
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: tokens.text.primary, opacity: 0.4, letterSpacing: '0.12em' }}>Platform Tools</p>
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--text-primary)', opacity: 0.4, letterSpacing: '0.12em' }}>Platform Tools</p>
 
                 {/* Channel Link Whitelist Card */}
-                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'whitelist' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`, animation: 'adminCardIn 0.45s ease 0.16s both' }}>
+                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'whitelist' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)', animation: 'adminCardIn 0.45s ease 0.16s both' }}>
                   <button
                     onClick={() => setExpandedHomeCard(expandedHomeCard === 'whitelist' ? null : 'whitelist')}
                     className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
-                    style={{ backgroundColor: tokens.bg.card }}
+                    style={{ backgroundColor: 'var(--bg-card)' }}
                   >
                     <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
                       <div className="text-left">
-                        <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Channel Link Whitelist</p>
-                        <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{whitelistedChannels.length} pattern{whitelistedChannels.length !== 1 ? 's' : ''} configured</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Channel Link Whitelist</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{whitelistedChannels.length} pattern{whitelistedChannels.length !== 1 ? 's' : ''} configured</p>
                       </div>
                     </div>
-                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'whitelist' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'whitelist' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                   </button>
                   {expandedHomeCard === 'whitelist' && (
-                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
-                  <p className="text-xs mb-4 mt-3" style={{ color: tokens.text.primary, opacity: 0.55 }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
+                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
+                  <p className="text-xs mb-4 mt-3" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Social links matching a whitelisted pattern are automatically verified — no verification prompt shown to the user.</p>
 
                   {/* Add form */}
-                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}>
-                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.primary }}>Add Pattern</p>
+                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-primary)' }}>Add Pattern</p>
                     <div className="flex flex-col sm:flex-row gap-2 mb-2">
                       <input
                         type="text"
@@ -1264,9 +1264,9 @@ export function AdminDashboard() {
                         onKeyDown={e => e.key === 'Enter' && handleAddWhitelist()}
                         placeholder="e.g. youtube.com/c/ or @handle"
                         className="flex-1 h-9 px-3 rounded-lg text-sm focus:outline-none"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                        onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                       />
                       <input
                         type="text"
@@ -1274,9 +1274,9 @@ export function AdminDashboard() {
                         onChange={e => setWhitelistPlatform(e.target.value)}
                         placeholder="Platform (optional)"
                         className="w-full sm:w-36 h-9 px-3 rounded-lg text-sm focus:outline-none"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                        onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                       />
                       <input
                         type="text"
@@ -1284,21 +1284,21 @@ export function AdminDashboard() {
                         onChange={e => setWhitelistNote(e.target.value)}
                         placeholder="Note (optional)"
                         className="w-full sm:w-40 h-9 px-3 rounded-lg text-sm focus:outline-none"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                        onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                        onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                       />
                       <button
                         onClick={handleAddWhitelist}
                         disabled={whitelistAdding || !whitelistInput.trim()}
                         className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50 flex-shrink-0"
-                        style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                        style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                       >
                         {whitelistAdding ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                         Add
                       </button>
                     </div>
-                    {whitelistError && <p className="text-xs mt-1" style={{ color: tokens.text.primary, opacity: 0.7 }}>{whitelistError}</p>}
+                    {whitelistError && <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{whitelistError}</p>}
                   </div>
 
                   {/* List */}
@@ -1308,8 +1308,8 @@ export function AdminDashboard() {
                     </div>
                   ) : whitelistedChannels.length === 0 ? (
                     <div className="text-center py-8">
-                      <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                      <p className="text-sm" style={{ color: tokens.text.primary }}>No whitelisted patterns yet. Add one above.</p>
+                      <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)' }}>No whitelisted patterns yet. Add one above.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -1317,15 +1317,15 @@ export function AdminDashboard() {
                         <div
                           key={ch.id}
                           className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg"
-                          style={{ backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.subtle}` }}
+                          style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                            <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium truncate" style={{ color: tokens.text.primary }}>{ch.url_pattern}</p>
+                              <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{ch.url_pattern}</p>
                               <div className="flex items-center gap-2 mt-0.5">
-                                {ch.platform && <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}>{ch.platform}</span>}
-                                {ch.note && <span className="text-xs truncate" style={{ color: tokens.text.primary }}>{ch.note}</span>}
+                                {ch.platform && <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)' }}>{ch.platform}</span>}
+                                {ch.note && <span className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{ch.note}</span>}
                               </div>
                             </div>
                           </div>
@@ -1333,7 +1333,7 @@ export function AdminDashboard() {
                             onClick={() => handleRemoveWhitelist(ch.id)}
                             disabled={removingWhitelistId === ch.id}
                             className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
-                            style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                            style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                           >
                             {removingWhitelistId === ch.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>}
                           </button>
@@ -1346,29 +1346,29 @@ export function AdminDashboard() {
                 </div>
 
                 {/* Campaign Manager Card */}
-                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'campaigns' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`, animation: 'adminCardIn 0.45s ease 0.24s both' }}>
+                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'campaigns' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)', animation: 'adminCardIn 0.45s ease 0.24s both' }}>
                   <button
                     onClick={() => setExpandedHomeCard(expandedHomeCard === 'campaigns' ? null : 'campaigns')}
                     className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
-                    style={{ backgroundColor: tokens.bg.card }}
+                    style={{ backgroundColor: 'var(--bg-card)' }}
                   >
                     <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
                       <div className="text-left">
-                        <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Campaign Manager</p>
-                        <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''} active</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Campaign Manager</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{campaigns.length} campaign{campaigns.length !== 1 ? 's' : ''} active</p>
                       </div>
                     </div>
-                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'campaigns' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                   </button>
                   {expandedHomeCard === 'campaigns' && (
-                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="px-5 pb-5 pt-1" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
                   <div className="flex items-center justify-between mt-3 mb-4">
-                    <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.55 }}>Create campaigns and assign them to users. Assigned campaigns appear in the user's dashboard.</p>
+                    <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Create campaigns and assign them to users. Assigned campaigns appear in the user's dashboard.</p>
                     <button
                       onClick={(e) => { e.stopPropagation(); setShowCampaignForm(v => !v); setCampaignError(null); }}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 flex-shrink-0 ml-4"
-                      style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                     >
                       {showCampaignForm ? <><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> Cancel</> : <><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> New Campaign</>}
                     </button>
@@ -1376,75 +1376,75 @@ export function AdminDashboard() {
 
                   {/* Create form */}
                   {showCampaignForm && (
-                    <div className="rounded-xl mb-6 overflow-hidden" style={{ border: `1px solid ${tokens.border.default}` }}>
-                      <div className="px-5 py-3.5" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
-                        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: tokens.text.primary }}>New Campaign</p>
+                    <div className="rounded-xl mb-6 overflow-hidden" style={{ border: '1px solid var(--border-default)' }}>
+                      <div className="px-5 py-3.5" style={{ backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-subtle)' }}>
+                        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>New Campaign</p>
                       </div>
-                      <div className="p-5 space-y-5" style={{ backgroundColor: tokens.bg.elevated }}>
+                      <div className="p-5 space-y-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
 
                       {/* Name + Language row */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Campaign Name <span style={{ color: tokens.text.primary }}>*</span></label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Campaign Name <span style={{ color: 'var(--text-primary)' }}>*</span></label>
                           <input
                             type="text"
                             value={campaignForm.name}
                             onChange={e => setCampaignForm(f => ({ ...f, name: e.target.value }))}
                             placeholder="e.g. Electronic Vibes"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
-                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Language</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Language</label>
                           <input
                             type="text"
                             value={campaignForm.language}
                             onChange={e => setCampaignForm(f => ({ ...f, language: e.target.value }))}
                             placeholder="English"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
-                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                           />
                         </div>
                       </div>
 
                       {/* Bio */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Bio <span className="normal-case font-normal" style={{ color: tokens.text.primary }}>(short tagline shown on the card)</span></label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Bio <span className="normal-case font-normal" style={{ color: 'var(--text-primary)' }}>(short tagline shown on the card)</span></label>
                         <input
                           type="text"
                           value={campaignForm.bio}
                           onChange={e => setCampaignForm(f => ({ ...f, bio: e.target.value }))}
                           placeholder="e.g. Earn per view promoting Neon Afterhours"
                           className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
-                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                           onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                          onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                         />
                       </div>
 
                       {/* Description */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Description</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Description</label>
                         <textarea
                           value={campaignForm.description}
                           onChange={e => setCampaignForm(f => ({ ...f, description: e.target.value }))}
                           placeholder="Describe the campaign..."
                           rows={3}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
-                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                           onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                          onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                         />
                       </div>
 
                       {/* Platforms */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary }}>Platforms</label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)' }}>Platforms</label>
                         <div className="flex flex-wrap gap-2">
                           {['Instagram', 'TikTok', 'YouTube', 'Twitter', 'Twitch'].map(p => (
                             <button
@@ -1456,9 +1456,9 @@ export function AdminDashboard() {
                               }))}
                               className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                               style={{
-                                backgroundColor: campaignForm.platforms.includes(p) ? tokens.bg.active : tokens.bg.primary,
-                                color: tokens.text.primary,
-                                border: `1px solid ${campaignForm.platforms.includes(p) ? 'var(--text-primary)' : tokens.border.subtle}`,
+                                backgroundColor: campaignForm.platforms.includes(p) ? 'var(--bg-active)' : 'var(--bg-primary)',
+                                color: 'var(--text-primary)',
+                                border: `1px solid ${campaignForm.platforms.includes(p) ? 'var(--text-primary)' : 'var(--border-subtle)'}`,
                               }}
                             >
                               {p}
@@ -1470,20 +1470,20 @@ export function AdminDashboard() {
                       {/* Pay type + Payout + Ends at */}
                       <div className={`grid grid-cols-1 gap-4 ${campaignForm.pay_type === 'Varied' ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
                         <div className="relative">
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Pay Type</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Pay Type</label>
                           <button
                             type="button"
                             onClick={() => setPayTypeDropdownOpen(v => !v)}
                             className="w-full h-9 px-3 rounded-lg text-sm flex items-center justify-between focus:outline-none transition-all"
-                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                            onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                            onBlur={e => e.currentTarget.style.borderColor = 'var(--border-default)'}
                           >
                             <span>{campaignForm.pay_type}</span>
-                            <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${payTypeDropdownOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M6 9l6 6 6-6"/></svg>
+                            <svg className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${payTypeDropdownOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
                           </button>
                           {payTypeDropdownOpen && (
-                            <div className="absolute z-20 w-full mt-1 rounded-lg overflow-hidden shadow-xl" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}>
+                            <div className="absolute z-20 w-full mt-1 rounded-lg overflow-hidden shadow-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
                               {['Per view', 'Varied'].map(opt => (
                                 <button
                                   key={opt}
@@ -1491,8 +1491,8 @@ export function AdminDashboard() {
                                   onClick={() => { setCampaignForm(f => ({ ...f, pay_type: opt })); setPayTypeDropdownOpen(false); }}
                                   className="w-full text-left px-3 py-2 text-sm transition-all hover:brightness-110"
                                   style={{
-                                    backgroundColor: campaignForm.pay_type === opt ? tokens.bg.active : 'transparent',
-                                    color: tokens.text.primary,
+                                    backgroundColor: campaignForm.pay_type === opt ? 'var(--bg-active)' : 'transparent',
+                                    color: 'var(--text-primary)',
                                   }}
                                 >
                                   {opt}
@@ -1503,72 +1503,72 @@ export function AdminDashboard() {
                         </div>
                         {campaignForm.pay_type !== 'Varied' && (
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Payout</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Payout</label>
                           <input
                             type="text"
                             value={campaignForm.payout}
                             onChange={e => setCampaignForm(f => ({ ...f, payout: e.target.value }))}
                             placeholder="e.g. $1.50 cpm"
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
-                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                           />
                         </div>
                         )}
                         <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Ends At</label>
+                          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Ends At</label>
                           <input
                             type="date"
                             value={campaignForm.ends_at}
                             onChange={e => setCampaignForm(f => ({ ...f, ends_at: e.target.value }))}
                             className="w-full h-9 px-3 rounded-lg text-sm focus:outline-none"
-                            style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                            style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                            onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                           />
                         </div>
                       </div>
 
                       {/* How it works */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>How It Works <span className="normal-case font-normal" style={{ color: tokens.text.primary }}>(one step per line)</span></label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>How It Works <span className="normal-case font-normal" style={{ color: 'var(--text-primary)' }}>(one step per line)</span></label>
                         <textarea
                           value={campaignForm.how_it_works}
                           onChange={e => setCampaignForm(f => ({ ...f, how_it_works: e.target.value }))}
                           placeholder={"Join the campaign\nCreate a video using the provided track\nPost on your platforms\nEarn per view"}
                           rows={4}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
-                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                           onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                          onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                         />
                       </div>
 
                       {/* Rules */}
                       <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Rules <span className="normal-case font-normal" style={{ color: tokens.text.primary }}>(one rule per line)</span></label>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Rules <span className="normal-case font-normal" style={{ color: 'var(--text-primary)' }}>(one rule per line)</span></label>
                         <textarea
                           value={campaignForm.rules}
                           onChange={e => setCampaignForm(f => ({ ...f, rules: e.target.value }))}
                           placeholder={"Minimum video length: 15 seconds\nMust include audio from the official track\nNo explicit content"}
                           rows={4}
                           className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
-                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                           onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                          onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                          onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                         />
                       </div>
 
                       {/* Songs to use */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary }}>Songs to Use</label>
+                          <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Songs to Use</label>
                           <button
                             type="button"
                             onClick={() => setCampaignForm(f => ({ ...f, songs: [...f.songs, { title: '', artist: '', url: '' }] }))}
                             className="text-xs flex items-center gap-1 hover:opacity-80 transition-opacity font-medium"
-                            style={{ color: tokens.text.primary }}
+                            style={{ color: 'var(--text-primary)' }}
                           >
                             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg> Add song
                           </button>
@@ -1582,9 +1582,9 @@ export function AdminDashboard() {
                                 onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], title: e.target.value }; return { ...f, songs: s }; })}
                                 placeholder="Song title"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
-                                style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                                onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                               />
                               <input
                                 type="text"
@@ -1592,9 +1592,9 @@ export function AdminDashboard() {
                                 onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], artist: e.target.value }; return { ...f, songs: s }; })}
                                 placeholder="Artist"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
-                                style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                                onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                               />
                               <input
                                 type="text"
@@ -1602,16 +1602,16 @@ export function AdminDashboard() {
                                 onChange={e => setCampaignForm(f => { const s = [...f.songs]; s[i] = { ...s[i], url: e.target.value }; return { ...f, songs: s }; })}
                                 placeholder="Link (optional)"
                                 className="flex-1 h-8 px-2.5 rounded-lg text-xs focus:outline-none"
-                                style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                 onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                                onBlur={(e) => e.target.style.borderColor = tokens.border.default}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--border-default)'}
                               />
                               {campaignForm.songs.length > 1 && (
                                 <button
                                   type="button"
                                   onClick={() => setCampaignForm(f => ({ ...f, songs: f.songs.filter((_, j) => j !== i) }))}
                                   className="w-7 h-7 flex items-center justify-center rounded-lg flex-shrink-0 hover:brightness-110"
-                                  style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}
+                                  style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)' }}
                                 >
                                   <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                 </button>
@@ -1622,17 +1622,17 @@ export function AdminDashboard() {
                       </div>
 
                       {/* Assign To */}
-                      <div className="pt-1" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
-                        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: tokens.text.primary }}>Assign To</label>
+                      <div className="pt-1" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                        <label className="block text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-primary)' }}>Assign To</label>
                         <div className="flex gap-2 mb-3">
                           <button
                             type="button"
                             onClick={() => setCampaignForm(f => ({ ...f, assign_to: 'all', assigned_user_ids: [] }))}
                             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
                             style={{
-                              backgroundColor: campaignForm.assign_to === 'all' ? tokens.bg.elevated : 'transparent',
-                              color: tokens.text.primary,
-                              border: campaignForm.assign_to === 'all' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                              backgroundColor: campaignForm.assign_to === 'all' ? 'var(--bg-elevated)' : 'transparent',
+                              color: 'var(--text-primary)',
+                              border: campaignForm.assign_to === 'all' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
                             }}
                           >
                             All Creators
@@ -1642,9 +1642,9 @@ export function AdminDashboard() {
                             onClick={() => setCampaignForm(f => ({ ...f, assign_to: 'specific' }))}
                             className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
                             style={{
-                              backgroundColor: campaignForm.assign_to === 'specific' ? tokens.bg.elevated : 'transparent',
-                              color: tokens.text.primary,
-                              border: campaignForm.assign_to === 'specific' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                              backgroundColor: campaignForm.assign_to === 'specific' ? 'var(--bg-elevated)' : 'transparent',
+                              color: 'var(--text-primary)',
+                              border: campaignForm.assign_to === 'specific' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
                             }}
                           >
                             Specific Users
@@ -1655,9 +1655,9 @@ export function AdminDashboard() {
                         {campaignForm.assign_to === 'all' && (() => {
                           const creatorCount = users.filter(u => u.user_type === 'creator').length;
                           return (
-                            <div className="rounded-lg px-4 py-3" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
-                              <p className="text-xs" style={{ color: tokens.text.primary }}>
-                                This campaign will be assigned to <span className="font-semibold" style={{ color: tokens.text.primary }}>{creatorCount} creator{creatorCount !== 1 ? 's' : ''}</span> on the platform.
+                            <div className="rounded-lg px-4 py-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                              <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
+                                This campaign will be assigned to <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{creatorCount} creator{creatorCount !== 1 ? 's' : ''}</span> on the platform.
                               </p>
                             </div>
                           );
@@ -1676,28 +1676,28 @@ export function AdminDashboard() {
                             return matchesSearch && matchesYoutube;
                           });
                           return (
-                            <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${tokens.border.subtle}` }}>
+                            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
                               {/* Search + filter bar */}
-                              <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderBottom: `1px solid ${tokens.border.subtle}` }}>
-                                <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: tokens.text.primary }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                              <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: 'var(--bg-primary)', borderBottom: '1px solid var(--border-subtle)' }}>
+                                <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
                                 <input
                                   type="text"
                                   value={campaignUserSearch}
                                   onChange={e => setCampaignUserSearch(e.target.value)}
                                   placeholder="Search creators..."
                                   className="flex-1 text-xs bg-transparent focus:outline-none"
-                                  style={{ color: tokens.text.primary }}
+                                  style={{ color: 'var(--text-primary)' }}
                                   onFocus={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', 'var(--text-primary)')}
-                                  onBlur={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', tokens.border.subtle)}
+                                  onBlur={(e) => (e.target.closest('.flex.items-center.gap-2') as HTMLElement)?.style.setProperty('border-color', 'var(--border-subtle)')}
                                 />
                                 <button
                                   type="button"
                                   onClick={() => setCampaignYoutubeOnly(v => !v)}
                                   className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium flex-shrink-0 transition-all"
                                   style={{
-                                    backgroundColor: campaignYoutubeOnly ? tokens.bg.active : 'transparent',
-                                    color: tokens.text.primary,
-                                    border: `1px solid ${campaignYoutubeOnly ? tokens.border.default : tokens.border.subtle}`,
+                                    backgroundColor: campaignYoutubeOnly ? 'var(--bg-active)' : 'transparent',
+                                    color: 'var(--text-primary)',
+                                    border: `1px solid ${campaignYoutubeOnly ? 'var(--border-default)' : 'var(--border-subtle)'}`,
                                   }}
                                 >
                                   YT only
@@ -1706,7 +1706,7 @@ export function AdminDashboard() {
                               <div className="max-h-48 overflow-y-auto">
                                 {filtered.length === 0 ? (
                                   <div className="px-3 py-4 text-center">
-                                    <p className="text-xs" style={{ color: tokens.text.primary }}>
+                                    <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
                                       {creatorUsers.length === 0 ? 'No creator accounts found' : 'No creators match your search'}
                                     </p>
                                   </div>
@@ -1715,7 +1715,7 @@ export function AdminDashboard() {
                                     <label
                                       key={u.id}
                                       className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:brightness-105 transition-all"
-                                      style={{ backgroundColor: tokens.bg.elevated, borderBottom: `1px solid ${tokens.border.subtle}` }}
+                                      style={{ backgroundColor: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-subtle)' }}
                                       onClick={() => setCampaignForm(f => ({
                                         ...f,
                                         assigned_user_ids: f.assigned_user_ids.includes(u.id)
@@ -1726,28 +1726,28 @@ export function AdminDashboard() {
                                       <div
                                         className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0 transition-all"
                                         style={{
-                                          backgroundColor: campaignForm.assigned_user_ids.includes(u.id) ? tokens.text.primary : 'transparent',
-                                          border: `1px solid ${campaignForm.assigned_user_ids.includes(u.id) ? tokens.text.primary : tokens.border.default}`
+                                          backgroundColor: campaignForm.assigned_user_ids.includes(u.id) ? 'var(--text-primary)' : 'transparent',
+                                          border: `1px solid ${campaignForm.assigned_user_ids.includes(u.id) ? 'var(--text-primary)' : 'var(--border-default)'}`
                                         }}
                                       >
                                         {campaignForm.assigned_user_ids.includes(u.id) && (
-                                          <svg className="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.bg.primary }}><path d="M20 6L9 17l-5-5"/></svg>
+                                          <svg className="w-2 h-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--bg-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>
                                         )}
                                       </div>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-medium truncate" style={{ color: tokens.text.primary }}>{u.full_name || u.username || u.email}</p>
-                                        <p className="text-xs truncate" style={{ color: tokens.text.primary }}>{u.email}</p>
+                                        <p className="text-xs font-medium truncate" style={{ color: 'var(--text-primary)' }}>{u.full_name || u.username || u.email}</p>
+                                        <p className="text-xs truncate" style={{ color: 'var(--text-primary)' }}>{u.email}</p>
                                       </div>
                                       {userYoutubeIds.has(u.id) && (
-                                        <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>YT</span>
+                                        <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>YT</span>
                                       )}
                                     </label>
                                   ))
                                 )}
                               </div>
                               {campaignForm.assigned_user_ids.length > 0 && (
-                                <div className="px-3 py-2" style={{ backgroundColor: tokens.bg.primary, borderTop: `1px solid ${tokens.border.subtle}` }}>
-                                  <p className="text-xs font-medium" style={{ color: tokens.text.primary }}>{campaignForm.assigned_user_ids.length} creator{campaignForm.assigned_user_ids.length !== 1 ? 's' : ''} selected</p>
+                                <div className="px-3 py-2" style={{ backgroundColor: 'var(--bg-primary)', borderTop: '1px solid var(--border-subtle)' }}>
+                                  <p className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{campaignForm.assigned_user_ids.length} creator{campaignForm.assigned_user_ids.length !== 1 ? 's' : ''} selected</p>
                                 </div>
                               )}
                             </div>
@@ -1755,13 +1755,13 @@ export function AdminDashboard() {
                         })()}
                       </div>
 
-                      {campaignError && <p className="text-xs pt-1" style={{ color: tokens.text.primary, opacity: 0.7 }}>{campaignError}</p>}
+                      {campaignError && <p className="text-xs pt-1" style={{ color: 'var(--text-primary)', opacity: 0.7 }}>{campaignError}</p>}
 
-                      <div className="flex justify-end gap-2 pt-2" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
+                      <div className="flex justify-end gap-2 pt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                         <button
                           onClick={() => { setShowCampaignForm(false); setCampaignForm(emptyCampaignForm); setCampaignError(null); }}
                           className="px-4 h-9 rounded-lg text-sm font-medium transition-all hover:brightness-110"
-                          style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         >
                           Cancel
                         </button>
@@ -1769,7 +1769,7 @@ export function AdminDashboard() {
                           onClick={handleSaveCampaign}
                           disabled={campaignSaving}
                           className="flex items-center gap-1.5 px-5 h-9 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                          style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         >
                           {campaignSaving ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                           Save Campaign
@@ -1786,26 +1786,26 @@ export function AdminDashboard() {
                     </div>
                   ) : campaigns.length === 0 ? (
                     <div className="text-center py-8">
-                      <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-                      <p className="text-sm" style={{ color: tokens.text.primary }}>No campaigns yet. Create one above.</p>
+                      <svg className="w-10 h-10 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)' }}>No campaigns yet. Create one above.</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {campaigns.map(c => (
-                        <div key={c.id} className="rounded-lg overflow-hidden" style={{ border: `1px solid ${tokens.border.subtle}` }}>
+                        <div key={c.id} className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
                           <div
                             className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer hover:brightness-105 transition-all"
-                            style={{ backgroundColor: tokens.bg.primary }}
+                            style={{ backgroundColor: 'var(--bg-primary)' }}
                             onClick={() => setExpandedCampaignId(expandedCampaignId === c.id ? null : c.id)}
                           >
                             <div className="flex items-center gap-3 min-w-0">
-                              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+                              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
                               <div className="min-w-0">
-                                <p className="text-sm font-semibold truncate" style={{ color: tokens.text.primary }}>{c.name}</p>
+                                <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{c.name}</p>
                                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                  <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>{c.status}</span>
-                                  {c.payout && <span className="text-xs" style={{ color: tokens.text.primary }}>{c.payout}</span>}
-                                  {c.platforms?.length > 0 && <span className="text-xs" style={{ color: tokens.text.primary }}>{c.platforms.join(', ')}</span>}
+                                  <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>{c.status}</span>
+                                  {c.payout && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>{c.payout}</span>}
+                                  {c.platforms?.length > 0 && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>{c.platforms.join(', ')}</span>}
                                 </div>
                               </div>
                             </div>
@@ -1827,7 +1827,7 @@ export function AdminDashboard() {
                                   disabled={reassigningCampaignId === c.id}
                                   title="Assign campaign"
                                   className="flex items-center gap-1 px-2 h-7 rounded-lg text-xs font-medium transition-all hover:brightness-110 disabled:opacity-50"
-                                  style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                  style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                                 >
                                   {reassigningCampaignId === c.id
                                     ? <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg>
@@ -1840,25 +1840,25 @@ export function AdminDashboard() {
                                 {reassignDropdownOpen === c.id && (
                                   <div
                                     className="absolute right-0 top-9 z-50 rounded-2xl shadow-2xl animate-fade-in"
-                                    style={{ width: '300px', backgroundColor: tokens.bg.card, border: `1px solid ${tokens.border.default}` }}
+                                    style={{ width: '300px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)' }}
                                     onClick={(e) => e.stopPropagation()}
                                   >
-                                    <div className="px-4 py-3 border-b" style={{ borderColor: tokens.border.subtle }}>
-                                      <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Assign Campaign</p>
-                                      <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.name}</p>
+                                    <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                                      <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Assign Campaign</p>
+                                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{c.name}</p>
                                     </div>
                                     <div className="px-4 py-3">
                                       {/* Assign To toggle */}
-                                      <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary }}>Assign To</label>
+                                      <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)' }}>Assign To</label>
                                       <div className="flex gap-2 mb-3">
                                         <button
                                           type="button"
                                           onClick={() => { setReassignMode('all'); setReassignSelectedUserIds([]); }}
                                           className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
                                           style={{
-                                            backgroundColor: reassignMode === 'all' ? tokens.bg.elevated : 'transparent',
-                                            color: tokens.text.primary,
-                                            border: reassignMode === 'all' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                                            backgroundColor: reassignMode === 'all' ? 'var(--bg-elevated)' : 'transparent',
+                                            color: 'var(--text-primary)',
+                                            border: reassignMode === 'all' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
                                           }}
                                         >
                                           All Creators
@@ -1868,9 +1868,9 @@ export function AdminDashboard() {
                                           onClick={() => setReassignMode('specific')}
                                           className="flex-1 py-2 rounded-lg text-xs font-semibold transition-all"
                                           style={{
-                                            backgroundColor: reassignMode === 'specific' ? tokens.bg.elevated : 'transparent',
-                                            color: tokens.text.primary,
-                                            border: reassignMode === 'specific' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                                            backgroundColor: reassignMode === 'specific' ? 'var(--bg-elevated)' : 'transparent',
+                                            color: 'var(--text-primary)',
+                                            border: reassignMode === 'specific' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
                                           }}
                                         >
                                           Specific Users
@@ -1881,8 +1881,8 @@ export function AdminDashboard() {
                                       {reassignMode === 'all' && (() => {
                                         const creatorCount = users.filter(u => u.user_type === 'creator').length;
                                         return (
-                                          <div className="rounded-lg px-3 py-2.5 mb-3" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
-                                            <p className="text-xs" style={{ color: tokens.text.primary }}>
+                                          <div className="rounded-lg px-3 py-2.5 mb-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                                            <p className="text-xs" style={{ color: 'var(--text-primary)' }}>
                                               This campaign will be assigned to <span className="font-semibold">{creatorCount} creator{creatorCount !== 1 ? 's' : ''}</span> on the platform.
                                             </p>
                                           </div>
@@ -1902,43 +1902,43 @@ export function AdminDashboard() {
                                         return (
                                           <div className="mb-3">
                                             <div className="relative mb-2">
-                                              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.45 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                                              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)', opacity: 0.45 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
                                               <input
                                                 type="text"
                                                 value={reassignUserSearch}
                                                 onChange={e => setReassignUserSearch(e.target.value)}
                                                 placeholder="Search creators..."
                                                 className="w-full pl-7 pr-2 py-1.5 rounded-lg text-xs focus:outline-none"
-                                                style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                                style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                                               />
                                             </div>
-                                            <div className="max-h-36 overflow-y-auto rounded-lg" style={{ border: `1px solid ${tokens.border.subtle}`, scrollbarWidth: 'thin' }}>
+                                            <div className="max-h-36 overflow-y-auto rounded-lg" style={{ border: '1px solid var(--border-subtle)', scrollbarWidth: 'thin' }}>
                                               {filtered.length === 0 ? (
-                                                <p className="px-3 py-2 text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>No creators found</p>
+                                                <p className="px-3 py-2 text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>No creators found</p>
                                               ) : filtered.slice(0, 20).map(u => {
                                                 const isSelected = reassignSelectedUserIds.includes(u.id);
                                                 return (
                                                   <button
                                                     key={u.id}
                                                     className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs transition-all hover:brightness-110"
-                                                    style={{ color: tokens.text.primary, backgroundColor: isSelected ? tokens.bg.elevated : 'transparent', borderBottom: `1px solid ${tokens.border.subtle}` }}
+                                                    style={{ color: 'var(--text-primary)', backgroundColor: isSelected ? 'var(--bg-elevated)' : 'transparent', borderBottom: '1px solid var(--border-subtle)' }}
                                                     onClick={() => setReassignSelectedUserIds(prev =>
                                                       isSelected ? prev.filter(id => id !== u.id) : [...prev, u.id]
                                                     )}
                                                   >
-                                                    <div className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: tokens.bg.active }}>
+                                                    <div className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[9px] font-bold" style={{ backgroundColor: 'var(--bg-active)' }}>
                                                       {(u.full_name || u.username || u.email || '?').charAt(0).toUpperCase()}
                                                     </div>
                                                     <span className="flex-1 truncate">{u.full_name || u.username || u.email}</span>
                                                     {isSelected && (
-                                                      <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M20 6L9 17l-5-5"/></svg>
+                                                      <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M20 6L9 17l-5-5"/></svg>
                                                     )}
                                                   </button>
                                                 );
                                               })}
                                             </div>
                                             {reassignSelectedUserIds.length > 0 && (
-                                              <p className="text-xs mt-1.5" style={{ color: tokens.text.primary, opacity: 0.55 }}>{reassignSelectedUserIds.length} selected</p>
+                                              <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{reassignSelectedUserIds.length} selected</p>
                                             )}
                                           </div>
                                         );
@@ -1947,7 +1947,7 @@ export function AdminDashboard() {
                                       {/* Confirm button */}
                                       <button
                                         className="w-full py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-40"
-                                        style={{ backgroundColor: tokens.text.primary, color: tokens.bg.primary }}
+                                        style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
                                         disabled={reassignMode === 'specific' && reassignSelectedUserIds.length === 0}
                                         onClick={() => {
                                           if (reassignMode === 'all') {
@@ -1968,23 +1968,23 @@ export function AdminDashboard() {
                                 onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}
                                 disabled={deletingCampaignId === c.id}
                                 className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50"
-                                style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                               >
                                 {deletingCampaignId === c.id ? <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>}
                               </button>
-                              <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${expandedCampaignId === c.id ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M6 9l6 6 6-6"/></svg>
+                              <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${expandedCampaignId === c.id ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M6 9l6 6 6-6"/></svg>
                             </div>
                           </div>
                           {expandedCampaignId === c.id && (
-                            <div className="px-4 pb-4 pt-2 space-y-3" style={{ backgroundColor: tokens.bg.elevated }}>
-                              {c.description && <p className="text-sm" style={{ color: tokens.text.primary }}>{c.description}</p>}
+                            <div className="px-4 pb-4 pt-2 space-y-3" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                              {c.description && <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{c.description}</p>}
                               {c.how_it_works && c.how_it_works.length > 0 && (
                                 <div>
-                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>How It Works</p>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>How It Works</p>
                                   <ol className="space-y-1">
                                     {c.how_it_works.map((step, i) => (
-                                      <li key={i} className="text-xs flex gap-2" style={{ color: tokens.text.primary }}>
-                                        <span className="font-semibold flex-shrink-0" style={{ color: tokens.text.primary }}>{i + 1}.</span>{step}
+                                      <li key={i} className="text-xs flex gap-2" style={{ color: 'var(--text-primary)' }}>
+                                        <span className="font-semibold flex-shrink-0" style={{ color: 'var(--text-primary)' }}>{i + 1}.</span>{step}
                                       </li>
                                     ))}
                                   </ol>
@@ -1992,24 +1992,24 @@ export function AdminDashboard() {
                               )}
                               {c.rules && c.rules.length > 0 && (
                                 <div>
-                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Rules</p>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Rules</p>
                                   <ul className="space-y-1">
                                     {c.rules.map((rule, i) => (
-                                      <li key={i} className="text-xs" style={{ color: tokens.text.primary }}>• {rule}</li>
+                                      <li key={i} className="text-xs" style={{ color: 'var(--text-primary)' }}>• {rule}</li>
                                     ))}
                                   </ul>
                                 </div>
                               )}
                               {c.songs_to_use && c.songs_to_use.length > 0 && (
                                 <div>
-                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary }}>Songs to Use</p>
+                                  <p className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)' }}>Songs to Use</p>
                                   <div className="space-y-1">
                                     {c.songs_to_use.map((s, i) => (
                                       <div key={i} className="flex items-center gap-2">
-                                        <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                                        <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{s.title}</span>
-                                        {s.artist && <span className="text-xs" style={{ color: tokens.text.primary }}>— {s.artist}</span>}
-                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}><svg className="w-3 h-3 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>}
+                                        <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                        <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{s.title}</span>
+                                        {s.artist && <span className="text-xs" style={{ color: 'var(--text-primary)' }}>— {s.artist}</span>}
+                                        {s.url && <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}><svg className="w-3 h-3 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>}
                                       </div>
                                     ))}
                                   </div>
@@ -2026,23 +2026,23 @@ export function AdminDashboard() {
                 </div>
 
                 {/* Alerts Card */}
-                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'alerts' ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`, animation: 'adminCardIn 0.45s ease 0.32s both' }}>
+                <div className="rounded-xl overflow-hidden" style={{ border: expandedHomeCard === 'alerts' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)', animation: 'adminCardIn 0.45s ease 0.32s both' }}>
                   <button
                     onClick={() => setExpandedHomeCard(expandedHomeCard === 'alerts' ? null : 'alerts')}
                     className="w-full flex items-center justify-between px-5 py-4 transition-all hover:brightness-110"
-                    style={{ backgroundColor: tokens.bg.card }}
+                    style={{ backgroundColor: 'var(--bg-card)' }}
                   >
                     <div className="flex items-center gap-3">
-                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                       <div className="text-left">
-                        <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Alerts</p>
-                        <p className="text-xs mt-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Send announcements to users</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Alerts</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Send announcements to users</p>
                       </div>
                     </div>
-                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'alerts' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
+                    <svg className={`w-4 h-4 transition-transform duration-200 ${expandedHomeCard === 'alerts' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M6 9l6 6 6-6"/></svg>
                   </button>
                   {expandedHomeCard === 'alerts' && (
-                    <div className="px-5 pb-5 pt-3" style={{ backgroundColor: tokens.bg.elevated, borderTop: `1px solid ${tokens.border.subtle}` }}>
+                    <div className="px-5 pb-5 pt-3" style={{ backgroundColor: 'var(--bg-elevated)', borderTop: '1px solid var(--border-subtle)' }}>
                       {adminProfileId && <AnnouncementSender adminId={adminProfileId} />}
                     </div>
                   )}
@@ -2056,15 +2056,15 @@ export function AdminDashboard() {
               <div className="animate-fade-in">
                 <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>Applications</h2>
-                    <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.6 }}>Freelancer onboarding, creator verification, and artist account requests</p>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>Applications</h2>
+                    <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Freelancer onboarding, creator verification, and artist account requests</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={fetchApplications}
                       disabled={applicationsLoading}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                      style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                     >
                       <svg className={`w-3.5 h-3.5 ${applicationsLoading ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
                       Refresh
@@ -2075,9 +2075,9 @@ export function AdminDashboard() {
                         onClick={() => setAppStatusFilter(s)}
                         className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
                         style={{
-                          backgroundColor: appStatusFilter === s ? tokens.bg.elevated : 'transparent',
-                          color: tokens.text.primary,
-                          border: appStatusFilter === s ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                          backgroundColor: appStatusFilter === s ? 'var(--bg-elevated)' : 'transparent',
+                          color: 'var(--text-primary)',
+                          border: appStatusFilter === s ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
                         }}
                       >
                         {s}
@@ -2104,11 +2104,11 @@ export function AdminDashboard() {
                     return (
                       <div className="flex items-center justify-center min-h-[400px]">
                         <div className="text-center px-4">
-                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
                           </div>
-                          <h3 className="text-xl font-bold mb-2" style={{ color: tokens.text.primary }}>No {appStatusFilter} applications</h3>
-                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Applications will appear here once submitted</p>
+                          <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>No {appStatusFilter} applications</h3>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Applications will appear here once submitted</p>
                         </div>
                       </div>
                     );
@@ -2121,36 +2121,36 @@ export function AdminDashboard() {
                         return (
                           <div key={type}>
                             <div className="flex items-center gap-3 mb-3">
-                              <h3 className="text-base font-semibold" style={{ color: tokens.text.primary }}>{label}</h3>
-                              <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: tokens.bg.active, color }}>
+                              <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{label}</h3>
+                              <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-active)', color }}>
                                 {group.length}
                               </span>
                             </div>
-                            <div className="h-px mb-4" style={{ backgroundColor: tokens.border.subtle }} />
+                            <div className="h-px mb-4" style={{ backgroundColor: 'var(--border-subtle)' }} />
                             <div className="space-y-3">
                               {group.map(app => (
                                 <div
                                   key={app.id}
                                   className="rounded-xl p-5 border"
-                                  style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.default }}
+                                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-default)' }}
                                 >
                                   <div className="flex items-start justify-between gap-4 flex-wrap">
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                        <span className="text-sm font-semibold" style={{ color: tokens.text.primary }}>
+                                        <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
                                           {app.full_name || app.username || 'Unknown'}
                                         </span>
                                         {app.username && (
-                                          <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>@{app.username}</span>
+                                          <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>@{app.username}</span>
                                         )}
                                         <span
                                           className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                                         >
                                           {app.status}
                                         </span>
                                       </div>
-                                      {app.email && <p className="text-xs mb-2" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.email}</p>}
+                                      {app.email && <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{app.email}</p>}
 
                                       {app.application_type === 'artist_account' && (
                                         <div className="mt-3">
@@ -2158,7 +2158,7 @@ export function AdminDashboard() {
                                           <button
                                             onClick={() => setExpandedAppId(expandedAppId === app.id ? null : app.id)}
                                             className="flex items-center gap-1.5 text-xs font-medium mb-3 transition-all hover:opacity-80"
-                                            style={{ color: tokens.text.primary, opacity: 0.6 }}
+                                            style={{ color: 'var(--text-primary)', opacity: 0.6 }}
                                           >
                                             <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedAppId === app.id ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                                             {expandedAppId === app.id ? 'Hide details' : 'View full application'}
@@ -2168,54 +2168,54 @@ export function AdminDashboard() {
                                             {app.category && (
                                               <div className="flex items-center gap-3">
                                                 {app.image_url && (
-                                                  <img src={app.image_url} alt={app.category} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" style={{ border: `1px solid ${tokens.border.subtle}` }} />
+                                                  <img src={app.image_url} alt={app.category} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" style={{ border: '1px solid var(--border-subtle)' }} />
                                                 )}
                                                 <div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{app.category}</span></div>
-                                                  {app.artist_type && <div className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>{app.artist_type}{app.artist_role ? ` · ${app.artist_role}` : ''}{app.artist_genre ? ` · ${app.artist_genre}` : ''}</div>}
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Artist Name: </span><span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{app.category}</span></div>
+                                                  {app.artist_type && <div className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{app.artist_type}{app.artist_role ? ` · ${app.artist_role}` : ''}{app.artist_genre ? ` · ${app.artist_genre}` : ''}</div>}
                                                 </div>
                                               </div>
                                             )}
-                                            {app.country && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country}</span></div>}
-                                            {app.bio && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                            {app.country && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.country}</span></div>}
+                                            {app.bio && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.bio}</span></div>}
                                           </div>
                                           {/* Expanded full details */}
                                           {expandedAppId === app.id && (
-                                            <div className="mt-4 rounded-xl p-4 space-y-4" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                            <div className="mt-4 rounded-xl p-4 space-y-4" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}>
                                               {/* Artist info */}
                                               <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Artist Info</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Artist Info</p>
                                                 <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artist Name: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{app.category || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_type || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Role: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_role || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.artist_genre || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.country || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Artist Name: </span><span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{app.category || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.artist_type || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Role: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.artist_role || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Genre: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.artist_genre || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Country: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.country || '-'}</span></div>
                                                 </div>
-                                                {app.bio && <div className="mt-1.5"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.bio}</span></div>}
+                                                {app.bio && <div className="mt-1.5"><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Bio: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.bio}</span></div>}
                                               </div>
                                               {/* Platform IDs */}
                                               <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Platform IDs</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Platform IDs</p>
                                                 <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Spotify: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.spotify_id || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Apple Music: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.apple_music_id || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>SoundCloud: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.soundcloud_id || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Deezer: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.deezer_id || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Audiomack: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.audiomack_id || '-'}</span></div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Amazon: </span><span className="text-xs font-mono" style={{ color: tokens.text.primary }}>{app.amazon_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Spotify: </span><span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>{app.spotify_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Apple Music: </span><span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>{app.apple_music_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>SoundCloud: </span><span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>{app.soundcloud_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Deezer: </span><span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>{app.deezer_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Audiomack: </span><span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>{app.audiomack_id || '-'}</span></div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Amazon: </span><span className="text-xs font-mono" style={{ color: 'var(--text-primary)' }}>{app.amazon_id || '-'}</span></div>
                                                 </div>
                                               </div>
                                               {/* Social links */}
                                               <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Social Links</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Social Links</p>
                                                 <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Instagram: </span>{app.instagram_handle ? <a href={`https://instagram.com/${app.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.instagram_handle}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>YouTube: </span>{app.youtube_channel ? <a href={`https://youtube.com/${app.youtube_channel.startsWith('@') ? app.youtube_channel : '@' + app.youtube_channel}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.youtube_channel}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>TikTok: </span>{app.tiktok_username ? <a href={`https://tiktok.com/@${app.tiktok_username}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.tiktok_username}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>X: </span>{app.x_handle ? <a href={`https://x.com/${app.x_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>@{app.x_handle}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Facebook: </span>{app.facebook_url ? <a href={app.facebook_url.startsWith('http') ? app.facebook_url : `https://facebook.com/${app.facebook_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.facebook_url}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
-                                                  <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Website: </span>{app.website_url ? <a href={app.website_url.startsWith('http') ? app.website_url : `https://${app.website_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: tokens.text.primary }}>{app.website_url}</a> : <span className="text-xs" style={{ color: tokens.text.primary }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Instagram: </span>{app.instagram_handle ? <a href={`https://instagram.com/${app.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}>@{app.instagram_handle}</a> : <span className="text-xs" style={{ color: 'var(--text-primary)' }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>YouTube: </span>{app.youtube_channel ? <a href={`https://youtube.com/${app.youtube_channel.startsWith('@') ? app.youtube_channel : '@' + app.youtube_channel}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}>{app.youtube_channel}</a> : <span className="text-xs" style={{ color: 'var(--text-primary)' }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>TikTok: </span>{app.tiktok_username ? <a href={`https://tiktok.com/@${app.tiktok_username}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}>@{app.tiktok_username}</a> : <span className="text-xs" style={{ color: 'var(--text-primary)' }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>X: </span>{app.x_handle ? <a href={`https://x.com/${app.x_handle}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}>@{app.x_handle}</a> : <span className="text-xs" style={{ color: 'var(--text-primary)' }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Facebook: </span>{app.facebook_url ? <a href={app.facebook_url.startsWith('http') ? app.facebook_url : `https://facebook.com/${app.facebook_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}>{app.facebook_url}</a> : <span className="text-xs" style={{ color: 'var(--text-primary)' }}>-</span>}</div>
+                                                  <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Website: </span>{app.website_url ? <a href={app.website_url.startsWith('http') ? app.website_url : `https://${app.website_url}`} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline" style={{ color: 'var(--text-primary)' }}>{app.website_url}</a> : <span className="text-xs" style={{ color: 'var(--text-primary)' }}>-</span>}</div>
                                                 </div>
                                               </div>
                                             </div>
@@ -2225,32 +2225,32 @@ export function AdminDashboard() {
 
                                       {app.application_type === 'freelancer_onboarding' && (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1 mt-2">
-                                          {app.professional_title && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Title: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.professional_title}</span></div>}
-                                          {app.category && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Category: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.category}</span></div>}
-                                          {app.hourly_rate != null && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Rate: </span><span className="text-xs" style={{ color: tokens.text.primary }}>${app.hourly_rate}/hr</span></div>}
-                                          {(app.city || app.country) && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Location: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{[app.city, app.country].filter(Boolean).join(', ')}</span></div>}
-                                          {app.skills && app.skills.length > 0 && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Skills: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.skills.slice(0, 5).join(', ')}{app.skills.length > 5 ? ` +${app.skills.length - 5}` : ''}</span></div>}
+                                          {app.professional_title && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Title: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.professional_title}</span></div>}
+                                          {app.category && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Category: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.category}</span></div>}
+                                          {app.hourly_rate != null && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Rate: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>${app.hourly_rate}/hr</span></div>}
+                                          {(app.city || app.country) && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Location: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{[app.city, app.country].filter(Boolean).join(', ')}</span></div>}
+                                          {app.skills && app.skills.length > 0 && <div className="col-span-2"><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Skills: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.skills.slice(0, 5).join(', ')}{app.skills.length > 5 ? ` +${app.skills.length - 5}` : ''}</span></div>}
                                         </div>
                                       )}
 
                                       {app.application_type === 'creator_verification' && (
                                         <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2">
-                                          {app.platform && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Platform: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.platform}</span></div>}
-                                          {app.channel_type && <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.channel_type}</span></div>}
+                                          {app.platform && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Platform: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.platform}</span></div>}
+                                          {app.channel_type && <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Type: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.channel_type}</span></div>}
                                           {app.social_url && (
                                             <div className="col-span-2">
-                                              <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>URL: </span>
-                                              <a href={app.social_url} target="_blank" rel="noopener noreferrer" className="text-xs inline-flex items-center gap-1 hover:underline" style={{ color: tokens.text.primary }}>
+                                              <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>URL: </span>
+                                              <a href={app.social_url} target="_blank" rel="noopener noreferrer" className="text-xs inline-flex items-center gap-1 hover:underline" style={{ color: 'var(--text-primary)' }}>
                                                 {app.social_url.replace(/^https?:\/\//i, '').slice(0, 50)}
                                                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                                               </a>
                                             </div>
                                           )}
-                                          {app.channel_description && <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Description: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{app.channel_description}</span></div>}
+                                          {app.channel_description && <div className="col-span-2"><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Description: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{app.channel_description}</span></div>}
                                         </div>
                                       )}
 
-                                      <p className="text-xs mt-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>
+                                      <p className="text-xs mt-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
                                         Submitted {formatDate(app.created_at)}
                                       </p>
                                     </div>
@@ -2261,7 +2261,7 @@ export function AdminDashboard() {
                                           onClick={() => handleApplicationAction(app.id, 'approved')}
                                           disabled={actioningId === app.id}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                         >
                                           {actioningId === app.id && declineModalId !== app.id ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                                           Verify
@@ -2270,7 +2270,7 @@ export function AdminDashboard() {
                                           onClick={() => { setDeclineModalId(declineModalId === app.id ? null : app.id); setDeclineReason(''); }}
                                           disabled={actioningId === app.id}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                                          style={{ backgroundColor: declineModalId === app.id ? 'var(--text-primary)' : tokens.bg.elevated, color: declineModalId === app.id ? 'var(--bg-primary)' : tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: declineModalId === app.id ? 'var(--text-primary)' : 'var(--bg-elevated)', color: declineModalId === app.id ? 'var(--bg-primary)' : 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                         >
                                           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                           Decline
@@ -2279,16 +2279,16 @@ export function AdminDashboard() {
                                     )}
                                     {app.status === 'denied' && app.decline_reason && (
                                       <div className="flex-shrink-0 max-w-[200px]">
-                                        <p className="text-xs font-medium mb-0.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Decline reason:</p>
-                                        <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary }}>{app.decline_reason}</p>
+                                        <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Decline reason:</p>
+                                        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>{app.decline_reason}</p>
                                       </div>
                                     )}
                                   </div>
 
                                   {/* Inline decline panel */}
                                   {declineModalId === app.id && (
-                                    <div className="mt-3 rounded-xl p-4 animate-modal-in" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                                      <p className="text-xs mb-3" style={{ color: tokens.text.primary, opacity: 0.65 }}>Provide a reason for declining — this will be shown to the applicant.</p>
+                                    <div className="mt-3 rounded-xl p-4 animate-modal-in" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}>
+                                      <p className="text-xs mb-3" style={{ color: 'var(--text-primary)', opacity: 0.65 }}>Provide a reason for declining — this will be shown to the applicant.</p>
                                       <textarea
                                         autoFocus
                                         value={declineReason}
@@ -2296,15 +2296,15 @@ export function AdminDashboard() {
                                         placeholder="e.g. Incomplete information, duplicate account, policy violation..."
                                         rows={3}
                                         className="w-full px-3 py-2.5 rounded-lg text-xs focus:outline-none transition-all resize-none mb-3"
-                                        style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.default}`, color: tokens.text.primary }}
+                                        style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-default)', color: 'var(--text-primary)' }}
                                         onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                                        onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                                        onBlur={e => e.currentTarget.style.borderColor = 'var(--border-default)'}
                                       />
                                       <div className="flex gap-2">
                                         <button
                                           onClick={() => { setDeclineModalId(null); setDeclineReason(''); }}
                                           className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
-                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                         >
                                           Cancel
                                         </button>
@@ -2334,15 +2334,15 @@ export function AdminDashboard() {
                 <div className="mt-12">
                   <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
                     <div>
-                      <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-1" style={{ color: tokens.text.primary }}>Release Submissions</h2>
-                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Music distribution requests from artist accounts</p>
+                      <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>Release Submissions</h2>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Music distribution requests from artist accounts</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={fetchReleaseSubmissions}
                         disabled={releaseSubmissionsLoading}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                       >
                         <svg className={`w-3.5 h-3.5 ${releaseSubmissionsLoading ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
                         Refresh
@@ -2353,9 +2353,9 @@ export function AdminDashboard() {
                           onClick={() => setRelSubStatusFilter(s)}
                           className="px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
                           style={{
-                            backgroundColor: relSubStatusFilter === s ? tokens.bg.elevated : 'transparent',
-                            color: tokens.text.primary,
-                            border: relSubStatusFilter === s ? '1px solid var(--text-primary)' : `1px solid ${tokens.border.subtle}`,
+                            backgroundColor: relSubStatusFilter === s ? 'var(--bg-elevated)' : 'transparent',
+                            color: 'var(--text-primary)',
+                            border: relSubStatusFilter === s ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
                           }}
                         >
                           {s === 'submitted' ? 'Pending' : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -2367,7 +2367,7 @@ export function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-px mb-6" style={{ backgroundColor: tokens.border.subtle }} />
+                  <div className="h-px mb-6" style={{ backgroundColor: 'var(--border-subtle)' }} />
 
                   {releaseSubmissionsLoading ? (
                     <div className="flex items-center justify-center min-h-[200px]">
@@ -2378,11 +2378,11 @@ export function AdminDashboard() {
                     if (filtered.length === 0) return (
                       <div className="flex items-center justify-center min-h-[180px]">
                         <div className="text-center px-4">
-                          <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                            <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                          <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                            <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                           </div>
-                          <h3 className="text-base font-bold mb-1" style={{ color: tokens.text.primary }}>No {relSubStatusFilter === 'submitted' ? 'pending' : relSubStatusFilter} releases</h3>
-                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>Release submissions will appear here once artists submit.</p>
+                          <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>No {relSubStatusFilter === 'submitted' ? 'pending' : relSubStatusFilter} releases</h3>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Release submissions will appear here once artists submit.</p>
                         </div>
                       </div>
                     );
@@ -2397,41 +2397,41 @@ export function AdminDashboard() {
                           const isActioning = actioningRelSubId === rel.id;
                           const isDeclining = declineRelSubId === rel.id;
                           return (
-                            <div key={rel.id} className="rounded-xl border overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, borderColor: tokens.border.default }}>
+                            <div key={rel.id} className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-default)' }}>
                               <div className="p-5">
                                 <div className="flex items-start justify-between gap-4 flex-wrap">
                                   <div className="flex items-start gap-4 flex-1 min-w-0">
                                     {/* Artwork */}
-                                    <div className="w-14 h-14 rounded-xl flex-shrink-0 overflow-hidden" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                    <div className="w-14 h-14 rounded-xl flex-shrink-0 overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}>
                                       {rel.artwork_url ? (
                                         <img src={rel.artwork_url} alt={rel.title} className="w-full h-full object-cover" />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center">
-                                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                                         </div>
                                       )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                        <span className="text-sm font-bold truncate" style={{ color: tokens.text.primary }}>{rel.title || 'Untitled Release'}</span>
-                                        <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>
+                                        <span className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>{rel.title || 'Untitled Release'}</span>
+                                        <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>
                                           {rel.status === 'submitted' ? 'Pending' : rel.status.charAt(0).toUpperCase() + rel.status.slice(1)}
                                         </span>
                                       </div>
                                       {u && (
                                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                                          <span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{displayName}</span>
-                                          {username && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>@{username}</span>}
-                                          {email && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>{email}</span>}
+                                          <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{displayName}</span>
+                                          {username && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>@{username}</span>}
+                                          {email && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{email}</span>}
                                         </div>
                                       )}
                                       <div className="flex items-center gap-3 flex-wrap">
-                                        {(() => { const tc = rel.tracks?.length ?? 0; return <span className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>{tc >= 7 ? 'Album' : tc >= 4 ? 'EP' : 'Single'}</span>; })()}
-                                        {rel.genre && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>{rel.genre}{rel.secondary_genre ? ` · ${rel.secondary_genre}` : ''}</span>}
-                                        {rel.release_artists && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>by {rel.release_artists}</span>}
-                                        {rel.tracks?.length > 0 && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>{rel.tracks.length} track{rel.tracks.length !== 1 ? 's' : ''}</span>}
+                                        {(() => { const tc = rel.tracks?.length ?? 0; return <span className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{tc >= 7 ? 'Album' : tc >= 4 ? 'EP' : 'Single'}</span>; })()}
+                                        {rel.genre && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{rel.genre}{rel.secondary_genre ? ` · ${rel.secondary_genre}` : ''}</span>}
+                                        {rel.release_artists && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>by {rel.release_artists}</span>}
+                                        {rel.tracks?.length > 0 && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{rel.tracks.length} track{rel.tracks.length !== 1 ? 's' : ''}</span>}
                                       </div>
-                                      <p className="text-xs mt-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>Submitted {formatDate(rel.updated_at)}</p>
+                                      <p className="text-xs mt-1.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Submitted {formatDate(rel.updated_at)}</p>
                                     </div>
                                   </div>
 
@@ -2440,7 +2440,7 @@ export function AdminDashboard() {
                                     <button
                                       onClick={() => setExpandedRelSubId(isExpanded ? null : rel.id)}
                                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:brightness-110"
-                                      style={{ backgroundColor: 'transparent', color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                      style={{ backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                                     >
                                       <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                                       {isExpanded ? 'Hide' : 'Details'}
@@ -2451,7 +2451,7 @@ export function AdminDashboard() {
                                           onClick={() => handleReleaseSubmissionAction(rel.id, 'approved')}
                                           disabled={isActioning}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                         >
                                           {isActioning && !isDeclining ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round"/></svg> : <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
                                           Accept
@@ -2460,7 +2460,7 @@ export function AdminDashboard() {
                                           onClick={() => { setDeclineRelSubId(isDeclining ? null : rel.id); setDeclineRelSubReason(''); }}
                                           disabled={isActioning}
                                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
-                                          style={{ backgroundColor: isDeclining ? 'var(--text-primary)' : tokens.bg.elevated, color: isDeclining ? 'var(--bg-primary)' : tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                          style={{ backgroundColor: isDeclining ? 'var(--text-primary)' : 'var(--bg-elevated)', color: isDeclining ? 'var(--bg-primary)' : 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                         >
                                           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                           Decline
@@ -2472,23 +2472,23 @@ export function AdminDashboard() {
 
                                 {/* Decline form */}
                                 {isDeclining && (
-                                  <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
-                                    <p className="text-xs font-semibold mb-2" style={{ color: tokens.text.primary }}>Decline reason (optional)</p>
+                                  <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}>
+                                    <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Decline reason (optional)</p>
                                     <textarea
                                       value={declineRelSubReason}
                                       onChange={e => setDeclineRelSubReason(e.target.value)}
                                       placeholder="Reason for declining this release..."
                                       rows={2}
                                       className="w-full px-3 py-2 rounded-lg text-xs resize-none focus:outline-none mb-3"
-                                      style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                      style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                       onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                                      onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                                      onBlur={e => e.currentTarget.style.borderColor = 'var(--border-default)'}
                                     />
                                     <div className="flex gap-2">
                                       <button
                                         onClick={() => { setDeclineRelSubId(null); setDeclineRelSubReason(''); }}
                                         className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
-                                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                                       >
                                         Cancel
                                       </button>
@@ -2510,18 +2510,18 @@ export function AdminDashboard() {
                                   const trackCount = rel.tracks?.length ?? 0;
                                   const releaseType = trackCount >= 7 ? 'Album' : trackCount >= 4 ? 'EP' : 'Single';
                                   return (
-                                  <div className="mt-4 rounded-xl p-4 space-y-5" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                  <div className="mt-4 rounded-xl p-4 space-y-5" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)' }}>
 
                                     {/* Cover Art + Release Info side by side */}
                                     <div className="flex gap-4">
                                       {/* Cover Art */}
                                       <div className="flex-shrink-0">
-                                        <div className="w-24 h-24 rounded-xl overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                                        <div className="w-24 h-24 rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                                           {rel.artwork_url ? (
                                             <img src={rel.artwork_url} alt={rel.title} className="w-full h-full object-cover" />
                                           ) : (
                                             <div className="w-full h-full flex items-center justify-center">
-                                              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.3 }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                                             </div>
                                           )}
                                         </div>
@@ -2532,7 +2532,7 @@ export function AdminDashboard() {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="mt-1.5 flex items-center justify-center gap-1 w-full px-2 py-1 rounded-lg text-[10px] font-medium transition-all hover:brightness-110"
-                                            style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                                            style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                                           >
                                             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                             Download
@@ -2542,18 +2542,18 @@ export function AdminDashboard() {
 
                                       {/* Release Info */}
                                       <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Release Info</p>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Release Info</p>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{releaseType}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Title: </span><span className="text-xs font-semibold" style={{ color: tokens.text.primary }}>{rel.title || '-'}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Artists: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.release_artists || '-'}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Label: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.record_label || 'Independent'}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Primary Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.genre || '-'}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Secondary Genre: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.secondary_genre || '-'}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Language: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.language || '-'}</span></div>
-                                          <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Release Date: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.release_date || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Type: </span><span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{releaseType}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Title: </span><span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{rel.title || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Artists: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.release_artists || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Label: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.record_label || 'Independent'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Primary Genre: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.genre || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Secondary Genre: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.secondary_genre || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Language: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.language || '-'}</span></div>
+                                          <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Release Date: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.release_date || '-'}</span></div>
                                           {rel.released_before && (
-                                            <div className="col-span-2"><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>Original Release Date: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.original_release_date || '-'}</span></div>
+                                            <div className="col-span-2"><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Original Release Date: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.original_release_date || '-'}</span></div>
                                           )}
                                         </div>
                                       </div>
@@ -2561,19 +2561,19 @@ export function AdminDashboard() {
 
                                     {/* Copyright & Production */}
                                     <div>
-                                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Copyright & Production</p>
+                                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Copyright & Production</p>
                                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5">
-                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>© Holder: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.copyright_holder || '-'}</span></div>
-                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>© Year: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.copyright_year || '-'}</span></div>
-                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>℗ Holder: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.production_holder || '-'}</span></div>
-                                        <div><span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>℗ Year: </span><span className="text-xs" style={{ color: tokens.text.primary }}>{rel.production_year || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>© Holder: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.copyright_holder || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>© Year: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.copyright_year || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>℗ Holder: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.production_holder || '-'}</span></div>
+                                        <div><span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>℗ Year: </span><span className="text-xs" style={{ color: 'var(--text-primary)' }}>{rel.production_year || '-'}</span></div>
                                       </div>
                                     </div>
 
                                     {/* Tracks */}
                                     {trackCount > 0 && (
                                       <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Tracks ({trackCount})</p>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Tracks ({trackCount})</p>
                                         <div className="space-y-1.5">
                                           {rel.tracks.map((t: any, i: number) => {
                                             const trackExpanded = (expandedTrackIndices[rel.id] || []).includes(i);
@@ -2595,20 +2595,20 @@ export function AdminDashboard() {
                                               return '';
                                             })();
                                             return (
-                                              <div key={i} className="rounded-lg overflow-hidden" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                                              <div key={i} className="rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                                                 {/* Track header row */}
                                                 <div className="flex items-center gap-3 px-3 py-2">
-                                                  <span className="text-xs w-5 text-right flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.4 }}>{i + 1}</span>
+                                                  <span className="text-xs w-5 text-right flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{i + 1}</span>
                                                   <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                      <span className="text-xs font-medium" style={{ color: tokens.text.primary }}>{t.title || 'Untitled'}</span>
-                                                      {t.featuring && <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.5 }}>ft. {t.featuring}</span>}
-                                                      {t.explicit && <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>E</span>}
+                                                      <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>{t.title || 'Untitled'}</span>
+                                                      {t.featuring && <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>ft. {t.featuring}</span>}
+                                                      {t.explicit && <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>E</span>}
                                                     </div>
                                                     {t.fileName && (
                                                       <div className="flex items-center gap-1 mt-0.5">
-                                                        <svg className="w-2.5 h-2.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.4 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                                                        <span className="text-[10px] truncate" style={{ color: tokens.text.primary, opacity: 0.45 }}>{t.fileName}</span>
+                                                        <svg className="w-2.5 h-2.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                                                        <span className="text-[10px] truncate" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{t.fileName}</span>
                                                       </div>
                                                     )}
                                                   </div>
@@ -2616,7 +2616,7 @@ export function AdminDashboard() {
                                                     {resolvedAudioUrl && (
                                                       <button
                                                         className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all hover:brightness-110"
-                                                        style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                                        style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
                                                         onClick={async (e) => {
                                                           e.stopPropagation();
                                                           try {
@@ -2642,7 +2642,7 @@ export function AdminDashboard() {
                                                       <button
                                                         onClick={toggleTrack}
                                                         className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium transition-all hover:brightness-110"
-                                                        style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                                        style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
                                                       >
                                                         <svg className={`w-3 h-3 transition-transform duration-200 ${trackExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                                                         {trackExpanded ? 'Less' : 'Details'}
@@ -2653,57 +2653,57 @@ export function AdminDashboard() {
 
                                                 {/* Expanded track details */}
                                                 {trackExpanded && (
-                                                  <div className="px-3 pb-3 pt-0 space-y-3 border-t" style={{ borderColor: tokens.border.subtle }}>
+                                                  <div className="px-3 pb-3 pt-0 space-y-3 border-t" style={{ borderColor: 'var(--border-subtle)' }}>
 
                                                     {/* Track metadata grid */}
                                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 pt-2.5">
                                                       {t.isrcMode === 'manual' && t.isrcCode && (
-                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>ISRC: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{t.isrcCode}</span></div>
+                                                        <div><span className="text-[10px]" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>ISRC: </span><span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{t.isrcCode}</span></div>
                                                       )}
                                                       {t.isrcMode === 'auto' && (
-                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>ISRC: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>Auto-assigned</span></div>
+                                                        <div><span className="text-[10px]" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>ISRC: </span><span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>Auto-assigned</span></div>
                                                       )}
                                                       {t.previewStart != null && t.previewStart !== '' && (
-                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>Preview Start: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{typeof t.previewStart === 'number' ? `${Math.floor(t.previewStart / 60)}:${String(Math.floor(t.previewStart % 60)).padStart(2, '0')}` : t.previewStart}</span></div>
+                                                        <div><span className="text-[10px]" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Preview Start: </span><span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{typeof t.previewStart === 'number' ? `${Math.floor(t.previewStart / 60)}:${String(Math.floor(t.previewStart % 60)).padStart(2, '0')}` : t.previewStart}</span></div>
                                                       )}
                                                       {t.duration > 0 && (
-                                                        <div><span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.5 }}>Duration: </span><span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{Math.floor(t.duration / 60)}:{String(Math.floor(t.duration % 60)).padStart(2, '0')}</span></div>
+                                                        <div><span className="text-[10px]" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Duration: </span><span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{Math.floor(t.duration / 60)}:{String(Math.floor(t.duration % 60)).padStart(2, '0')}</span></div>
                                                       )}
                                                     </div>
 
                                                     {/* Credits */}
                                                     {hasCredits && (
                                                       <div>
-                                                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>Credits</p>
+                                                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Credits</p>
                                                         <div className="space-y-1">
                                                           {c.composer && (
                                                             <div className="flex items-center gap-2">
-                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>Composer</span>
-                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.composer}</span>
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Composer</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{c.composer}</span>
                                                             </div>
                                                           )}
                                                           {c.songwriter && (
                                                             <div className="flex items-center gap-2">
-                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.songwriterRole || 'Songwriter'}</span>
-                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.songwriter}</span>
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{c.songwriterRole || 'Songwriter'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{c.songwriter}</span>
                                                             </div>
                                                           )}
                                                           {c.engineer && (
                                                             <div className="flex items-center gap-2">
-                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.engineerRole || 'Engineer'}</span>
-                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.engineer}</span>
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{c.engineerRole || 'Engineer'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{c.engineer}</span>
                                                             </div>
                                                           )}
                                                           {c.performer && (
                                                             <div className="flex items-center gap-2">
-                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{c.performerRole || 'Performer'}</span>
-                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{c.performer}</span>
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{c.performerRole || 'Performer'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{c.performer}</span>
                                                             </div>
                                                           )}
                                                           {t.extraCredits?.map((ec: any, ei: number) => ec.name && (
                                                             <div key={ei} className="flex items-center gap-2">
-                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: tokens.text.primary, opacity: 0.5 }}>{ec.role || 'Credit'}</span>
-                                                              <span className="text-[10px] font-medium" style={{ color: tokens.text.primary }}>{ec.name}</span>
+                                                              <span className="text-[10px] w-20 flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{ec.role || 'Credit'}</span>
+                                                              <span className="text-[10px] font-medium" style={{ color: 'var(--text-primary)' }}>{ec.name}</span>
                                                             </div>
                                                           ))}
                                                         </div>
@@ -2713,14 +2713,14 @@ export function AdminDashboard() {
                                                     {/* Lyrics */}
                                                     {hasLyrics && (
                                                       <div>
-                                                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary, opacity: 0.4 }}>Lyrics</p>
+                                                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Lyrics</p>
                                                         {t.lyricsText && (
-                                                          <pre className="text-[10px] leading-relaxed whitespace-pre-wrap rounded-lg px-3 py-2 max-h-40 overflow-y-auto" style={{ color: tokens.text.primary, opacity: 0.8, backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.subtle}`, fontFamily: 'inherit' }}>{t.lyricsText}</pre>
+                                                          <pre className="text-[10px] leading-relaxed whitespace-pre-wrap rounded-lg px-3 py-2 max-h-40 overflow-y-auto" style={{ color: 'var(--text-primary)', opacity: 0.8, backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-subtle)', fontFamily: 'inherit' }}>{t.lyricsText}</pre>
                                                         )}
                                                         {t.lyricsDocName && (
                                                           <div className="flex items-center gap-1.5 mt-1">
-                                                            <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                                            <span className="text-[10px]" style={{ color: tokens.text.primary, opacity: 0.6 }}>{t.lyricsDocName}</span>
+                                                            <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                            <span className="text-[10px]" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{t.lyricsDocName}</span>
                                                           </div>
                                                         )}
                                                       </div>
@@ -2737,7 +2737,7 @@ export function AdminDashboard() {
                                     {/* Copyright Documentation */}
                                     {rel.copyright_doc_urls?.length > 0 && (
                                       <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Copyright Documentation</p>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Copyright Documentation</p>
                                         <div className="space-y-1">
                                           {rel.copyright_doc_urls.map((docUrl: string, i: number) => (
                                             <a
@@ -2746,11 +2746,11 @@ export function AdminDashboard() {
                                               target="_blank"
                                               rel="noopener noreferrer"
                                               className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:brightness-110"
-                                              style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}
+                                              style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
                                             >
-                                              <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                              <span className="text-xs truncate flex-1" style={{ color: tokens.text.primary }}>Copyright Document {i + 1}</span>
-                                              <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.4 }}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                              <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                              <span className="text-xs truncate flex-1" style={{ color: 'var(--text-primary)' }}>Copyright Document {i + 1}</span>
+                                              <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.4 }}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                                             </a>
                                           ))}
                                         </div>
@@ -2760,10 +2760,10 @@ export function AdminDashboard() {
                                     {/* Distribution Stores */}
                                     {rel.stores?.length > 0 && (
                                       <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: tokens.text.primary, opacity: 0.4 }}>Distribution Stores ({rel.stores.length})</p>
+                                        <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Distribution Stores ({rel.stores.length})</p>
                                         <div className="flex flex-wrap gap-1.5">
                                           {rel.stores.map((s: string) => (
-                                            <span key={s} className="text-xs px-2 py-0.5 rounded-md" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}>{s}</span>
+                                            <span key={s} className="text-xs px-2 py-0.5 rounded-md" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>{s}</span>
                                           ))}
                                         </div>
                                       </div>
@@ -2799,17 +2799,17 @@ export function AdminDashboard() {
               <div className="animate-fade-in">
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: tokens.text.primary }}>All Users</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>All Users</h2>
                     {users.length > 0 && (
-                      <span className="text-sm font-medium px-3 py-1 rounded-lg" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}>
+                      <span className="text-sm font-medium px-3 py-1 rounded-lg" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)' }}>
                         {filteredUsers.length}{filteredUsers.length !== users.length ? ` / ${users.length}` : ''} {users.length === 1 ? 'user' : 'users'}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm sm:text-base mb-4" style={{ color: tokens.text.primary, opacity: 0.6 }}>View and manage all registered users (Creators, Artists, Business)</p>
+                  <p className="text-sm sm:text-base mb-4" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>View and manage all registered users (Creators, Artists, Business)</p>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
                     </div>
                     <input
                       type="text"
@@ -2817,16 +2817,16 @@ export function AdminDashboard() {
                       onChange={(e) => setUserSearch(e.target.value)}
                       placeholder="Search by name, email, username, or type..."
                       className="w-full h-10 pl-9 pr-4 rounded-xl text-sm focus:outline-none transition-all"
-                      style={{ color: tokens.text.primary, background: tokens.bg.elevated, border: `1px solid ${tokens.border.default}` }}
+                      style={{ color: 'var(--text-primary)', background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}
                       onFocus={e => e.currentTarget.style.borderColor = 'var(--text-primary)'}
-                      onBlur={e => e.currentTarget.style.borderColor = tokens.border.default}
+                      onBlur={e => e.currentTarget.style.borderColor = 'var(--border-default)'}
                     />
                     {userSearch && (
                       <button
                         onClick={() => setUserSearch('')}
                         className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity"
                       >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.5 }}><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M18 6L6 18M6 6l12 12"/></svg>
                       </button>
                     )}
                   </div>
@@ -2839,13 +2839,13 @@ export function AdminDashboard() {
                 ) : usersError ? (
                   <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center px-4">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                        <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.primary }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>Error Loading Users</h3>
-                      <p className="text-sm sm:text-base mb-4" style={{ color: tokens.text.primary, opacity: 0.6 }}>{usersError}</p>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>Error Loading Users</h3>
+                      <p className="text-sm sm:text-base mb-4" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{usersError}</p>
                       <button
                         onClick={() => {
                           fetchingUsersRef.current = false;
@@ -2855,7 +2855,7 @@ export function AdminDashboard() {
                           setTimeout(() => setActiveSection('users'), 100);
                         }}
                         className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:brightness-110"
-                        style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}
+                        style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}
                       >
                         Retry
                       </button>
@@ -2864,37 +2864,37 @@ export function AdminDashboard() {
                 ) : users.length === 0 ? (
                   <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center px-4">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                        <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No users found</h3>
-                      <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.5 }}>User data will appear here</p>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>No users found</h3>
+                      <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>User data will appear here</p>
                     </div>
                   </div>
                 ) : filteredUsers.length === 0 ? (
                   <div className="flex items-center justify-center min-h-[400px]">
                     <div className="text-center px-4">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                        <svg className="w-8 h-8 sm:w-10 sm:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                        <svg className="w-8 h-8 sm:w-10 sm:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No results for "{userSearch}"</h3>
-                      <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.5 }}>Try searching by name, email, username, or account type</p>
+                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>No results for "{userSearch}"</h3>
+                      <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Try searching by name, email, username, or account type</p>
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-xl sm:rounded-2xl overflow-hidden" style={{ backgroundColor: tokens.bg.elevated }}>
+                  <div className="rounded-xl sm:rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b" style={{ borderColor: tokens.border.subtle }}>
-                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary, opacity: 0.5 }}>Email</th>
-                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary, opacity: 0.5 }}>Name</th>
-                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary, opacity: 0.5 }}>Username</th>
-                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type</th>
-                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary, opacity: 0.5 }}>Status</th>
-                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: tokens.text.primary, opacity: 0.5 }}>Created</th>
+                          <tr className="border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Email</th>
+                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Name</th>
+                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Username</th>
+                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Type</th>
+                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Status</th>
+                            <th className="text-left py-4 px-4 sm:px-6 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Created</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2903,45 +2903,45 @@ export function AdminDashboard() {
                               key={user.id} 
                               onClick={() => handleSelectUser(user)}
                               className="border-b transition-colors hover:brightness-105 cursor-pointer" 
-                              style={{ borderColor: index === filteredUsers.length - 1 ? 'transparent' : tokens.border.default }}
+                              style={{ borderColor: index === filteredUsers.length - 1 ? 'transparent' : 'var(--border-default)' }}
                             >
                               <td className="py-4 px-4 sm:px-6">
-                                <div className="text-sm font-medium" style={{ color: tokens.text.primary }}>{user.email}</div>
+                                <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{user.email}</div>
                               </td>
                               <td className="py-4 px-4 sm:px-6">
-                                <div className="text-sm" style={{ color: tokens.text.primary, opacity: user.full_name ? 1 : 0.4 }}>
+                                <div className="text-sm" style={{ color: 'var(--text-primary)', opacity: user.full_name ? 1 : 0.4 }}>
                                   {user.full_name || '—'}
                                 </div>
                               </td>
                               <td className="py-4 px-4 sm:px-6">
-                                <div className="text-sm" style={{ color: tokens.text.primary, opacity: user.username ? 1 : 0.4 }}>
+                                <div className="text-sm" style={{ color: 'var(--text-primary)', opacity: user.username ? 1 : 0.4 }}>
                                   {user.username || '—'}
                                 </div>
                               </td>
                               <td className="py-4 px-4 sm:px-6">
-                                <div className="text-sm" style={{ color: tokens.text.primary, opacity: user.user_type ? 1 : 0.4 }}>
+                                <div className="text-sm" style={{ color: 'var(--text-primary)', opacity: user.user_type ? 1 : 0.4 }}>
                                   {user.user_type ? user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1) : '—'}
                                 </div>
                               </td>
                               <td className="py-4 px-4 sm:px-6">
                                 <div className="flex items-center gap-2">
                                   {user.verified && (
-                                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>
                                       Verified
                                     </span>
                                   )}
                                   {user.profile_completed && (
-                                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium" style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>
+                                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>
                                       Complete
                                     </span>
                                   )}
                                   {!user.verified && !user.profile_completed && (
-                                    <span className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>Pending</span>
+                                    <span className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Pending</span>
                                   )}
                                 </div>
                               </td>
                               <td className="py-4 px-4 sm:px-6">
-                                <div className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>{formatDate(user.created_at)}</div>
+                                <div className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{formatDate(user.created_at)}</div>
                               </td>
                             </tr>
                           ))}
@@ -2956,13 +2956,13 @@ export function AdminDashboard() {
             {activeSection === 'data' && (
               <div className="flex items-center justify-center min-h-[calc(100vh-200px)] animate-fade-in">
                 <div className="text-center px-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: tokens.bg.elevated }}>
-                    <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: tokens.text.primary, opacity: 0.35 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 sm:mb-6 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: 'var(--text-primary)', opacity: 0.35 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: tokens.text.primary }}>No data yet</h3>
-                  <p className="text-sm sm:text-base" style={{ color: tokens.text.primary, opacity: 0.5 }}>Revenue and analytics data will appear here</p>
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3" style={{ color: 'var(--text-primary)' }}>No data yet</h3>
+                  <p className="text-sm sm:text-base" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Revenue and analytics data will appear here</p>
                 </div>
               </div>
             )}
@@ -2979,7 +2979,7 @@ export function AdminDashboard() {
                       <div className="space-y-6 lg:space-y-8">
                         {/* Preview Section */}
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Preview</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Preview</h3>
                           <div 
                             className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
                             style={{ 
@@ -3015,7 +3015,7 @@ export function AdminDashboard() {
 
                         {/* Background Selector */}
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Background Theme</h3>
 
                           {/* Mobile: compact stacked list */}
                           <div className="flex flex-col gap-2 sm:hidden">
@@ -3056,7 +3056,7 @@ export function AdminDashboard() {
                           </div>
 
                           {/* Desktop: 5-column grid */}
-                          <div className="hidden sm:grid sm:grid-cols-5 gap-4">
+                          <div data-theme-card-text className="hidden sm:grid sm:grid-cols-5 gap-4">
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -3213,12 +3213,12 @@ export function AdminDashboard() {
 
                         {/* Sidebar Section */}
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sidebar</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sidebar</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
                               <div className="min-w-0 flex-1">
-                                <h4 className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Collapse sidebar</h4>
-                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
+                                <h4 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Collapse sidebar</h4>
+                                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
                               </div>
                               <ToggleSwitch isActive={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} backgroundTheme={theme} />
                             </div>
@@ -3230,32 +3230,32 @@ export function AdminDashboard() {
                     renderNotifications={() => (
                       <div className="space-y-3 lg:space-y-8">
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Interface</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Interface</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Message Notifications</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show notification dropdown for unread messages</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Message Notifications</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show notification dropdown for unread messages</p>
                               </div>
                               <ToggleSwitch isActive={messageNotifications} onToggle={handleToggleMessageNotifications} backgroundTheme={theme} />
                             </div>
-                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Unread Message Badge</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show badge count on messages icon when you have unread messages</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Unread Message Badge</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show badge count on messages icon when you have unread messages</p>
                               </div>
                               <ToggleSwitch isActive={unreadMessageBadge} onToggle={handleToggleUnreadMessageBadge} backgroundTheme={theme} />
                             </div>
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sounds</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sounds</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div className="flex items-center justify-between mb-3">
                                 <div>
-                                  <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Message</h4>
-                                  <p className="text-sm" style={{ color: tokens.text.primary }}>Play a sound when you receive a new unread message or notification</p>
+                                  <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message</h4>
+                                  <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when you receive a new unread message or notification</p>
                                 </div>
                                 <ToggleSwitch isActive={newMessageSound} onToggle={handleToggleNewMessageSound} backgroundTheme={theme} />
                               </div>
@@ -3264,7 +3264,7 @@ export function AdminDashboard() {
                                   try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
                                 }}
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
-                                style={{ background: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <polygon points="5 3 19 12 5 21 5 3"/>
@@ -3275,19 +3275,19 @@ export function AdminDashboard() {
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Email</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Email</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Features</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Get notified about new platform features and updates via email</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Features</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Get notified about new platform features and updates via email</p>
                               </div>
                               <ToggleSwitch isActive={emailNewFeatures} onToggle={handleToggleNewFeatures} backgroundTheme={theme} />
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Platform Updates</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Receive important platform announcements and maintenance notices</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Platform Updates</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Receive important platform announcements and maintenance notices</p>
                               </div>
                               <ToggleSwitch isActive={emailPlatformUpdates} onToggle={handleTogglePlatformUpdates} backgroundTheme={theme} />
                             </div>
@@ -3325,7 +3325,7 @@ export function AdminDashboard() {
                       <div className="space-y-6 lg:space-y-8">
                         {/* Preview Section */}
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Preview</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Preview</h3>
                           <div 
                             className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border transition-all duration-300"
                             style={{ 
@@ -3361,7 +3361,7 @@ export function AdminDashboard() {
 
                         {/* Background Selector */}
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Background Theme</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Background Theme</h3>
 
                           {/* Mobile: compact stacked list */}
                           <div className="flex flex-col gap-2 sm:hidden">
@@ -3402,7 +3402,7 @@ export function AdminDashboard() {
                           </div>
 
                           {/* Desktop: 5-column grid */}
-                          <div className="hidden sm:grid sm:grid-cols-5 gap-4">
+                          <div data-theme-card-text className="hidden sm:grid sm:grid-cols-5 gap-4">
                             {/* Navy Option */}
                             <div 
                               className={`relative rounded-2xl p-7 border-2 cursor-pointer transition-all duration-200 ${
@@ -3559,12 +3559,12 @@ export function AdminDashboard() {
 
                         {/* Sidebar Section */}
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sidebar</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sidebar</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
                               <div className="min-w-0 flex-1">
-                                <h4 className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Collapse sidebar</h4>
-                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
+                                <h4 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Collapse sidebar</h4>
+                                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Minimize the sidebar to show only icons</p>
                               </div>
                               <ToggleSwitch isActive={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} backgroundTheme={theme} />
                             </div>
@@ -3576,32 +3576,32 @@ export function AdminDashboard() {
                     renderNotifications={() => (
                       <div className="space-y-3 lg:space-y-8">
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Interface</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Interface</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Message Notifications</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show notification dropdown for unread messages</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Message Notifications</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show notification dropdown for unread messages</p>
                               </div>
                               <ToggleSwitch isActive={messageNotifications} onToggle={handleToggleMessageNotifications} backgroundTheme={theme} />
                             </div>
-                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Unread Message Badge</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Show badge count on messages icon when you have unread messages</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Unread Message Badge</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Show badge count on messages icon when you have unread messages</p>
                               </div>
                               <ToggleSwitch isActive={unreadMessageBadge} onToggle={handleToggleUnreadMessageBadge} backgroundTheme={theme} />
                             </div>
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Sounds</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Sounds</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div className="flex items-center justify-between mb-3">
                                 <div>
-                                  <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Message</h4>
-                                  <p className="text-sm" style={{ color: tokens.text.primary }}>Play a sound when you receive a new unread message or notification</p>
+                                  <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Message</h4>
+                                  <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Play a sound when you receive a new unread message or notification</p>
                                 </div>
                                 <ToggleSwitch isActive={newMessageSound} onToggle={handleToggleNewMessageSound} backgroundTheme={theme} />
                               </div>
@@ -3610,7 +3610,7 @@ export function AdminDashboard() {
                                   try { const a = new Audio('/elevate notification ping v1.wav'); a.volume = 0.7; a.play().catch(() => {}); } catch {}
                                 }}
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110"
-                                style={{ background: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}`, color: tokens.text.primary }}
+                                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                   <polygon points="5 3 19 12 5 21 5 3"/>
@@ -3621,19 +3621,19 @@ export function AdminDashboard() {
                           </div>
                         </div>
                         <div>
-                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: tokens.text.primary }}>Email</h3>
+                          <h3 className="text-sm lg:text-lg font-semibold mb-3 lg:mb-6" style={{ color: 'var(--text-primary)' }}>Email</h3>
                           <div className="space-y-3 lg:space-y-6">
-                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: tokens.border.subtle }}>
+                            <div className="flex items-center justify-between pb-3 lg:pb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>New Features</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Get notified about new platform features and updates via email</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>New Features</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Get notified about new platform features and updates via email</p>
                               </div>
                               <ToggleSwitch isActive={emailNewFeatures} onToggle={handleToggleNewFeatures} backgroundTheme={theme} />
                             </div>
                             <div className="flex items-center justify-between">
                               <div>
-                                <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>Platform Updates</h4>
-                                <p className="text-sm" style={{ color: tokens.text.primary }}>Receive important platform announcements and maintenance notices</p>
+                                <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Platform Updates</h4>
+                                <p className="text-sm" style={{ color: 'var(--text-primary)' }}>Receive important platform announcements and maintenance notices</p>
                               </div>
                               <ToggleSwitch isActive={emailPlatformUpdates} onToggle={handleTogglePlatformUpdates} backgroundTheme={theme} />
                             </div>
@@ -3678,16 +3678,16 @@ export function AdminDashboard() {
           >
             <div 
               className="w-full max-w-4xl h-[80vh] rounded-2xl overflow-hidden flex animate-modal-in"
-              style={{ backgroundColor: tokens.bg.modal, boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
+              style={{ backgroundColor: 'var(--bg-modal)', boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-64 flex-shrink-0 p-6" style={{ backgroundColor: tokens.bg.elevated }}>
+              <div className="w-64 flex-shrink-0 p-6" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                 <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-xl font-bold" style={{ color: tokens.text.primary }}>User Details</h2>
+                  <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>User Details</h2>
                   <button
                     onClick={() => setSelectedUser(null)}
                     className="p-2 rounded-lg transition-colors hover:brightness-110"
-                    style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary }}
+                    style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)' }}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                   </button>
@@ -3700,8 +3700,8 @@ export function AdminDashboard() {
                       userDetailSection === 'personal' ? '' : 'hover:brightness-110'
                     }`}
                     style={{
-                      backgroundColor: userDetailSection === 'personal' ? tokens.bg.active : 'transparent',
-                      color: tokens.text.primary
+                      backgroundColor: userDetailSection === 'personal' ? 'var(--bg-active)' : 'transparent',
+                      color: 'var(--text-primary)'
                     }}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -3714,8 +3714,8 @@ export function AdminDashboard() {
                       userDetailSection === 'connected' ? '' : 'hover:brightness-110'
                     }`}
                     style={{
-                      backgroundColor: userDetailSection === 'connected' ? tokens.bg.active : 'transparent',
-                      color: tokens.text.primary
+                      backgroundColor: userDetailSection === 'connected' ? 'var(--bg-active)' : 'transparent',
+                      color: 'var(--text-primary)'
                     }}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
@@ -3728,8 +3728,8 @@ export function AdminDashboard() {
                       userDetailSection === 'payment' ? '' : 'hover:brightness-110'
                     }`}
                     style={{
-                      backgroundColor: userDetailSection === 'payment' ? tokens.bg.active : 'transparent',
-                      color: tokens.text.primary
+                      backgroundColor: userDetailSection === 'payment' ? 'var(--bg-active)' : 'transparent',
+                      color: 'var(--text-primary)'
                     }}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -3742,23 +3742,23 @@ export function AdminDashboard() {
                       userDetailSection === 'notifications' ? '' : 'hover:brightness-110'
                     }`}
                     style={{
-                      backgroundColor: userDetailSection === 'notifications' ? tokens.bg.active : 'transparent',
-                      color: tokens.text.primary
+                      backgroundColor: userDetailSection === 'notifications' ? 'var(--bg-active)' : 'transparent',
+                      color: 'var(--text-primary)'
                     }}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                     <span className="text-sm font-medium">Notifications</span>
                   </button>
 
-                  <div className="pt-2 mt-2" style={{ borderTop: `1px solid ${tokens.border.subtle}` }}>
+                  <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                     <button
                       onClick={() => { setUserDetailSection('account-actions'); setDeleteConfirmStep('idle'); setSuspendStep('idle'); setSuspendReason(''); }}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         userDetailSection === 'account-actions' ? '' : 'hover:brightness-110'
                       }`}
                       style={{
-                        backgroundColor: userDetailSection === 'account-actions' ? tokens.bg.active : 'transparent',
-                        color: tokens.text.primary
+                        backgroundColor: userDetailSection === 'account-actions' ? 'var(--bg-active)' : 'transparent',
+                        color: 'var(--text-primary)'
                       }}
                     >
                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
@@ -3772,56 +3772,56 @@ export function AdminDashboard() {
                 {userDetailSection === 'personal' && (
                   <div className="space-y-6 animate-modal-in">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Personal Information</h3>
-                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View and manage user's personal details</p>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Personal Information</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>View and manage user's personal details</p>
                     </div>
 
-                    <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
-                      <h4 className="text-lg font-semibold mb-4" style={{ color: tokens.text.primary }}>Basic Information</h4>
+                    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                      <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Basic Information</h4>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>Email</label>
-                          <p className="text-sm" style={{ color: tokens.text.primary }}>{selectedUser.email}</p>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Email</label>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{selectedUser.email}</p>
                         </div>
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>Full Name</label>
-                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: selectedUser.full_name ? 1 : 0.4 }}>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Full Name</label>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: selectedUser.full_name ? 1 : 0.4 }}>
                             {selectedUser.full_name || 'Not provided'}
                           </p>
                         </div>
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>Username</label>
-                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: selectedUser.username ? 1 : 0.4 }}>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Username</label>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: selectedUser.username ? 1 : 0.4 }}>
                             {selectedUser.username || 'Not provided'}
                           </p>
                         </div>
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>User Type</label>
-                          <p className="text-sm" style={{ color: tokens.text.primary }}>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>User Type</label>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
                             {selectedUser.user_type ? selectedUser.user_type.charAt(0).toUpperCase() + selectedUser.user_type.slice(1) : 'Not specified'}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
-                      <h4 className="text-lg font-semibold mb-4" style={{ color: tokens.text.primary }}>Status</h4>
+                    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                      <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Status</h4>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>Account Status</label>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Account Status</label>
                           <div className="flex items-center gap-2 flex-wrap">
                             {selectedUser.verified && (
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}>
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>
                                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Verified
                               </span>
                             )}
                             {selectedUser.profile_completed && (
-                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}>
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>
                                 <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Profile Complete
                               </span>
                             )}
                             {!selectedUser.verified && !selectedUser.profile_completed && (
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, opacity: 0.5, border: `1px solid ${tokens.border.subtle}` }}>
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', opacity: 0.5, border: '1px solid var(--border-subtle)' }}>
                                 Pending
                               </span>
                             )}
@@ -3830,20 +3830,20 @@ export function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
-                      <h4 className="text-lg font-semibold mb-4" style={{ color: tokens.text.primary }}>Account Information</h4>
+                    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                      <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Account Information</h4>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>User ID</label>
-                          <p className="text-sm font-mono break-all" style={{ color: tokens.text.primary, opacity: 0.4 }}>{selectedUser.id}</p>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>User ID</label>
+                          <p className="text-sm font-mono break-all" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>{selectedUser.id}</p>
                         </div>
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>Created At</label>
-                          <p className="text-sm" style={{ color: tokens.text.primary }}>{formatDate(selectedUser.created_at)}</p>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Created At</label>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{formatDate(selectedUser.created_at)}</p>
                         </div>
                         <div>
-                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: tokens.text.primary, opacity: 0.5 }}>Last Updated</label>
-                          <p className="text-sm" style={{ color: tokens.text.primary }}>{formatDate(selectedUser.updated_at)}</p>
+                          <label className="text-xs font-medium uppercase tracking-wider mb-1 block" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Last Updated</label>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{formatDate(selectedUser.updated_at)}</p>
                         </div>
                       </div>
                     </div>
@@ -3853,8 +3853,8 @@ export function AdminDashboard() {
                 {userDetailSection === 'connected' && (
                   <div className="space-y-6 animate-modal-in">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Connected Accounts</h3>
-                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>All social links and external accounts connected to this user's profile</p>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Connected Accounts</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>All social links and external accounts connected to this user's profile</p>
                     </div>
 
                     {userSocialLinksLoading ? (
@@ -3862,51 +3862,51 @@ export function AdminDashboard() {
                         <AnimatedBarsLoader text="Loading accounts..." />
                       </div>
                     ) : userSocialLinks.length === 0 ? (
-                      <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
+                      <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                         <div className="flex items-center justify-center min-h-[200px]">
                           <div className="text-center">
-                            <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.active }}>
-                              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                            <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-active)' }}>
+                              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                             </div>
-                            <h4 className="text-base font-semibold mb-1" style={{ color: tokens.text.primary }}>No connected accounts</h4>
-                            <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>This user hasn't connected any social accounts yet</p>
+                            <h4 className="text-base font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No connected accounts</h4>
+                            <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>This user hasn't connected any social accounts yet</p>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
                         {userSocialLinks.map(link => (
-                          <div key={link.id} className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated, border: `1px solid ${tokens.border.subtle}` }}>
+                          <div key={link.id} className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex items-start gap-4 min-w-0">
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: tokens.bg.active }}>
-                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--bg-active)' }}>
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                                 </div>
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                                    <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>{link.display_name || link.platform}</p>
-                                    <span className="text-xs px-2 py-0.5 rounded font-medium capitalize" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.subtle}` }}>{link.platform}</span>
+                                    <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{link.display_name || link.platform}</p>
+                                    <span className="text-xs px-2 py-0.5 rounded font-medium capitalize" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-subtle)' }}>{link.platform}</span>
                                     {link.verified ? (
-                                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}>
+                                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}>
                                         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Verified
                                       </span>
                                     ) : (
-                                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, opacity: 0.5, border: `1px solid ${tokens.border.subtle}` }}>
+                                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', opacity: 0.5, border: '1px solid var(--border-subtle)' }}>
                                         <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg> Unverified
                                       </span>
                                     )}
                                   </div>
-                                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline flex items-center gap-1 truncate" style={{ color: tokens.text.primary, opacity: 0.5 }}>
+                                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs hover:underline flex items-center gap-1 truncate" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>
                                     <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                                     <span className="truncate">{link.url}</span>
                                   </a>
-                                  {link.channel_type && <p className="text-xs mt-1" style={{ color: tokens.text.primary, opacity: 0.5 }}>Type: {link.channel_type}</p>}
-                                  {link.channel_description && <p className="text-xs mt-1 line-clamp-2" style={{ color: tokens.text.primary, opacity: 0.5 }}>{link.channel_description}</p>}
+                                  {link.channel_type && <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Type: {link.channel_type}</p>}
+                                  {link.channel_description && <p className="text-xs mt-1 line-clamp-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{link.channel_description}</p>}
                                 </div>
                               </div>
                               <div className="flex-shrink-0 text-right">
-                                <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.4 }}>Added</p>
-                                <p className="text-xs font-medium" style={{ color: tokens.text.primary, opacity: 0.6 }}>{new Date(link.created_at).toLocaleDateString()}</p>
+                                <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>Added</p>
+                                <p className="text-xs font-medium" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>{new Date(link.created_at).toLocaleDateString()}</p>
                               </div>
                             </div>
                           </div>
@@ -3919,18 +3919,18 @@ export function AdminDashboard() {
                 {userDetailSection === 'payment' && (
                   <div className="space-y-6 animate-modal-in">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Payment Method</h3>
-                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View user's payment and payout methods</p>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Payment Method</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>View user's payment and payout methods</p>
                     </div>
 
-                    <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
+                    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                       <div className="flex items-center justify-center min-h-[300px]">
                         <div className="text-center">
-                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.active }}>
-                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-active)' }}>
+                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                           </div>
-                          <h4 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>No payment methods</h4>
-                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>This user hasn't added any payment methods yet</p>
+                          <h4 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No payment methods</h4>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>This user hasn't added any payment methods yet</p>
                         </div>
                       </div>
                     </div>
@@ -3940,17 +3940,17 @@ export function AdminDashboard() {
                 {userDetailSection === 'account-actions' && (
                   <div className="space-y-6 animate-modal-in">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Account Actions</h3>
-                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>Perform administrative actions on this user's account.</p>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Account Actions</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Perform administrative actions on this user's account.</p>
                     </div>
 
                     {/* Suspend section */}
-                    <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: tokens.bg.elevated }}>
+                    <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                       <div className="flex items-start gap-3">
-                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Suspend Account</p>
-                          <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary, opacity: 0.55 }}>Temporarily restrict this user's access to the platform. You will be prompted to provide a reason.</p>
+                          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Suspend Account</p>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Temporarily restrict this user's access to the platform. You will be prompted to provide a reason.</p>
                         </div>
                       </div>
 
@@ -3958,7 +3958,7 @@ export function AdminDashboard() {
                         <button
                           onClick={() => setSuspendStep('reason')}
                           className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
-                          style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         >
                           Suspend Account
                         </button>
@@ -3967,16 +3967,16 @@ export function AdminDashboard() {
                       {suspendStep === 'reason' && (
                         <div className="space-y-3">
                           <div>
-                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: tokens.text.primary, opacity: 0.5 }}>Reason for suspension</label>
+                            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Reason for suspension</label>
                             <textarea
                               value={suspendReason}
                               onChange={e => setSuspendReason(e.target.value)}
                               placeholder="e.g. Violation of community guidelines — repeated spam..."
                               rows={3}
                               className="w-full px-3 py-2.5 rounded-lg text-sm resize-none focus:outline-none"
-                              style={{ backgroundColor: tokens.bg.primary, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                               onFocus={e => e.target.style.borderColor = 'var(--text-primary)'}
-                              onBlur={e => e.target.style.borderColor = tokens.border.default}
+                              onBlur={e => e.target.style.borderColor = 'var(--border-default)'}
                             />
                           </div>
                           <div className="flex items-center gap-2">
@@ -3984,14 +3984,14 @@ export function AdminDashboard() {
                               onClick={() => setSuspendStep('confirm')}
                               disabled={!suspendReason.trim()}
                               className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-                              style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             >
                               Review & Confirm
                             </button>
                             <button
                               onClick={() => { setSuspendStep('idle'); setSuspendReason(''); }}
                               className="px-4 py-2.5 rounded-lg text-sm transition-all hover:brightness-110"
-                              style={{ backgroundColor: 'transparent', color: tokens.text.primary, opacity: 0.5 }}
+                              style={{ backgroundColor: 'transparent', color: 'var(--text-primary)', opacity: 0.5 }}
                             >
                               Cancel
                             </button>
@@ -4000,9 +4000,9 @@ export function AdminDashboard() {
                       )}
 
                       {suspendStep === 'confirm' && (
-                        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}>
-                          <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Confirm suspension for <span style={{ opacity: 0.7 }}>{selectedUser?.email}</span></p>
-                          <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary, opacity: 0.6 }}>Reason: {suspendReason}</p>
+                        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-default)' }}>
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Confirm suspension for <span style={{ opacity: 0.7 }}>{selectedUser?.email}</span></p>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Reason: {suspendReason}</p>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={async () => {
@@ -4012,14 +4012,14 @@ export function AdminDashboard() {
                                 alert(`Account suspended: ${selectedUser?.email}`);
                               }}
                               className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
-                              style={{ backgroundColor: tokens.bg.active, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              style={{ backgroundColor: 'var(--bg-active)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             >
                               Confirm Suspend
                             </button>
                             <button
                               onClick={() => setSuspendStep('reason')}
                               className="px-4 py-2.5 rounded-lg text-sm transition-all hover:brightness-110"
-                              style={{ backgroundColor: 'transparent', color: tokens.text.primary, opacity: 0.5 }}
+                              style={{ backgroundColor: 'transparent', color: 'var(--text-primary)', opacity: 0.5 }}
                             >
                               Back
                             </button>
@@ -4029,12 +4029,12 @@ export function AdminDashboard() {
                     </div>
 
                     {/* Delete section */}
-                    <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: tokens.bg.elevated }}>
+                    <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                       <div className="flex items-start gap-3">
-                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                        <svg className="w-5 h-5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold mb-1" style={{ color: tokens.text.primary }}>Delete Account</p>
-                          <p className="text-xs leading-relaxed" style={{ color: tokens.text.primary, opacity: 0.55 }}>Permanently delete this user and all associated data. This action cannot be undone.</p>
+                          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Delete Account</p>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Permanently delete this user and all associated data. This action cannot be undone.</p>
                         </div>
                       </div>
 
@@ -4042,16 +4042,16 @@ export function AdminDashboard() {
                         <button
                           onClick={() => setDeleteConfirmStep('confirm')}
                           className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
-                          style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                          style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                         >
                           Delete Account
                         </button>
                       )}
 
                       {deleteConfirmStep === 'confirm' && (
-                        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: tokens.bg.primary, border: `1px solid ${tokens.border.default}` }}>
-                          <p className="text-sm font-semibold" style={{ color: tokens.text.primary }}>Are you sure you want to permanently delete this account?</p>
-                          <p className="text-xs" style={{ color: tokens.text.primary, opacity: 0.55 }}>User: <span style={{ opacity: 1 }}>{selectedUser?.email}</span> — This cannot be undone.</p>
+                        <div className="rounded-lg p-4 space-y-3" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-default)' }}>
+                          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Are you sure you want to permanently delete this account?</p>
+                          <p className="text-xs" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>User: <span style={{ opacity: 1 }}>{selectedUser?.email}</span> — This cannot be undone.</p>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={async () => {
@@ -4060,14 +4060,14 @@ export function AdminDashboard() {
                                 setDeleteConfirmStep('idle');
                               }}
                               className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:brightness-110"
-                              style={{ backgroundColor: tokens.bg.elevated, color: tokens.text.primary, border: `1px solid ${tokens.border.default}` }}
+                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', border: '1px solid var(--border-default)' }}
                             >
                               Yes, Delete Permanently
                             </button>
                             <button
                               onClick={() => setDeleteConfirmStep('idle')}
                               className="px-4 py-2.5 rounded-lg text-sm transition-all hover:brightness-110"
-                              style={{ backgroundColor: 'transparent', color: tokens.text.primary, opacity: 0.5 }}
+                              style={{ backgroundColor: 'transparent', color: 'var(--text-primary)', opacity: 0.5 }}
                             >
                               Cancel
                             </button>
@@ -4081,18 +4081,18 @@ export function AdminDashboard() {
                 {userDetailSection === 'notifications' && (
                   <div className="space-y-6 animate-modal-in">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2" style={{ color: tokens.text.primary }}>Notifications</h3>
-                      <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.6 }}>View user's notification preferences and history</p>
+                      <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Notifications</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>View user's notification preferences and history</p>
                     </div>
 
-                    <div className="rounded-xl p-5" style={{ backgroundColor: tokens.bg.elevated }}>
+                    <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                       <div className="flex items-center justify-center min-h-[300px]">
                         <div className="text-center">
-                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tokens.bg.active }}>
-                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: tokens.text.primary, opacity: 0.35 }}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                          <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--bg-active)' }}>
+                            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.35 }}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                           </div>
-                          <h4 className="text-lg font-semibold mb-2" style={{ color: tokens.text.primary }}>No notifications</h4>
-                          <p className="text-sm" style={{ color: tokens.text.primary, opacity: 0.5 }}>No notification history available for this user</p>
+                          <h4 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No notifications</h4>
+                          <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>No notification history available for this user</p>
                         </div>
                       </div>
                     </div>
