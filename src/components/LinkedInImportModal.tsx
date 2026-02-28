@@ -235,7 +235,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
         {/* Title */}
         <h2
           className="text-3xl font-normal mb-6"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Upload your LinkedIn profile
         </h2>
@@ -243,7 +243,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
         {/* Step 1 */}
         <p
           className="text-base mb-6"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
+          style={{ color: '#cccccc' }}
         >
           Step 1: if you haven't already, save your LinkedIn profile as a PDF. Here's how:
         </p>
@@ -275,7 +275,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
             <div className="flex-1">
               <h3
                 className="text-xl font-semibold mb-3"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+                style={{ color: '#ffffff' }}
               >
                 Your Name
               </h3>
@@ -284,19 +284,19 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               <div className="flex gap-2 mb-4">
                 <button
                   className="px-4 py-1.5 rounded-full text-sm font-medium"
-                  style={{ backgroundColor: '#2563eb', color: '#ffffff', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
+                  style={{ backgroundColor: '#2563eb', color: '#ffffff' }}
                 >
                   Open to
                 </button>
                 <button
                   className="px-4 py-1.5 rounded-full text-sm font-medium"
-                  style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)', border: '1px solid #2563eb', color: '#2563eb', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
+                  style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)', border: '1px solid #2563eb', color: '#2563eb' }}
                 >
                   Add section
                 </button>
                 <button
                   className="px-4 py-1.5 rounded-full text-sm font-medium"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#cccccc', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#cccccc' }}
                 >
                   More
                 </button>
@@ -308,7 +308,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 12h8M12 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
-                  <span style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+                  <span>
                     Share profile in a message
                   </span>
                 </div>
@@ -316,7 +316,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
-                  <span style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', fontWeight: 600 }}>
+                  <span style={{ fontWeight: 600 }}>
                     Save to PDF
                   </span>
                 </div>
@@ -325,7 +325,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
                     <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" fill="none" />
                     <path d="M8 8h8M8 12h8M8 16h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
-                  <span style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+                  <span>
                     Build a resume
                   </span>
                 </div>
@@ -337,7 +337,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
         {/* Step 2 */}
         <p
           className="text-base mb-4"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
+          style={{ color: '#cccccc' }}
         >
           Step 2: come back here to upload it.
         </p>
@@ -350,8 +350,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '2px solid var(--border-subtle)',
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-              }}
+                }}
               onClick={handleChooseFile}
             >
               <Upload className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
@@ -372,7 +371,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--text-primary)', borderTopColor: 'transparent' }} />
               <span
                 className="text-sm"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#cccccc' }}
+                style={{ color: '#cccccc' }}
               >
                 Validating file...
               </span>
@@ -391,13 +390,13 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
                 <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
                 <span
                   className="text-sm truncate flex-1"
-                  style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+                  style={{ color: '#ffffff' }}
                 >
                   {selectedFile.name}
                 </span>
                 <span
                   className="text-xs flex-shrink-0"
-                  style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'var(--text-primary)' }}
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   {uploadProgress}%
                 </span>
@@ -423,7 +422,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               <Paperclip className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--text-primary)' }} />
               <span
                 className="text-sm truncate flex-1"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+                style={{ color: '#ffffff' }}
               >
                 {selectedFile.name}
               </span>
@@ -451,7 +450,7 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
               <AlertCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#ef4444' }} />
               <span
                 className="text-sm flex-1"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#fca5a5' }}
+                style={{ color: '#fca5a5' }}
               >
                 {errorMessage}
               </span>
@@ -484,7 +483,6 @@ export default function LinkedInImportModal({ onClose }: LinkedInImportModalProp
             style={{
               backgroundColor: uploadState === 'ready' ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
               color: uploadState === 'ready' ? '#000000' : '#666666',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               cursor: uploadState === 'ready' ? 'pointer' : 'not-allowed',
             }}
           >

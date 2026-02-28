@@ -31,7 +31,6 @@ export default function FreelancerSetRate() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -51,7 +50,7 @@ export default function FreelancerSetRate() {
         {/* Title */}
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Now, let's set your hourly rate.
         </h1>
@@ -59,7 +58,6 @@ export default function FreelancerSetRate() {
         <p
           className="text-base mb-12"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: 'var(--text-primary)',
           }}
         >
@@ -73,7 +71,6 @@ export default function FreelancerSetRate() {
               <h2
                 className="text-xl font-semibold mb-1"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -82,7 +79,6 @@ export default function FreelancerSetRate() {
               <p
                 className="text-sm"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -99,7 +95,6 @@ export default function FreelancerSetRate() {
                 step="0.01"
                 className="w-32 px-4 py-2 rounded-lg text-right text-base outline-none transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -108,7 +103,6 @@ export default function FreelancerSetRate() {
               <span
                 className="text-base"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -126,7 +120,6 @@ export default function FreelancerSetRate() {
                 <h2
                   className="text-xl font-semibold"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -136,7 +129,6 @@ export default function FreelancerSetRate() {
                   href="#"
                   className="text-sm underline"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                   onClick={(e) => e.preventDefault()}
@@ -147,7 +139,6 @@ export default function FreelancerSetRate() {
               <p
                 className="text-sm max-w-md"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -158,7 +149,6 @@ export default function FreelancerSetRate() {
               <div
                 className="w-32 px-4 py-2 rounded-lg text-right text-base"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: 'var(--text-primary)',
@@ -169,7 +159,6 @@ export default function FreelancerSetRate() {
               <span
                 className="text-base"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -186,7 +175,6 @@ export default function FreelancerSetRate() {
               <h2
                 className="text-xl font-semibold mb-1"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -195,7 +183,6 @@ export default function FreelancerSetRate() {
               <p
                 className="text-sm"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -206,7 +193,6 @@ export default function FreelancerSetRate() {
               <div
                 className="w-32 px-4 py-2 rounded-lg text-right text-base"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -217,7 +203,6 @@ export default function FreelancerSetRate() {
               <span
                 className="text-base"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -233,7 +218,6 @@ export default function FreelancerSetRate() {
             onClick={handleBack}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
@@ -248,8 +232,7 @@ export default function FreelancerSetRate() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Next, add your photo and location
           </button>

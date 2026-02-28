@@ -275,7 +275,6 @@ export default function FreelancerExperience() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -295,7 +294,7 @@ export default function FreelancerExperience() {
         {/* Title */}
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Here's what you've told us about your experience — any more to add?
         </h1>
@@ -303,7 +302,6 @@ export default function FreelancerExperience() {
         <p
           className="text-base mb-10"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#cccccc',
           }}
         >
@@ -375,7 +373,6 @@ export default function FreelancerExperience() {
                 <p
                   className="text-base"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#cccccc',
                   }}
                 >
@@ -394,7 +391,6 @@ export default function FreelancerExperience() {
               <p
                 className="text-base mb-4"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#fca5a5',
                 }}
               >
@@ -406,8 +402,7 @@ export default function FreelancerExperience() {
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   color: '#ffffff',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                }}
+                  }}
               >
                 Add manually
               </button>
@@ -423,7 +418,6 @@ export default function FreelancerExperience() {
               <p
                 className="text-base mb-4"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#cccccc',
                 }}
               >
@@ -465,7 +459,6 @@ export default function FreelancerExperience() {
                         <h3
                           className="font-semibold text-base leading-tight"
                           style={{
-                            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                             color: '#ffffff',
                           }}
                         >
@@ -505,7 +498,6 @@ export default function FreelancerExperience() {
                   <p
                     className="text-sm mb-2"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: 'var(--text-primary)',
                     }}
                   >
@@ -518,7 +510,6 @@ export default function FreelancerExperience() {
                     <p
                       className="text-sm leading-relaxed"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
@@ -540,7 +531,6 @@ export default function FreelancerExperience() {
                       <p
                         className="text-xs"
                         style={{
-                          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                           color: '#ef4444',
                         }}
                       >
@@ -563,8 +553,7 @@ export default function FreelancerExperience() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
@@ -577,8 +566,7 @@ export default function FreelancerExperience() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Next, add your education
           </button>
@@ -607,7 +595,6 @@ export default function FreelancerExperience() {
               <h2
                 className="text-xl font-semibold"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -628,7 +615,7 @@ export default function FreelancerExperience() {
             <div className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                   Title *
                 </label>
                 <input
@@ -641,14 +628,13 @@ export default function FreelancerExperience() {
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: !editingExp.title.trim() ? '1px solid rgba(239, 68, 68, 0.5)' : '1px solid rgba(255, 255, 255, 0.15)',
                     color: '#ffffff',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  }}
+                    }}
                 />
               </div>
 
               {/* Company */}
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                   Company *
                 </label>
                 <input
@@ -661,15 +647,14 @@ export default function FreelancerExperience() {
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: !editingExp.company.trim() ? '1px solid rgba(239, 68, 68, 0.5)' : '1px solid rgba(255, 255, 255, 0.15)',
                     color: '#ffffff',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  }}
+                    }}
                 />
               </div>
 
               {/* Location */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                     City
                   </label>
                   <input
@@ -682,12 +667,11 @@ export default function FreelancerExperience() {
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       color: '#ffffff',
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    }}
+                      }}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                     Country
                   </label>
                   <input
@@ -700,8 +684,7 @@ export default function FreelancerExperience() {
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       color: '#ffffff',
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                    }}
+                      }}
                   />
                 </div>
               </div>
@@ -709,7 +692,7 @@ export default function FreelancerExperience() {
               {/* Start date */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                     Start month
                   </label>
                   <CustomDropdown
@@ -722,7 +705,7 @@ export default function FreelancerExperience() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                     Start year
                   </label>
                   <CustomDropdown
@@ -755,7 +738,6 @@ export default function FreelancerExperience() {
                 <span
                   className="text-sm"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -767,7 +749,7 @@ export default function FreelancerExperience() {
               {!editingExp.isCurrent && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                    <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                       End month
                     </label>
                     <CustomDropdown
@@ -780,7 +762,7 @@ export default function FreelancerExperience() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                    <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                       End year
                     </label>
                     <CustomDropdown
@@ -797,7 +779,7 @@ export default function FreelancerExperience() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium mb-1.5" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}>
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#ffffff' }}>
                   Description
                 </label>
                 <textarea
@@ -810,8 +792,7 @@ export default function FreelancerExperience() {
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.15)',
                     color: '#ffffff',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                  }}
+                    }}
                 />
               </div>
             </div>
@@ -825,8 +806,7 @@ export default function FreelancerExperience() {
                   backgroundColor: 'transparent',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                }}
+                  }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
               >
@@ -839,7 +819,6 @@ export default function FreelancerExperience() {
                 style={{
                   backgroundColor: editingExp.title.trim() && editingExp.company.trim() ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
                   color: editingExp.title.trim() && editingExp.company.trim() ? '#000000' : '#666666',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   cursor: editingExp.title.trim() && editingExp.company.trim() ? 'pointer' : 'not-allowed',
                 }}
               >

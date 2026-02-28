@@ -29,7 +29,6 @@ export default function FreelancerBio() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -51,7 +50,7 @@ export default function FreelancerBio() {
           <div>
             <h1
               className="text-4xl md:text-5xl font-normal mb-3"
-              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+              style={{ color: '#ffffff' }}
             >
               Great. Now write a bio to tell the world about yourself.
             </h1>
@@ -59,7 +58,6 @@ export default function FreelancerBio() {
             <p
               className="text-base mb-8"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: 'var(--text-primary)',
               }}
             >
@@ -75,7 +73,6 @@ export default function FreelancerBio() {
                 rows={12}
                 className="w-full px-4 py-3 rounded-lg text-base outline-none resize-none transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -84,7 +81,6 @@ export default function FreelancerBio() {
               <div
                 className="absolute bottom-3 right-3 text-sm"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -122,7 +118,6 @@ export default function FreelancerBio() {
                       <span
                         className="text-3xl"
                         style={{
-                          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                           color: 'var(--text-primary)',
                         }}
                       >
@@ -141,7 +136,6 @@ export default function FreelancerBio() {
               <h2
                 className="text-2xl font-semibold text-center mb-3"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -155,7 +149,6 @@ export default function FreelancerBio() {
                   <span
                     className="text-sm font-medium"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: '#ffffff',
                     }}
                   >
@@ -165,7 +158,6 @@ export default function FreelancerBio() {
                 <div
                   className="text-sm font-medium"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#ffffff',
                   }}
                 >
@@ -175,7 +167,6 @@ export default function FreelancerBio() {
                   <span
                     className="text-sm font-medium"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: '#ffffff',
                     }}
                   >
@@ -188,7 +179,6 @@ export default function FreelancerBio() {
               <div
                 className="text-sm leading-relaxed"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: 'var(--text-primary)',
                 }}
               >
@@ -204,7 +194,6 @@ export default function FreelancerBio() {
             onClick={handleBack}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
@@ -219,8 +208,7 @@ export default function FreelancerBio() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Next, set your rate
           </button>

@@ -75,7 +75,6 @@ export default function FreelancerPortfolio() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -95,7 +94,7 @@ export default function FreelancerPortfolio() {
         {/* Title */}
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Let's add your portfolio
         </h1>
@@ -103,7 +102,6 @@ export default function FreelancerPortfolio() {
         <p
           className="text-lg mb-12"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: 'var(--text-primary)',
           }}
         >
@@ -115,7 +113,6 @@ export default function FreelancerPortfolio() {
           <h2
             className="text-2xl font-semibold mb-4"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: '#ffffff',
             }}
           >
@@ -145,7 +142,6 @@ export default function FreelancerPortfolio() {
                   <h3
                     className="text-xl font-semibold mb-2"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: '#ffffff',
                     }}
                   >
@@ -154,7 +150,6 @@ export default function FreelancerPortfolio() {
                   <p
                     className="text-base mb-3"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: 'var(--text-primary)',
                     }}
                   >
@@ -164,7 +159,6 @@ export default function FreelancerPortfolio() {
                     <span
                       className="text-sm px-3 py-1 rounded-full"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         backgroundColor: 'rgba(148, 163, 184, 0.2)',
                         color: 'var(--text-primary)',
                       }}
@@ -174,7 +168,6 @@ export default function FreelancerPortfolio() {
                     <span
                       className="text-sm px-3 py-1 rounded-full"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         backgroundColor: 'rgba(148, 163, 184, 0.2)',
                         color: 'var(--text-primary)',
                       }}
@@ -204,7 +197,6 @@ export default function FreelancerPortfolio() {
               <span
                 className="text-base font-medium"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -221,7 +213,6 @@ export default function FreelancerPortfolio() {
             onClick={handleBack}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
@@ -236,8 +227,7 @@ export default function FreelancerPortfolio() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Complete profile
           </button>
@@ -263,7 +253,6 @@ export default function FreelancerPortfolio() {
               <h2
                 className="text-2xl font-semibold"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -285,7 +274,6 @@ export default function FreelancerPortfolio() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -298,7 +286,6 @@ export default function FreelancerPortfolio() {
                   placeholder="e.g. Website Redesign, Mobile App UI"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -310,7 +297,6 @@ export default function FreelancerPortfolio() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -323,7 +309,6 @@ export default function FreelancerPortfolio() {
                   rows={3}
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200 resize-none"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -335,7 +320,6 @@ export default function FreelancerPortfolio() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -346,7 +330,6 @@ export default function FreelancerPortfolio() {
                   onChange={(e) => updateField('type', e.target.value as 'image' | 'document' | 'link')}
                   className="w-full px-4 py-3 rounded-lg text-base outline-none appearance-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -362,7 +345,6 @@ export default function FreelancerPortfolio() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -376,7 +358,6 @@ export default function FreelancerPortfolio() {
                     placeholder="https://example.com/your-work"
                     className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
                       border: '1px solid rgba(255, 255, 255, 0.2)',
                       color: '#ffffff',
@@ -394,7 +375,6 @@ export default function FreelancerPortfolio() {
                     <span
                       className="text-sm"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                       }}
                     >
@@ -403,7 +383,6 @@ export default function FreelancerPortfolio() {
                     <span
                       className="text-xs"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                       }}
                     >
@@ -419,7 +398,6 @@ export default function FreelancerPortfolio() {
                 onClick={handleCloseModal}
                 className="flex-1 px-6 py-3 rounded-lg font-medium text-base transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -434,8 +412,7 @@ export default function FreelancerPortfolio() {
                 style={{
                   backgroundColor: '#ffffff',
                   color: '#000000',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                }}
+                  }}
               >
                 Save
               </button>

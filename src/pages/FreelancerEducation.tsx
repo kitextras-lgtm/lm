@@ -137,7 +137,6 @@ export default function FreelancerEducation() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -157,7 +156,7 @@ export default function FreelancerEducation() {
         {/* Title */}
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           And here's what we picked up on your education — is it right?
         </h1>
@@ -165,7 +164,6 @@ export default function FreelancerEducation() {
         <p
           className="text-lg mb-12"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: 'var(--text-primary)',
           }}
         >
@@ -211,7 +209,6 @@ export default function FreelancerEducation() {
               <span
                 className="text-base font-medium"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -263,7 +260,6 @@ export default function FreelancerEducation() {
                     <h3
                       className="text-lg font-semibold mb-1 truncate"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: '#ffffff',
                       }}
                     >
@@ -272,7 +268,6 @@ export default function FreelancerEducation() {
                     <p
                       className="text-sm truncate"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                       }}
                     >
@@ -286,7 +281,6 @@ export default function FreelancerEducation() {
                   <p
                     className="text-sm mb-3"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: 'var(--text-primary)',
                     }}
                   >
@@ -298,7 +292,6 @@ export default function FreelancerEducation() {
                   <p
                     className="text-sm line-clamp-3"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: 'var(--text-primary)',
                     }}
                   >
@@ -329,7 +322,6 @@ export default function FreelancerEducation() {
             onClick={handleBack}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
@@ -344,8 +336,7 @@ export default function FreelancerEducation() {
             style={{
               backgroundColor: '#ffffff',
               color: '#000000',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           >
             Next, add languages
           </button>
@@ -371,7 +362,6 @@ export default function FreelancerEducation() {
               <h2
                 className="text-2xl font-semibold"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   color: '#ffffff',
                 }}
               >
@@ -393,7 +383,6 @@ export default function FreelancerEducation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -406,7 +395,6 @@ export default function FreelancerEducation() {
                   placeholder="e.g. University of Mindanao"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -418,7 +406,6 @@ export default function FreelancerEducation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -431,7 +418,6 @@ export default function FreelancerEducation() {
                   placeholder="e.g. Bachelor of Science"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -443,7 +429,6 @@ export default function FreelancerEducation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -456,7 +441,6 @@ export default function FreelancerEducation() {
                   placeholder="e.g. Computer Applications"
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -469,7 +453,6 @@ export default function FreelancerEducation() {
                   <label
                     className="block text-sm font-medium mb-2"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: 'var(--text-primary)',
                     }}
                   >
@@ -489,7 +472,6 @@ export default function FreelancerEducation() {
                   <label
                     className="block text-sm font-medium mb-2"
                     style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       color: 'var(--text-primary)',
                     }}
                   >
@@ -516,7 +498,6 @@ export default function FreelancerEducation() {
                 <label
                   className="text-sm"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -530,7 +511,6 @@ export default function FreelancerEducation() {
                     <label
                       className="block text-sm font-medium mb-2"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                       }}
                     >
@@ -550,7 +530,6 @@ export default function FreelancerEducation() {
                     <label
                       className="block text-sm font-medium mb-2"
                       style={{
-                        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                         color: 'var(--text-primary)',
                       }}
                     >
@@ -572,7 +551,6 @@ export default function FreelancerEducation() {
                 <label
                   className="block text-sm font-medium mb-2"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -585,7 +563,6 @@ export default function FreelancerEducation() {
                   rows={4}
                   className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all duration-200 resize-none"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
@@ -599,7 +576,6 @@ export default function FreelancerEducation() {
                 onClick={handleCloseModal}
                 className="flex-1 px-6 py-3 rounded-lg font-medium text-base transition-all duration-200"
                 style={{
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                   backgroundColor: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
@@ -614,8 +590,7 @@ export default function FreelancerEducation() {
                 style={{
                   backgroundColor: '#ffffff',
                   color: '#000000',
-                  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                }}
+                  }}
               >
                 Save
               </button>

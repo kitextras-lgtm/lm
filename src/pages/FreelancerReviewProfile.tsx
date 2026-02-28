@@ -72,16 +72,16 @@ export default function FreelancerReviewProfile() {
           <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
             <CheckCircle className="w-10 h-10" style={{ color: '#10b981' }} />
           </div>
-          <h1 className="text-3xl font-semibold mb-3" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#ffffff' }}>
+          <h1 className="text-3xl font-semibold mb-3" style={{ color: '#ffffff' }}>
             Application submitted!
           </h1>
-          <p className="text-base mb-8" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: 'var(--text-primary)' }}>
+          <p className="text-base mb-8" style={{ color: 'var(--text-primary)' }}>
             Your freelancer application is under review. We'll notify you once it's been approved.
           </p>
           <button
             onClick={() => navigate('/dashboard/freelancer')}
             className="px-8 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
-            style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ backgroundColor: '#ffffff', color: '#000000' }}
           >
             Go to dashboard
           </button>
@@ -100,7 +100,7 @@ export default function FreelancerReviewProfile() {
     >
       <div className="max-w-2xl w-full">
         <div className="mb-8">
-          <p className="text-sm mb-2" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: 'var(--text-primary)' }}>
+          <p className="text-sm mb-2" style={{ color: 'var(--text-primary)' }}>
             Final step
           </p>
           <div className="h-1 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
@@ -110,11 +110,11 @@ export default function FreelancerReviewProfile() {
 
         <h1
           className="text-4xl md:text-5xl font-normal mb-3"
-          style={{ fontFamily: 'Inter, system-ui, sans-serif', color: '#ffffff' }}
+          style={{ color: '#ffffff' }}
         >
           Review and submit your profile
         </h1>
-        <p className="text-base mb-10" style={{ fontFamily: 'Inter, system-ui, sans-serif', color: 'var(--text-primary)' }}>
+        <p className="text-base mb-10" style={{ color: 'var(--text-primary)' }}>
           Once submitted, our team will review your application. You'll be notified when it's approved.
         </p>
 
@@ -166,7 +166,7 @@ export default function FreelancerReviewProfile() {
           <button
             onClick={() => navigate(-1)}
             className="px-6 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95"
-            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff' }}
           >
             Back
           </button>
@@ -174,7 +174,7 @@ export default function FreelancerReviewProfile() {
             onClick={handleSubmit}
             disabled={isSubmitting}
             className="px-8 py-3 rounded-lg font-medium text-base transition-all duration-200 hover:brightness-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
-            style={{ backgroundColor: '#ffffff', color: '#000000', fontFamily: 'Inter, system-ui, sans-serif' }}
+            style={{ backgroundColor: '#ffffff', color: '#000000' }}
           >
             {isSubmitting ? (
               <>

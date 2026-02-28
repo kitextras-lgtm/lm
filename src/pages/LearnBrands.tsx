@@ -674,7 +674,6 @@ function FeatureSection({ feature, index }: { feature: BrandFeature; index: numb
         <h3
           className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 leading-tight whitespace-pre-line"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#ffffff',
             letterSpacing: '-0.02em'
           }}
@@ -684,7 +683,6 @@ function FeatureSection({ feature, index }: { feature: BrandFeature; index: numb
         <p
           className="text-base leading-relaxed max-w-md"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#cccccc',
             fontWeight: 400
           }}
@@ -723,7 +721,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       >
         <span
           className="text-base md:text-lg font-medium pr-4 leading-tight"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff', fontWeight: 500 }}
+          style={{ color: '#ffffff', fontWeight: 500 }}
         >
           {question}
         </span>
@@ -748,7 +746,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '16px' }}>
               <p
                 className="text-base leading-relaxed"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+                style={{ color: 'rgb(204, 204, 204)', fontWeight: 400 }}
               >
                 {answer}
               </p>
@@ -797,7 +795,7 @@ export function LearnBrands() {
           </h1>
           <p 
             className="text-base md:text-lg mt-6 max-w-2xl mx-auto"
-            style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', lineHeight: '1.7', fontWeight: 400 }}
+            style={{ color: 'rgb(204, 204, 204)', lineHeight: '1.7', fontWeight: 400 }}
           >
             Connect with authentic voices that resonate with your audience. Drive real results through strategic creator partnerships.
           </p>
@@ -829,7 +827,7 @@ export function LearnBrands() {
             </h2>
             <p 
               className="text-base md:text-lg mx-auto"
-              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+              style={{ color: 'rgb(204, 204, 204)', fontWeight: 400 }}
             >
               Everything you need to know about partnering with brands on Elevate
             </p>

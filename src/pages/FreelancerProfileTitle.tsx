@@ -41,7 +41,6 @@ export default function FreelancerProfileTitle() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -75,7 +74,6 @@ export default function FreelancerProfileTitle() {
         <p
           className="text-base mb-10"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#cccccc',
           }}
         >
@@ -87,7 +85,6 @@ export default function FreelancerProfileTitle() {
           <label
             className="block text-sm font-medium mb-3"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: '#ffffff',
             }}
           >
@@ -108,8 +105,7 @@ export default function FreelancerProfileTitle() {
                 ? '1px solid #ef4444'
                 : '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
           />
 
           {/* Validation Message */}
@@ -117,7 +113,6 @@ export default function FreelancerProfileTitle() {
             <p
               className="text-sm mt-2 flex items-center gap-2"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: '#ef4444',
               }}
             >
@@ -131,7 +126,6 @@ export default function FreelancerProfileTitle() {
             <p
               className="text-sm mt-2"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: 'var(--text-primary)',
                 textAlign: 'right',
               }}
@@ -150,8 +144,7 @@ export default function FreelancerProfileTitle() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
             }}
@@ -169,7 +162,6 @@ export default function FreelancerProfileTitle() {
             style={{
               backgroundColor: isValid ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
               color: isValid ? '#000000' : '#666666',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               cursor: isValid ? 'pointer' : 'not-allowed',
             }}
           >

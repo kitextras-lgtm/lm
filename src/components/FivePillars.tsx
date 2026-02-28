@@ -141,7 +141,6 @@ export function FivePillars() {
           <p
             className="text-base max-w-xl mx-auto transition-all duration-300"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'rgb(204, 204, 204)',
               fontWeight: 400,
               lineHeight: '1.6',

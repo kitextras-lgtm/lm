@@ -223,7 +223,6 @@ export default function FreelancerCategorySelection() {
           <p
             className="text-sm mb-2"
             style={{
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               color: 'var(--text-primary)',
             }}
           >
@@ -257,7 +256,6 @@ export default function FreelancerCategorySelection() {
         <p
           className="text-base mb-12"
           style={{
-            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             color: '#cccccc',
           }}
         >
@@ -271,7 +269,6 @@ export default function FreelancerCategorySelection() {
             <h2
               className="text-sm font-medium mb-4"
               style={{
-                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                 color: 'var(--text-primary)',
               }}
             >
@@ -292,7 +289,6 @@ export default function FreelancerCategorySelection() {
                       selectedCategory?.id === category.id
                         ? '1px solid rgba(255, 255, 255, 0.2)'
                         : '1px solid transparent',
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color:
                       selectedCategory?.id === category.id ? '#ffffff' : 'var(--text-primary)',
                   }}
@@ -326,7 +322,6 @@ export default function FreelancerCategorySelection() {
                 <h2
                   className="text-sm font-medium mb-4"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: 'var(--text-primary)',
                   }}
                 >
@@ -351,7 +346,6 @@ export default function FreelancerCategorySelection() {
                           border: isSelected
                             ? '1px solid rgba(255, 255, 255, 0.2)'
                             : '1px solid rgba(255, 255, 255, 0.1)',
-                          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                           color: isDisabled ? '#666666' : isSelected ? '#ffffff' : '#cccccc',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           opacity: isDisabled ? 0.5 : 1,
@@ -411,7 +405,6 @@ export default function FreelancerCategorySelection() {
                 <p
                   className="text-center"
                   style={{
-                    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     color: '#666666',
                   }}
                 >
@@ -431,8 +424,7 @@ export default function FreelancerCategorySelection() {
               backgroundColor: 'transparent',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-            }}
+              }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
             }}
@@ -451,7 +443,6 @@ export default function FreelancerCategorySelection() {
               backgroundColor:
                 selectedSpecialties.length > 0 ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
               color: selectedSpecialties.length > 0 ? '#000000' : '#666666',
-              fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
               cursor: selectedSpecialties.length > 0 ? 'pointer' : 'not-allowed',
             }}
           >

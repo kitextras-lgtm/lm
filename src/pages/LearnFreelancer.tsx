@@ -496,21 +496,21 @@ function FeatureSection({ feature, index }: { feature: FreelancerFeature; index:
           }}
         >
           <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#888' }} />
-          <span className="text-xs font-medium" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#999' }}>
+          <span className="text-xs font-medium" style={{ color: '#999' }}>
             {feature.tag}
           </span>
         </div>
 
         <h3
           className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 leading-tight whitespace-pre-line"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#ffffff', letterSpacing: '-0.02em' }}
+          style={{ color: '#ffffff', letterSpacing: '-0.02em' }}
         >
           {feature.title}
         </h3>
 
         <p
           className="text-base leading-relaxed max-w-md"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+          style={{ color: 'rgb(204, 204, 204)', fontWeight: 400 }}
         >
           {feature.description}
         </p>
@@ -568,7 +568,7 @@ export default function LearnFreelancer() {
             </h1>
             <p 
               className="text-base md:text-lg mt-6 max-w-2xl mx-auto"
-              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', lineHeight: '1.7', fontWeight: 400 }}
+              style={{ color: 'rgb(204, 204, 204)', lineHeight: '1.7', fontWeight: 400 }}
             >
               Take your freelance career to the next level with tools, clients, and support designed for you.
               Set your own rates, work on your terms, and grow with Elevate.
@@ -602,7 +602,7 @@ export default function LearnFreelancer() {
             </h2>
             <p 
               className="text-base md:text-lg"
-              style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+              style={{ color: 'rgb(204, 204, 204)', fontWeight: 400 }}
             >
               Everything you need to know about joining Elevate as a freelancer
             </p>
@@ -658,7 +658,7 @@ function FAQItem({ item, index, isOpen, onToggle }: { item: { question: string; 
         >
           <h3 
             className="text-base md:text-lg font-medium pr-4 transition-colors duration-200 group-hover:text-white"
-            style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: isOpen ? '#ffffff' : '#cccccc' }}
+            style={{ color: isOpen ? '#ffffff' : '#cccccc' }}
           >
             {item.question}
           </h3>
@@ -689,7 +689,7 @@ function FAQItem({ item, index, isOpen, onToggle }: { item: { question: string; 
             <div className="pb-5">
               <p 
                 className="text-base leading-relaxed max-w-3xl"
-                style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: 'rgb(204, 204, 204)', fontWeight: 400 }}
+                style={{ color: 'rgb(204, 204, 204)', fontWeight: 400 }}
               >
                 {item.answer}
               </p>

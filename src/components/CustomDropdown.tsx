@@ -46,7 +46,6 @@ export default function CustomDropdown({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     border: '1px solid rgba(255, 255, 255, 0.15)',
     color: '#ffffff',
-    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
     fontSize: '14px',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
@@ -69,7 +68,6 @@ export default function CustomDropdown({
   const optionStyle: React.CSSProperties = {
     padding: '10px 16px',
     color: '#ffffff',
-    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
     fontSize: '14px',
     cursor: 'pointer',
     transition: 'background-color 0.2s',
