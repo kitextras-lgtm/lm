@@ -641,6 +641,7 @@ html, body, #root {
 
 html, body {
   background-color: var(--bg-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   font-variant-ligatures: common-ligatures;

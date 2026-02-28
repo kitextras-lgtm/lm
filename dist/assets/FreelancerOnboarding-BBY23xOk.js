@@ -1,4 +1,4 @@
-import{j as e}from"./spline-OfIZ-5GP.js";import{u as s,r as t}from"./react-vendor-ClpDbY_3.js";import{s as a}from"./index-B-5CwU3e.js";import{C as l}from"./chevron-left-e436A-jR.js";import{C as r}from"./chevron-right-CFt0xrlA.js";import{c as i}from"./createLucideIcon-DkpiXdJH.js";import"./supabase-Dq2D-Wrk.js";
+import{j as e}from"./spline-OfIZ-5GP.js";import{u as s,r as t}from"./react-vendor-ClpDbY_3.js";import{s as a}from"./index-BeWpAAxC.js";import{C as l}from"./chevron-left-e436A-jR.js";import{C as r}from"./chevron-right-CFt0xrlA.js";import{c as i}from"./createLucideIcon-DkpiXdJH.js";import"./supabase-Dq2D-Wrk.js";
 /**
  * @license lucide-react v0.344.0 - ISC
  *
