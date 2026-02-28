@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown, CheckCircle, Check, ExternalLink, Loader, User, Info } from 'lucide-react';
+import { X, Youtube, Instagram, Music2, Twitter, Twitch, Link2, ChevronDown, CheckCircle, Check, ExternalLink, Loader, User, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, supabase } from '../lib/supabase';
 import { AnimatedLinkIcon } from './AnimatedLinkIcon';
@@ -467,19 +467,6 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
   return (
     <>
     <div className="rounded-xl sm:rounded-2xl p-5 sm:p-7 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
-      <div className="flex items-center justify-end mb-5 sm:mb-6">
-        {!isAdding && (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 border"
-            style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
-          >
-            <Plus className="w-4 h-4" />
-            <span>{userType === 'artist' ? 'Add New Artist' : t('socialLinks.addLink')}</span>
-          </button>
-        )}
-      </div>
-
       {isAdding && userType !== 'artist' && (
         <div className="mb-5 p-4 sm:p-5 rounded-xl" style={{ backgroundColor: 'transparent' }}>
           <div className="space-y-3 sm:space-y-4">
@@ -701,7 +688,7 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
       )}
 
       <div className="space-y-3">
-        {!linksLoaded ? null : links.length === 0 ? (
+        {!linksLoaded ? null : links.length === 0 && !isAdding ? (
           <div className="text-center py-8 sm:py-12">
             <AnimatedLinkIcon />
             <p className="text-sm sm:text-base font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
@@ -826,6 +813,20 @@ export function SocialLinksForm({ appliedTheme, userType, userId, onOpenArticle,
           })
         )}
       </div>
+
+      {/* Add Link button at bottom */}
+      {!isAdding && (
+        <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+          <button
+            onClick={() => setIsAdding(true)}
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:brightness-110 border"
+            style={{ backgroundColor: 'transparent', borderColor: 'var(--border-subtle)', color: 'var(--text-primary)' }}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            <span>{userType === 'artist' ? 'Add New Artist' : t('socialLinks.addLink')}</span>
+          </button>
+        </div>
+      )}
     </div>
 
     {/* Verification Modal */}

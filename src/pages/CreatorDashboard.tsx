@@ -9,6 +9,7 @@ import { MessagesPage } from './MessagesPage';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 import { useCustomerConversations } from '../hooks/useChat';
 import { useUnreadCount } from '../hooks/useUnreadCount';
+import { useUniqueSenderCount } from '../hooks/useUniqueSenderCount';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
@@ -1262,6 +1263,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
     }
   }, []);
   const unreadCount = useUnreadCount(currentUserId || '', onNewMessageArrived);
+  const uniqueSenderCount = useUniqueSenderCount(currentUserId || '');
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
@@ -2287,13 +2289,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
         </div>
 
         {saveError && (
-          <div className="text-red-500 text-sm mt-4">
-            {saveError}
-          </div>
-        )}
-
-        {saveError && (
-          <div className="text-red-500 text-sm mt-4">
+          <div className="text-sm mt-4" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>
             {saveError}
           </div>
         )}
@@ -3491,7 +3487,7 @@ const [sidebarPermanentlyCollapsed, setSidebarPermanentlyCollapsed] = useState(f
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           userProfile={userProfile || cachedProfile}
-          unreadCount={unreadCount}
+          unreadCount={uniqueSenderCount}
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarPermanentlyCollapsed ? true : sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}

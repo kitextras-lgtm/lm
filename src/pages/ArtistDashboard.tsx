@@ -14,6 +14,7 @@ import { BellIcon } from '../components/BellIcon';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '../lib/supabase';
 import { useCustomerConversations } from '../hooks/useChat';
 import { useUnreadCount } from '../hooks/useUnreadCount';
+import { useUniqueSenderCount } from '../hooks/useUniqueSenderCount';
 import { DEFAULT_AVATAR_DATA_URI, ELEVATE_ADMIN_AVATAR_URL } from '../components/DefaultAvatar';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { getCachedImage, preloadAndCacheImage } from '../utils/imageCache';
@@ -2093,6 +2094,272 @@ function CreditDropdown({ value, options, onChange, placeholder, borderless }: {
   );
 }
 
+type SyncCategory = 'All' | 'Film & TV' | 'Advertising' | 'Games' | 'Streaming' | 'Trailers';
+type SyncStatus = 'Open' | 'Closing Soon' | 'Featured';
+
+interface SyncOpportunity {
+  id: string;
+  title: string;
+  company: string;
+  category: Exclude<SyncCategory, 'All'>;
+  status: SyncStatus;
+  budget: string;
+  deadline: string;
+  description: string;
+  genres: string[];
+  moods: string[];
+}
+
+const SYNC_OPPORTUNITIES: SyncOpportunity[] = [
+  {
+    id: '1',
+    title: 'Drama Series — Emotional Score Tracks',
+    company: 'Netflix Original Productions',
+    category: 'Film & TV',
+    status: 'Featured',
+    budget: '$2,000 – $8,000',
+    deadline: 'Mar 15, 2026',
+    description: 'Seeking introspective, emotionally rich instrumental tracks for a limited drama series. Cinematic builds, sparse piano, and ambient textures preferred.',
+    genres: ['Cinematic', 'Ambient', 'Neo-Classical'],
+    moods: ['Emotional', 'Tense', 'Reflective'],
+  },
+  {
+    id: '2',
+    title: 'Global Sportswear Campaign',
+    company: 'Elevate Brand Collective',
+    category: 'Advertising',
+    status: 'Closing Soon',
+    budget: '$5,000 – $15,000',
+    deadline: 'Mar 8, 2026',
+    description: 'High-energy tracks needed for a global athletic brand campaign. Think powerful beats, driving rhythms, anthemic feel. No vocals or clear lyrical content.',
+    genres: ['Hip-Hop', 'Electronic', 'Rock'],
+    moods: ['Energetic', 'Powerful', 'Motivating'],
+  },
+  {
+    id: '3',
+    title: 'Open World RPG Soundtrack',
+    company: 'Horizon Game Studios',
+    category: 'Games',
+    status: 'Open',
+    budget: '$1,500 – $6,000',
+    deadline: 'Apr 2, 2026',
+    description: 'Looking for atmospheric, loopable background music for an open-world RPG. Tracks should be 2–5 min, mix seamlessly, and work at low volume.',
+    genres: ['Orchestral', 'Folk', 'World'],
+    moods: ['Mysterious', 'Adventurous', 'Calm'],
+  },
+  {
+    id: '4',
+    title: 'Documentary — Social Justice Theme',
+    company: 'Sundance Film Fund',
+    category: 'Film & TV',
+    status: 'Open',
+    budget: '$800 – $3,000',
+    deadline: 'Apr 20, 2026',
+    description: 'Indie documentary on civil rights movements needs authentic, raw music. Acoustic, folk, soul, and spoken word-adjacent tracks are ideal.',
+    genres: ['Folk', 'Soul', 'Acoustic'],
+    moods: ['Hopeful', 'Serious', 'Inspiring'],
+  },
+  {
+    id: '5',
+    title: 'Action-Thriller Movie Trailer',
+    company: 'Summit Pictures',
+    category: 'Trailers',
+    status: 'Closing Soon',
+    budget: '$3,000 – $10,000',
+    deadline: 'Mar 11, 2026',
+    description: 'Need a high-impact, cinematic track for a major action-thriller trailer. Should build to a climax around the 1:30 mark with strong low-end presence.',
+    genres: ['Cinematic', 'Electronic', 'Orchestral'],
+    moods: ['Intense', 'Dramatic', 'Suspenseful'],
+  },
+  {
+    id: '6',
+    title: 'Streaming Platform Discovery Playlist',
+    company: 'Spotify Editorial',
+    category: 'Streaming',
+    status: 'Open',
+    budget: 'Royalty-based',
+    deadline: 'Rolling',
+    description: 'Curating fresh indie-pop and alt-R&B tracks for new editorial playlists. Strong songwriting, unique voice, and professional quality required.',
+    genres: ['Indie Pop', 'Alt-R&B', 'Bedroom Pop'],
+    moods: ['Chill', 'Uplifting', 'Groovy'],
+  },
+];
+
+const CATEGORY_FILTERS: SyncCategory[] = ['All', 'Film & TV', 'Advertising', 'Games', 'Streaming', 'Trailers'];
+
+function SyncOpportunitiesPage() {
+  const [activeCategory, setActiveCategory] = useState<SyncCategory>('All');
+  const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const filtered = activeCategory === 'All'
+    ? SYNC_OPPORTUNITIES
+    : SYNC_OPPORTUNITIES.filter(o => o.category === activeCategory);
+
+  const statusOrder: Record<SyncStatus, number> = { Featured: 0, 'Closing Soon': 1, Open: 2 };
+  const sorted = [...filtered].sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+
+  return (
+    <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Sync Opportunities</h1>
+        <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Apply for your tracks to be featured on Television, Movies, Ads, Games, Media, and more.</p>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        {[
+          { label: 'Open Opportunities', value: SYNC_OPPORTUNITIES.filter(o => o.status !== 'Closing Soon').length.toString() },
+          { label: 'Closing Soon', value: SYNC_OPPORTUNITIES.filter(o => o.status === 'Closing Soon').length.toString() },
+          { label: 'My Applications', value: appliedIds.size.toString() },
+        ].map(({ label, value }) => (
+          <div key={label} className="rounded-xl p-4 sm:p-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+            <p className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{value}</p>
+            <p className="text-xs sm:text-sm" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>{label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Category filters */}
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+        {CATEGORY_FILTERS.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className="flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+            style={{
+              backgroundColor: activeCategory === cat ? 'var(--text-primary)' : 'var(--bg-elevated)',
+              color: activeCategory === cat ? 'var(--bg-primary)' : 'var(--text-primary)',
+              border: activeCategory === cat ? '1px solid transparent' : '1px solid var(--border-subtle)',
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Opportunity cards */}
+      <div className="space-y-4">
+        {sorted.map(opp => {
+          const isApplied = appliedIds.has(opp.id);
+          const isExpanded = expandedId === opp.id;
+          return (
+            <div
+              key={opp.id}
+              className="rounded-2xl border overflow-hidden transition-all duration-200"
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+            >
+              {/* Card header */}
+              <div
+                className="p-5 sm:p-6 cursor-pointer"
+                onClick={() => setExpandedId(isExpanded ? null : opp.id)}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    {/* Status + category row */}
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span
+                        className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                        style={{
+                          backgroundColor: 'var(--bg-elevated)',
+                          border: '1px solid var(--border-subtle)',
+                          color: 'var(--text-primary)',
+                          opacity: opp.status === 'Open' ? 1 : 1,
+                        }}
+                      >
+                        {opp.status === 'Featured' ? '★ Featured' : opp.status === 'Closing Soon' ? '⏱ Closing Soon' : '● Open'}
+                      </span>
+                      <span className="text-xs font-medium px-2.5 py-0.5 rounded-full" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', opacity: 0.7 }}>
+                        {opp.category}
+                      </span>
+                    </div>
+                    <h3 className="text-base sm:text-lg font-semibold leading-snug mb-1" style={{ color: 'var(--text-primary)' }}>{opp.title}</h3>
+                    <p className="text-sm" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>{opp.company}</p>
+                  </div>
+
+                  {/* Right meta */}
+                  <div className="flex flex-col items-end gap-3 flex-shrink-0">
+                    <svg
+                      className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+                      style={{ color: 'var(--text-primary)', opacity: 0.4 }}
+                    >
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{opp.budget}</p>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>Due {opp.deadline}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Genre + mood chips */}
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {[...opp.genres, ...opp.moods].map(tag => (
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-md" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', opacity: 0.75 }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Expanded detail */}
+              {isExpanded && (
+                <div className="px-5 sm:px-6 pb-5 sm:pb-6 animate-fade-in" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                  <p className="text-sm leading-relaxed mt-4 mb-5" style={{ color: 'var(--text-primary)', opacity: 0.75 }}>{opp.description}</p>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
+                    {[
+                      { label: 'Budget', value: opp.budget },
+                      { label: 'Deadline', value: opp.deadline },
+                      { label: 'Category', value: opp.category },
+                    ].map(({ label, value }) => (
+                      <div key={label}>
+                        <p className="text-xs mb-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>{label}</p>
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{value}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setAppliedIds(prev => { const n = new Set(prev); n.add(opp.id); return n; })}
+                      disabled={isApplied}
+                      className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:brightness-110 disabled:opacity-60"
+                      style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+                    >
+                      {isApplied ? 'Applied' : 'Apply Now'}
+                    </button>
+                    {isApplied && (
+                      <span className="text-sm animate-fade-in" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
+                        Application submitted — we'll be in touch.
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Info footer */}
+      <div className="mt-8 rounded-2xl p-5 border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}>
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0 mt-0.5">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>How Sync Works</p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Submit your tracks for consideration. If selected, you'll receive a one-time sync fee plus ongoing royalties when your music is used. All placements are non-exclusive unless otherwise stated.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ArtistDashboard() {
   // Use cached profile for instant loading (like Twitter/Instagram)
   const { profile: cachedProfile, userId: cachedUserId, updateProfile: updateCachedProfile, clearCache: clearProfileCache } = useUserProfile();
@@ -2415,6 +2682,7 @@ export function ArtistDashboard() {
     }
   }, []);
   const unreadCount = useUnreadCount(currentUserId || '', onNewMessageArrived);
+  const uniqueSenderCount = useUniqueSenderCount(currentUserId || '');
   
   // Only show badge when not in messages section and there are unread messages
   const shouldShowBadge = activeSection !== 'messages' && unreadCount > 0;
@@ -5162,7 +5430,7 @@ export function ArtistDashboard() {
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           userProfile={userProfile || cachedProfile}
-          unreadCount={unreadCount}
+          unreadCount={uniqueSenderCount}
           cachedProfilePic={cachedProfilePic}
           isCollapsed={sidebarPermanentlyCollapsed ? true : sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
@@ -5716,27 +5984,7 @@ export function ArtistDashboard() {
         )}
 
         {activeSection === 'deals' && (
-          <div className="animate-fade-in pb-20 lg:pb-0 px-6 lg:px-12 pt-10 lg:pt-14">
-            <div className="mb-10">
-              <h1 className="text-4xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>Sync Opportunities</h1>
-              <p className="text-base" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>Apply for your tracks to be featured on Television, Movies, Ads, Games, Media, and more.</p>
-            </div>
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="mb-6" style={{ color: 'var(--text-primary)', opacity: 0.4 }}>
-                <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="8" y="24" width="32" height="16" rx="2"/>
-                  <line x1="12" y1="30" x2="28" y2="30"/>
-                  <line x1="12" y1="36" x2="22" y2="36"/>
-                  <path d="M8 24V16C8 14.9 8.9 14 10 14H38C39.1 14 40 14.9 40 16V24"/>
-                  <line x1="14" y1="14" x2="20" y2="24"/>
-                  <line x1="22" y1="14" x2="28" y2="24"/>
-                  <line x1="30" y1="14" x2="36" y2="24"/>
-                </svg>
-              </div>
-              <p className="text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>No sync opportunities available</p>
-              <p className="text-sm max-w-sm leading-relaxed" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>There are currently no sync opportunities available. We encourage you to check back for future openings.</p>
-            </div>
-          </div>
+          <SyncOpportunitiesPage />
         )}
 
         {activeSection === 'explore' && !showReleaseForm && (
