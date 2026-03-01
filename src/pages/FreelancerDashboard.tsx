@@ -1615,14 +1615,20 @@ export function FreelancerDashboard() {
         <div>
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.username')}</label>
           <div className="flex items-center gap-1 lg:gap-2">
-            <div className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}>
+            <div
+              className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg transition-all"
+              style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}
+              onFocusCapture={(e) => (e.currentTarget.style.borderColor = 'var(--text-primary)')}
+              onBlurCapture={(e) => (e.currentTarget.style.borderColor = 'rgba(75, 85, 99, 0.5)')}
+            >
               <span className="text-xs lg:text-sm" style={{ color: 'var(--text-primary)' }}>@</span>
               <input
                 type="text"
                 value={formData.username}
-                disabled
-                className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1 opacity-50"
-                style={{ color: 'var(--text-primary)' }}
+                disabled={!isEditing}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1 transition-all"
+                style={{ color: 'var(--text-primary)', opacity: isEditing ? 1 : 0.5 }}
               />
             </div>
           </div>

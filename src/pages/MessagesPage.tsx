@@ -335,12 +335,14 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('messages.searchConversations')}
                 aria-label={t('messages.searchConversations')}
-                className="w-full pl-9 lg:pl-10 pr-3 lg:pr-4 py-2 lg:py-3 rounded-lg lg:rounded-xl text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+                className="w-full pl-9 lg:pl-10 pr-3 lg:pr-4 py-2 lg:py-3 rounded-lg lg:rounded-xl text-xs lg:text-sm focus:outline-none transition-all"
                 style={{
                   backgroundColor: 'var(--bg-elevated)',
                   border: '1px solid rgba(75, 85, 99, 0.25)',
                   color: 'var(--text-primary)',
                 }}
+                onFocus={(e) => (e.target.style.borderColor = 'var(--text-primary)')}
+                onBlur={(e) => (e.target.style.borderColor = 'rgba(75, 85, 99, 0.25)')}
               />
             </div>
 
@@ -362,7 +364,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                   }`}
                   style={filter === 'unread' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
                 >
-                  {t('messages.general')}
+                  Friends
                 </button>
                 <button
                   onClick={() => setFilter('pinned')}
@@ -439,12 +441,14 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('messages.searchConversations')}
               aria-label={t('messages.searchConversations')}
-              className="w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
               style={{
                 backgroundColor: 'var(--bg-elevated)',
                 border: '1px solid rgba(75, 85, 99, 0.25)',
                 color: 'var(--text-primary)',
               }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--text-primary)')}
+              onBlur={(e) => (e.target.style.borderColor = 'rgba(75, 85, 99, 0.25)')}
             />
           </div>
 
@@ -466,7 +470,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
                 }`}
                 style={filter === 'unread' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
               >
-                {t('messages.general')}
+                Friends
               </button>
               <button
                 onClick={() => setFilter('pinned')}

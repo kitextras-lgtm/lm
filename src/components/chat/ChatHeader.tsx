@@ -154,7 +154,44 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
               {user.user_type}
             </span>
           )}
+
+          {/* Add Friend + 3-dots action row */}
+          {!user.is_admin && (
+            <div className="flex items-center gap-2 mt-4 w-full">
+              <button
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all hover:brightness-110 active:scale-[0.98]"
+                style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                Add Friend
+              </button>
+              <button
+                className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:brightness-110 active:scale-[0.98] flex-shrink-0"
+                style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Mutual Friends / Mutual Servers section */}
+        {!user.is_admin && (
+          <div className="px-5 pt-4 pb-0" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Mutual Friends</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>—</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>None yet</p>
+              </div>
+              <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Mutual Servers</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>—</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>None yet</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Social links section */}
         {!user.is_admin && (
