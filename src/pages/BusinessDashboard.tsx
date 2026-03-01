@@ -788,6 +788,10 @@ export function BusinessDashboard() {
   const [mobileSettingsView, setMobileSettingsView] = useState<'menu' | SettingsSection>('menu');
   const [guideSearch, setGuideSearch] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [showUsernameChange, setShowUsernameChange] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [usernameAvailability, setUsernameAvailability] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>('idle');
+  const [usernameChangesThisWeek, setUsernameChangesThisWeek] = useState(0);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignData | null>(null);
   const [userType, setUserType] = useState<string>('');
@@ -1335,6 +1339,51 @@ export function BusinessDashboard() {
     }
   };
 
+  const checkUsernameAvailability = async (value: string) => {
+    const trimmed = value.trim().toLowerCase();
+    if (!trimmed) { setUsernameAvailability('idle'); return; }
+    if (!/^[a-z0-9_]{3,20}$/.test(trimmed)) { setUsernameAvailability('invalid'); return; }
+    if (trimmed === (formData.username || '').toLowerCase()) { setUsernameAvailability('idle'); return; }
+    setUsernameAvailability('checking');
+    try {
+      const { data } = await supabase.from('users').select('id').eq('username', trimmed).maybeSingle();
+      setUsernameAvailability(data ? 'taken' : 'available');
+    } catch { setUsernameAvailability('idle'); }
+  };
+
+  const handleApplyUsernameChange = async () => {
+    if (usernameAvailability !== 'available' || !currentUserId) return;
+    if (usernameChangesThisWeek >= 2) return;
+    const trimmed = newUsername.trim().toLowerCase();
+    try {
+      const { error } = await supabase.from('users').update({ username: trimmed }).eq('id', currentUserId);
+      if (error) throw error;
+      setFormData(prev => ({ ...prev, username: trimmed }));
+      updateCachedProfile({ username: trimmed });
+      setShowUsernameChange(false);
+      setNewUsername('');
+      setUsernameAvailability('idle');
+      setUsernameChangesThisWeek(prev => prev + 1);
+      const changeKey = `username_changes_${currentUserId}`;
+      const existing: { ts: number }[] = JSON.parse(localStorage.getItem(changeKey) || '[]');
+      localStorage.setItem(changeKey, JSON.stringify([...existing, { ts: Date.now() }]));
+    } catch (e: any) {
+      setSaveError(e.message || 'Failed to update username');
+    }
+  };
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    const changeKey = `username_changes_${currentUserId}`;
+    try {
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const entries: { ts: number }[] = JSON.parse(localStorage.getItem(changeKey) || '[]');
+      const recent = entries.filter(e => e.ts > oneWeekAgo);
+      localStorage.setItem(changeKey, JSON.stringify(recent));
+      setUsernameChangesThisWeek(recent.length);
+    } catch {}
+  }, [currentUserId]);
+
   const handleSaveChanges = async () => {
     setIsSaving(true);
     setSaveError(null);
@@ -1640,7 +1689,7 @@ export function BusinessDashboard() {
 
         <div>
           <label className="block text-xs lg:text-sm font-medium mb-1 lg:mb-1.5" style={{ color: 'var(--text-primary)' }}>{t('personalInfo.username')}</label>
-          <div className="flex items-center gap-1 lg:gap-2">
+          <div className="flex items-center gap-2">
             <div
               className="flex-1 flex items-center h-9 lg:h-10 px-2 lg:px-3 rounded-lg transition-all"
               style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }}
@@ -1648,16 +1697,36 @@ export function BusinessDashboard() {
               onBlurCapture={(e) => (e.currentTarget.style.borderColor = 'rgba(75, 85, 99, 0.5)')}
             >
               <span className="text-xs lg:text-sm" style={{ color: 'var(--text-primary)' }}>@</span>
-              <input
-                type="text"
-                value={formData.username}
-                disabled={!isEditing}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1 transition-all"
-                style={{ color: 'var(--text-primary)', opacity: isEditing ? 1 : 0.5 }}
-              />
+              <input type="text" value={formData.username} disabled className="flex-1 bg-transparent text-xs lg:text-sm focus:outline-none ml-1" style={{ color: 'var(--text-primary)', opacity: 0.85 }} />
             </div>
+            {isEditing && usernameChangesThisWeek < 2 && (
+              <button type="button" onClick={() => { setShowUsernameChange(v => !v); setNewUsername(''); setUsernameAvailability('idle'); }} className="flex items-center justify-center w-8 h-8 lg:w-9 lg:h-9 rounded-lg flex-shrink-0 transition-all hover:brightness-110" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }} title="Change username">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+            )}
+            {isEditing && usernameChangesThisWeek >= 2 && (
+              <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>2/week limit reached</span>
+            )}
           </div>
+          {showUsernameChange && isEditing && usernameChangesThisWeek < 2 && (
+            <div className="mt-2 p-3 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>You can change your username {2 - usernameChangesThisWeek} more time{2 - usernameChangesThisWeek !== 1 ? 's' : ''} this week.</p>
+              <div className="flex items-center h-9 px-3 rounded-lg transition-all mb-2" style={{ background: 'transparent', border: '1px solid rgba(75, 85, 99, 0.5)' }} onFocusCapture={(e) => (e.currentTarget.style.borderColor = 'var(--text-primary)')} onBlurCapture={(e) => (e.currentTarget.style.borderColor = 'rgba(75, 85, 99, 0.5)')}>
+                <span className="text-sm mr-1" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>@</span>
+                <input type="text" value={newUsername} autoFocus placeholder="new username" onChange={(e) => { setNewUsername(e.target.value); setUsernameAvailability('idle'); }} onKeyDown={(e) => { if (e.key === 'Enter') checkUsernameAvailability(newUsername); }} className="flex-1 bg-transparent text-sm focus:outline-none" style={{ color: 'var(--text-primary)' }} />
+                {usernameAvailability === 'checking' && <div className="w-3.5 h-3.5 rounded-full border-2 animate-spin flex-shrink-0" style={{ borderColor: 'rgba(75,85,99,0.4)', borderTopColor: 'var(--text-primary)' }} />}
+                {usernameAvailability === 'available' && <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-accent)' }}><path d="M20 6L9 17l-5-5"/></svg>}
+                {(usernameAvailability === 'taken' || usernameAvailability === 'invalid') && <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M18 6L6 18M6 6l12 12"/></svg>}
+              </div>
+              {usernameAvailability === 'taken' && <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>That username is already taken.</p>}
+              {usernameAvailability === 'invalid' && <p className="text-xs mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>3–20 chars, letters, numbers and underscores only.</p>}
+              {usernameAvailability === 'available' && <p className="text-xs mb-2" style={{ color: 'var(--text-accent)' }}>Available!</p>}
+              <div className="flex gap-2">
+                <button type="button" onClick={() => checkUsernameAvailability(newUsername)} disabled={!newUsername.trim() || usernameAvailability === 'checking'} className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-all hover:brightness-110 disabled:opacity-40" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}>Check</button>
+                <button type="button" onClick={handleApplyUsernameChange} disabled={usernameAvailability !== 'available'} className="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-40" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)' }}>Apply</button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div>

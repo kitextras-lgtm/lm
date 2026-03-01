@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, MessageSquare } from 'lucide-react';
 import { EditIcon } from '../components/EditIcon';
 import { useUserProfile } from '../contexts/UserProfileContext';
 import { ChatWindow, UserListItem, ConversationListSkeleton, ChatWindowSkeleton, NewMessageModal } from '../components/chat';
 import { useCustomerConversations, usePresence, getOrCreateAdminConversation } from '../hooks/useChat';
+import { useFriends } from '../hooks/useFriends';
+import { FriendsPanel } from '../components/friends/FriendsPanel';
 import { supabase } from '../lib/supabase';
 import type { Conversation, Profile } from '../types/chat';
 import { debounce } from '../utils/debounce';
 
-type FilterType = 'all' | 'unread' | 'pinned';
+type FilterType = 'all' | 'unread' | 'pinned' | 'friends';
 
 interface MessagesPageProps {
   currentUserId: string;
@@ -44,6 +45,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
   const [filter, setFilter] = useState<FilterType>('all');
   const [initializing, setInitializing] = useState(true);
   const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
+  const { incoming } = useFriends(currentUserId);
+  const pendingFriendCount = incoming.length;
 
   usePresence(currentUserId);
 
@@ -160,6 +163,8 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
   }, [conversations, initializing, selectedConversation]);
 
   const filteredConversations = useMemo(() => {
+    if (filter === 'friends') return []; // friends tab renders FriendsPanel instead
+
     let convs = [...conversations];
 
     if (selectedConversation && !convs.find(c => c.id === selectedConversation.id)) {
@@ -328,7 +333,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
             </div>
             
             <div className="relative mb-3 lg:mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 lg:w-4 lg:h-4" style={{ color: 'var(--text-primary)' }} />
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
               <input
                 type="text"
                 value={searchQuery}
@@ -348,73 +353,71 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
             {userType !== 'artist' && (
               <div className="flex gap-1.5 lg:gap-2">
-                <button
-                  onClick={() => setFilter('all')}
-                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
-                    filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                  }`}
-                  style={filter === 'all' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
-                >
-                  {t('messages.primary')}
-                </button>
-                <button
-                  onClick={() => setFilter('unread')}
-                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 ${
-                    filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                  }`}
-                  style={filter === 'unread' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
-                >
-                  Friends
-                </button>
-                <button
-                  onClick={() => setFilter('pinned')}
-                  className={`flex-1 px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-200 relative ${
-                    filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                  }`}
-                  style={filter === 'pinned' ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
-                >
-                  {requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests')}
-                </button>
+                {(['all', 'friends', 'pinned'] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`flex-1 relative px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      filter === f ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                    }`}
+                    style={filter === f ? { backgroundColor: 'var(--bg-primary)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid transparent' }}
+                  >
+                    {f === 'all' ? t('messages.primary') : f === 'friends' ? 'Friends' : (requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests'))}
+                    {f === 'friends' && pendingFriendCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)', fontSize: 9 }}>{pendingFriendCount}</span>
+                    )}
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
-          <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
-            {showConversationSkeletons ? (
-              <ConversationListSkeleton count={4} backgroundTheme={backgroundTheme} />
-            ) : filteredConversations.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
-                  <MessageSquare className="w-8 h-8 animate-message-float" style={{ color: 'var(--text-primary)' }} />
-                </div>
-                {userType === 'artist' ? (
-                  <>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noMessagesYet')}</p>
-                    <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('messages.supportTeamReachOut')}</p>
-                  </>
-                ) : (
-                  <>
+          {filter === 'friends' ? (
+            <div className="flex-1 overflow-hidden min-h-0">
+              <FriendsPanel
+                currentUserId={currentUserId}
+                onStartChat={(userId, user) => {
+                  setFilter('all');
+                  startConversationWith({ id: userId, name: [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || '', avatar_url: user.profile_picture_url, username: user.username } as any);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
+              {showConversationSkeletons ? (
+                <ConversationListSkeleton count={4} backgroundTheme={backgroundTheme} />
+              ) : filteredConversations.length === 0 ? (
+                <div className="p-12 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                    <svg className="w-8 h-8 animate-message-float" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                  </div>
+                  {userType === 'artist' ? (
+                    <>
+                      <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noMessagesYet')}</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('messages.supportTeamReachOut')}</p>
+                    </>
+                  ) : (
                     <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noConversationsFound')}</p>
-                  </>
-                )}
-              </div>
-            ) : (
-              filteredConversations.map((conv) => (
-                conv.admin && (
-                  <UserListItem
-                    key={conv.id}
-                    user={conv.admin}
-                    conversation={conv}
-                    isActive={selectedConversation?.id === conv.id}
-                    onClick={() => handleSelectConversation(conv)}
-                    onPin={handlePinConversation}
-                    unreadCount={conv.customer_id === currentUserId ? conv.unread_count_customer : conv.unread_count_admin}
-                    currentUserId={currentUserId}
-                  />
-                )
-              ))
-            )}
-          </div>
+                  )}
+                </div>
+              ) : (
+                filteredConversations.map((conv) => (
+                  conv.admin && (
+                    <UserListItem
+                      key={conv.id}
+                      user={conv.admin}
+                      conversation={conv}
+                      isActive={selectedConversation?.id === conv.id}
+                      onClick={() => handleSelectConversation(conv)}
+                      onPin={handlePinConversation}
+                      unreadCount={conv.customer_id === currentUserId ? conv.unread_count_customer : conv.unread_count_admin}
+                      currentUserId={currentUserId}
+                    />
+                  )
+                ))
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -434,7 +437,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
         <div className="px-5 pb-4" style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--bg-primary)' }}>
           <div className="relative mb-4">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             <input
               type="text"
               value={searchQuery}
@@ -454,73 +457,71 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
 
           {userType !== 'artist' && (
             <div className="flex gap-2">
-              <button
-                onClick={() => setFilter('all')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  filter === 'all' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                }`}
-                style={filter === 'all' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
-              >
-                {t('messages.primary')}
-              </button>
-              <button
-                onClick={() => setFilter('unread')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  filter === 'unread' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                }`}
-                style={filter === 'unread' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
-              >
-                Friends
-              </button>
-              <button
-                onClick={() => setFilter('pinned')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative ${
-                  filter === 'pinned' ? '' : 'hover:brightness-110 active:scale-[0.98]'
-                }`}
-                style={filter === 'pinned' ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
-              >
-                {requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests')}
-              </button>
+              {(['all', 'friends', 'pinned'] as const).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`flex-1 relative px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    filter === f ? '' : 'hover:brightness-110 active:scale-[0.98]'
+                  }`}
+                  style={filter === f ? { backgroundColor: 'var(--bg-elevated)', border: '1.5px solid rgba(148, 163, 184, 0.3)', color: 'var(--text-primary)', boxShadow: '0 1px 2px rgba(148, 163, 184, 0.2)' } : { backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid transparent' }}
+                >
+                  {f === 'all' ? t('messages.primary') : f === 'friends' ? 'Friends' : (requestCount > 0 ? `Requests (${requestCount})` : t('messages.requests'))}
+                  {f === 'friends' && pendingFriendCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style={{ backgroundColor: 'var(--text-primary)', color: 'var(--bg-primary)', fontSize: 9 }}>{pendingFriendCount}</span>
+                  )}
+                </button>
+              ))}
             </div>
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
-          {showConversationSkeletons ? (
-            <ConversationListSkeleton count={5} backgroundTheme={backgroundTheme} />
-          ) : filteredConversations.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)' }}>
-                <MessageSquare className="w-8 h-8 animate-message-float" style={{ color: 'var(--text-primary)' }} />
-              </div>
-              {userType === 'artist' ? (
-                <>
-                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noMessagesYet')}</p>
-                  <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('messages.supportTeamReachOut')}</p>
-                </>
-              ) : (
-                <>
+        {filter === 'friends' ? (
+          <div className="flex-1 overflow-hidden min-h-0">
+            <FriendsPanel
+              currentUserId={currentUserId}
+              onStartChat={(userId, user) => {
+                setFilter('all');
+                startConversationWith({ id: userId, name: [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || '', avatar_url: user.profile_picture_url, username: user.username } as any);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75, 85, 99, 0.3) transparent', WebkitOverflowScrolling: 'touch' }}>
+            {showConversationSkeletons ? (
+              <ConversationListSkeleton count={5} backgroundTheme={backgroundTheme} />
+            ) : filteredConversations.length === 0 ? (
+              <div className="p-12 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-card)' }}>
+                  <svg className="w-8 h-8 animate-message-float" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </div>
+                {userType === 'artist' ? (
+                  <>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noMessagesYet')}</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>{t('messages.supportTeamReachOut')}</p>
+                  </>
+                ) : (
                   <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{t('messages.noConversationsFound')}</p>
-                </>
-              )}
-            </div>
-          ) : (
-            filteredConversations.map((conv) => (
-              conv.admin && (
-                <UserListItem
-                  key={conv.id}
-                  user={conv.admin}
-                  conversation={conv}
-                  isActive={selectedConversation?.id === conv.id}
-                  onClick={() => handleSelectConversation(conv)}
-                  onPin={handlePinConversation}
-                  unreadCount={conv.customer_id === currentUserId ? conv.unread_count_customer : conv.unread_count_admin}
-                  currentUserId={currentUserId}
-                />
-              )
-            ))
-          )}
-        </div>
+                )}
+              </div>
+            ) : (
+              filteredConversations.map((conv) => (
+                conv.admin && (
+                  <UserListItem
+                    key={conv.id}
+                    user={conv.admin}
+                    conversation={conv}
+                    isActive={selectedConversation?.id === conv.id}
+                    onClick={() => handleSelectConversation(conv)}
+                    onPin={handlePinConversation}
+                    unreadCount={conv.customer_id === currentUserId ? conv.unread_count_customer : conv.unread_count_admin}
+                    currentUserId={currentUserId}
+                  />
+                )
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {/* Desktop Chat Window */}
@@ -576,7 +577,7 @@ export function MessagesPage({ currentUserId, backgroundTheme = 'dark', userType
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center px-6">
               <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid rgba(75, 85, 99, 0.1)' }}>
-                <MessageSquare className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
+                <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               </div>
               <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>{t('messages.selectConversation')}</h2>
               <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{t('messages.chooseFromList')}</p>

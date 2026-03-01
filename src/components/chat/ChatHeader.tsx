@@ -55,6 +55,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
   const rowHover = 'hover:bg-white/5';
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(true);
+  const [activeTab, setActiveTab] = useState<'activity' | 'friends' | 'servers'>('activity');
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const totalFollowers = links.reduce((sum, l) => sum + (l.follower_count || 0), 0);
@@ -108,6 +109,12 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
     return () => { cancelled = true; };
   }, [user.id, user.is_admin]);
 
+  const TABS = [
+    { key: 'activity' as const, label: 'Activity' },
+    { key: 'friends' as const, label: 'No Mutual Friends' },
+    { key: 'servers' as const, label: 'No Mutual Servers' },
+  ];
+
   return (
     <div
       ref={overlayRef}
@@ -116,8 +123,8 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl overflow-hidden"
-        style={{ backgroundColor: modalBg, border: `1px solid ${borderColor}` }}
+        className="relative w-full max-w-md rounded-2xl overflow-hidden flex flex-col"
+        style={{ backgroundColor: modalBg, border: `1px solid ${borderColor}`, maxHeight: '90vh' }}
       >
         {/* Close button */}
         <button
@@ -129,7 +136,7 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
         </button>
 
         {/* Avatar + name section */}
-        <div className="flex flex-col items-center pt-8 pb-5 px-6" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+        <div className="flex flex-col items-center pt-8 pb-5 px-6 flex-shrink-0" style={{ borderBottom: `1px solid ${dividerColor}` }}>
           <img
             src={user.is_admin ? ELEVATE_ADMIN_AVATAR_URL : (user.avatar_url || DEFAULT_AVATAR_DATA_URI)}
             alt={user.name}
@@ -175,38 +182,51 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
           )}
         </div>
 
-        {/* Mutual Friends / Mutual Servers section */}
+        {/* Tab bar — only for non-admin users */}
         {!user.is_admin && (
-          <div className="px-5 pt-4 pb-0" style={{ borderBottom: `1px solid ${dividerColor}` }}>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Mutual Friends</p>
-                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>—</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>None yet</p>
-              </div>
-              <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>Mutual Servers</p>
-                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>—</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>None yet</p>
-              </div>
-            </div>
+          <div className="flex items-end gap-0 px-5 flex-shrink-0" style={{ borderBottom: `1px solid ${dividerColor}` }}>
+            {TABS.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className="relative mr-5 pb-2.5 pt-3 text-xs font-semibold transition-colors whitespace-nowrap"
+                style={{
+                  color: activeTab === tab.key ? 'var(--text-primary)' : 'var(--text-primary)',
+                  opacity: activeTab === tab.key ? 1 : 0.45,
+                }}
+              >
+                {tab.label}
+                {activeTab === tab.key && (
+                  <span
+                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                    style={{ backgroundColor: 'var(--text-primary)' }}
+                  />
+                )}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Social links section */}
-        {!user.is_admin && (
-          <div className="px-5 py-4">
-            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-primary)' }}>Social Links</p>
-            {loadingLinks ? (
-              <div className="flex justify-center py-4">
-                <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.7)' }} />
-              </div>
-            ) : links.length === 0 ? (
-              <p className="text-sm text-center py-3" style={{ color: 'var(--text-primary)' }}>No social links added</p>
-            ) : (
-              <div className="space-y-1">
-                {links.map(link => {
-                  return (
+        {/* Tab content — scrollable */}
+        <div className="flex-1 overflow-y-auto min-h-0" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(75,85,99,0.3) transparent' }}>
+          {user.is_admin ? (
+            /* Admin: no tabs, just a simple message */
+            <div className="px-6 py-5">
+              <p className="text-sm text-center" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>This is the official Elevate support account.</p>
+            </div>
+          ) : activeTab === 'activity' ? (
+            /* Activity tab = Social Links */
+            <div className="px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-primary)' }}>Social Links</p>
+              {loadingLinks ? (
+                <div className="flex justify-center py-6">
+                  <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.7)' }} />
+                </div>
+              ) : links.length === 0 ? (
+                <p className="text-sm text-center py-4" style={{ color: 'var(--text-primary)', opacity: 0.5 }}>No social links added</p>
+              ) : (
+                <div className="space-y-1">
+                  {links.map(link => (
                     <a
                       key={link.id}
                       href={link.url}
@@ -223,38 +243,56 @@ function UserProfilePopup({ user, onClose, backgroundTheme: _backgroundTheme }: 
                           <span className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{link.display_name || link.platform}</span>
                           {link.verified && <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>}
                         </div>
-                        <span className="text-xs truncate block" style={{ color: 'var(--text-primary)' }}>
+                        <span className="text-xs truncate block" style={{ color: 'var(--text-primary)', opacity: 0.55 }}>
                           {link.url.replace(/^https?:\/\//i, '')}
                         </span>
                       </div>
                       <svg className="w-3.5 h-3.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)' }}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     </a>
-                  );
-                })}
-              </div>
-            )}
-            {/* Followers & Views aggregated stats */}
-            {!loadingLinks && hasStats && (
-              <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${dividerColor}` }}>
-                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)' }}>Channel Stats</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {totalFollowers > 0 && (
-                    <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                      <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalFollowers)}</span>
-                      <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Followers</span>
-                    </div>
-                  )}
-                  {totalViews > 0 && (
-                    <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
-                      <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalViews)}</span>
-                      <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Views</span>
-                    </div>
-                  )}
+                  ))}
                 </div>
+              )}
+              {/* Channel stats */}
+              {!loadingLinks && hasStats && (
+                <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${dividerColor}` }}>
+                  <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-primary)' }}>Channel Stats</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {totalFollowers > 0 && (
+                      <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalFollowers)}</span>
+                        <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Followers</span>
+                      </div>
+                    )}
+                    {totalViews > 0 && (
+                      <div className="flex flex-col items-center py-2.5 rounded-xl" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                        <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{formatCount(totalViews)}</span>
+                        <span className="text-xs mt-0.5" style={{ color: 'var(--text-primary)', opacity: 0.6 }}>Views</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : activeTab === 'friends' ? (
+            /* Mutual Friends tab */
+            <div className="px-5 py-8 text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
-            )}
-          </div>
-        )}
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>No Mutual Friends</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>You don't have any friends in common yet.</p>
+            </div>
+          ) : (
+            /* Mutual Servers tab */
+            <div className="px-5 py-8 text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', opacity: 0.5 }}><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+              </div>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>No Mutual Servers</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-primary)', opacity: 0.45 }}>You're not in any of the same servers.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
